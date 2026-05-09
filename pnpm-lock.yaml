@@ -65,7 +65,7 @@ importers:
 
   packages/core: {}
 
-  packages/feature-registry: {}
+  packages/features-registry: {}
 
   packages/ui: {}
 
