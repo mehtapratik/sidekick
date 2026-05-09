@@ -189,7 +189,7 @@ This package owns:
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js 15 App Router |
+| Frontend | Next.js 16 App Router |
 | Language | TypeScript Strict |
 | DB | Supabase PostgreSQL |
 | ORM | Drizzle ORM |
