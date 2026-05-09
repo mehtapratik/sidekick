@@ -1112,7 +1112,47 @@ Repository abstractions are mandatory for all mutations.
 
 ---
 
-# 21. Final Architectural Position
+# 21. Repository Visibility
+
+## 21.1 Decision
+
+The GitHub repository is **public**.
+
+This is intentional. The project is built in the open as a learning exercise and portfolio. Friends and collaborators can view progress without requiring explicit invitations.
+
+## 21.2 Why This Is Safe
+
+Security in this architecture comes from correct implementation, not obscurity:
+
+- RLS policies enforce data isolation at the database level regardless of who reads the source code
+- `withApiGuard()` centralizes authorization — knowing the code exists doesn't bypass it
+- API keys are hashed (SHA-256) before storage — the schema being public is irrelevant
+- `.env.local` is gitignored — real secrets never enter the repository
+
+Making the architecture and implementation decisions public is consistent with standard open-source practice. The actual security surface is the running application, not the source code.
+
+## 21.3 Permanent Caution — Never Commit Secrets
+
+The following must **never** be committed to the repository under any circumstances:
+
+- `.env.local` or any file containing real environment variable values
+- Supabase service role keys
+- API keys (Anthropic, OpenAI, Stripe)
+- Database connection strings with credentials
+- Any token, password, or private key
+
+The `.gitignore` blocks `.env*` files (with the exception of `.env.example`). This is a technical safeguard, not a substitute for vigilance. Always verify `git status` before committing.
+
+If a secret is ever accidentally committed:
+1. Immediately rotate the exposed key/token in the relevant service dashboard
+2. Remove the secret from git history using `git filter-repo` or GitHub's secret scanning remediation tools
+3. Force-push the cleaned history
+
+Rotation is mandatory — removing from git history is not sufficient on its own because the secret may already have been cloned or cached.
+
+---
+
+# 22. Final Architectural Position
 
 This architecture intentionally optimizes for:
 
