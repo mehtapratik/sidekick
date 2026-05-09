@@ -134,3 +134,41 @@ Both are legitimate, widely-used packages. Approving them is safe.
 
 **Why `onlyBuiltDependencies` alone wasn't enough:**
 `apps/web` has its own local `node_modules` (installed by `pnpm create next-app`) and its own install context. The root approval didn't automatically propagate to the `apps/web` context. Running `pnpm approve-builds` from inside `apps/web` fixed this.
+
+---
+
+## Decision 9 — Declaring environment variables in `turbo.json`
+
+**What we chose:** Listing all environment variables in the `env` array of the `build` task in `turbo.json`.
+
+**Why:**
+Turborepo caches builds by hashing source files. Without declaring environment variables, Turbo has no way to know that a change to `NEXT_PUBLIC_APP_URL` should invalidate the cached build. This means:
+- You change an environment variable in Vercel
+- Turbo sees no source file changes
+- It serves the stale cached build — ignoring your new variable value
+
+Declaring variables in `env` includes their values in the cache hash. If a value changes, the cache is invalidated and the app rebuilds.
+
+**Server-only vs `NEXT_PUBLIC_` variables:**
+Both types must be declared. `NEXT_PUBLIC_` variables are embedded into the browser bundle at build time — a change requires a rebuild. Server-only variables (like `DATABASE_URL`) affect runtime behavior, so they also need to invalidate the cache when changed.
+
+**How Vercel detects this:**
+Vercel's build system reads `turbo.json` and warns if environment variables are configured in the Vercel dashboard but not declared in `turbo.json`. This was the warning we saw on the first Vercel build, which prompted this fix.
+
+---
+
+## Decision 10 — Vercel monorepo configuration
+
+**What we chose:**
+- Root Directory: `apps/web`
+- Install Command: `pnpm install` (run from `apps/web`, which resolves to the workspace root)
+- Build Command: Vercel auto-detects `turbo run build` due to Turborepo detection
+
+**Why Root Directory is `apps/web` and not the repo root:**
+Vercel needs to know which app to deploy. Setting Root Directory to `apps/web` tells Vercel where the Next.js app lives. However, `pnpm install` still runs at the workspace root (two levels up) because pnpm detects the workspace configuration automatically.
+
+**Why we don't set a custom build command:**
+Vercel detects Turborepo automatically and adjusts its build command to `turbo run build`. This is correct — it builds only the `web` package and its dependencies, not the whole monorepo unnecessarily.
+
+**The stable URL vs per-deployment URL:**
+Every Vercel deployment gets a unique immutable URL (e.g. `sidekick-i6nvee84m-...vercel.app`). This is useful for rollbacks but not for `NEXT_PUBLIC_APP_URL`. The stable production URL (`sidekick-six-bay.vercel.app`) is assigned to the project and never changes between deployments. Always use the stable URL for environment variables.

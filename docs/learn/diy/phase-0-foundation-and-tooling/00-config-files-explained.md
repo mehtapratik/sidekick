@@ -80,6 +80,11 @@ Without `^build`, Turbo might try to build `apps/web` before `packages/core` has
 **`build.outputs: ["dist/**", ".next/**"]`**
 Tells Turbo which files are the result of a build. Turbo hashes these folders to detect whether a cached result is still valid. If the source files haven't changed and these output folders already exist, Turbo skips the build entirely and restores from cache.
 
+**`build.env: [...]`**
+Declares which environment variables affect the build output. Turbo includes these variable values in its cache hash alongside source files. If a listed variable changes, the cache is invalidated and the app rebuilds — even if no source files changed.
+
+This is critical for correctness on Vercel. Without it, changing `NEXT_PUBLIC_APP_URL` in the Vercel dashboard would have no effect until a source file also changed, because Turbo would serve the stale cached build. Vercel warns loudly during deployment if environment variables are set in the dashboard but not declared here.
+
 ---
 
 **`dev.cache: false`**

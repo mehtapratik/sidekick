@@ -128,23 +128,74 @@ Vercel needs to know this is a monorepo and which app to deploy:
 
 | Setting | Value |
 |---|---|
-| Framework Preset | Next.js |
+| Framework Preset | Next.js (auto-detected) |
 | Root Directory | `apps/web` |
-| Build Command | `cd ../.. && pnpm build --filter=web` |
-| Output Directory | (leave as default — Next.js handles this) |
 | Install Command | `pnpm install` |
+| Build Command | Leave as default — Vercel detects Turborepo and uses `turbo run build` automatically |
 
 ### 4.3 — Add environment variables
 
-In the Vercel dashboard under **Environment Variables**, add all variables from `.env.example`. Use placeholder values for variables not needed yet (Phases 1+). Only `NEXT_PUBLIC_APP_URL` is meaningful now — set it to your Vercel deployment URL once it's assigned.
+In the Vercel dashboard under **Environment Variables**, add all variables from `.env.example`. Use placeholder values for variables not needed yet (Phases 1+). Leave `NEXT_PUBLIC_APP_URL` empty for now — you'll get the stable URL after the first deploy.
 
-### 4.4 — Deploy
+### 4.4 — First deploy
 
-Click **Deploy**. Vercel will:
-1. Clone the repo
-2. Run `pnpm install` from `apps/web`
-3. Run `next build`
-4. Deploy the static output to its CDN
+Click **Deploy**. The first build will succeed but may show a warning:
+
+```
+Warning - the following environment variables are set on your Vercel project,
+but missing from "turbo.json". These variables WILL NOT be available to your
+application and may cause your build to fail.
+```
+
+This is expected — fix it in Step 5.
+
+### 4.5 — Declare environment variables in `turbo.json`
+
+Add an `env` array to the `build` task in `turbo.json`:
+
+```json
+"build": {
+  "dependsOn": ["^build"],
+  "outputs": ["dist/**", ".next/**"],
+  "env": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "DATABASE_URL",
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_APP_URL"
+  ]
+}
+```
+
+Commit and push:
+
+```bash
+git add turbo.json
+git commit -m "chore: declare env vars in turbo.json build task"
+git push origin main
+```
+
+### 4.6 — Set `NEXT_PUBLIC_APP_URL`
+
+After the first deploy, Vercel assigns a stable production URL to your project. Find it in **Settings → Domains** — it looks like `your-project-name.vercel.app`. This URL never changes between deployments.
+
+Update `NEXT_PUBLIC_APP_URL` in Vercel's environment variables to:
+```
+https://your-project-name.vercel.app
+```
+
+This triggers a new deploy automatically.
+
+> **Stable URL vs per-deployment URL:** Every Vercel deployment also gets a unique immutable URL (e.g. `sidekick-i6nvee84m-....vercel.app`). This is useful for rollbacks but is not the right value for `NEXT_PUBLIC_APP_URL`. Always use the stable project URL.
+
+### 4.7 — The 403 in the Vercel deployment preview
+
+The deployment details page in Vercel shows a preview of your app in an iframe. You may see a `403 Forbidden` error in this preview pane. This is **not a real error** — it's Vercel's own iframe being blocked by the app's security headers (`X-Frame-Options`). Click **Visit** to open the real URL and confirm the app loads correctly.
 
 ---
 
@@ -152,7 +203,10 @@ Click **Deploy**. Vercel will:
 
 - [ ] `.env.example` committed to the repo
 - [ ] Repo pushed to GitHub
-- [ ] Vercel project linked and `apps/web` builds successfully in Vercel CI
+- [ ] `turbo.json` declares all env vars in the `build.env` array
+- [ ] Vercel project linked and `apps/web` builds without warnings
+- [ ] `NEXT_PUBLIC_APP_URL` set to the stable Vercel production URL
+- [ ] Visiting the production URL loads the app correctly
 
 ---
 
