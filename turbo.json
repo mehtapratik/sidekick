@@ -6,8 +6,8 @@
       "outputs": ["dist/**", ".next/**"],
       "env": [
         "NEXT_PUBLIC_SUPABASE_URL",
-        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_SECRET_KEY",
         "DATABASE_URL",
         "ANTHROPIC_API_KEY",
         "OPENAI_API_KEY",
@@ -26,6 +26,12 @@
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
     }
   }
 }

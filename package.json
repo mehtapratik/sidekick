@@ -10,10 +10,13 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",
     "eslint-plugin-boundaries": "^6.0.2",
     "prettier": "^3.8.3",
