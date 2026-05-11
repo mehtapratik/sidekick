@@ -38,6 +38,18 @@ export default defineConfig(
       }
    },
    {
+      files: ['**/*.cjs'],
+      languageOptions: {
+         globals: {
+            module: 'readonly',
+            require: 'readonly',
+            exports: 'writable',
+            __dirname: 'readonly',
+            __filename: 'readonly',
+         },
+      },
+   },
+   {
       ignores: [
          '**/node_modules/**',
          '**/dist/**',
