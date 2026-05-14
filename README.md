@@ -126,7 +126,7 @@ Follow the same steps above, then:
 1. Define your schema in `schema.ts`
 2. Add a Drizzle config in `drizzle.config.ts`
 3. Register the feature in `packages/features-registry`
-4. Add API routes in `apps/web/src/app/api/v1/your-feature/`
+4. Add API routes in `apps/web/src/app/api/your-feature/`
 5. All routes must use `withApiGuard()`
 
 ---

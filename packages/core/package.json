@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./supabase/types": "./src/supabase/types.ts",
     "./supabase/browser": "./src/supabase/browser.ts",
     "./supabase/server": "./src/supabase/server.ts",
     "./supabase/admin": "./src/supabase/admin.ts",

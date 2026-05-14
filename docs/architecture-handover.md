@@ -31,7 +31,7 @@ The system is NOT designed as a hyperscale enterprise platform from day one. Ins
 
 ## 2.1 API-First
 
-All mutations flow through `/api/v1/*`.
+All mutations flow through `/api/*`.
 
 This guarantees:
 
@@ -95,7 +95,7 @@ without large-scale rewrites.
                     │
                     ▼
 ┌─────────────────────────────────────────┐
-│ API Layer (/api/v1/*)                  │
+│ API Layer (/api/*)                     │
 │                                         │
 │ withApiGuard()                         │
 │ ├── Auth                               │
@@ -208,7 +208,7 @@ This package owns:
 
 # 7.1 Canonical API Security Model
 
-ALL `/api/v1/*` routes MUST use:
+ALL `/api/*` routes MUST use:
 
 ```ts
 withApiGuard()

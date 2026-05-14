@@ -1,0 +1,18 @@
+.container {
+  padding: var(--mantine-spacing-xl);
+  width: 420px;
+}
+
+.title {
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.submitButton {
+  width: 100%;
+}
+
+.switchText {
+  text-align: center;
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-sm);
+}

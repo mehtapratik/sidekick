@@ -1,0 +1,40 @@
+.shell {
+  padding: var(--mantine-spacing-md);
+}
+
+.header {
+  height: 60px;
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+}
+
+.brandName {
+  font-weight: 700;
+}
+
+.userEmail {
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-dimmed);
+}
+
+.signoutButton {
+  font-size: var(--mantine-font-size-sm);
+}
+
+.navbar {
+  width: 240px;
+  padding: var(--mantine-spacing-md);
+}

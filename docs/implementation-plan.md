@@ -116,10 +116,10 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 | 2.8 | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureSlug`, RLS policy | 🔴 | 🗄️ 🔐 |
 | 2.9 | Implement `getEnabledFeatures(userId)` in `packages/core` — reads from entitlements table | 🟡 | 🗄️ |
 | 2.10 | Write a seed script to enable all features for your own user account during development | 🟢 | 🗄️ |
-| 2.11 | Create a test API route `/api/v1/health` using `withApiGuard` to verify the full guard chain works | 🟡 | 🧩 🔐 |
+| 2.11 | Create a test API route `/api/health` using `withApiGuard` to verify the full guard chain works | 🟡 | 🧩 🔐 |
 | 2.12 | Verify 401 is returned when unauthenticated; 403 when a feature is disabled | 🟢 | |
 
-**Phase 2 Exit Criteria:** `withApiGuard` is implemented and the `/api/v1/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
+**Phase 2 Exit Criteria:** `withApiGuard` is implemented and the `/api/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
 
 ---
 
@@ -136,11 +136,11 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 | 3.4 | Enable RLS on `notes`; add canonical user-owns-rows policy | 🔴 | 🔐 🗄️ |
 | 3.5 | Register `notes` feature in `packages/features-registry/ALL_FEATURES` | 🟢 | 📦 |
 | 3.6 | Implement `NotesRepository` in `packages/feature-notes/repository.ts` — `list()`, `getById()`, `create()`, `update()`, `softDelete()` | 🔴 | 🗄️ |
-| 3.7 | Implement `GET /api/v1/notes` route using `withApiGuard` + feature guard + `notes:read` scope | 🔴 | 🧩 🔐 |
-| 3.8 | Implement `POST /api/v1/notes` route — accept client-generated UUID | 🔴 | 🧩 🔐 |
-| 3.9 | Implement `GET /api/v1/notes/[id]` route | 🟡 | 🧩 |
-| 3.10 | Implement `PATCH /api/v1/notes/[id]` route | 🟡 | 🧩 |
-| 3.11 | Implement `DELETE /api/v1/notes/[id]` route — soft delete only, set `deletedAt` | 🟡 | 🧩 🗄️ |
+| 3.7 | Implement `GET /api/notes` route using `withApiGuard` + feature guard + `notes:read` scope | 🔴 | 🧩 🔐 |
+| 3.8 | Implement `POST /api/notes` route — accept client-generated UUID | 🔴 | 🧩 🔐 |
+| 3.9 | Implement `GET /api/notes/[id]` route | 🟡 | 🧩 |
+| 3.10 | Implement `PATCH /api/notes/[id]` route | 🟡 | 🧩 |
+| 3.11 | Implement `DELETE /api/notes/[id]` route — soft delete only, set `deletedAt` | 🟡 | 🧩 🗄️ |
 | 3.12 | Build Notes list page at `/notes` — server component fetching notes via repository | 🟡 | 🧩 🎨 |
 | 3.13 | Build Note detail/edit page at `/notes/[id]` | 🟡 | 🧩 🎨 |
 | 3.14 | Build "New Note" flow with client-generated UUID | 🟡 | 🧩 🎨 |
@@ -237,7 +237,7 @@ Each sub-feature follows the same pattern: schema → migration → RLS → feat
 | 6.8 | Implement `match_content()` PostgreSQL function for vector similarity search | 🔴 | 🤖 🗄️ |
 | 6.9 | Create `packages/feature-ai-chat` with its own schema (`chat_sessions`, `chat_messages`) | 🟡 | 📦 🗄️ |
 | 6.10 | Migration, RLS, feature registry entry for AI Chat | 🟡 | |
-| 6.11 | Implement `POST /api/v1/ai/chat` streaming route using Vercel AI SDK + Anthropic Claude | 🔴 | 🤖 🧩 |
+| 6.11 | Implement `POST /api/ai/chat` streaming route using Vercel AI SDK + Anthropic Claude | 🔴 | 🤖 🧩 |
 | 6.12 | Implement RAG context retrieval in the chat handler — retrieve top-k relevant chunks before calling LLM | 🔴 | 🤖 |
 | 6.13 | Build AI Chat UI in `packages/feature-ai-chat` — streaming message display, input, loading states | 🟡 | 🎨 🧩 |
 | 6.14 | Add `/chat` page to app shell | 🟢 | |
@@ -281,9 +281,9 @@ Each sub-feature follows the same pattern: schema → migration → RLS → feat
 | 8.2 | Migration + RLS for `api_keys` | 🟡 | 🗄️ 🔐 |
 | 8.3 | Implement API key generation — secure random bytes → raw key returned once → SHA-256 hash stored | 🔴 | 🔐 |
 | 8.4 | Wire Bearer API key lookup into `resolveApiCaller()` in `packages/core` | 🔴 | 🔐 |
-| 8.5 | Implement `POST /api/v1/api-keys` — create key, return raw key once | 🔴 | 🔐 🧩 |
-| 8.6 | Implement `GET /api/v1/api-keys` — list keys (no raw key values, show label/scopes/last-used) | 🟡 | 🧩 |
-| 8.7 | Implement `DELETE /api/v1/api-keys/[id]` — revoke key by setting `revokedAt` | 🟡 | 🧩 |
+| 8.5 | Implement `POST /api/api-keys` — create key, return raw key once | 🔴 | 🔐 🧩 |
+| 8.6 | Implement `GET /api/api-keys` — list keys (no raw key values, show label/scopes/last-used) | 🟡 | 🧩 |
+| 8.7 | Implement `DELETE /api/api-keys/[id]` — revoke key by setting `revokedAt` | 🟡 | 🧩 |
 | 8.8 | Update `withApiGuard` to track `lastUsedAt` on successful API key auth | 🟡 | 🔐 |
 | 8.9 | Build API key management UI — list keys, create key (show raw key once), revoke | 🟡 | 🎨 |
 | 8.10 | Build `apps/cli` as a Node.js CLI tool — authenticate with API key from env/config file | 🟡 | 🖥️ |
@@ -345,7 +345,7 @@ Each sub-feature follows the same pattern: schema → migration → RLS → feat
 |---|------|-----------|---------|
 | 11.1 | Create Stripe account; configure products and price tiers | 🟢 | 💳 |
 | 11.2 | Add `subscriptions` table — `userId`, `stripeCustomerId`, `stripePriceId`, `status`, `currentPeriodEnd` | 🟡 | 🗄️ 💳 |
-| 11.3 | Implement Stripe checkout session creation in `POST /api/v1/billing/checkout` | 🟡 | 💳 🧩 |
+| 11.3 | Implement Stripe checkout session creation in `POST /api/billing/checkout` | 🟡 | 💳 🧩 |
 | 11.4 | Implement Stripe webhook handler — sync subscription state into `subscriptions` table | 🔴 | 💳 🔐 |
 | 11.5 | Update `getEnabledFeatures()` to resolve features from subscription tier as well as manual entitlements | 🔴 | 💳 🗄️ |
 | 11.6 | Build billing settings page — current plan, upgrade CTA, portal link | 🟡 | 🎨 💳 |

@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { createServerClient } from '@sidekick/core/supabase/server';
 
-import { isApiRoute, isAuthRoute } from './utils/auth';
+import { isApiRoute, isAuthRoute } from './utils/route';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request });
 
   const supabase = await createServerClient();

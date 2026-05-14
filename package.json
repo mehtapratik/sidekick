@@ -16,6 +16,7 @@
     "db:migrate": "turbo db:migrate"
   },
   "devDependencies": {
+    "@sidekick/eslint-plugin-sidekick": "workspace:*",
     "@eslint/js": "^10.0.1",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { ColorSchemeScript } from '@mantine/core';
+import { appDescriptionCopy, appNameCopy } from '@sidekick/copy/app';
 
 import { Providers } from './providers';
 
@@ -18,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Sidekick',
-  description: 'Your intelligent work assistant',
+  title: appNameCopy,
+  description: appDescriptionCopy,
 };
 
 export default function RootLayout({
@@ -28,9 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
         <Providers>{children}</Providers>

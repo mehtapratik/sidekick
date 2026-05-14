@@ -1,0 +1,4 @@
+.welcomeText {
+  margin-top: var(--mantine-spacing-sm);
+  color: var(--mantine-color-dimmed);
+}

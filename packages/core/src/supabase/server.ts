@@ -22,7 +22,7 @@ export async function createServerClient() {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options)
           })
-        } catch (error) {
+        } catch {
           // Server Components can't set cookies - middleware handles session refresh
         }
       },
