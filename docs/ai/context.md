@@ -53,7 +53,8 @@ Three clients in `packages/core/src/supabase/` — never mix them:
 | Client | File | Key | Used In |
 |---|---|---|---|
 | `createBrowserClient()` | `browser.ts` | publishable key | Client Components (`'use client'`) |
-| `createServerClient()` | `server.ts` | publishable key + cookies | Server Components, Route Handlers, Middleware |
+| `createServerClient()` | `server.ts` | publishable key + cookies | Server Components, Route Handlers (Node.js runtime) |
+| `createProxyClient(req, res)` | `proxy.ts` | publishable key + request cookies | `proxy.ts` only (Edge runtime) |
 | `createAdminClient()` | `admin.ts` | secret key (bypasses RLS) | Server-only, trusted operations |
 
 Import via subpath: `@sidekick/core/supabase/browser`, `@sidekick/core/supabase/server`, etc.

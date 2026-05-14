@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { createServerClient } from '@sidekick/core/supabase/server';
+import { createProxyClient } from '@sidekick/core/supabase/proxy';
 
 import { isApiRoute, isAuthRoute } from './utils/route';
 
 export async function proxy(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request });
 
-  const supabase = await createServerClient();
+  const supabase = createProxyClient(request, supabaseResponse);
 
   const {
     data: { user },

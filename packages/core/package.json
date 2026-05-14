@@ -9,6 +9,7 @@
     "./supabase/types": "./src/supabase/types.ts",
     "./supabase/browser": "./src/supabase/browser.ts",
     "./supabase/server": "./src/supabase/server.ts",
+    "./supabase/proxy": "./src/supabase/proxy.ts",
     "./supabase/admin": "./src/supabase/admin.ts",
     "./db": "./src/db/index.ts",
     "./db/schema": "./src/db/schema/index.ts",
