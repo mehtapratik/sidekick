@@ -79,6 +79,8 @@ apps/
 packages/
   core/                 # Shared server infrastructure: Supabase, Drizzle, API guard, RLS
   ui/                   # Shared React components (Mantine-based)
+  copy/                 # Centralized copy (text strings) shared across all apps
+  eslint-plugin-sidekick/  # Custom ESLint rules (no-mantine-style-props)
   features-registry/    # Master feature manifest list (ALL_FEATURES)
   feature-notes/        # Notes feature — schema, repository, API routes
   feature-writing/      # Writing feature
@@ -140,3 +142,12 @@ cp .env.example .env.local
 ```
 
 See `.env.example` for all required variables and which phase they are needed in.
+
+`.env.local` lives at the **repo root**, not inside `apps/web`. Scripts that need it (e.g. `db:generate`, `db:migrate`) prefix with `dotenv -e ../../.env.local --`. Never create a separate `.env.local` inside `apps/web`.
+
+### Deploying to Vercel
+
+- Set all environment variables in the Vercel dashboard before building
+- Set the build command to `next build` in Vercel (bypasses the `dotenv -e` prefix in `package.json`, which is only needed locally)
+- `DATABASE_DIRECT_URL` is NOT needed in Vercel — migrations run locally, never on the Vercel build server
+- `NEXT_PUBLIC_*` variables are baked into the browser bundle at build time — they must be set in Vercel before building, not after

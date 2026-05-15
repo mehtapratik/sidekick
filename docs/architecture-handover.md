@@ -848,9 +848,10 @@ The original handover contained important operational environment variables that
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-DATABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=    # renamed from NEXT_PUBLIC_SUPABASE_ANON_KEY in 2025
+SUPABASE_SECRET_KEY=                      # renamed from SUPABASE_SERVICE_ROLE_KEY in 2025
+DATABASE_URL=          # port 6543, pooler — runtime queries
+DATABASE_DIRECT_URL=   # port 5432, direct — Drizzle migrations only (not needed in Vercel)
 ```
 
 ### AI Providers
@@ -878,45 +879,38 @@ NEXT_PUBLIC_APP_URL=
 
 ## 20.2 Supabase Client Separation
 
-The architecture intentionally separates:
+The architecture intentionally separates four clients. Never mix them.
 
-- browser client
-- server client
-- admin/service-role client
+| Client | File | Key | Used In |
+|---|---|---|---|
+| `createBrowserClient()` | `browser.ts` | publishable key | Client Components (`'use client'`) |
+| `createServerClient()` | `server.ts` | publishable key + cookies | Server Components, Route Handlers (Node.js runtime) |
+| `createProxyClient(req, res)` | `proxy.ts` | publishable key + request cookies | `proxy.ts` only (Edge runtime) |
+| `createAdminClient()` | `admin.ts` | secret key (bypasses RLS) | Server-only, trusted operations |
 
-This separation is security-critical.
+Import via subpath: `@sidekick/core/supabase/browser`, `@sidekick/core/supabase/server`, etc.
 
-### Browser Client
+### Why the proxy client is separate
 
-Uses:
-
-```ts
-createBrowserClient()
-```
-
-### Server Client
-
-Uses:
-
-```ts
-createServerClient()
-```
-
-### Admin Client
-
-Uses service-role credentials and must only execute in trusted server environments.
+`proxy.ts` runs in the Edge runtime, which cannot import `next/headers`. `createServerClient()` uses `next/headers` internally — calling it from `proxy.ts` would crash at runtime. `createProxyClient(request, response)` reads cookies from the incoming `Request` and outgoing `Response` directly, with no `next/headers` dependency. It must be used exclusively in `proxy.ts` and nowhere else.
 
 ---
 
-## 20.3 Middleware Responsibilities
+## 20.3 Middleware Responsibilities (Next.js 16: `proxy.ts`)
 
-Next.js middleware is responsible for:
+Next.js 16 renamed the middleware convention:
 
-- session refresh
+- File: `middleware.ts` → `proxy.ts`
+- Export: `export function middleware` → `export function proxy`
+- The `config` export is unchanged
+
+`proxy.ts` is responsible for:
+
+- session refresh (via `createProxyClient`)
 - redirecting unauthenticated browser users
 - excluding API routes from redirect behavior
 
-Middleware MUST NOT contain business authorization logic.
+`proxy.ts` MUST NOT contain business authorization logic.
 
 Authorization belongs in:
 
@@ -953,6 +947,142 @@ postcss-simple-vars
 ```
 
 These are required for Mantine CSS variable resolution.
+
+### Hydration Fix
+
+Add `suppressHydrationWarning` to the `<html>` element. `ColorSchemeScript` injects a `data-mantine-color-scheme` attribute via a script tag before React hydrates — without `suppressHydrationWarning`, React will emit a hydration warning because the attribute wasn't present during server render.
+
+Set `defaultColorScheme="auto"` on BOTH `ColorSchemeScript` AND `MantineProvider`. A mismatch between the two causes hydration errors.
+
+```tsx
+<html suppressHydrationWarning>
+  <head>
+    <ColorSchemeScript defaultColorScheme="auto" />
+  </head>
+  <body>
+    <MantineProvider defaultColorScheme="auto">
+      {children}
+    </MantineProvider>
+  </body>
+</html>
+```
+
+---
+
+## 20.4a CSS Modules Convention
+
+All styling uses CSS modules. No exceptions.
+
+### What is banned
+
+Pure Mantine style props that set visual styles inline:
+
+```tsx
+// BANNED — style props
+<Box h={100} px="md" fw={700} c="red" mt={8} />
+```
+
+### What is allowed
+
+Mantine behavioral props that configure component behavior, not visual style:
+
+```tsx
+// ALLOWED — behavioral props
+<AppShell navbar={{ width: 240, breakpoint: 'sm' }} withBorder shadow="sm" />
+```
+
+### Enforcement
+
+`packages/eslint-plugin-sidekick` contains the `no-mantine-style-props` rule. It is compiled with `tsup` (not raw `tsc`) because ESLint plugins must run as CommonJS in Node.js and cannot load `.ts` files directly.
+
+The rule is registered in the root `eslint.config.js` and fails lint immediately on any violation.
+
+---
+
+## 20.4b `packages/copy` — Centralized String Copy
+
+All user-visible strings live in `packages/copy`. Never hardcode strings directly in source files.
+
+```ts
+import { copy } from '@sidekick/copy'
+
+// Use
+<Button>{copy.auth.signIn}</Button>
+```
+
+**Why:** Consistent copy across `apps/web` and `apps/cli`. Copy changes happen in one place. TypeScript `as const` makes copy type-safe and autocomplete-friendly.
+
+---
+
+## 20.4c Runtime Patterns
+
+### `useNavigation` hook
+
+Always use `useNavigation()` instead of calling `router.push()` alone. The hook calls `router.push()` followed by `router.refresh()` together. Forgetting `router.refresh()` after auth actions leaves the UI in a stale server-rendered state.
+
+```ts
+const { navigate } = useNavigation()
+navigate('/dashboard')  // push + refresh
+```
+
+### `force-dynamic` on Supabase-touching route groups
+
+Add `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase (e.g. `(app)/layout.tsx`, `(auth)/layout.tsx`). Without it, Next.js may attempt to statically pre-render these layouts at build time, which fails because Supabase cookie reads are request-time operations.
+
+---
+
+## 20.4d Profile Creation — Postgres Trigger
+
+User profiles are created via a Postgres trigger on `auth.users`, not an API route.
+
+```sql
+CREATE FUNCTION public.create_profile_for_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, created_at)
+  VALUES (NEW.id, NEW.email, NOW());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.create_profile_for_new_user();
+```
+
+Critical: the function must use `public.profiles` (fully qualified) because triggers run in the `auth` schema context. An unqualified `profiles` reference would fail to resolve.
+
+**Why a trigger instead of an API route:**
+- Works for all auth providers (email, OAuth, magic link) without per-provider app-level code
+- Cannot fail silently after auth succeeds — the profile creation is part of the same database transaction
+- No race conditions between auth completion and API calls
+
+---
+
+## 20.4e Deferred Decisions
+
+### GraphQL + Relay — Deferred to Post-MVP
+
+REST API for MVP. GraphQL evaluation is deferred.
+
+**Why not now:**
+- Cognitive load during learning phase
+- Relay + App Router integration is unresolved upstream
+- `withApiGuard` maps cleanly to REST; adapting it to a GraphQL resolver layer requires rethinking
+
+**When to revisit:** After MVP ships, when data-fetching complexity justifies it, or when Relay/App Router integration matures.
+
+**How to add:** Could replace or augment REST without full architectural rework. `withApiGuard` would need a GraphQL resolver adapter.
+
+### API Versioning (/api/v1/) — Deferred to Post-MVP
+
+Current API uses `/api/` with no version prefix.
+
+**Why not now:** Adds URL complexity for no current benefit. MVP has one client. Breaking changes can be coordinated directly.
+
+**When to add:** When multiple external clients need migration time, or when breaking changes become frequent.
+
+**How to add:** Route group at `/api/v1/` in Next.js. No architectural rework needed — just move route handlers into the versioned group.
 
 ---
 

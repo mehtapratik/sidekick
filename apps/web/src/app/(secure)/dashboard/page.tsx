@@ -3,7 +3,7 @@ import { createServerClient } from '@sidekick/core/supabase/server';
 
 import styles from './page.module.css';
 
-export default async function DashboardPage() {
+export default async function DashboardPage(): Promise<React.ReactElement> {
   const supabase = await createServerClient();
   const {
     data: { user },

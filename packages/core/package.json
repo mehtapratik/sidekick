@@ -28,6 +28,9 @@
     "drizzle-orm": "^0.45.2",
     "postgres": "^3.4.9"
   },
+  "peerDependencies": {
+    "next": ">=16"
+  },
   "devDependencies": {
     "@types/node": "^20.19.40",
     "drizzle-kit": "^0.31.10",

@@ -7,7 +7,7 @@ import type { User } from '@sidekick/core/supabase/types';
 
 import styles from './app-shell.module.css';
 
-export function AppShell({ user, children }: { user: User; children: React.ReactNode }) {
+export function AppShell({ user, children }: { user: User; children: React.ReactNode }): React.ReactElement {
   const supabase = createBrowserClient();
   const { push } = useNavigation();
 

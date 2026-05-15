@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
-export function useNavigation() {
+export function useNavigation(): { push: (path: string) => void } {
   const router = useRouter();
 
   const push = useCallback(

@@ -95,6 +95,8 @@ const MANTINE_STYLE_PROPS = new Set([
   // Old-style aliases still in Mantine
   'color',
   'size',
+  // CSS-in-JS escape hatch — banned alongside inline styles
+  'sx',
 ]);
 
 export const noMantineStyleProps: Rule.RuleModule = {

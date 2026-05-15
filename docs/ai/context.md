@@ -91,9 +91,42 @@ export const GET = withApiGuard(
 
 `withApiGuard` handles auth → feature entitlement → RLS context → scope validation → handler. Direct route handlers without it are prohibited.
 
+### CSS Modules Convention
+
+All styling uses CSS modules. No inline styles, no Mantine style props. Mantine behavioral props (e.g. `withBorder`, `shadow`, `navbar={{ width, breakpoint }}`) are allowed. Pure style props (`h`, `px`, `fw`, `c`, `mt`, `size`, `color`, `justify`, `gap`) are banned.
+
+`packages/eslint-plugin-sidekick` with the `no-mantine-style-props` rule enforces this. The plugin is compiled with `tsup` (not raw `tsc`) because ESLint plugins must run as CommonJS and cannot load `.ts` files directly.
+
+### `packages/copy` — Centralized String Copy
+
+All user-visible strings live in `packages/copy`. Never hardcode strings in source files.
+
+```ts
+import { copy } from '@sidekick/copy'
+```
+
+This ensures consistent copy across `apps/web` and `apps/cli`, and makes copy changes a one-place operation. TypeScript `as const` makes copy type-safe.
+
+### `useNavigation` Hook
+
+Always use `useNavigation()` instead of `router.push()` alone. The hook calls `router.push()` + `router.refresh()` together. Forgetting `router.refresh()` after auth actions leaves the UI in stale server-rendered state.
+
+### `force-dynamic` on Supabase-Touching Route Groups
+
+```ts
+export const dynamic = 'force-dynamic'
+```
+
+Required on the layout of every route group that touches Supabase (e.g. `(app)/layout.tsx`, `(auth)/layout.tsx`). Without it, Next.js may attempt to pre-render these layouts at build time, which fails because cookie reads are request-time operations.
+
 ### Profile Creation
 
-User profiles are created via a PostgreSQL trigger on `auth.users` (not an API route). This handles all auth providers (email, OAuth) uniformly without app-level code per provider.
+User profiles are created via a PostgreSQL trigger on `auth.users` (not an API route). The trigger function must use `public.profiles` (fully qualified) because triggers run in the `auth` schema context. This handles all auth providers (email, OAuth, magic link) uniformly without app-level code per provider.
+
+### Deferred Decisions
+
+- **GraphQL + Relay** — deferred to post-MVP. REST is sufficient. Relay + App Router friction is unresolved. `withApiGuard` maps cleanly to REST.
+- **API versioning (/api/v1/)** — deferred to post-MVP. Current routes are at `/api/`. One client, no need for versioning yet.
 
 ### Next.js Proxy (formerly Middleware)
 

@@ -172,3 +172,128 @@ Vercel detects Turborepo automatically and adjusts its build command to `turbo r
 
 **The stable URL vs per-deployment URL:**
 Every Vercel deployment gets a unique immutable URL (e.g. `sidekick-i6nvee84m-...vercel.app`). This is useful for rollbacks but not for `NEXT_PUBLIC_APP_URL`. The stable production URL (`sidekick-six-bay.vercel.app`) is assigned to the project and never changes between deployments. Always use the stable URL for environment variables.
+
+---
+
+## Decision 11 — `packages/copy` for centralized string copy
+
+**What we chose:** A dedicated `packages/copy` package for all user-visible strings. No strings are hardcoded in source files.
+
+**Why:**
+- `apps/web` and `apps/cli` share the same copy. Without centralization, the same string would be duplicated and drift over time.
+- Copy changes (fixing a typo, rewording a label) happen in one file and propagate everywhere automatically.
+- TypeScript `as const` makes copy objects type-safe and autocomplete-friendly — you can't accidentally reference a key that doesn't exist.
+
+**How:** Import from `@sidekick/copy` via subpath. The package exports a `copy` object structured by domain (auth, nav, errors, etc.).
+
+---
+
+## Decision 12 — CSS modules only; `no-mantine-style-props` ESLint rule
+
+**What we chose:** CSS modules for all styling. No Mantine style props (inline-style shorthand props like `h`, `px`, `fw`, `c`, `mt`, `size`, `color`, `justify`, `gap`).
+
+**Why:**
+Mantine style props apply styles as inline styles. They bypass the CSS cascade, cannot be overridden by CSS modules, and make it impossible to have a consistent visual language without reading every component's props. CSS modules make styles explicit and co-located with the component.
+
+**What is allowed:** Mantine behavioral props — props that configure component behavior, not visual style. Examples: `withBorder`, `shadow`, `navbar={{ width, breakpoint }}`. These configure Mantine's layout engine, not inline styles.
+
+**Enforcement:** `packages/eslint-plugin-sidekick` contains the `no-mantine-style-props` rule. It is registered in the root `eslint.config.js` and fails lint immediately on any violation.
+
+---
+
+## Decision 13 — tsup for ESLint plugin compilation (not raw tsc)
+
+**What we chose:** `tsup` to compile `packages/eslint-plugin-sidekick` instead of running `tsc` directly.
+
+**Why:**
+ESLint plugins must be loaded by Node.js at lint time. Node.js cannot load `.ts` files — it needs compiled `.js` (specifically CommonJS format). `tsc` with `moduleResolution: bundler` produces ESM output by default. `tsup` handles the CJS/ESM output format correctly, handles the compilation in one command, and doesn't require a separate tsconfig for the emit target. It is simpler and produces the right output format.
+
+**Note:** This is the only place in the repo that uses `tsup`. All other packages are compiled by their consumers (Next.js, or the test runner).
+
+---
+
+## Decision 14 — dotenv-cli over Node.js `--env-file` flag
+
+**What we chose:** `dotenv-cli` (via `dotenv -e ../../.env.local -- <command>`) to load environment variables in database scripts.
+
+**Why:**
+Node.js blocks the `--env-file` flag when it is passed via `NODE_OPTIONS`. Scripts that set `NODE_OPTIONS=--env-file=.env.local` fail immediately with a security error. This is intentional in Node.js — `NODE_OPTIONS` is an environment variable itself and allowing arbitrary flags via it would be a security risk.
+
+`dotenv-cli` sidesteps this entirely. It loads the `.env.local` file into the process environment before the command runs, without touching `NODE_OPTIONS`.
+
+**Single source of truth:** `.env.local` lives at the repo root only. Never create a `.env.local` inside `apps/web` or any package.
+
+---
+
+## Decision 15 — `useNavigation` hook encapsulates push + refresh
+
+**What we chose:** A `useNavigation()` hook that always calls `router.push()` + `router.refresh()` together.
+
+**Why:**
+In Next.js App Router, `router.push()` navigates to a new route but does not re-fetch server-rendered data. After auth actions (login, logout, sign-up), the new page may still show stale server-rendered state — for example, the layout still showing "Sign In" after a successful login. `router.refresh()` tells Next.js to re-fetch all server components on the current page.
+
+The two calls must always happen together after auth mutations. Encapsulating them in a hook prevents developers from forgetting `router.refresh()` and chasing confusing stale-state bugs.
+
+---
+
+## Decision 16 — `export const dynamic = 'force-dynamic'` on Supabase-touching route groups
+
+**What we chose:** Adding `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase.
+
+**Why:**
+Next.js attempts to statically pre-render layouts at build time unless told otherwise. Layouts that call Supabase (for session reads, user data, etc.) read cookies — a request-time operation that doesn't exist at build time. Without `force-dynamic`, the build will either fail or produce a stale static layout.
+
+**Where:** `(app)/layout.tsx` and `(auth)/layout.tsx` — any route group whose layout imports a Supabase client.
+
+**Scope:** This only affects the layout and its children. Route groups that don't touch Supabase can remain statically rendered.
+
+---
+
+## Decision 17 — Postgres trigger for profile creation (not API route)
+
+**What we chose:** A Postgres trigger (`on_auth_user_created`) on `auth.users` that calls `public.create_profile_for_new_user()` to insert into `public.profiles`.
+
+**Why not an API route:**
+An API route approach (`POST /api/auth/profile`) would need to be called manually after every sign-up — and it would need to be called for every auth provider separately (email, OAuth, magic link). Forgetting to call it for a new provider leaves users without profiles. A trigger fires unconditionally on every `auth.users` insert, regardless of provider.
+
+**The `public.` prefix requirement:** Trigger functions execute in the schema context of the table that fired them. Since the trigger is on `auth.users`, unqualified table references resolve to the `auth` schema. The `public.profiles` table must be referenced with the full `public.` prefix or the insert will fail silently or with a confusing error.
+
+---
+
+## Decision 18 — `createProxyClient` for Edge runtime (`proxy.ts`)
+
+**What we chose:** A dedicated `createProxyClient(request, response)` Supabase client for the Edge runtime.
+
+**Why:**
+`createServerClient()` (the standard server client) calls `cookies()` from `next/headers` to read and write session cookies. `next/headers` is a Node.js-only API — it is not available in the Edge runtime. `proxy.ts` runs in the Edge runtime, so using `createServerClient()` there would crash at runtime.
+
+`createProxyClient` receives the incoming `Request` and outgoing `Response` objects directly, reads/writes cookies from those objects, and never calls `next/headers`. It must be used exclusively in `proxy.ts`.
+
+---
+
+## Decision 19 — GraphQL + Relay deferred to post-MVP
+
+**What we chose:** REST API for MVP. GraphQL evaluation is deferred.
+
+**Why:**
+- Cognitive load: learning Supabase, Drizzle, Next.js App Router, and GraphQL simultaneously is too much.
+- Relay + App Router: the integration between Relay's compiler and Next.js App Router Server Components is not mature and has significant friction as of Phase 1.
+- `withApiGuard`: the current API guard abstraction maps cleanly to REST handlers. Adapting it to GraphQL resolvers would require a different mental model and a non-trivial adapter layer.
+- REST is sufficient for MVP: one client, clear endpoints, no over-fetching problem at this data scale.
+
+**When to revisit:** After MVP ships, when data-fetching complexity justifies it, or when Relay + App Router integration matures in the ecosystem.
+
+---
+
+## Decision 20 — API versioning (/api/v1/) deferred to post-MVP
+
+**What we chose:** API routes at `/api/` with no version prefix. Versioning is deferred.
+
+**Why:**
+- MVP has one client (the web app). There is no external party that needs migration time when a breaking change is made.
+- Adding `/api/v1/` adds URL complexity and a naming convention decision (what is a "version"?) with no current benefit.
+- Breaking changes during MVP can be coordinated directly — there's only one consumer.
+
+**When to add:** When multiple external clients need migration time, or when breaking changes become frequent enough that coordination is impractical.
+
+**How to add when the time comes:** Create a route group at `apps/web/src/app/api/v1/`. No architectural rework is needed — Next.js route groups handle the URL structure, and `withApiGuard` works the same regardless of URL prefix.

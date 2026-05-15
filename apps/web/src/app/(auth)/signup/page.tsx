@@ -17,7 +17,7 @@ import { createBrowserClient } from '@sidekick/core/supabase/browser';
 
 import styles from '../auth.module.css';
 
-export default function SignupPage() {
+export default function SignupPage(): React.ReactElement {
   const supabase = createBrowserClient();
   const { push } = useNavigation();
   const form = useForm({

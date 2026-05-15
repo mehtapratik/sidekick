@@ -4,7 +4,7 @@ import { createProxyClient } from '@sidekick/core/supabase/proxy';
 
 import { isApiRoute, isAuthRoute } from './utils/route';
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const supabaseResponse = NextResponse.next({ request });
 
   const supabase = createProxyClient(request, supabaseResponse);
