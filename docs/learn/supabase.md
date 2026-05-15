@@ -1,3 +1,9 @@
+---
+title: Supabase
+parent: Learn
+nav_order: 1
+---
+
 # Supabase — Concepts and How We Use It
 
 This document explains the key Supabase and database concepts introduced in Phase 1, with enough context that you understand not just what to do but why each piece exists.

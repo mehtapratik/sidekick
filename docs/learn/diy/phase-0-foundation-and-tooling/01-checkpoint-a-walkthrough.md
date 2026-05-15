@@ -1,3 +1,10 @@
+---
+title: Checkpoint A
+parent: Phase 0 — Foundation & Tooling
+grand_parent: Walkthroughs
+nav_order: 2
+---
+
 # Checkpoint A — Step-by-Step Walkthrough
 
 > **Goal:** Set up the monorepo skeleton from scratch. By the end, `pnpm install` succeeds and the folder structure matches the architecture.

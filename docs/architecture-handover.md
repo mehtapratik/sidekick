@@ -1,3 +1,8 @@
+---
+title: Architecture Handover
+nav_order: 2
+---
+
 # Workspace App — Production-Grade Architecture Handover
 
 > Status: Canonical Architecture Document  

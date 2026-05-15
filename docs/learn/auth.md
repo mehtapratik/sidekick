@@ -1,3 +1,9 @@
+---
+title: Authentication
+parent: Learn
+nav_order: 2
+---
+
 # Authentication — Concepts and How Sidekick Uses It
 
 This document explains authentication from first principles, then shows how Supabase implements it and how Sidekick's architecture builds on top of it.

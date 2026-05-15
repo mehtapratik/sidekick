@@ -1,3 +1,8 @@
+---
+title: Implementation Plan
+nav_order: 3
+---
+
 # Workspace App — Implementation Plan & Work Breakdown
 
 > Document Type: Living Implementation Plan  

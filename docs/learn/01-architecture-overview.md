@@ -1,3 +1,8 @@
+---
+title: Architecture Overview
+nav_order: 4
+---
+
 # Architecture Overview — Why We Built Sidekick This Way
 
 > Audience: Solo developer or someone new to the codebase who wants to understand *why* decisions were made, not just *what* was built.

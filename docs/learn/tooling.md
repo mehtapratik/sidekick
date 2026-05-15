@@ -1,3 +1,9 @@
+---
+title: Tooling
+parent: Learn
+nav_order: 5
+---
+
 # Tooling — Concepts and How We Use Them
 
 This document covers the monorepo tooling decisions introduced in Phase 1: pnpm flags, Turborepo configuration, TypeScript module resolution, ESLint setup, and package conventions.

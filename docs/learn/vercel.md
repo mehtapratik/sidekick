@@ -1,3 +1,9 @@
+---
+title: Vercel
+parent: Learn
+nav_order: 7
+---
+
 # Vercel — Hosting and Observability
 
 This document covers what Vercel provides out of the box and where its built-in capabilities are sufficient vs. where a dedicated tool (like Sentry) becomes necessary.

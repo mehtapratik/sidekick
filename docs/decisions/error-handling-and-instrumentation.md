@@ -1,3 +1,9 @@
+---
+title: Error Handling
+parent: Decisions
+nav_order: 6
+---
+
 # Decision — Error Handling and Instrumentation
 
 ---

@@ -1,3 +1,9 @@
+---
+title: Auth
+parent: Decisions
+nav_order: 1
+---
+
 # Decision — Profile Creation via Postgres Trigger
 
 ---

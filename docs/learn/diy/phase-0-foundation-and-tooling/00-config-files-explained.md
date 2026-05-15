@@ -1,3 +1,10 @@
+---
+title: Config Files Explained
+parent: Phase 0 — Foundation & Tooling
+grand_parent: Walkthroughs
+nav_order: 1
+---
+
 # Config Files Explained
 
 > A reference guide for every configuration file in the monorepo root. Each section explains what the file does, what each field means, and why it was configured that way.

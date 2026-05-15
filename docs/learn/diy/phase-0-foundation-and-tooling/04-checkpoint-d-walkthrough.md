@@ -1,3 +1,10 @@
+---
+title: Checkpoint D
+parent: Phase 0 — Foundation & Tooling
+grand_parent: Walkthroughs
+nav_order: 5
+---
+
 # Checkpoint D — Step-by-Step Walkthrough
 
 > **Goal:** Add the environment variable template, push the repo to GitHub, and link it to Vercel so `apps/web` can be deployed.

@@ -1,3 +1,9 @@
+---
+title: TypeScript
+parent: Learn
+nav_order: 4
+---
+
 # TypeScript and Bundlers
 
 This document covers TypeScript compilation concepts and bundler behaviour as they apply to the Sidekick monorepo.

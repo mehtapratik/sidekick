@@ -1,3 +1,9 @@
+---
+title: Tooling
+parent: Decisions
+nav_order: 3
+---
+
 # Tooling Decisions — Why We Chose What We Chose
 
 > This document records the non-obvious decisions made during Phase 0 setup, with rationale. Future developers (or your future self) should read this before changing any tooling configuration.

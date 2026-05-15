@@ -1,3 +1,9 @@
+---
+title: Packages
+parent: Learn
+nav_order: 6
+---
+
 # Packages — Monorepo Package Concepts
 
 This document covers how packages in a pnpm monorepo expose their API, declare dependencies, and share code through workspace linking and hoisting.

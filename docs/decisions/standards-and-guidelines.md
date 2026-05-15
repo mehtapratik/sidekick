@@ -1,3 +1,9 @@
+---
+title: Standards & Guidelines
+parent: Decisions
+nav_order: 5
+---
+
 # Decision — Standards and Guidelines
 
 ---

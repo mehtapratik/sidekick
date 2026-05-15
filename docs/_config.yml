@@ -1,0 +1,45 @@
+title: Sidekick Docs
+description: Internal documentation for the Sidekick monorepo
+
+remote_theme: just-the-docs/just-the-docs@v0.10.0
+
+# Site settings
+url: ''
+
+# Search
+search_enabled: true
+search:
+  heading_level: 3
+  previews: 2
+  preview_words_before: 5
+  preview_words_after: 10
+
+# Colour scheme — options: light (default) | dark
+color_scheme: dark
+
+# Navigation
+nav_sort: case_insensitive
+
+# Aux links (top-right)
+aux_links:
+  'GitHub':
+    - 'https://github.com/mehtapratik/sidekick'
+aux_links_new_tab: true
+
+# Footer
+footer_content: 'Sidekick internal documentation &mdash; not for public distribution.'
+
+# Back to top
+back_to_top: true
+back_to_top_text: 'Back to top'
+
+# Exclude folders that are not doc pages
+exclude:
+  - ai/
+  - plans/
+  - '*.DS_Store'
+
+# Jekyll plugins (GitHub Pages allowlist)
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag

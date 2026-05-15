@@ -1,3 +1,10 @@
+---
+title: Checkpoint C
+parent: Phase 0 — Foundation & Tooling
+grand_parent: Walkthroughs
+nav_order: 4
+---
+
 # Checkpoint C — Step-by-Step Walkthrough
 
 > **Goal:** Verify `pnpm turbo build` and `pnpm turbo dev` work end-to-end from the monorepo root. Fix any build warnings. Add the root `README.md`.

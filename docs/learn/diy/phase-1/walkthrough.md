@@ -1,3 +1,9 @@
+---
+title: Phase 1 Walkthrough
+parent: Walkthroughs
+nav_order: 2
+---
+
 # Phase 1 Walkthrough — Supabase Auth, DB Schema, and UI Shell
 
 This guide walks through reproducing Phase 1 step by step. It assumes you have completed Phase 0: the monorepo is set up with Turborepo, pnpm workspaces, TypeScript, ESLint, Prettier, and `apps/web` is a working Next.js 16 app.

@@ -1,3 +1,9 @@
+---
+title: Next.js
+parent: Learn
+nav_order: 3
+---
+
 # Next.js — App Router Concepts
 
 This document covers the Next.js App Router patterns that come up repeatedly in Sidekick. It focuses on the "why" behind each concept, not just the "what".
