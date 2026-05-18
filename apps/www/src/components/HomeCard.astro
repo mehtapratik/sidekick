@@ -1,0 +1,73 @@
+---
+import type { PostEntry } from "../lib/entries";
+import { postUrl } from "../lib/entries";
+import { CATEGORY_TAGS } from "../lib/site";
+import { formatDateYmd } from "../lib/reading";
+import { heroSvg } from "../lib/art";
+
+interface Props {
+  post: PostEntry;
+  caption: string;
+  heroImage?: string | null;
+  cta?: string;
+  titleId?: string;
+}
+
+const {
+  post,
+  caption,
+  heroImage = null,
+  cta = "Read the entry",
+  titleId,
+} = Astro.props;
+
+const url = postUrl(post);
+const dateLabel = formatDateYmd(post.data.pubDate);
+const version = `v${post.data.version || 1}.0.0`;
+const heroMarkup = heroSvg(`${post.category}/${post.id}`);
+const tags = post.data.tags?.length
+  ? post.data.tags
+  : [CATEGORY_TAGS[post.category]];
+---
+<article class="card" aria-labelledby={titleId}>
+  <header class="card__head">
+    <span class="card__caption">{caption}</span>
+    <span class="card__meta">
+      <span>{dateLabel}</span>
+      <span>{version}</span>
+    </span>
+  </header>
+
+  <h2 class="card__title" id={titleId}>
+    <a href={url}>{post.data.title}</a>
+  </h2>
+
+  {tags.length > 0 && (
+    <ul class="tags" aria-label="Tags">
+      {tags.map((tag) => (
+        <li>
+          <a href={`/archive/?tag=${encodeURIComponent(tag)}`} class="tag">{tag}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <div class="hero">
+    {heroImage ? (
+      <img src={heroImage} alt="" loading="lazy" />
+    ) : (
+      <Fragment set:html={heroMarkup} />
+    )}
+  </div>
+
+  {post.data.deck && (
+    <p class="card__blurb">{post.data.deck}</p>
+  )}
+
+  <a href={url} class="read-more">
+    {cta}
+    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <path d="M0 5h13M8 1l5 4-5 4" />
+    </svg>
+  </a>
+</article>

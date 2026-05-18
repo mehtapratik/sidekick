@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostListRow from "../../components/PostListRow.astro";
+import Ornament from "../../components/Ornament.astro";
+import { getAllPosts } from "../../lib/entries";
+import {
+  CATEGORY_LABELS,
+  CATEGORY_TAGS,
+  CATEGORY_DESCRIPTIONS,
+  CATEGORIES,
+} from "../../lib/site";
+import type { Category } from "../../lib/site";
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params as { category: Category };
+if (!CATEGORIES.includes(category)) {
+  return Astro.redirect("/404");
+}
+
+const posts = (await getAllPosts()).filter((p) => p.category === category);
+const label = CATEGORY_LABELS[category];
+const tag = CATEGORY_TAGS[category];
+const description = CATEGORY_DESCRIPTIONS[category];
+const countLabel = `${posts.length} ${posts.length === 1 ? "entry" : "entries"} · sorted by last updated`;
+---
+<BaseLayout
+  title={label}
+  description={description}
+  activeCategory={category}
+>
+  <div class="stage">
+    <header class="page-head">
+      <p class="page-head__eyebrow">Category · #{tag}</p>
+      <h1 class="page-head__title">{label}</h1>
+      <p class="page-head__desc">{description}</p>
+      <p class="page-head__count">{countLabel}</p>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="page-head__desc">No entries yet. Check back soon.</p>
+    ) : (
+      <ol class="list" aria-label={label}>
+        {posts.map((post, i) => (
+          <>
+            <PostListRow post={post} />
+            {i < posts.length - 1 && (
+              <li class="ornament-li" role="presentation" aria-hidden="true">
+                <Ornament />
+              </li>
+            )}
+          </>
+        ))}
+      </ol>
+    )}
+  </div>
+</BaseLayout>

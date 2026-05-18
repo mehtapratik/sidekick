@@ -1,0 +1,69 @@
+---
+import { loadContentMeta } from "../lib/site";
+import { getLastCommit } from "../lib/build-meta";
+
+const meta = loadContentMeta();
+const year = new Date().getFullYear();
+const repoUrl = meta.site.repoUrl ?? "https://github.com/mehtapratik/sidekick";
+const lastCommit = await getLastCommit(repoUrl);
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__row">
+      <span class="status">Human + Machine Collaborative</span>
+      {lastCommit && (
+        <span class="last-update">
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="last-update__label">Last Update:</span>
+          <a
+            class="last-update__link"
+            data-lu-when
+            href={lastCommit.htmlUrl}
+            target="_blank"
+            rel="noopener"
+          >
+            <time datetime={lastCommit.iso}>{lastCommit.displayUtc}</time>
+          </a>
+          <span class="sep" aria-hidden="true">·</span>
+        </span>
+      )}
+      <a href={repoUrl} target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="site-footer__row">
+      <span>© {year} Pratik Mehta</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="about-me">About me</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/rss.xml">RSS</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/llms.txt">llms.txt</a>
+    </div>
+  </div>
+</footer>
+
+<script is:inline>
+  // Reformat the build-time UTC stamp to the viewer's local timezone.
+  // No network calls — purely DOM-local Date formatting on a value already
+  // baked into the HTML at build time.
+  (function () {
+    var t = document.querySelector("[data-lu-when] time[datetime]");
+    if (!t) return;
+    var iso = t.getAttribute("datetime");
+    if (!iso) return;
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return;
+    function pad(n) { return n < 10 ? "0" + n : "" + n; }
+    var tz = "";
+    try {
+      var parts = new Intl.DateTimeFormat("en-US", {
+        timeZoneName: "short",
+      }).formatToParts(d);
+      var p = parts.find(function (x) { return x.type === "timeZoneName"; });
+      tz = p ? p.value : "";
+    } catch (_) {}
+    t.textContent =
+      d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+      " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) +
+      (tz ? " " + tz : "");
+  })();
+</script>

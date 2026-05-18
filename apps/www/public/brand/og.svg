@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Arkive">
+  <rect width="1200" height="630" fill="#faf8f3"/>
+
+  <line x1="80" y1="80" x2="1120" y2="80" stroke="#e3dfd3" stroke-width="1"/>
+  <line x1="80" y1="550" x2="1120" y2="550" stroke="#e3dfd3" stroke-width="1"/>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#75736b" letter-spacing="2.5">
+    <text x="80" y="60">ARKIVE / JOURNAL OF PROJECT SIDEKICK</text>
+    <text x="1120" y="60" text-anchor="end">VOL. 01 / 2026</text>
+  </g>
+
+  <g transform="translate(80, 130)">
+    <rect x="0.5" y="0.5" width="139" height="139" fill="#faf8f3" stroke="#1a1a17" stroke-width="1"/>
+    <text x="70" y="107" font-family="'Averia Serif Libre', 'Iowan Old Style', 'Hoefler Text', Georgia, serif" font-style="italic" font-weight="700" font-size="110" fill="#1a1a17" text-anchor="middle">K</text>
+  </g>
+
+  <text x="80" y="380" font-family="'Averia Serif Libre', 'Iowan Old Style', 'Hoefler Text', Georgia, serif" font-weight="700" font-size="148" fill="#1a1a17" letter-spacing="14">ARKIVE</text>
+
+  <text x="80" y="455" font-family="'Averia Serif Libre', 'Iowan Old Style', 'Hoefler Text', Georgia, serif" font-style="italic" font-weight="400" font-size="36" fill="#3a3a35">Build in the open / Written as it happens</text>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#75736b" letter-spacing="2.5">
+    <text x="80" y="585">HUMAN + MACHINE COLLABORATIVE</text>
+    <text x="1120" y="585" text-anchor="end">ARKIVE.BLOG</text>
+  </g>
+</svg>

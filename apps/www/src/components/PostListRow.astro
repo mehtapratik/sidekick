@@ -1,0 +1,44 @@
+---
+import type { PostEntry } from "../lib/entries";
+import { postUrl } from "../lib/entries";
+import { CATEGORY_TAGS } from "../lib/site";
+import { formatDateYmd } from "../lib/reading";
+import { thumbSvg } from "../lib/art";
+
+interface Props {
+  post: PostEntry;
+}
+
+const { post } = Astro.props;
+const url = postUrl(post);
+const dateLabel = formatDateYmd(post.data.pubDate);
+const version = `v${post.data.version || 1}.0.0`;
+const thumb = thumbSvg(`${post.category}/${post.id}`);
+const tags = post.data.tags?.length
+  ? post.data.tags
+  : [CATEGORY_TAGS[post.category]];
+---
+<li class="list-row">
+  <a href={url} class="list-row__thumb" aria-hidden="true" tabindex="-1">
+    <Fragment set:html={thumb} />
+  </a>
+  <div class="list-row__body">
+    <h2 class="list-row__title">
+      <a href={url}>{post.data.title}</a>
+    </h2>
+    <div class="list-row__meta">
+      <span>{dateLabel}</span>
+      <span>{version}</span>
+    </div>
+    {tags.length > 0 && (
+      <ul class="tags" aria-label="Tags">
+        {tags.map((tag) => (
+          <li>
+            <a class="tag" href={`/archive/?tag=${encodeURIComponent(tag)}`}>{tag}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+    {post.data.deck && <p class="list-row__blurb">{post.data.deck}</p>}
+  </div>
+</li>

@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Not Found"
+  description="That page is not in the archive."
+>
+  <div class="stage">
+    <header class="page-head">
+      <p class="page-head__eyebrow">Error · 404</p>
+      <h1 class="page-head__title">Not in the Archive.</h1>
+      <p class="page-head__desc">
+        The page you asked for isn't filed under any category. It may have been
+        retitled, moved, or it never existed in the first place.
+      </p>
+    </header>
+    <p>
+      <a href="/" class="read-more">
+        Return home
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M0 5h13M8 1l5 4-5 4" />
+        </svg>
+      </a>
+    </p>
+  </div>
+</BaseLayout>

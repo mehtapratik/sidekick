@@ -1,0 +1,18 @@
+site:
+  hero: kickoff
+  heroImage: null    # set to /images/hero/kickoff.jpg to override generative art
+  title: ARKIVE
+  description: The public journal of Project Sidekick. Essays, plans, decisions, builds, and notes — written while building a personal operating system in the open.
+  url: https://arkive.blog
+  repoUrl: https://github.com/mehtapratik/sidekick
+
+defaults:
+  author: Pratik Mehta
+  license: CC BY-NC 4.0
+  version: 1
+
+entries:
+  kickoff:
+    deck: "Why I'm spending the next 3 years building Sidekick in the open — mastering the full stack without vibe-coding."
+    date: 2026-05-18
+    tags: [sidekick, kickoff, meta]

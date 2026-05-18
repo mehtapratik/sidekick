@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HomeCard from "../components/HomeCard.astro";
+import Ornament from "../components/Ornament.astro";
+import { getAllPosts, getHeroPost } from "../lib/entries";
+import { loadContentMeta } from "../lib/site";
+
+const hero = await getHeroPost();
+if (!hero) throw new Error("No hero post configured");
+
+const all = await getAllPosts();
+const recent = all.find(
+  (p) => !(p.id === hero.id && p.category === hero.category),
+);
+
+const meta = loadContentMeta();
+const introBlurb =
+  meta.site.intro ??
+  "Thoughts, ideas, plans, builds, decisions, and learning logs from <strong>Sidekick</strong> — an open-source personal operating system being built inch by inch, with human + machine collaboration, between my full-time job and raising two high-schoolers. Two-to-three-year horizon.";
+const heroImage = meta.site.heroImage ?? null;
+---
+<BaseLayout>
+  <div class="stage">
+    <section class="intro" aria-labelledby="intro-title">
+      <h1 class="intro__tag" id="intro-title">
+        Journal of Project <em>Sidekick</em><br />
+        Build in the Open<br />
+        Written as it Happens
+      </h1>
+      <p class="intro__blurb" set:html={introBlurb} />
+    </section>
+
+    <Ornament />
+
+    <HomeCard
+      post={hero}
+      caption="★ Featured"
+      heroImage={heroImage}
+      cta="Read the essay"
+      titleId="featured-title"
+    />
+
+    {recent && (
+      <>
+        <Ornament />
+        <HomeCard
+          post={recent}
+          caption="↻ Most Recent"
+          cta="Read the entry"
+          titleId="recent-title"
+        />
+      </>
+    )}
+  </div>
+</BaseLayout>

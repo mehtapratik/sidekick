@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostListRow from "../components/PostListRow.astro";
+import Ornament from "../components/Ornament.astro";
+import { getAllPosts } from "../lib/entries";
+
+const posts = await getAllPosts();
+const countLabel = `${posts.length} ${posts.length === 1 ? "entry" : "entries"} · sorted by last updated`;
+---
+<BaseLayout
+  title="Index"
+  description="Every entry in the Arkive, sorted by date."
+  activeIndex={true}
+>
+  <div class="stage">
+    <header class="page-head">
+      <p class="page-head__eyebrow">Index · #all</p>
+      <h1 class="page-head__title">Index</h1>
+      <p class="page-head__desc">
+        Every published entry, newest first. Use search (press <kbd
+          style="font-family:var(--ff-mono);font-size:0.78em;padding:0.05rem 0.4rem;border:1px solid var(--rule);border-radius:2px;background:var(--bg-sunk)">/</kbd
+        >) to filter by keyword.
+      </p>
+      <p class="page-head__count">{countLabel}</p>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="page-head__desc">No entries yet. Check back soon.</p>
+    ) : (
+      <ol class="list" aria-label="All entries">
+        {posts.map((post, i) => (
+          <>
+            <PostListRow post={post} />
+            {i < posts.length - 1 && (
+              <li class="ornament-li" role="presentation" aria-hidden="true">
+                <Ornament />
+              </li>
+            )}
+          </>
+        ))}
+      </ol>
+    )}
+  </div>
+</BaseLayout>

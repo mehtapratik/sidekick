@@ -1,0 +1,50 @@
+---
+import { loadContentMeta } from "../lib/site";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  ogType?: "website" | "article";
+}
+
+const meta = loadContentMeta();
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  ogType = "website",
+} = Astro.props;
+
+const siteBase = Astro.site?.href ?? meta.site.url ?? "https://arkive.blog";
+const siteUrl = String(siteBase).replace(/\/$/, "");
+const canonical = new URL(canonicalPath, siteUrl).href;
+const ogImage = new URL("/icons/png/og-1200x630.png", siteUrl).href;
+const twitterImage = new URL("/icons/png/twitter-card-1200x630.png", siteUrl).href;
+---
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="theme-color" content="#faf8f3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#13130f" media="(prefers-color-scheme: dark)" />
+
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="/brand/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="/icons/png/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="/icons/png/favicon-16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/png/apple-touch-icon-180.png" />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content="ARKIVE" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={twitterImage} />
+
+<link rel="manifest" href="/site.webmanifest" />

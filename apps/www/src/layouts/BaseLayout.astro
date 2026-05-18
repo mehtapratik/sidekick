@@ -1,0 +1,133 @@
+---
+import "@fontsource/averia-serif-libre/400.css";
+import "@fontsource/averia-serif-libre/400-italic.css";
+import "@fontsource/averia-serif-libre/700.css";
+import "@fontsource/averia-serif-libre/700-italic.css";
+import "@fontsource/barlow/300.css";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/500.css";
+import "@fontsource/barlow/600.css";
+import "@fontsource/barlow/700.css";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import SiteMeta from "../components/SiteMeta.astro";
+import type { Category } from "../lib/site";
+import { loadContentMeta } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  activeCategory?: Category | null;
+  activeIndex?: boolean;
+  ogType?: "website" | "article";
+}
+
+const meta = loadContentMeta();
+const {
+  title = meta.site.title ?? "ARKIVE",
+  description = meta.site.description ?? "",
+  activeCategory = null,
+  activeIndex = false,
+  ogType = "website",
+} = Astro.props;
+const pageTitle = title === (meta.site.title ?? "ARKIVE") ? title : `${title} — ARKIVE`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      // Theme bootstrap — runs before first paint. Honours stored choice
+      // first, then falls back to `prefers-color-scheme`. If the user
+      // never explicitly toggled, the page tracks system changes live.
+      (function () {
+        var KEY = "arkive-theme";
+        var stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (_) {}
+        function systemTheme() {
+          return window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        var initial = stored === "light" || stored === "dark" ? stored : systemTheme();
+        document.documentElement.dataset.theme = initial;
+        if (!stored && window.matchMedia) {
+          var mq = window.matchMedia("(prefers-color-scheme: dark)");
+          var sync = function () {
+            // Re-check at runtime in case the user toggled & stored after load.
+            var s = null;
+            try { s = localStorage.getItem(KEY); } catch (_) {}
+            if (!s) document.documentElement.dataset.theme = systemTheme();
+          };
+          if (mq.addEventListener) mq.addEventListener("change", sync);
+          else if (mq.addListener) mq.addListener(sync);
+        }
+      })();
+    </script>
+    <SiteMeta
+      title={pageTitle}
+      description={description}
+      ogType={ogType}
+      canonicalPath={Astro.url.pathname}
+    />
+    <link rel="alternate" type="application/rss+xml" title="ARKIVE RSS" href="/rss.xml" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+    <SiteHeader activeCategory={activeCategory} activeIndex={activeIndex} />
+    <main id="main" data-pagefind-body>
+      <slot />
+    </main>
+    <SiteFooter />
+    <SearchDialog />
+    <script is:inline>
+      // Section permalinks — click the `§` anchor on an <h2> to copy
+      // the canonical URL (with hash) to clipboard. We also update
+      // the address bar via `replaceState` so the hash matches what
+      // was copied, but we deliberately don't scroll (the heading is
+      // already in view).
+      (function () {
+        document.addEventListener("click", function (event) {
+          var target = event.target;
+          if (!(target instanceof Element)) return;
+          var link = target.closest("a.permalink[data-permalink]");
+          if (!link) return;
+          event.preventDefault();
+          var hash = link.getAttribute("href") || "";
+          var absolute = new URL(hash, window.location.href).toString();
+          try {
+            history.replaceState(null, "", hash);
+          } catch (_) {}
+          var done = function () {
+            link.setAttribute("data-copied", "");
+            window.setTimeout(function () {
+              link.removeAttribute("data-copied");
+            }, 1400);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(absolute).then(done, done);
+          } else {
+            // Older Safari / WebKit fallback.
+            var ta = document.createElement("textarea");
+            ta.value = absolute;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.top = "-1000px";
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (_) {}
+            document.body.removeChild(ta);
+            done();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

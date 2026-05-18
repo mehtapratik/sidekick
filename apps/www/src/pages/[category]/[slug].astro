@@ -1,0 +1,64 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CATEGORIES, CATEGORY_LABELS, CATEGORY_TAGS } from "../../lib/site";
+import type { Category } from "../../lib/site";
+import { formatDateYmd } from "../../lib/reading";
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const category of CATEGORIES) {
+    const entries = await getCollection(category);
+    for (const entry of entries) {
+      paths.push({ params: { category, slug: entry.id }, props: { entry, category } });
+    }
+  }
+  return paths;
+}
+
+const { entry, category } = Astro.props;
+const { Content } = await render(entry);
+const cat = category as Category;
+const label = CATEGORY_LABELS[cat];
+const tag = CATEGORY_TAGS[cat];
+const dateLabel = formatDateYmd(entry.data.pubDate);
+const updatedLabel = formatDateYmd(entry.data.updated || entry.data.pubDate);
+const version = `v${entry.data.version || 1}.0.0`;
+const tags = entry.data.tags?.length ? entry.data.tags : [tag];
+---
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.deck}
+  activeCategory={cat}
+  ogType="article"
+>
+  <article class="stage">
+    <header class="article__head">
+      <div class="article__meta">
+        <span><span class="accent">Updated</span> &nbsp;{updatedLabel}</span>
+        <span><span class="accent">Version</span> &nbsp;{version}</span>
+        <span><span class="accent">Filed under</span> &nbsp;#{tag}</span>
+      </div>
+      <h1 class="article__title">{entry.data.title}</h1>
+      {tags.length > 0 && (
+        <ul class="tags" aria-label="Tags">
+          {tags.map((t) => (
+            <li>
+              <a class="tag" href={`/archive/?tag=${encodeURIComponent(t)}`}>{t}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+      {entry.data.deck && (
+        <aside class="article__tldr" aria-label="Summary">
+          <strong>TL;DR</strong>
+          {entry.data.deck}
+        </aside>
+      )}
+    </header>
+
+    <div class="prose" data-pagefind-body>
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

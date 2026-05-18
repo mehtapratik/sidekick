@@ -1,0 +1,208 @@
+---
+import type { Category } from "../lib/site";
+import { CATEGORY_LABELS, CATEGORIES } from "../lib/site";
+
+interface Props {
+  activeCategory?: Category | null;
+  activeIndex?: boolean;
+}
+
+const { activeCategory = null, activeIndex = false } = Astro.props;
+---
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="wordmark" aria-label="Arkive — home">ARKIVE</a>
+
+    <nav class="nav" aria-label="Primary">
+      {CATEGORIES.map((cat) => (
+        <a
+          href={`/${cat}/`}
+          aria-current={activeCategory === cat ? "page" : undefined}
+        >
+          {CATEGORY_LABELS[cat]}
+        </a>
+      ))}
+      <a
+        href="/archive/"
+        class="is-index"
+        aria-current={activeIndex ? "page" : undefined}
+      >
+        Index
+      </a>
+    </nav>
+
+    <div class="header-aux">
+      <button class="search" type="button" aria-label="Search" data-search-open>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" />
+          <path d="m11 11 3 3" />
+        </svg>
+        <span>Search</span>
+        <kbd>/</kbd>
+      </button>
+      <button
+        class="theme-toggle"
+        type="button"
+        data-theme-toggle
+        aria-label="Switch theme"
+        title="Switch theme"
+      >
+        <span class="theme-toggle__chip" aria-hidden="true"></span>
+      </button>
+      <button
+        class="nav-toggle"
+        type="button"
+        data-menu-open
+        aria-label="Open menu"
+        aria-controls="mobile-menu-overlay"
+        aria-expanded="false"
+      >
+        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M1 1h14M1 7h14M1 13h14" />
+        </svg>
+        <span class="sr-only">Menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div
+  id="mobile-menu-overlay"
+  class="menu-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Site menu"
+  hidden
+>
+  <div class="menu-panel">
+    <div class="menu-panel__head">
+      <span class="menu-panel__title">Menu</span>
+      <button
+        type="button"
+        class="menu-panel__close"
+        data-menu-close
+        aria-label="Close menu"
+      >Close</button>
+    </div>
+    <button
+      class="search menu-search-trigger"
+      type="button"
+      aria-label="Search"
+      data-search-open
+    >
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.5" />
+        <path d="m11 11 3 3" />
+      </svg>
+      <span>Search</span>
+      <kbd>/</kbd>
+    </button>
+    <nav class="menu-nav" aria-label="Mobile primary">
+      {CATEGORIES.map((cat) => (
+        <a
+          href={`/${cat}/`}
+          aria-current={activeCategory === cat ? "page" : undefined}
+        >
+          {CATEGORY_LABELS[cat]}
+        </a>
+      ))}
+      <a
+        href="/archive/"
+        class="is-index"
+        aria-current={activeIndex ? "page" : undefined}
+      >
+        Index
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    // ----- Theme toggle -----
+    var KEY = "arkive-theme";
+    var root = document.documentElement;
+    function currentTheme() {
+      return root.dataset.theme === "dark" ? "dark" : "light";
+    }
+    function syncToggleLabels() {
+      var next = currentTheme() === "dark" ? "light" : "dark";
+      var label = "Switch to " + next + " theme";
+      document.querySelectorAll("[data-theme-toggle]").forEach(function (el) {
+        el.setAttribute("aria-label", label);
+        el.setAttribute("title", label);
+      });
+    }
+    document.querySelectorAll("[data-theme-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        try { localStorage.setItem(KEY, next); } catch (_) {}
+        syncToggleLabels();
+      });
+    });
+    syncToggleLabels();
+
+    // ----- Mobile menu overlay -----
+    var overlay = document.getElementById("mobile-menu-overlay");
+    var openers = document.querySelectorAll("[data-menu-open]");
+    var closers = document.querySelectorAll("[data-menu-close]");
+
+    function openMenu() {
+      if (!overlay) return;
+      overlay.hidden = false;
+      document.body.classList.add("body--no-scroll");
+      openers.forEach(function (b) { b.setAttribute("aria-expanded", "true"); });
+      var firstLink = overlay.querySelector("a, button");
+      if (firstLink) firstLink.focus();
+    }
+    function closeMenu() {
+      if (!overlay) return;
+      overlay.hidden = true;
+      document.body.classList.remove("body--no-scroll");
+      openers.forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+    }
+    openers.forEach(function (b) { b.addEventListener("click", openMenu); });
+    closers.forEach(function (b) { b.addEventListener("click", closeMenu); });
+    if (overlay) {
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeMenu();
+      });
+      // Tapping a nav link inside the overlay closes it.
+      overlay.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", closeMenu);
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && overlay && !overlay.hidden) {
+        e.preventDefault();
+        closeMenu();
+      }
+    });
+
+    // ----- Global search hotkeys -----
+    document.querySelectorAll("[data-search-open]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        closeMenu();
+        window.dispatchEvent(new CustomEvent("arkive-search-open"));
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      var target = e.target;
+      var isTyping =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+      if (e.key === "/" && !isTyping) {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("arkive-search-open"));
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("arkive-search-open"));
+      }
+    });
+  })();
+</script>

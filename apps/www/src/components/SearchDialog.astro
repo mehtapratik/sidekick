@@ -1,0 +1,153 @@
+---
+---
+<div id="search-overlay" class="search-overlay" hidden>
+  <div class="search-panel" role="dialog" aria-label="Search">
+    <input type="search" id="search-input" placeholder="Search entries…" autocomplete="off" />
+    <div id="search-results" class="search-results"></div>
+    <p class="search-hint">↑↓ navigate · Enter open · Esc close</p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const overlay = document.getElementById("search-overlay");
+    const input = document.getElementById("search-input");
+    const resultsEl = document.getElementById("search-results");
+    let active = 0;
+    let pagefind = null;
+    let jsonIndex = null;
+
+    async function ensurePagefind() {
+      if (pagefind) return pagefind;
+      const mod = await import("/pagefind/pagefind.js");
+      await mod.init();
+      pagefind = mod;
+      return pagefind;
+    }
+
+    async function ensureJsonIndex() {
+      if (jsonIndex) return jsonIndex;
+      const res = await fetch("/search-index.json");
+      jsonIndex = await res.json();
+      return jsonIndex;
+    }
+
+    async function render(q) {
+      const query = q.trim();
+      resultsEl.innerHTML = "";
+      active = 0;
+
+      if (!query) {
+        resultsEl.innerHTML =
+          '<p class="meta" style="padding:12px 8px">Type to search the archive…</p>';
+        return;
+      }
+
+      try {
+        const pf = await ensurePagefind();
+        const { results } = await pf.search(query);
+        const slice = results.slice(0, 12);
+        if (slice.length === 0) {
+          resultsEl.innerHTML =
+            '<p class="meta" style="padding:12px 8px">No matches.</p>';
+          return;
+        }
+        const items = await Promise.all(slice.map((r) => r.data()));
+        resultsEl.innerHTML = items
+          .map((data, i) => {
+            const title = (data.meta && data.meta.title) || data.url;
+            const excerpt = data.excerpt || "";
+            return (
+              '<a href="' +
+              data.url +
+              '" class="' +
+              (i === 0 ? "is-active" : "") +
+              '"><span>' +
+              title +
+              "</span>" +
+              (excerpt ? '<div class="excerpt">' + excerpt + "</div>" : "") +
+              "</a>"
+            );
+          })
+          .join("");
+        return;
+      } catch (e) {
+        /* Pagefind unavailable in dev — fall back to JSON index */
+      }
+
+      const index = await ensureJsonIndex();
+      const ql = query.toLowerCase();
+      const hits = index
+        .filter(function (e) {
+          return (
+            e.title.toLowerCase().includes(ql) ||
+            (e.deck && e.deck.toLowerCase().includes(ql))
+          );
+        })
+        .slice(0, 12);
+      if (hits.length === 0) {
+        resultsEl.innerHTML =
+          '<p class="meta" style="padding:12px 8px">No matches.</p>';
+        return;
+      }
+      resultsEl.innerHTML = hits
+        .map(function (e, i) {
+          return (
+            '<a href="' +
+            e.url +
+            '" class="' +
+            (i === 0 ? "is-active" : "") +
+            '"><span>' +
+            e.title +
+            '</span><div class="meta">' +
+            e.category +
+            "</div></a>"
+          );
+        })
+        .join("");
+    }
+
+    function openSearch() {
+      overlay.hidden = false;
+      input.value = "";
+      render("");
+      setTimeout(function () { input.focus(); }, 0);
+    }
+
+    function closeSearch() {
+      overlay.hidden = true;
+    }
+
+    window.addEventListener("arkive-search-open", openSearch);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeSearch();
+    });
+    input.addEventListener("input", function () {
+      render(input.value);
+    });
+    input.addEventListener("keydown", function (e) {
+      const links = Array.from(resultsEl.querySelectorAll("a"));
+      if (e.key === "Escape") {
+        closeSearch();
+        return;
+      }
+      if (e.key === "ArrowDown" && links.length) {
+        e.preventDefault();
+        active = Math.min(active + 1, links.length - 1);
+        links.forEach(function (a, i) {
+          a.classList.toggle("is-active", i === active);
+        });
+      }
+      if (e.key === "ArrowUp" && links.length) {
+        e.preventDefault();
+        active = Math.max(active - 1, 0);
+        links.forEach(function (a, i) {
+          a.classList.toggle("is-active", i === active);
+        });
+      }
+      if (e.key === "Enter" && links[active]) {
+        window.location.href = links[active].href;
+      }
+    });
+  })();
+</script>

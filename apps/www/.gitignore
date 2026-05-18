@@ -1,0 +1,29 @@
+# build output
+dist/
+.astro/
+
+# generated content from ingest
+src/content/essays/
+src/content/plans/
+src/content/decisions/
+src/content/builds/
+src/content/notes/
+!src/content/.gitkeep
+
+src/lib/ingest-manifest.json
+public/search-index.json
+public/pagefind/
+public/icons/png/
+
+# dependencies
+node_modules/
+
+# logs
+*.log
+
+# environment
+.env
+.env.production
+
+# macOS
+.DS_Store
