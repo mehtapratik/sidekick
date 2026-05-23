@@ -8,6 +8,27 @@
       "when": 1778377618177,
       "tag": "0000_mixed_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778377618178,
+      "tag": "0001_app_runtime_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778377618179,
+      "tag": "0002_profiles_rls_policy",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778377618180,
+      "tag": "0003_soft_delete_trigger_fns",
+      "breakpoints": true
     }
   ]
 }

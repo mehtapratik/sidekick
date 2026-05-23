@@ -18,6 +18,17 @@ export default defineConfig(
         { type: 'app-elements', pattern: 'apps/*' },
         { type: 'package-elements', pattern: 'packages/*' },
       ],
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
+          project: [
+            'tsconfig.base.json',
+            'apps/*/tsconfig.json',
+            'packages/*/tsconfig.json',
+          ],
+        },
+      },
     },
     rules: {
       'boundaries/no-unknown': 'error',

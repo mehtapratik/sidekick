@@ -317,17 +317,44 @@ export const apiKeys = pgTable('api_keys', {
 
 ## 9.1 Canonical Pattern
 
-Every user-owned table MUST enforce:
+Drizzle connects as `app_runtime`, a non-superuser PostgreSQL role. RLS is enforced at the database level for all Drizzle queries.
+
+**`profiles` table** (no `deletedAt` — not a syncable entity):
+
+```sql
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "users_own_profile"
+ON profiles
+FOR ALL
+USING  (id::text = current_setting('app.current_user_id', true))
+WITH CHECK (id::text = current_setting('app.current_user_id', true));
+```
+
+**Phase 3+ syncable feature tables** (notes, bookmarks, recipes, etc. — all have `deletedAt`):
 
 ```sql
 ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
+ALTER TABLE table_name FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY "users access own rows"
+CREATE POLICY "users_own_rows"
 ON table_name
 FOR ALL
-USING (user_id = auth.uid())
-WITH CHECK (user_id = auth.uid());
+USING (
+  user_id::text = current_setting('app.current_user_id', true)
+  AND deleted_at IS NULL
+)
+WITH CHECK (
+  user_id::text = current_setting('app.current_user_id', true)
+);
 ```
+
+The USING clause combines two constraints: user isolation and soft-delete filtering. Both are enforced at the database level — not by application convention.
+
+`WITH CHECK` intentionally omits `deleted_at IS NULL` — a restore operation (setting `deleted_at = NULL`) is a valid UPDATE that must be allowed through.
+
+`FORCE ROW LEVEL SECURITY` ensures the policy applies even to the table owner role. Belt and suspenders.
 
 ---
 
@@ -348,22 +375,84 @@ only.
 ## 9.3 Canonical RLS Helper
 
 ```ts
-export async function withRLS(userId, fn) {
+export async function withRLS<T>(
+  userId: string,
+  fn: (tx: Tx) => Promise<T>,
+): Promise<T> {
   return db.transaction(async (tx) => {
     await tx.execute(
-      sql`select set_config('request.jwt.claim.sub', ${userId}, true)`
+      sql`select set_config('app.current_user_id', ${userId}, true)`
     )
-
     return fn(tx)
   })
 }
 ```
+
+The transaction wrapper is mandatory. `set_config` with `is_local = true` only resets at the end of the current transaction. Without the wrapper, the setting has no transaction to bind to and persists on the pooled connection — leaking the user ID to the next request.
 
 This removes:
 
 - duplicated SQL
 - injection risk
 - inconsistent setup
+- user ID leakage across pooled connections
+
+---
+
+## 9.4 Soft-Delete Trigger Functions
+
+Two shared trigger functions are defined once in migration `0003_soft_delete_trigger_fns.sql` and reused across all syncable tables.
+
+```sql
+-- Blocks hard deletes unless explicitly opted in
+CREATE OR REPLACE FUNCTION enforce_soft_delete()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF current_setting('app.allow_hard_delete', true) IS DISTINCT FROM 'true' THEN
+    RAISE EXCEPTION
+      'Hard deletes are prohibited on %. Use soft delete (set deleted_at).', TG_TABLE_NAME;
+  END IF;
+  RETURN OLD;
+END;
+$$;
+
+-- Blocks updates on already soft-deleted rows
+CREATE OR REPLACE FUNCTION block_update_on_deleted()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF OLD.deleted_at IS NOT NULL THEN
+    RAISE EXCEPTION
+      'Cannot update a soft-deleted row in % (id: %). Restore it first.',
+      TG_TABLE_NAME, OLD.id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+```
+
+Each Phase 3+ feature migration binds these functions to its table:
+
+```sql
+CREATE TRIGGER no_hard_delete_[table]
+  BEFORE DELETE ON [table]
+  FOR EACH ROW EXECUTE FUNCTION enforce_soft_delete();
+
+CREATE TRIGGER no_update_deleted_[table]
+  BEFORE UPDATE ON [table]
+  FOR EACH ROW EXECUTE FUNCTION block_update_on_deleted();
+```
+
+**Enforcement summary:**
+
+| Constraint | Mechanism | Enforced at |
+|---|---|---|
+| User sees only their own rows | RLS USING clause | Database |
+| Soft-deleted rows invisible to users | RLS USING clause | Database |
+| Hard deletes blocked | BEFORE DELETE trigger | Database |
+| Updates on deleted rows blocked | BEFORE UPDATE trigger | Database |
+| SELECT filtering (belt) | `where(isNull(deletedAt))` in repos | Application |
+
+Triggers fire for **all roles** including service role and superuser. RLS is enforced because Drizzle connects as `app_runtime` (non-superuser). `createAdminClient()` bypasses RLS but not triggers.
 
 ---
 
@@ -840,6 +929,25 @@ All queries against syncable tables must filter `where(isNull(table.deletedAt))`
 All content tables participating in the embedding pipeline MUST include an `embeddingStatus` field.
 
 Set it to `'failed'` after retries are exhausted. Never silently drop failed embedding jobs.
+
+---
+
+### Rule 9
+
+Never use `createAdminClient().from(...).delete()` to hard-delete rows from syncable tables.
+
+The BEFORE DELETE trigger fires for all roles including service role. The delete will be rejected regardless of the client used.
+
+Hard-deletes that must bypass the trigger (e.g. GDPR erasure) require a dedicated Drizzle transaction:
+
+```ts
+await db.transaction(async (tx) => {
+  await tx.execute(sql`SET LOCAL app.allow_hard_delete = 'true'`)
+  await tx.delete(table).where(eq(table.id, id))
+})
+```
+
+`SET LOCAL` scopes the flag to the transaction — it resets on commit or rollback. This is the only legitimate hard-delete pathway.
 
 ---
 

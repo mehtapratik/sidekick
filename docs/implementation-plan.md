@@ -122,6 +122,41 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 
 ---
 
+## Phase 1.1 — DB-Level RLS & Soft-Delete Enforcement ✅ COMPLETE
+
+> **Milestone:** Drizzle connects as a non-superuser role (`app_runtime`). RLS is enforced at the database level — not by convention. Soft-delete filtering, user-data isolation, and hard-delete prevention are guaranteed by the database regardless of what application code does.
+> **Learning payoff:** PostgreSQL roles, RLS enforcement vs. convention, trigger functions, migration journal mechanics, connection pooling and session variable scoping.
+> **Completed:** May 2026
+
+| # | Task | Complexity | Learning | Status |
+|---|------|-----------|---------|--------|
+| 1.1.1 | Create `app_runtime` PostgreSQL role via Supabase SQL Editor (not in git — contains password) | 🟢 | 🗄️ 🔐 | ✅ |
+| 1.1.2 | Create migration `0001_app_runtime_grants.sql` — GRANT + ALTER DEFAULT PRIVILEGES | 🟡 | 🗄️ 🔐 | ✅ |
+| 1.1.3 | Create migration `0002_profiles_rls_policy.sql` — formalize `profiles` RLS policy in version control | 🟡 | 🗄️ 🔐 | ✅ |
+| 1.1.4 | Create migration `0003_soft_delete_trigger_fns.sql` — shared `enforce_soft_delete()` and `block_update_on_deleted()` functions | 🟡 | 🗄️ | ✅ |
+| 1.1.5 | Register all three migrations in `meta/_journal.json` with increasing `when` timestamps | 🟢 | 🗄️ | ✅ |
+| 1.1.6 | Run `pnpm db:migrate` — apply all three migrations | 🟢 | 🗄️ | ✅ |
+| 1.1.7 | Drop the dashboard-created `profiles` policy that predated version-controlled migrations | 🟢 | 🗄️ | ✅ |
+| 1.1.8 | Update `DATABASE_URL` in `.env.local` to use `app_runtime` credentials (pooler, port 6543) | 🟢 | 🔐 | ✅ |
+| 1.1.9 | Fix `withRLS` — wrap in `db.transaction()` so `set_config` is properly transaction-scoped | 🔴 | 🗄️ 🔐 | ✅ |
+| 1.1.10 | Verify: `pg_roles`, `role_table_grants`, `pg_policies` queries confirm setup; app loads after `DATABASE_URL` change | 🟢 | | ✅ |
+
+**Phase 1.1 Exit Criteria:** ✅ All met.
+- `app_runtime` role exists with `SELECT/INSERT/UPDATE/DELETE` on all public tables
+- `DEFAULT PRIVILEGES` ensures future tables are auto-granted
+- `profiles` RLS policy is in version control and enforced
+- `withRLS` wraps queries in a real transaction — no session variable leakage
+- Trigger functions `enforce_soft_delete()` and `block_update_on_deleted()` exist, ready to bind in Phase 3+
+
+**Implementation notes:**
+- `SET ROLE` in Supabase SQL Editor is restricted — cannot be used to test role-based access. Verify via `pg_roles`, `information_schema.role_table_grants`, and `pg_policies`. True end-to-end test is the running application.
+- Migration `when` timestamps must be strictly increasing. Always base new timestamps on the previous entry.
+- `db:generate` is NOT run for hand-written SQL migrations. Custom SQL goes straight to `db:migrate`.
+- Two policies existed on `profiles` after migration — the original dashboard policy had a different name and was not dropped by the migration. Required a manual `DROP POLICY` afterward.
+- Trigger functions defined now (not deferred to Phase 3) so feature migrations only need `CREATE TRIGGER` bindings.
+
+---
+
 ## Phase 2 — Core Infrastructure (API Guard, Feature System)
 
 > **Milestone:** The architectural backbone is live. `withApiGuard` is implemented and tested. The feature registry exists. You could add any feature safely from here.  
@@ -172,6 +207,23 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 | 3.17 | Manually test the full CRUD loop via both UI and direct API calls (use curl or Postman) | 🟢 | |
 
 **Phase 3 Exit Criteria:** Notes can be created, edited, listed, and soft-deleted through the UI. The API layer enforces auth and feature entitlement. All queries filter `where(isNull(notes.deletedAt))`.
+
+**Note on task 3.4:** The RLS policy for `notes` uses the combined pattern (user isolation + soft-delete in one USING clause) established in Phase 1.1. The migration must also bind the two shared trigger functions created in `0003`. See the Phase 3+ template in the architecture handover.
+
+```sql
+-- RLS (combined pattern)
+ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notes FORCE ROW LEVEL SECURITY;
+CREATE POLICY "users_own_rows" ON notes FOR ALL
+  USING (user_id::text = current_setting('app.current_user_id', true) AND deleted_at IS NULL)
+  WITH CHECK (user_id::text = current_setting('app.current_user_id', true));
+
+-- Trigger bindings (functions already exist from migration 0003)
+CREATE TRIGGER no_hard_delete_notes
+  BEFORE DELETE ON notes FOR EACH ROW EXECUTE FUNCTION enforce_soft_delete();
+CREATE TRIGGER no_update_deleted_notes
+  BEFORE UPDATE ON notes FOR EACH ROW EXECUTE FUNCTION block_update_on_deleted();
+```
 
 ---
 
@@ -420,13 +472,15 @@ Before moving to the next phase, verify:
 
 - [ ] Every new API route uses `withApiGuard()`
 - [ ] No `packages/*` imports from `apps/*`
-- [ ] Every new user-owned table has RLS enabled with the canonical policy
+- [ ] Every new user-owned table has RLS enabled with the canonical combined policy (user isolation + soft-delete in one USING clause)
+- [ ] Every new syncable table has `no_hard_delete_[table]` and `no_update_deleted_[table]` triggers applied
 - [ ] Every new table with user content uses `withRLS()` via the guard, not inline
 - [ ] All mutations go through the repository layer
 - [ ] Syncable tables include `createdAt`, `updatedAt`, `deletedAt`
 - [ ] Soft deletes only — no hard deletes on user data
 - [ ] All queries on syncable tables filter `where(isNull(table.deletedAt))`
 - [ ] Content tables in the embedding pipeline have `embeddingStatus`
+- [ ] `DATABASE_URL` connects as `app_runtime` (not superuser) — verify if changing connection config
 
 ---
 
@@ -449,3 +503,29 @@ Before moving to the next phase, verify:
 | Phase 12 | Open-ended | Exploratory; do when ready |
 
 > Sessions are loosely defined as focused 2–3 hour working blocks. Estimates assume you're reviewing every line and asking questions — that's the point.
+
+---
+
+## Backlogged / Unplanned
+
+These items are known, intentional gaps — deferred, not forgotten.
+
+### B1 — Hard-Delete Erasure Job (GDPR / Account Deletion)
+
+**What:** A scheduled or on-demand job that permanently erases user data rows after soft-delete, to satisfy GDPR right-to-erasure or account deletion requests.
+
+**Why deferred:** No external users yet. Compliance obligation does not apply at MVP scale. Tombstones exist via soft-delete; the erasure step is not yet wired up.
+
+**Why it cannot use conventional channels:**
+- `DATABASE_URL` connects as `app_runtime` — hard deletes are blocked by the BEFORE DELETE trigger.
+- `DATABASE_DIRECT_URL` is reserved for schema migrations — using it for runtime data operations conflates two distinct concerns.
+- `createAdminClient().from(...).delete()` bypasses RLS but not triggers — still rejected.
+
+**What it needs:** A dedicated pathway that opens an explicit transaction, sets `SET LOCAL app.allow_hard_delete = 'true'`, executes targeted DELETEs, and records an audit event.
+
+**Options to evaluate when the time comes:**
+- **Supabase `pg_cron`** — a scheduled SQL job running inside the database itself, no external process needed
+- **Edge Function with privileged connection** — invoked on-demand via a secure internal endpoint, direct database access
+- **Dedicated admin Drizzle client** in `packages/core` scoped exclusively to erasure operations, distinct from the runtime `db` instance
+
+**When to implement:** When onboarding external users, or when a compliance review requires a documented erasure process.

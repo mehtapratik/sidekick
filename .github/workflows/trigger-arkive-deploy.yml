@@ -1,0 +1,21 @@
+name: Trigger ARKIVE deploy
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+
+jobs:
+  deploy-hook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy
+        env:
+          CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
+        run: |
+          if [ -z "${CF_PAGES_DEPLOY_HOOK}" ]; then
+            echo "CF_PAGES_DEPLOY_HOOK secret not set — skip (configure in repo settings)."
+            exit 0
+          fi
+          curl -fsS -X POST "${CF_PAGES_DEPLOY_HOOK}"

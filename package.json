@@ -21,6 +21,7 @@
     "@sidekick/eslint-plugin-sidekick": "workspace:*",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-boundaries": "^6.0.2",
     "eslint-plugin-import": "^2.32.0",
     "prettier": "^3.8.3",

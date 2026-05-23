@@ -58,3 +58,60 @@ GraphQL could replace or augment the REST layer without a full architectural rew
 - REST routes that serve the web app could be replaced with GraphQL resolvers
 - REST routes that serve the CLI and external agents could remain as-is (REST is a better fit for scripting)
 - `withApiGuard` would need a GraphQL resolver adapter — wrapping resolvers instead of route handlers — but the core auth → entitlement → RLS → handler chain would remain the same
+
+---
+
+## `app_runtime` Role for Drizzle Runtime Connection
+
+### What
+
+`DATABASE_URL` (the pooler connection used by Drizzle at runtime) connects as `app_runtime`, a non-superuser PostgreSQL role. `DATABASE_DIRECT_URL` (used by Drizzle Kit for migrations) continues to connect as the superuser `postgres`.
+
+### Why
+
+Drizzle connecting as the `postgres` superuser bypasses Row Level Security entirely — all RLS policies are ignored for superuser connections. This meant the RLS policies defined on user tables were never actually enforced for any runtime query; enforcement relied solely on application-level `WHERE user_id = ...` clauses.
+
+Switching to `app_runtime` makes RLS enforced at the database level for all runtime queries, consistent with the architecture's philosophy of "Enforced Security > Convention."
+
+### Setup
+
+Role creation is a **one-time manual step** performed in the Supabase SQL Editor — it is not in any migration file. The reason: the `CREATE ROLE` statement includes a password, and the repository is public. Credentials must never enter version control.
+
+```sql
+-- Run once in Supabase SQL Editor only — never commit
+CREATE ROLE app_runtime WITH LOGIN PASSWORD 'your-strong-password';
+```
+
+GRANT statements and `DEFAULT PRIVILEGES` are in migration `0001_app_runtime_grants.sql` (safe to commit — no secrets):
+
+```sql
+GRANT USAGE ON SCHEMA public TO app_runtime;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_runtime;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_runtime;
+```
+
+`ALTER DEFAULT PRIVILEGES` means every new table created by future migrations is automatically accessible to `app_runtime` — no per-table GRANT needed when adding feature packages.
+
+### Verification
+
+`SET ROLE app_runtime` does not work in the Supabase SQL Editor — Supabase restricts role switching in the dashboard. Verify the setup using system catalog queries instead:
+
+```sql
+-- Role exists
+SELECT rolname, rolcanlogin FROM pg_roles WHERE rolname = 'app_runtime';
+
+-- Grants applied
+SELECT grantee, table_name, privilege_type
+FROM information_schema.role_table_grants
+WHERE grantee = 'app_runtime';
+
+-- RLS policies exist
+SELECT policyname, cmd, qual FROM pg_policies WHERE tablename = 'profiles';
+```
+
+True end-to-end verification: update `DATABASE_URL` in `.env.local` to `app_runtime` credentials and confirm the running application loads correctly.
+
+### Tradeoff
+
+Non-superuser roles require explicit privilege grants. `ALTER DEFAULT PRIVILEGES` eliminates the per-table maintenance burden for future tables, but the initial role creation and `GRANT` on existing tables is a one-time manual step that lives outside of the automated migration flow. This is documented here as the single source of truth for that step.

@@ -174,7 +174,7 @@ USING (id::text = current_setting('app.current_user_id', true));
 
 This policy says: "when querying `profiles`, only return rows where the `id` column (cast to text) matches the current setting `app.current_user_id`."
 
-`current_setting('app.current_user_id', true)` is a PostgreSQL session variable — a value you set at the start of a query session. This is how Drizzle (which connects as the Postgres superuser, bypassing Supabase auth) can still enforce user-level access: before every query, we set this variable to the current user's ID, and the RLS policy reads it.
+`current_setting('app.current_user_id', true)` is a PostgreSQL session variable — a value you set at the start of a query session. Drizzle connects as `app_runtime`, a non-superuser role that is subject to RLS. Before every query, `withRLS` sets this variable to the current user's ID inside a transaction, and the RLS policy reads it to filter rows.
 
 ### What "canonical RLS policy" means
 
@@ -195,14 +195,62 @@ USING (id::text = current_setting('app.current_user_id', true))
 ### The `withRLS` helper
 
 ```ts
-await withRLS(userId, async (db) => {
-  return db.select().from(profiles)
+await withRLS(userId, async (tx) => {
+  return tx.select().from(profiles)
 })
 ```
 
-`withRLS` sets the `app.current_user_id` session variable before running your query function. The `true` in `set_config('app.current_user_id', ${userId}, true)` means the setting is local to the current transaction — it is automatically cleared when the transaction ends. This prevents the user ID from leaking between requests in the connection pool.
+`withRLS` opens a database transaction, sets `app.current_user_id` inside it, then runs your query function — passing the transaction object (`tx`) rather than the global `db` instance. All queries inside the callback share that same connection and transaction, so they all see the user ID you just set.
+
+The `true` in `set_config('app.current_user_id', ${userId}, true)` means "local to the current transaction" — the setting is automatically cleared when the transaction ends.
+
+**Why the transaction wrapper matters:** If you call `set_config(..., true)` outside a transaction, the "local" guarantee has nothing to bind to. The setting effectively becomes session-scoped for that connection. In a connection pool, that connection may be reused by the next request from a completely different user — and they would inherit the wrong `app.current_user_id`. Wrapping in `db.transaction()` closes this gap entirely.
 
 Never set `app.current_user_id` manually inline. Always use `withRLS`.
+
+### Triggers and the Limits of `createAdminClient()`
+
+Supabase's service role (used by `createAdminClient()`) bypasses Row Level Security — but it does **not** bypass PostgreSQL triggers. Triggers are role-agnostic: they fire for every role, including service role and superuser.
+
+This means if you call:
+
+```ts
+await createAdminClient().from('notes').delete().eq('id', id)
+```
+
+...the BEFORE DELETE trigger on `notes` will fire and reject the operation, even though the service role has full data access. The trigger runs before the delete executes, regardless of who is asking.
+
+The only way to legitimately hard-delete a row from a syncable table is through a Drizzle transaction that explicitly opts in:
+
+```ts
+await db.transaction(async (tx) => {
+  await tx.execute(sql`SET LOCAL app.allow_hard_delete = 'true'`)
+  await tx.delete(notes).where(eq(notes.id, id))
+})
+```
+
+`SET LOCAL` sets the flag for this transaction only — it resets on commit or rollback. The trigger reads this flag and permits the delete only if it is present.
+
+This is intentional. Hard-deletes must be deliberate, server-side, auditable operations. They must never flow through `createAdminClient()` or the standard API path.
+
+---
+
+### `db:generate` vs `db:migrate` — which to run for custom SQL
+
+`db:generate` reads your Drizzle TypeScript schema files and generates SQL migration files automatically. Run it when you change a schema definition (`schema.ts`) and want Drizzle to write the corresponding SQL for you.
+
+`db:migrate` reads the migration journal and applies any pending SQL files to the database. It does not care how those files were created.
+
+For hand-written SQL migrations — RLS policies, trigger functions, GRANT statements — you skip `db:generate` entirely. You write the SQL file yourself, register it in `meta/_journal.json`, then run `db:migrate` directly.
+
+| You changed | Run |
+|---|---|
+| A TypeScript schema file (`schema.ts`) | `db:generate` → `db:migrate` |
+| A custom SQL file (RLS, triggers, grants) | `db:migrate` only |
+
+Running `db:generate` on a custom SQL migration is harmless but wasteful — Drizzle would detect no schema change and produce nothing.
+
+---
 
 ### The `public.` prefix in trigger functions
 

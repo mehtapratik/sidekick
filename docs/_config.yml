@@ -1,3 +1,5 @@
+# Legacy Jekyll config — public docs now ship via ARKIVE (arkive.blog).
+# Content source of truth remains this docs/ folder.
 title: Sidekick Docs
 description: Internal documentation for the Sidekick monorepo
 
