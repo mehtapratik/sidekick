@@ -1,7 +1,5 @@
 # Building in the Margins: Why I’m Spending the Next 3 Years Creating "Sidekick"
 
-For years, I’ve had a persistent, nagging itch.
-
 Ever since I started my career as a software engineer, I dreamed of building something from the ground up. I didn’t necessarily want to be an "entrepreneur" in the corporate sense; I wanted to be a creator, a builder, and a creative problem solver.
 
 But life happens. The dream kept getting pushed back. Weeks turned into months, months into years. Lately, it has been keeping me up at night. That quiet, uncomfortable realization that you are failing to follow through on your own dreams is a terrible sleep aid.
