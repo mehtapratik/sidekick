@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+import yaml from "js-yaml";
+import { execSync } from "node:child_process";
 /**
  * Ingest markdown from sidekick/docs into src/content/{category}/
  * Run before astro build (prebuild).
@@ -6,8 +9,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
-import yaml from "js-yaml";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -40,13 +41,11 @@ function shouldSkip(relativePath) {
 
 function resolveCategory(relativePath) {
   const norm = relativePath.split(path.sep).join("/");
-  if (norm.startsWith("writings/")) return "essays";
-  if (norm === "implementation-plan.md" || norm.startsWith("plans/"))
-    return "plans";
+  if (norm.startsWith("essays/")) return "essays";
+  if (norm.startsWith("plans/")) return "plans";
   if (norm.startsWith("decisions/")) return "decisions";
-  if (norm.startsWith("learn/diy/")) return "builds";
-  if (norm.startsWith("learn/") || norm === "architecture-handover.md")
-    return "notes";
+  if (norm.startsWith("builds/")) return "builds";
+  if (norm.startsWith("notes/")) return "notes";
   return null;
 }
 
