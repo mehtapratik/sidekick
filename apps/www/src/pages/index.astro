@@ -15,8 +15,7 @@ const recent = all.find(
 
 const meta = loadContentMeta();
 const introBlurb =
-  meta.site.intro ??
-  "Thoughts, ideas, plans, builds, decisions, and learning logs from <strong>Sidekick</strong> — an open-source personal operating system being built inch by inch, with human + machine collaboration, between my full-time job and raising two high-schoolers. Two-to-three-year horizon.";
+  meta.site.intro ?? '';
 const heroImage = meta.site.heroImage ?? null;
 ---
 <BaseLayout>
@@ -24,8 +23,7 @@ const heroImage = meta.site.heroImage ?? null;
     <section class="intro" aria-labelledby="intro-title">
       <h1 class="intro__tag" id="intro-title">
         Journal of Project <em>Sidekick</em><br />
-        Build in the Open<br />
-        Written as it Happens
+        <small>Building in the open; writing as it happens</small>
       </h1>
       <p class="intro__blurb" set:html={introBlurb} />
     </section>

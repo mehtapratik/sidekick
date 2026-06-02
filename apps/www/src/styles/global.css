@@ -19,7 +19,7 @@
   --selection: oklch(58% 0.09 65 / 0.25);
 
   --ff-serif:  "Averia Serif Libre", "Iowan Old Style", Georgia, serif;
-  --ff-sans:   "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ff-sans:   "Sora Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ff-mono:   "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
@@ -70,6 +70,8 @@ body {
   font-feature-settings: "kern", "liga";
 }
 ::selection { background: var(--selection); }
+strong { font-weight: 700; }
+em { font-style: italic; }
 
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -231,29 +233,29 @@ button { font: inherit; cursor: pointer; }
 main { display: block; padding: var(--row) 0 calc(var(--row) * 1.5); }
 
 /* ---------- Intro block (home) ---------- */
-.intro { text-align: left; padding-block: 0 var(--row); }
+.intro { text-align: left; }
 .intro__tag {
   font-family: var(--ff-serif);
-  font-weight: 400;
-  font-style: italic;
-  font-size: var(--step-2);
-  line-height: 1.35;
-  color: var(--ink);
+  font-weight: 700;
+  font-size: var(--step-3);
+  line-height: 1.2;
+  color: var(--ink-soft);
   margin: 0 0 1.25rem;
 }
 .intro__tag em {
-  font-style: normal;
   font-weight: 700;
 }
-.intro__tag .sep { color: var(--muted); margin: 0 0.4em; font-style: normal; }
+
+.intro__tag small {
+  font-size: 0.75em;
+  font-weight: 400;
+}
+
 .intro__blurb {
-  font-size: var(--step-1);
-  line-height: 1.55;
-  color: var(--ink-soft);
+  color: var(--muted);
   max-width: 42rem;
   margin: 0;
 }
-.intro__blurb strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- Section divider (ornament) ---------- */
 .ornament {
@@ -460,7 +462,7 @@ main { display: block; padding: var(--row) 0 calc(var(--row) * 1.5); }
 }
 
 /* ---------- Article (long-form) ---------- */
-.article__head { padding-block: 0 calc(var(--row) * 0.8); border-bottom: 1px solid var(--rule); margin-bottom: var(--row); }
+.article__head { margin-bottom: var(--row); }
 .article__meta {
   display: flex; gap: 1rem; flex-wrap: wrap;
   font-family: var(--ff-mono);
@@ -616,12 +618,9 @@ main { display: block; padding: var(--row) 0 calc(var(--row) * 1.5); }
 .prose li::marker { color: var(--muted); }
 
 .prose code {
-  font-family: var(--ff-mono);
-  font-size: 0.88em;
-  background: var(--bg-sunk);
-  padding: 0.1rem 0.35rem;
-  border-radius: 2px;
-  border: 1px solid var(--rule);
+  font-family: inherit;
+  padding: 0 0.20rem;
+  color: var(--muted);
 }
 
 /* ---------- Code blocks (Shiki, dual-theme) ----------
