@@ -1,8 +1,5 @@
 ---
 title: Config Files Explained
-parent: Phase 0 — Foundation & Tooling
-grand_parent: Walkthroughs
-nav_order: 1
 ---
 
 # Config Files Explained

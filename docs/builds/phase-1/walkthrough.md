@@ -1,7 +1,5 @@
 ---
 title: Phase 1 Walkthrough
-parent: Walkthroughs
-nav_order: 2
 ---
 
 # Phase 1 Walkthrough — Supabase Auth, DB Schema, and UI Shell

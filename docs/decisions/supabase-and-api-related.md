@@ -1,7 +1,5 @@
 ---
 title: Supabase & API
-parent: Decisions
-nav_order: 2
 ---
 
 # Decision — Supabase & API-Related Decisions

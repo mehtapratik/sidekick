@@ -1,8 +1,5 @@
 ---
 title: Checkpoint B
-parent: Phase 0 — Foundation & Tooling
-grand_parent: Walkthroughs
-nav_order: 3
 ---
 
 # Checkpoint B — Step-by-Step Walkthrough

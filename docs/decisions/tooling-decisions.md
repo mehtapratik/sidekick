@@ -1,7 +1,5 @@
 ---
 title: Tooling
-parent: Decisions
-nav_order: 3
 ---
 
 # Tooling Decisions — Why We Chose What We Chose

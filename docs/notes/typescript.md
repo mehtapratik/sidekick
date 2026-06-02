@@ -1,7 +1,5 @@
 ---
 title: TypeScript
-parent: Learn
-nav_order: 4
 ---
 
 # TypeScript and Bundlers

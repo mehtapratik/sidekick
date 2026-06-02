@@ -1,7 +1,5 @@
 ---
 title: Packages
-parent: Learn
-nav_order: 6
 ---
 
 # Packages — Monorepo Package Concepts

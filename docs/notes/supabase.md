@@ -1,7 +1,5 @@
 ---
 title: Supabase
-parent: Learn
-nav_order: 1
 ---
 
 # Supabase — Concepts and How We Use It

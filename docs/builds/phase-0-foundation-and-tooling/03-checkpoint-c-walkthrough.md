@@ -1,8 +1,5 @@
 ---
 title: Checkpoint C
-parent: Phase 0 — Foundation & Tooling
-grand_parent: Walkthroughs
-nav_order: 4
 ---
 
 # Checkpoint C — Step-by-Step Walkthrough

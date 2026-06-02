@@ -1,6 +1,5 @@
 ---
 title: Architecture Overview
-nav_order: 4
 ---
 
 # Architecture Overview — Why We Built Sidekick This Way

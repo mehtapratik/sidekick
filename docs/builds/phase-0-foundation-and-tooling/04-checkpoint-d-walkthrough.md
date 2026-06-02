@@ -1,8 +1,5 @@
 ---
 title: Checkpoint D
-parent: Phase 0 — Foundation & Tooling
-grand_parent: Walkthroughs
-nav_order: 5
 ---
 
 # Checkpoint D — Step-by-Step Walkthrough

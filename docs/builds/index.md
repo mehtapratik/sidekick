@@ -1,7 +1,5 @@
 ---
 title: Walkthroughs
-nav_order: 7
-has_children: true
 ---
 
 # Walkthroughs

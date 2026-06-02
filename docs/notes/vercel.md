@@ -1,7 +1,5 @@
 ---
 title: Vercel
-parent: Learn
-nav_order: 7
 ---
 
 # Vercel — Hosting and Observability

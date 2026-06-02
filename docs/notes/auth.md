@@ -1,7 +1,5 @@
 ---
 title: Authentication
-parent: Learn
-nav_order: 2
 ---
 
 # Authentication — Concepts and How Sidekick Uses It

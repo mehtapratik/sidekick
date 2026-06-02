@@ -1,7 +1,5 @@
 ---
 title: Next.js
-parent: Learn
-nav_order: 3
 ---
 
 # Next.js — App Router Concepts

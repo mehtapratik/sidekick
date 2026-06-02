@@ -1,8 +1,5 @@
 ---
 title: Phase 0 — Foundation & Tooling
-parent: Walkthroughs
-nav_order: 1
-has_children: true
 ---
 
 # Phase 0 — Foundation & Tooling

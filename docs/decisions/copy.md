@@ -1,7 +1,5 @@
 ---
 title: Copy
-parent: Decisions
-nav_order: 4
 ---
 
 # Decision — `packages/copy` for Centralized String Copy

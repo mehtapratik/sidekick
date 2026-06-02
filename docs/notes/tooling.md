@@ -1,7 +1,5 @@
 ---
 title: Tooling
-parent: Learn
-nav_order: 5
 ---
 
 # Tooling — Concepts and How We Use Them

@@ -1,4 +1,8 @@
-# Phase 1 — Supabase & Auth Shell: Implementation Plan
+---
+title: Phase 1 — Supabase and Auth Shell
+---
+
+# Phase 1 — Supabase and Auth Shell: Implementation Plan
 
 > **Context:** Phase 0 delivered a working monorepo skeleton (pnpm, Turborepo, TypeScript strict mode, ESLint with boundary enforcement). All packages contain placeholder exports only. Phase 1 wires in real authentication, a database schema, and a minimal UI shell — the security and data foundation that every subsequent phase builds on top of.
 >
@@ -9,6 +13,7 @@
 ## What Phase 1 Delivers
 
 By the end of this phase you can:
+
 - Sign up with email + password
 - Log in and land on `/dashboard`
 - Log out
@@ -20,6 +25,7 @@ By the end of this phase you can:
 ## Architectural Constraints (from architecture-handover.md)
 
 These must not be violated:
+
 1. `packages/*` must **never** import from `apps/*` (ESLint boundary rule)
 2. All database queries that touch user data must go through `withRLS(userId, fn)` — never raw queries against user tables
 3. Three Supabase clients, strictly separated: browser, server, admin — never mix them
@@ -30,26 +36,26 @@ These must not be violated:
 
 ## Critical File Paths
 
-| Role | Path |
-|------|------|
-| Supabase browser client | `packages/core/src/supabase/browser.ts` |
-| Supabase server client | `packages/core/src/supabase/server.ts` |
-| Supabase admin client | `packages/core/src/supabase/admin.ts` |
-| Core package barrel | `packages/core/src/index.ts` |
-| Core package.json | `packages/core/package.json` |
-| DB schema | `packages/core/src/db/schema/profiles.ts` |
-| DB index | `packages/core/src/db/schema/index.ts` |
-| RLS helper | `packages/core/src/db/rls.ts` |
-| DB connection | `packages/core/src/db/index.ts` |
-| Drizzle config | `packages/core/drizzle.config.ts` |
-| Next.js middleware | `apps/web/src/middleware.ts` |
-| Root layout | `apps/web/src/app/layout.tsx` |
-| Login page | `apps/web/src/app/(auth)/login/page.tsx` |
-| Sign-up page | `apps/web/src/app/(auth)/signup/page.tsx` |
-| Auth layout | `apps/web/src/app/(auth)/layout.tsx` |
-| Dashboard page | `apps/web/src/app/(app)/dashboard/page.tsx` |
-| App layout | `apps/web/src/app/(app)/layout.tsx` |
-| Root .env.local | `.env.local` (gitignored, not committed) |
+| Role                    | Path                                        |
+| ----------------------- | ------------------------------------------- |
+| Supabase browser client | `packages/core/src/supabase/browser.ts`     |
+| Supabase server client  | `packages/core/src/supabase/server.ts`      |
+| Supabase admin client   | `packages/core/src/supabase/admin.ts`       |
+| Core package barrel     | `packages/core/src/index.ts`                |
+| Core package.json       | `packages/core/package.json`                |
+| DB schema               | `packages/core/src/db/schema/profiles.ts`   |
+| DB index                | `packages/core/src/db/schema/index.ts`      |
+| RLS helper              | `packages/core/src/db/rls.ts`               |
+| DB connection           | `packages/core/src/db/index.ts`             |
+| Drizzle config          | `packages/core/drizzle.config.ts`           |
+| Next.js middleware      | `apps/web/src/middleware.ts`                |
+| Root layout             | `apps/web/src/app/layout.tsx`               |
+| Login page              | `apps/web/src/app/(auth)/login/page.tsx`    |
+| Sign-up page            | `apps/web/src/app/(auth)/signup/page.tsx`   |
+| Auth layout             | `apps/web/src/app/(auth)/layout.tsx`        |
+| Dashboard page          | `apps/web/src/app/(app)/dashboard/page.tsx` |
+| App layout              | `apps/web/src/app/(app)/layout.tsx`         |
+| Root .env.local         | `.env.local` (gitignored, not committed)    |
 
 ---
 
@@ -58,6 +64,7 @@ These must not be violated:
 ### Task 1.1 — Create Supabase project (manual, no code)
 
 **Steps:**
+
 1. Go to supabase.com → New Project → name: `sidekick`
 2. Set a strong DB password (save it — needed for `DATABASE_URL`)
 3. Authentication → Providers → confirm Email is enabled
@@ -68,6 +75,7 @@ These must not be violated:
 5. Project Settings → Database → Connection string → URI → collect `DATABASE_URL` (replace `[YOUR-PASSWORD]`)
 
 **Create `.env.local` at repo root:**
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJh...
@@ -86,11 +94,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 `@supabase/ssr` is the current official package for server-rendered apps (Next.js App Router). The older helpers package is deprecated.
 
 **Run from repo root:**
+
 ```bash
 pnpm add --filter @sidekick/core @supabase/ssr @supabase/supabase-js
 ```
 
 Also install Drizzle dependencies (needed for tasks 1.6–1.8):
+
 ```bash
 pnpm add --filter @sidekick/core drizzle-orm postgres
 pnpm add --filter @sidekick/core -D drizzle-kit
@@ -106,13 +116,13 @@ pnpm add --filter @sidekick/core -D drizzle-kit
 
 ```typescript
 // packages/core/src/supabase/browser.ts
-import { createBrowserClient as _createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient as _createBrowserClient } from '@supabase/ssr';
 
 export function createBrowserClient() {
   return _createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
 }
 ```
 
@@ -128,11 +138,11 @@ export function createBrowserClient() {
 
 ```typescript
 // packages/core/src/supabase/server.ts
-import { createServerClient as _createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient as _createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function createServerClient() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   return _createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -140,20 +150,20 @@ export async function createServerClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll()
+          return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
+              cookieStore.set(name, value, options),
+            );
           } catch {
             // Server Components cannot set cookies — middleware handles the refresh
           }
         },
       },
-    }
-  )
+    },
+  );
 }
 ```
 
@@ -162,6 +172,7 @@ export async function createServerClient() {
 **Important:** This file imports `next/headers` which is a Next.js-specific module. This means `packages/core` will depend on Next.js. That's acceptable here because `packages/core` is exclusively used by `apps/web`. If you ever need a truly framework-agnostic package, create a separate package.
 
 Add `next` as a peer dependency in `packages/core/package.json`:
+
 ```json
 "peerDependencies": {
   "next": ">=16"
@@ -176,7 +187,7 @@ Add `next` as a peer dependency in `packages/core/package.json`:
 
 ```typescript
 // packages/core/src/supabase/admin.ts
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 // This client uses the service_role key which bypasses RLS.
 // It is server-only — never import this in a browser context.
@@ -189,8 +200,8 @@ export function createAdminClient() {
         autoRefreshToken: false,
         persistSession: false,
       },
-    }
-  )
+    },
+  );
 }
 ```
 
@@ -203,6 +214,7 @@ export function createAdminClient() {
 **Why Drizzle over Prisma:** Drizzle is SQL-first — you write TypeScript that maps directly to SQL. There's no magic schema sync or shadow database. The SQL you write is the SQL that runs. It's also significantly lighter weight, which matters for a monorepo with many feature packages each having their own schema.
 
 Create the file structure:
+
 ```
 packages/core/src/db/
 ├── schema/
@@ -213,23 +225,23 @@ packages/core/src/db/
 ```
 
 **`packages/core/src/db/schema/profiles.ts`:**
+
 ```typescript
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const profiles = pgTable('profiles', {
-  id: uuid('id').primaryKey(),          // matches auth.users.id from Supabase
+  id: uuid('id').primaryKey(), // matches auth.users.id from Supabase
   email: text('email').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-})
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 ```
 
 > `id` is a UUID that matches `auth.users.id` — Supabase creates the auth user first, then we create the matching profile row with the same ID. This is the standard pattern.
 
 **`packages/core/src/db/schema/index.ts`:**
+
 ```typescript
-export * from './profiles'
+export * from './profiles';
 ```
 
 ---
@@ -238,7 +250,7 @@ export * from './profiles'
 
 ```typescript
 // packages/core/drizzle.config.ts
-import { defineConfig } from 'drizzle-kit'
+import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
   schema: './src/db/schema/index.ts',
@@ -247,10 +259,11 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-})
+});
 ```
 
 **Add a `db:generate` script to `packages/core/package.json`:**
+
 ```json
 "scripts": {
   "db:generate": "drizzle-kit generate",
@@ -261,14 +274,15 @@ export default defineConfig({
 > `db:generate` creates SQL migration files from your schema. `db:migrate` applies them to the database. You always run generate first, review the SQL, then migrate.
 
 **`packages/core/src/db/index.ts`** (the database connection):
+
 ```typescript
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from './schema/index'
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from './schema/index';
 
-const client = postgres(process.env.DATABASE_URL!)
+const client = postgres(process.env.DATABASE_URL!);
 
-export const db = drizzle(client, { schema })
+export const db = drizzle(client, { schema });
 ```
 
 ---
@@ -276,11 +290,13 @@ export const db = drizzle(client, { schema })
 ### Task 1.8 — Root `db:migrate` script
 
 Add to root `package.json` scripts:
+
 ```json
 "db:migrate": "turbo run db:migrate"
 ```
 
 And add `db:migrate` task to `turbo.json`:
+
 ```json
 "db:migrate": {
   "cache": false
@@ -290,6 +306,7 @@ And add `db:migrate` task to `turbo.json`:
 > `cache: false` because migrations are side effects — the result is a database state change, not an output file. Turborepo should never skip them.
 
 **Running migrations:**
+
 ```bash
 # From repo root, generates SQL from schema:
 pnpm --filter @sidekick/core db:generate
@@ -332,20 +349,21 @@ CREATE POLICY "Users can manage their own profile"
 
 ```typescript
 // packages/core/src/db/rls.ts
-import { db } from './index'
-import { sql } from 'drizzle-orm'
+import { db } from './index';
+import { sql } from 'drizzle-orm';
 
 export async function withRLS<T>(
   userId: string,
-  fn: (db: typeof import('./index').db) => Promise<T>
+  fn: (db: typeof import('./index').db) => Promise<T>,
 ): Promise<T> {
   // Set the session variable that RLS policies will read
-  await db.execute(sql`SELECT set_config('app.current_user_id', ${userId}, true)`)
-  return fn(db)
+  await db.execute(sql`SELECT set_config('app.current_user_id', ${userId}, true)`);
+  return fn(db);
 }
 ```
 
 **Update the RLS policy** to use this session variable (update the SQL from task 1.9):
+
 ```sql
 -- Drop the previous policy
 DROP POLICY IF EXISTS "Users can manage their own profile" ON profiles;
@@ -365,6 +383,7 @@ CREATE POLICY "Users can manage their own profile"
 ### Task 1.11 — Next.js middleware in `apps/web/src/middleware.ts`
 
 **What middleware does (and doesn't do):**
+
 - ✅ Refreshes the Supabase session (rotates tokens before they expire)
 - ✅ Redirects unauthenticated users from protected routes to `/login`
 - ✅ Redirects authenticated users away from `/login` and `/signup` to `/dashboard`
@@ -372,37 +391,39 @@ CREATE POLICY "Users can manage their own profile"
 
 ```typescript
 // apps/web/src/middleware.ts
-import { createServerClient } from '@sidekick/core/supabase/server'
-import { type NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@sidekick/core/supabase/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
-  const isApiRoute = pathname.startsWith('/api')
+  const { pathname } = request.nextUrl;
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup');
+  const isApiRoute = pathname.startsWith('/api');
 
   // Don't redirect API routes — they handle their own auth
-  if (isApiRoute) return supabaseResponse
+  if (isApiRoute) return supabaseResponse;
 
   // Redirect unauthenticated users to login
   if (!user && !isAuthRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
   }
 
   // Redirect authenticated users away from auth pages
   if (user && isAuthRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
   }
 
-  return supabaseResponse
+  return supabaseResponse;
 }
 
 export const config = {
@@ -410,7 +431,7 @@ export const config = {
     // Run middleware on all routes except static files and Next.js internals
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-}
+};
 ```
 
 **Package exports setup — required for subpath imports:**
@@ -418,6 +439,7 @@ export const config = {
 For `@sidekick/core/supabase/browser` style imports to work, `packages/core/package.json` needs an `exports` field that maps subpaths. Without this, TypeScript and the bundler won't know where to find these modules.
 
 Add to `packages/core/package.json`:
+
 ```json
 {
   "exports": {
@@ -435,6 +457,7 @@ Add to `packages/core/package.json`:
 > Pointing directly to `.ts` source files (not `.js` dist files) works here because Next.js's bundler (SWC/Turbopack) processes the workspace packages' TypeScript directly — it does not need the pre-compiled `dist/`. This is the standard pnpm monorepo pattern with Next.js.
 
 Also add `@sidekick/core` as a dependency in `apps/web/package.json`:
+
 ```json
 "dependencies": {
   "@sidekick/core": "workspace:*",
@@ -449,12 +472,14 @@ Also add `@sidekick/core` as a dependency in `apps/web/package.json`:
 **Why Mantine:** Pre-built accessible component library with a form library (`@mantine/form`) and notification system. Significantly faster to build good-looking UIs than writing everything from scratch.
 
 **Install in `apps/web`:**
+
 ```bash
 pnpm add --filter web @mantine/core @mantine/hooks @mantine/form @mantine/notifications
 pnpm add --filter web postcss postcss-preset-mantine postcss-simple-vars
 ```
 
 **Create `apps/web/postcss.config.cjs`:**
+
 ```js
 module.exports = {
   plugins: {
@@ -469,18 +494,19 @@ module.exports = {
       },
     },
   },
-}
+};
 ```
 
 **Update `apps/web/src/app/layout.tsx`** to wrap with Mantine's `ColorSchemeScript` and `MantineProvider`. This must be a Server Component that imports a `Providers` Client Component (because `MantineProvider` needs the React context which requires `'use client'`):
 
 Create `apps/web/src/app/providers.tsx`:
+
 ```tsx
-'use client'
-import { MantineProvider } from '@mantine/core'
-import { Notifications } from '@mantine/notifications'
-import '@mantine/core/styles.css'
-import '@mantine/notifications/styles.css'
+'use client';
+import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -488,16 +514,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <Notifications />
       {children}
     </MantineProvider>
-  )
+  );
 }
 ```
 
 Update `apps/web/src/app/layout.tsx`:
-```tsx
-import { ColorSchemeScript } from '@mantine/core'
-import { Providers } from './providers'
 
-export const metadata = { title: 'Sidekick' }
+```tsx
+import { ColorSchemeScript } from '@mantine/core';
+import { Providers } from './providers';
+
+export const metadata = { title: 'Sidekick' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -509,7 +536,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -520,28 +547,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 **Next.js Route Groups:** Use `(auth)` route group to keep auth pages visually grouped without affecting the URL. `(auth)` does not appear in the URL — `/login` not `/(auth)/login`.
 
 **Create `apps/web/src/app/(auth)/layout.tsx`:**
+
 ```tsx
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+    <main
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {children}
     </main>
-  )
+  );
 }
 ```
 
 **`apps/web/src/app/(auth)/login/page.tsx`** — This is a Client Component (needs form interactivity):
+
 ```tsx
-'use client'
-import { useForm } from '@mantine/form'
-import { TextInput, PasswordInput, Button, Paper, Title, Text, Anchor, Stack } from '@mantine/core'
-import { notifications } from '@mantine/notifications'
-import { createBrowserClient } from '@sidekick/core/supabase/browser'
-import { useRouter } from 'next/navigation'
+'use client';
+import { useForm } from '@mantine/form';
+import { TextInput, PasswordInput, Button, Paper, Title, Text, Anchor, Stack } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { createBrowserClient } from '@sidekick/core/supabase/browser';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const router = useRouter()
-  const supabase = createBrowserClient()
+  const router = useRouter();
+  const supabase = createBrowserClient();
 
   const form = useForm({
     initialValues: { email: '', password: '' },
@@ -549,44 +585,49 @@ export default function LoginPage() {
       email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
       password: (v) => (v.length >= 6 ? null : 'Password too short'),
     },
-  })
+  });
 
   async function handleSubmit(values: typeof form.values) {
-    const { error } = await supabase.auth.signInWithPassword(values)
+    const { error } = await supabase.auth.signInWithPassword(values);
     if (error) {
-      notifications.show({ color: 'red', message: error.message })
-      return
+      notifications.show({ color: 'red', message: error.message });
+      return;
     }
-    router.push('/dashboard')
-    router.refresh()
+    router.push('/dashboard');
+    router.refresh();
   }
 
   return (
     <Paper withBorder shadow="md" p={30} w={420}>
-      <Title order={2} mb="md">Sign in</Title>
+      <Title order={2} mb="md">
+        Sign in
+      </Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <TextInput label="Email" placeholder="you@example.com" {...form.getInputProps('email')} />
           <PasswordInput label="Password" {...form.getInputProps('password')} />
-          <Button type="submit" fullWidth>Sign in</Button>
+          <Button type="submit" fullWidth>
+            Sign in
+          </Button>
           <Text ta="center" size="sm">
             No account? <Anchor href="/signup">Sign up</Anchor>
           </Text>
         </Stack>
       </form>
     </Paper>
-  )
+  );
 }
 ```
 
 **`apps/web/src/app/(auth)/signup/page.tsx`** — Same pattern, uses `supabase.auth.signUp()`:
+
 ```tsx
-'use client'
+'use client';
 // ... same imports as login
 
 export default function SignupPage() {
-  const router = useRouter()
-  const supabase = createBrowserClient()
+  const router = useRouter();
+  const supabase = createBrowserClient();
 
   const form = useForm({
     initialValues: { email: '', password: '' },
@@ -594,22 +635,24 @@ export default function SignupPage() {
       email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
       password: (v) => (v.length >= 8 ? null : 'Password must be 8+ characters'),
     },
-  })
+  });
 
   async function handleSubmit(values: typeof form.values) {
-    const { error } = await supabase.auth.signUp(values)
+    const { error } = await supabase.auth.signUp(values);
     if (error) {
-      notifications.show({ color: 'red', message: error.message })
-      return
+      notifications.show({ color: 'red', message: error.message });
+      return;
     }
     // After signup, also create the profile row
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       // This will fail silently if profile already exists — that's fine
-      await fetch('/api/auth/profile', { method: 'POST' })
+      await fetch('/api/auth/profile', { method: 'POST' });
     }
-    router.push('/dashboard')
-    router.refresh()
+    router.push('/dashboard');
+    router.refresh();
   }
 
   // ... same JSX as login but with sign-up copy
@@ -617,27 +660,33 @@ export default function SignupPage() {
 ```
 
 **`apps/web/src/app/api/auth/profile/route.ts`** — Server Route Handler that creates the `profiles` row after signup using the admin client:
+
 ```typescript
-import { createServerClient } from '@sidekick/core/supabase/server'
-import { createAdminClient } from '@sidekick/core/supabase/admin'
-import { db } from '@sidekick/core/db'
-import { profiles } from '@sidekick/core/db/schema'
-import { NextResponse } from 'next/server'
+import { createServerClient } from '@sidekick/core/supabase/server';
+import { createAdminClient } from '@sidekick/core/supabase/admin';
+import { db } from '@sidekick/core/db';
+import { profiles } from '@sidekick/core/db/schema';
+import { NextResponse } from 'next/server';
 
 export async function POST() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   // Use withRLS to insert the profile row
   // (Or use admin client here since the user is newly created and has no profile yet)
-  await db.insert(profiles).values({
-    id: user.id,
-    email: user.email!,
-  }).onConflictDoNothing()  // idempotent — safe to call multiple times
+  await db
+    .insert(profiles)
+    .values({
+      id: user.id,
+      email: user.email!,
+    })
+    .onConflictDoNothing(); // idempotent — safe to call multiple times
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true });
 }
 ```
 
@@ -648,49 +697,51 @@ export async function POST() {
 ### Task 1.15 & 1.16 — Dashboard shell with sign-out
 
 **`apps/web/src/app/(app)/layout.tsx`** — Protected layout. In Next.js App Router, you can validate the session in a layout's server component:
+
 ```tsx
-import { createServerClient } from '@sidekick/core/supabase/server'
-import { redirect } from 'next/navigation'
-import { AppShell } from './app-shell'
+import { createServerClient } from '@sidekick/core/supabase/server';
+import { redirect } from 'next/navigation';
+import { AppShell } from './app-shell';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) redirect('/login')  // Belt-and-suspenders — middleware handles this too
+  if (!user) redirect('/login'); // Belt-and-suspenders — middleware handles this too
 
-  return <AppShell user={user}>{children}</AppShell>
+  return <AppShell user={user}>{children}</AppShell>;
 }
 ```
 
 **`apps/web/src/app/(app)/app-shell.tsx`** — Client Component for interactive sidebar/header:
-```tsx
-'use client'
-import { AppShell as MantineAppShell, NavLink, Group, Text, Button } from '@mantine/core'
-import { createBrowserClient } from '@sidekick/core/supabase/browser'
-import { useRouter } from 'next/navigation'
-import type { User } from '@supabase/supabase-js'
 
-export function AppShell({ user, children }: { user: User, children: React.ReactNode }) {
-  const router = useRouter()
-  const supabase = createBrowserClient()
+```tsx
+'use client';
+import { AppShell as MantineAppShell, NavLink, Group, Text, Button } from '@mantine/core';
+import { createBrowserClient } from '@sidekick/core/supabase/browser';
+import { useRouter } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
+
+export function AppShell({ user, children }: { user: User; children: React.ReactNode }) {
+  const router = useRouter();
+  const supabase = createBrowserClient();
 
   async function handleSignOut() {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
   }
 
   return (
-    <MantineAppShell
-      header={{ height: 60 }}
-      navbar={{ width: 240, breakpoint: 'sm' }}
-      padding="md"
-    >
+    <MantineAppShell header={{ height: 60 }} navbar={{ width: 240, breakpoint: 'sm' }} padding="md">
       <MantineAppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Text fw={700}>Sidekick</Text>
-          <Button variant="subtle" size="sm" onClick={handleSignOut}>Sign out</Button>
+          <Button variant="subtle" size="sm" onClick={handleSignOut}>
+            Sign out
+          </Button>
         </Group>
       </MantineAppShell.Header>
       <MantineAppShell.Navbar p="md">
@@ -699,25 +750,30 @@ export function AppShell({ user, children }: { user: User, children: React.React
       </MantineAppShell.Navbar>
       <MantineAppShell.Main>{children}</MantineAppShell.Main>
     </MantineAppShell>
-  )
+  );
 }
 ```
 
 **`apps/web/src/app/(app)/dashboard/page.tsx`:**
+
 ```tsx
-import { createServerClient } from '@sidekick/core/supabase/server'
-import { Text, Title } from '@mantine/core'
+import { createServerClient } from '@sidekick/core/supabase/server';
+import { Text, Title } from '@mantine/core';
 
 export default async function DashboardPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <>
       <Title order={2}>Dashboard</Title>
-      <Text mt="sm" c="dimmed">Welcome, {user?.email}</Text>
+      <Text mt="sm" c="dimmed">
+        Welcome, {user?.email}
+      </Text>
     </>
-  )
+  );
 }
 ```
 
@@ -748,36 +804,36 @@ Before declaring Phase 1 complete:
 
 ## Packages to Install (Summary)
 
-| Package | Target | Purpose |
-|---------|--------|---------|
-| `@supabase/ssr` | `@sidekick/core` | Supabase client for Next.js App Router |
-| `@supabase/supabase-js` | `@sidekick/core` | Supabase base client |
-| `drizzle-orm` | `@sidekick/core` | TypeScript ORM for schema + queries |
-| `postgres` | `@sidekick/core` | PostgreSQL driver for Drizzle |
-| `drizzle-kit` (dev) | `@sidekick/core` | CLI for generating/running migrations |
-| `@mantine/core` | `web` | Component library |
-| `@mantine/hooks` | `web` | Mantine React hooks |
-| `@mantine/form` | `web` | Form state management |
-| `@mantine/notifications` | `web` | Toast notifications |
-| `postcss` | `web` | CSS processing (required by Mantine) |
-| `postcss-preset-mantine` | `web` | Mantine PostCSS plugin |
-| `postcss-simple-vars` | `web` | CSS variables for breakpoints |
-| `@sidekick/core` | `web` | Workspace dep — access Supabase clients |
+| Package                  | Target           | Purpose                                 |
+| ------------------------ | ---------------- | --------------------------------------- |
+| `@supabase/ssr`          | `@sidekick/core` | Supabase client for Next.js App Router  |
+| `@supabase/supabase-js`  | `@sidekick/core` | Supabase base client                    |
+| `drizzle-orm`            | `@sidekick/core` | TypeScript ORM for schema + queries     |
+| `postgres`               | `@sidekick/core` | PostgreSQL driver for Drizzle           |
+| `drizzle-kit` (dev)      | `@sidekick/core` | CLI for generating/running migrations   |
+| `@mantine/core`          | `web`            | Component library                       |
+| `@mantine/hooks`         | `web`            | Mantine React hooks                     |
+| `@mantine/form`          | `web`            | Form state management                   |
+| `@mantine/notifications` | `web`            | Toast notifications                     |
+| `postcss`                | `web`            | CSS processing (required by Mantine)    |
+| `postcss-preset-mantine` | `web`            | Mantine PostCSS plugin                  |
+| `postcss-simple-vars`    | `web`            | CSS variables for breakpoints           |
+| `@sidekick/core`         | `web`            | Workspace dep — access Supabase clients |
 
 ---
 
 ## Key Concepts Introduced in Phase 1 (Learning Reference)
 
-| Concept | Where | Why |
-|---------|-------|-----|
-| Browser vs. server Supabase clients | `packages/core/src/supabase/` | Different environments need different auth strategies |
-| Cookie-based sessions | `middleware.ts` + server client | Server-rendered pages need cookies, not localStorage |
-| Drizzle schema = TypeScript types | `packages/core/src/db/schema/` | Write once, type-safe everywhere |
-| Row Level Security | Supabase SQL Editor | Database-enforced data isolation |
-| `withRLS` session variable | `packages/core/src/db/rls.ts` | Bridge between Drizzle's postgres connection and RLS policies |
-| Route groups | `(auth)/`, `(app)/` | Organize pages without affecting URLs |
-| Server vs. Client Components | Throughout `apps/web` | Server = data fetching; Client = interactivity |
-| Next.js middleware | `apps/web/src/middleware.ts` | Runs before every request for session refresh + redirects |
+| Concept                             | Where                           | Why                                                           |
+| ----------------------------------- | ------------------------------- | ------------------------------------------------------------- |
+| Browser vs. server Supabase clients | `packages/core/src/supabase/`   | Different environments need different auth strategies         |
+| Cookie-based sessions               | `middleware.ts` + server client | Server-rendered pages need cookies, not localStorage          |
+| Drizzle schema = TypeScript types   | `packages/core/src/db/schema/`  | Write once, type-safe everywhere                              |
+| Row Level Security                  | Supabase SQL Editor             | Database-enforced data isolation                              |
+| `withRLS` session variable          | `packages/core/src/db/rls.ts`   | Bridge between Drizzle's postgres connection and RLS policies |
+| Route groups                        | `(auth)/`, `(app)/`             | Organize pages without affecting URLs                         |
+| Server vs. Client Components        | Throughout `apps/web`           | Server = data fetching; Client = interactivity                |
+| Next.js middleware                  | `apps/web/src/middleware.ts`    | Runs before every request for session refresh + redirects     |
 
 ---
 

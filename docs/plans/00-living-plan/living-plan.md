@@ -1,6 +1,5 @@
 ---
 title: Living Implementation Plan of Sidekick
-nav_order: 3
 ---
 
 # Workspace App — Implementation Plan & Work Breakdown
