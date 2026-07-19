@@ -1,0 +1,124 @@
+---
+
+---
+
+<div
+   class="search-overlay"
+   id="search-overlay"
+   hidden
+   role="dialog"
+   aria-modal="true"
+   aria-label="Search"
+>
+   <div class="search-panel">
+      <div id="search-results"></div>
+   </div>
+</div>
+
+<script>
+   let pagefindLoaded = false;
+
+   async function loadPagefind(): Promise<void> {
+      return new Promise((resolve, reject) => {
+         const link = document.createElement("link");
+         link.rel = "stylesheet";
+         link.href = "/pagefind/pagefind-ui.css";
+         document.head.appendChild(link);
+
+         // Register listener BEFORE appending the script to avoid any race condition
+         // where the event fires before the listener is wired up.
+         window.addEventListener(
+            "pagefind-ready",
+            (e) => {
+               const { ok } = (e as CustomEvent<{ ok: boolean }>).detail;
+               if (ok) resolve();
+               else reject(new Error("pagefind not found"));
+            },
+            { once: true },
+         );
+
+         // Use an inline module script so Vite never sees the import path.
+         // pagefind-ui.js may be an IIFE (sets window.PagefindUI) or an ES module
+         // (named export). Try the named export first, fall back to the window global.
+         const script = document.createElement("script");
+         script.type = "module";
+         script.textContent = `
+            try {
+               const mod = await import("/pagefind/pagefind-ui.js");
+               const UI = mod.PagefindUI ?? window.PagefindUI;
+               if (UI) {
+                  window.__PagefindUI = UI;
+                  window.dispatchEvent(new CustomEvent("pagefind-ready", { detail: { ok: true } }));
+               } else {
+                  window.dispatchEvent(new CustomEvent("pagefind-ready", { detail: { ok: false } }));
+               }
+            } catch {
+               window.dispatchEvent(new CustomEvent("pagefind-ready", { detail: { ok: false } }));
+            }
+         `;
+         document.head.appendChild(script);
+      });
+   }
+
+   async function openSearch() {
+      // Close mobile menu if open
+      const mobileNav = document.getElementById("mobile-nav");
+      const menuBtn = document.getElementById("menu-btn");
+      if (mobileNav?.classList.contains("open")) {
+         mobileNav.classList.remove("open");
+         menuBtn?.setAttribute("aria-expanded", "false");
+         if (menuBtn) menuBtn.textContent = "Menu";
+      }
+
+      const overlay = document.getElementById("search-overlay")!;
+      overlay.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+
+      if (!pagefindLoaded) {
+         pagefindLoaded = true;
+         try {
+            await loadPagefind();
+            // @ts-ignore — __PagefindUI is set on window by the inline module script
+            new window.__PagefindUI({
+               element: "#search-results",
+               showImages: false,
+            });
+         } catch {
+            document.getElementById("search-results")!.innerHTML =
+               '<p style="padding:1rem;color:var(--muted);font-size:14px">Search unavailable in dev — run <code>npm run build</code> first.</p>';
+         }
+      }
+
+      (
+         document.querySelector(
+            "#search-results input",
+         ) as HTMLInputElement | null
+      )?.focus();
+   }
+
+   function closeSearch() {
+      const overlay = document.getElementById("search-overlay")!;
+      overlay.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+   }
+
+   document.addEventListener("keydown", (e) => {
+      if (
+         e.key === "/" &&
+         !(e.target instanceof HTMLInputElement) &&
+         !(e.target instanceof HTMLTextAreaElement)
+      ) {
+         e.preventDefault();
+         openSearch();
+      }
+      if (e.key === "Escape") closeSearch();
+   });
+
+   document.getElementById("search-overlay")!.addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) closeSearch();
+   });
+
+   document.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("[data-open-search]")) openSearch();
+   });
+</script>

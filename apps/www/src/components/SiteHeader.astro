@@ -1,0 +1,38 @@
+---
+import SiteNav from "./SiteNav.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { type ContentMeta } from "../lib/site.ts";
+
+interface Props {
+   activeCategory?: string | null;
+   contentMeta: ContentMeta;
+}
+
+const { activeCategory = null, contentMeta } = Astro.props;
+const siteTitle = contentMeta.site.title ?? "ARKIVE";
+---
+
+<header class="site-header">
+   <div class="site-header__inner">
+      <a href="/" class="logo">{siteTitle}</a>
+
+      <SiteNav type="desktop" />
+
+      <div class="header-controls">
+         <button class="search-trigger" id="search-btn" data-open-search aria-label="Search">
+            Press / to search
+         </button>
+         <ThemeToggle />
+         <button
+            class="menu-btn"
+            id="menu-btn"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+         >
+            Menu
+         </button>
+      </div>
+   </div>
+
+   <SiteNav type="mobile" />
+</header>

@@ -1,0 +1,29 @@
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">
+   🌑
+</button>
+
+<script>
+   // Theme toggle
+   const btn = document.getElementById("theme-toggle")!;
+   function syncLabel() {
+      btn.textContent =
+         document.documentElement.dataset.theme === "dark" ? "🌞" : "🌑";
+   }
+   syncLabel();
+   btn.addEventListener("click", () => {
+      const next =
+         document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("arkive-theme", next);
+      syncLabel();
+   });
+
+   // Mobile menu
+   const menuBtn = document.getElementById("menu-btn")!;
+   const mobileNav = document.getElementById("mobile-nav")!;
+   menuBtn.addEventListener("click", () => {
+      const open = mobileNav.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(open));
+      menuBtn.textContent = open ? "Close" : "Menu";
+   });
+</script>

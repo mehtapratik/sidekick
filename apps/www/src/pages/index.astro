@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllPosts, getHeroPost, postUrl } from "../lib/entries.ts";
+import {
+   loadContentMeta,
+   CATEGORIES,
+   CATEGORY_LABELS,
+   CATEGORY_DESCRIPTIONS,
+} from "../lib/site.ts";
+import { formatDate } from "../lib/reading.ts";
+
+const meta = loadContentMeta();
+const heroPost = await getHeroPost();
+const allPosts = await getAllPosts();
+const latestPosts = allPosts.filter((p) => p.id !== heroPost?.id);
+---
+
+<BaseLayout
+   title={meta.site.title ?? "ARKIVE"}
+   description={meta.site.intro}
+   activeCategory={null}
+>
+   <div class="stage">
+      {meta.site.intro && <p class="lede">{meta.site.intro}</p>}
+      {
+         heroPost && (
+            <section class="featured">
+               <p class="eyebrow">Featured post</p>
+               <h1 class="featured-title">
+                  <a href={postUrl(heroPost)}>{heroPost.data.title}</a>
+               </h1>
+               {heroPost.data.deck && (
+                  <p class="featured-blurb">{heroPost.data.deck}</p>
+               )}
+               <p class="featured-meta">
+                  {CATEGORY_LABELS[heroPost.data.category]} ·{" "}
+                  {formatDate(heroPost.data.created)}
+               </p>
+            </section>
+         )
+      }
+
+      {
+         latestPosts.length > 0 && (
+            <>
+               <div class="rule" />
+               <p class="section-label">Most recent posts</p>
+               {latestPosts.map((post) => (
+                  <article class="post-row">
+                     <h2>
+                        <a href={postUrl(post)}>{post.data.title}</a>
+                     </h2>
+                     {post.data.deck && <p>{post.data.deck}</p>}
+                     <span class="post-date">
+                        {CATEGORY_LABELS[post.data.category]} ·{" "}
+                        {formatDate(post.data.created)}
+                     </span>
+                  </article>
+               ))}
+            </>
+         )
+      }
+
+      <div class="rule"></div>
+      <p class="section-label">Sections</p>
+      <div class="cat-grid">
+         {
+            CATEGORIES.map((cat) => (
+               <div class="cat-cell">
+                  <h3>
+                     <a href={`/${cat}/`}>{CATEGORY_LABELS[cat]}</a>
+                  </h3>
+                  <p>{CATEGORY_DESCRIPTIONS[cat]}</p>
+               </div>
+            ))
+         }
+      </div>
+   </div>
+</BaseLayout>

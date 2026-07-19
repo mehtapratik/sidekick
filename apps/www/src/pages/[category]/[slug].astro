@@ -1,0 +1,101 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, postUrl } from "../../lib/entries.ts";
+import { CATEGORY_LABELS } from "../../lib/site.ts";
+import { formatDate, formatDateYmd } from "../../lib/reading.ts";
+
+export async function getStaticPaths() {
+   const posts = await getAllPosts();
+   return posts.map((post) => ({
+      params: { category: post.data.category, slug: post.id },
+      props: { post },
+   }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const { data } = post;
+
+const tocHeadings = headings.filter((h) => h.depth === 2 && h.text !== "TL;DR");
+const showToc = tocHeadings.length >= 3;
+
+const metaToShow = new Set(["Author", "Tags", "Updated", "Version"]);
+
+const metaRows: Map<string, string> = new Map();
+if (data.version) metaRows.set("Version", String(data.version));
+if (data.tags?.length) metaRows.set("Tags", data.tags.join(", "));
+
+metaRows.set("Updated", formatDate(data.updated ?? data.created!));
+---
+
+<BaseLayout
+   title={data.title}
+   description={data.deck ?? data.description}
+   ogType="article"
+   activeCategory={data.category}
+>
+   <div class="stage">
+      <p class="article-eyebrow">
+         {CATEGORY_LABELS[data.category]} ·{" "}
+         {
+            metaRows.has("Updated") && (
+               <time datetime={formatDateYmd(metaRows.get("Updated")!)}>
+                  {formatDate(metaRows.get("Updated")!)} ·{" "}
+               </time>
+            )
+         }
+         {
+            metaRows.has("Version") && (
+               <span>v{metaRows.get("Version")!} · </span>
+            )
+         }
+         {metaRows.has("Tags") && <span>Tags: {metaRows.get("Tags")}</span>}
+      </p>
+
+      <h1 class="article-title">{data.title}</h1>
+
+      {
+         (data.description ?? data.deck) && (
+            <p class="article-blurb">{data.description ?? data.deck}</p>
+         )
+      }
+
+      {
+         metaRows.length > 0 && (
+            <table class="meta-table" aria-label="Post metadata">
+               <tbody>
+                  {metaRows.entries().map(
+                     ([label, value]) =>
+                        metaToShow.has(label) && (
+                           <tr>
+                              <td>{label}</td>
+                              <td>{value}</td>
+                           </tr>
+                        ),
+                  )}
+               </tbody>
+            </table>
+         )
+      }
+
+      {
+         showToc && (
+            <nav class="toc" aria-label="Table of contents">
+               <p class="toc__label">Contents</p>
+               <ul>
+                  {tocHeadings.map((h) => (
+                     <li>
+                        <a href={`#${h.slug}`}>{h.text}</a>
+                     </li>
+                  ))}
+               </ul>
+            </nav>
+         )
+      }
+
+      <div class="prose">
+         <Content />
+      </div>
+   </div>
+</BaseLayout>

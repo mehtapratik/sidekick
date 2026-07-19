@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg   { fill: #F1EBDF; }
+    .mark { fill: #2B2621; }
+    @media (prefers-color-scheme: dark) {
+      .bg   { fill: #221D18; }
+      .mark { fill: #ECE5D8; }
+    }
+  </style>
+  <rect width="64" height="64" rx="8" class="bg"/>
+  <text
+    x="32" y="46"
+    text-anchor="middle"
+    font-family="'Funnel Display', 'Manrope', system-ui, sans-serif"
+    font-size="40"
+    font-weight="600"
+    class="mark"
+  >A</text>
+</svg>

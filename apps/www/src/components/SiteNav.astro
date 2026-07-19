@@ -1,0 +1,34 @@
+---
+import { CATEGORIES, CATEGORY_LABELS } from "../lib/site.ts";
+
+const navItems = [
+   { href: "/", label: "Home" },
+   ...CATEGORIES.map((cat) => ({ href: `/${cat}/`, label: CATEGORY_LABELS[cat] })),
+];
+
+interface Props {
+   type: "mobile" | "desktop";
+}
+const { type = "desktop" } = Astro.props;
+---
+<nav
+   class={type === "desktop" ? "nav" : "mobile-nav"}
+   id={type === "mobile" ? "mobile-nav" : undefined}
+   aria-label="Navigation"
+>
+   {navItems.map(({ href, label }) => (
+      <a
+         href={href}
+         aria-current={
+            href === "/"
+               ? Astro.url.pathname === "/" ? "page" : undefined
+               : Astro.url.pathname.startsWith(href) ? "page" : undefined
+         }
+      >
+         {label}
+      </a>
+   ))}
+   {type === "mobile" && (
+      <button class="mobile-nav__search" data-open-search>Search</button>
+   )}
+</nav>

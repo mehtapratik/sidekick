@@ -1,0 +1,12 @@
+site:
+  title: ARKIVE
+  hero: 00-margins
+  heroImage: null
+  url: https://arkive.blog
+  repoUrl: https://github.com/mehtapratik/sidekick
+  intro: "Notes, decisions, and progress on my journey as I build Project Sidekick — built in the open; written as it happens."
+
+defaults:
+  author: Pratik Mehta
+  license: CC BY-NC 4.0
+  version: 0.0.0

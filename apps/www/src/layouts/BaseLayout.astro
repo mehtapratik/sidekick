@@ -1,0 +1,98 @@
+---
+import "@fontsource-variable/bricolage-grotesque/wght.css";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/600.css";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
+
+import "../styles/global.css";
+
+import { loadContentMeta } from "../lib/site.ts";
+
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteMeta from "../components/SiteMeta.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+
+interface Props {
+   title: string;
+   description?: string;
+   ogType?: "website" | "article";
+   activeCategory?: string | null;
+}
+
+const {
+   title,
+   description,
+   ogType = "website",
+   activeCategory = null,
+} = Astro.props;
+const contentMeta = loadContentMeta();
+---
+
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <SiteMeta
+         title={title}
+         description={description}
+         ogType={ogType}
+         contentMeta={contentMeta}
+      />
+
+      <!-- Theme init: runs before first paint to prevent flash -->
+      <script is:inline>
+         (function () {
+            const stored = localStorage.getItem("arkive-theme");
+            const prefersDark = window.matchMedia(
+               "(prefers-color-scheme: dark)",
+            ).matches;
+            document.documentElement.dataset.theme =
+               stored ?? (prefersDark ? "dark" : "light");
+            if (!stored) {
+               window
+                  .matchMedia("(prefers-color-scheme: dark)")
+                  .addEventListener("change", (e) => {
+                     if (!localStorage.getItem("arkive-theme")) {
+                        document.documentElement.dataset.theme = e.matches
+                           ? "dark"
+                           : "light";
+                     }
+                  });
+            }
+         })();
+      </script>
+   </head>
+
+   <body>
+      <a href="#main" class="skip-link">Skip to content</a>
+      <SiteHeader activeCategory={activeCategory} contentMeta={contentMeta} />
+      <SearchDialog />
+
+      <main id="main">
+         <slot />
+      </main>
+
+      <SiteFooter contentMeta={contentMeta} />
+
+      <!-- Permalink copy-to-clipboard -->
+      <script>
+         document.addEventListener("click", (e) => {
+            const link = (e.target as HTMLElement).closest("[data-permalink]");
+            if (!link) return;
+            e.preventDefault();
+            navigator.clipboard
+               .writeText((link as HTMLAnchorElement).href)
+               .catch(() => {});
+            const el = link as HTMLElement;
+            const prev = el.textContent;
+            el.textContent = "✓";
+            setTimeout(() => {
+               el.textContent = prev;
+            }, 1200);
+         });
+      </script>
+   </body>
+</html>

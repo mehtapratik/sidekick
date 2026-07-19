@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPostsByCategory, postUrl } from "../../lib/entries.ts";
+import {
+   CATEGORIES,
+   CATEGORY_LABELS,
+   CATEGORY_DESCRIPTIONS,
+   type Category,
+} from "../../lib/site.ts";
+import { formatDate } from "../../lib/reading.ts";
+
+export function getStaticPaths() {
+   return CATEGORIES.map((cat) => ({ params: { category: cat } }));
+}
+
+const { category } = Astro.params;
+const cat = category as Category;
+const posts = await getPostsByCategory(cat);
+---
+
+<BaseLayout
+   title={CATEGORY_LABELS[cat]}
+   description={CATEGORY_DESCRIPTIONS[cat]}
+   activeCategory={cat}
+>
+   <div class="stage">
+      <p class="page-eyebrow">{CATEGORY_LABELS[cat]}</p>
+      <h1 class="page-title">{CATEGORY_LABELS[cat]}</h1>
+      <p class="page-desc">{CATEGORY_DESCRIPTIONS[cat]}</p>
+
+      {
+         posts.length === 0 ? (
+            <div class="empty-state">
+               <h2>Nothing published yet.</h2>
+               <p>The drafts exist — they're just not ready to share.</p>
+            </div>
+         ) : (
+            posts.map((post) => (
+               <article class="post-row">
+                  <h2>
+                     <a href={postUrl(post)}>{post.data.title}</a>
+                  </h2>
+                  {post.data.deck && <p>{post.data.deck}</p>}
+                  <span class="post-date">{formatDate(post.data.created)}</span>
+               </article>
+            ))
+         )
+      }
+   </div>
+</BaseLayout>
