@@ -22,11 +22,13 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 
 export const CATEGORY_DESCRIPTIONS: Record<Category, string> = {
    essays:
-      "Non-technical writing about building Sidekick, and other things worth writing down.",
-   decisions: "A record of the calls that changed the plan — and why.",
-   plans: "What was intended, in steps, and how it actually went.",
-   builds: "Instructions to build the same thing yourself, from scratch.",
-   notes: "Reference notes on Sidekick's architecture and internals.",
+      "Non-technical writings about Sidekick and other ideas worth writing down.",
+   decisions:
+      "A registry of every decisions (technical and non-technical) made while building Sidekick.",
+   plans: "Overall implementation plan and phase-wise plans. What was planned and how it went.",
+   builds:
+      "Step-by-step instructions to build the same thing yourself, from scratch.",
+   notes: "Learning notes taken while building Sidekick - mostly technical in nature, but not always.",
 };
 
 export type ContentMeta = {
