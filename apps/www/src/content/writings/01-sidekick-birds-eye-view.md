@@ -9,7 +9,8 @@ version: 1.0.0
 tags:
   - essays
   - sidekick
-category: essays
+section: writings
+type: essay
 sourcePath: essays/01-sidekick-birds-eye-view.md
 wordCount: 2402
 readingMinutes: 11

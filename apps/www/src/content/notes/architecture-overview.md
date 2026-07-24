@@ -1,8 +1,6 @@
 ---
-title: Architecture Overview
-deck: >-
-  Sidekick's architectural overview — an API-first platform tuned for
-  solo-developer
+title: Sidekick's Architectural Overview
+deck: ''
 created: '2026-07-09'
 updated: '2026-07-09'
 version: 1.0.0
@@ -11,805 +9,392 @@ tags:
   - project
   - technical
   - architecture
-category: notes
+section: notes
+type: note
 sourcePath: notes/architecture-overview.md
-wordCount: 5731
-readingMinutes: 27
+wordCount: 3542
+readingMinutes: 17
 author: Pratik Mehta
 license: CC BY-NC 4.0
 audience: Software Engineers
 status: active
 description: >-
-  Sidekick's architectural overview — an API-first platform tuned for
-  solo-developer
+  Sidekick's architectural overview — an API-first platform tuned for solo
+  developers
 ---
 
 ## 1. Executive summary
 
-The Sidekick will be a modular, API-first productivity platform with multiple types of clients in mind: a Next.js powered web app, a PWA (Progressive Web Application), and above all, a programmable API platform for agents, automations, workflows and CLI tooling.
+> Sidekick will be a modular, API-first productivity platform designed with multiple types of clients in mind: a Next.js-powered web app, a Progressive Web Application (PWA), and above all, a programmable API platform for agents, automations, workflows, and CLI tooling.
 
-The application architecture intentionally prioritizes security through enforceable structure, maintainability for solo-developer, incremental scalability, future support for offline capabilities, and API parity across browser, CLI, and agents.
-
-The system is NOT designed as a hyper-scale enterprise platform from day one. Instead, it is designed to evolve safely without major re-architecture.
+The application architecture intentionally prioritizes security through enforceable structures, maintainability for a solo developer, incremental scalability, future support for offline capabilities, and API parity across browsers, CLIs, and agents. The system is NOT designed as a hyper-scale enterprise platform from day one. Instead, it is designed to evolve safely without requiring major architectural rewrites.
 
 ---
 
 ## 2. Architectural philosophy
 
 ### 2.1 API-first platform
+Sidekick will be an API-first product, exposed publicly through detailed documentation to let power users extend and customize its features. To keep things simple and avoid architectural drift, we will not build private APIs for our internal clients. Even our native clients (web app, CLI, agents, native apps, and automations) must route through the same public APIs to access features. 
 
-Sidekick will be API-first product — exposed publicly through detailed documentation to let power users extend/customer its features. To keep things simple and to avoid drifts, we will not have private APIs for our own clients. Even our clients (web app, CLI, agents, native apps, automations) will have to go through same public-API to access features. This strategy comes with many benefits:
+This strategy provides several benefits:
+1. The product’s business logic is centralized within the API layer.
+2. In the future, it will be easier to integrate capabilities with third-party providers.
+3. All features are inherently CLI and AI-agent compatible.
+4. Authorization is centralized.
 
-1. Product’s business logic is centralized in API-layer
-2. In future, it will be easier to integrate out capability with third-party providers
-3. Features are CLI and AI-agent compatible
-4. Authorization is centralized
-
-MVP version intentionally excludes api versioning to keep scope manageable and simple while keeping the architecture flexible enough to shift to that goal when warranted.
+The MVP intentionally excludes API versioning to keep the scope manageable and simple, while keeping the architecture flexible enough to shift toward that goal when warranted.
 
 ### 2.2 Enforced conventions, especially security
-
-We want to add every guardrails possible to enforce architectural guidelines and standards through linting, and testing. This strategy eliminates the need for having to remember everything. This is prominent in our security enforcement:
-
-1. Route security and its context is centralized
-2. Feature entitlement checks are centralized
-3. API-scope checks are centralized
+We want to implement every possible guardrail to enforce architectural guidelines and standards through linting and testing. This strategy eliminates the cognitive load of having to remember every rule. This is prominently reflected in our security enforcement:
+1. Route security and its context are centralized.
+2. Feature entitlement checks are centralized.
+3. API-scope checks are centralized.
 
 ### 2.3 Modular but pragmatic
+Sidekick’s architecture is intentionally designed to balance complexity and simplicity in a way that works efficiently for a solo developer today, while remaining open enough to introduce necessary complexity later. For example, whether a specific feature is authorized or not, the MVP will build all features, deploy everything, and share the same runtime (i.e., features are not containerized). 
 
-Sidekick’s architecture is intentionally designed to to balance complexity and simplicity in a way that works today for solo-developer while keeping it open enough to add needed complexity later when need arises. For example, whether a specific feature is authorized or not, MVP (Minimum Viable Product) will build all features, deploy everything and share the runtime (i.e. features are not containerized).
-
-This avoid premature complexity and support rapid development cycle. The architecture is open enough to support runtime feature loading, microservices, independent deployments, and offline sync-engines without large-scale rewrites.
+This avoids premature complexity and supports a rapid development cycle. The architecture remains open enough to support runtime feature loading, microservices, independent deployments, and offline sync engines without large-scale rewrites.
 
 ---
 
 ## 3. System overview
 
-```markdown
-┌─────────────────────────────────────────┐
-│ Clients                                 │
-│                                         │
-│ Browser │ PWA │ CLI │ Agents │ iOS      │
-└─────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────┐
-│ API Layer (/api/*)                      │
-│                                         │
-│ withApiGuard()                          │
-│ ├── Auth                                │
-│ ├── Feature Entitlement                 │
-│ ├── RLS Context                         │
-│ ├── Scope Validation                    │
-│ └── Handler Execution                   │
-└─────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────┐
-│ PostgreSQL (Supabase)                   │
-│                                         │
-│ RLS Policies                            │
-│ Feature Tables                          │
-│ Vector Search                           │
-└─────────────────────────────────────────┘
-```
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 700">
+  <style>
+    .box {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1;
+      rx: 4px;
+    }
+    .text {
+      fill: currentColor;
+      font-family: var(--ff-mono, "Space Mono", monospace);
+      font-size: var(--fs-base, 16px);
+      font-weight: var(--fw-base, 400);
+    }
+    .arrow {
+      stroke: currentColor;
+      stroke-width: 1;
+    }
+    .arrow-head {
+      fill: currentColor;
+    }
+  </style>
+
+  <!-- Box 1: Clients -->
+  <rect class="box" x="40" y="40" width="420" height="100" />
+  <text class="text" x="60" y="75">Clients</text>
+  <text class="text" x="60" y="115">Browser | PWA | CLI | Agents | iOS</text>
+
+  <!-- Arrow 1 (Clients to API Layer) -->
+  <line class="arrow" x1="250" y1="140" x2="250" y2="185" />
+  <polygon class="arrow-head" points="245,185 255,185 250,195" />
+
+  <!-- Box 2: API Layer -->
+  <rect class="box" x="40" y="200" width="420" height="245" />
+  <text class="text" x="60" y="235">API Layer (/api/*)</text>
+  <text class="text" x="60" y="275">withApiGuard()</text>
+  <text class="text" x="60" y="305">├── Auth</text>
+  <text class="text" x="60" y="335">├── Feature Entitlement</text>
+  <text class="text" x="60" y="365">├── RLS Context</text>
+  <text class="text" x="60" y="395">├── Scope Validation</text>
+  <text class="text" x="60" y="425">└── Handler Execution</text>
+
+  <!-- Arrow 2 (API Layer to PostgreSQL) -->
+  <line class="arrow" x1="250" y1="445" x2="250" y2="495" />
+  <polygon class="arrow-head" points="245,495 255,495 250,505" />
+
+  <!-- Box 3: PostgreSQL -->
+  <rect class="box" x="40" y="510" width="420" height="150" />
+  <text class="text" x="60" y="545">PostgreSQL (Supabase)</text>
+  <text class="text" x="60" y="585">RLS Policies</text>
+  <text class="text" x="60" y="615">Feature Tables</text>
+  <text class="text" x="60" y="645">Vector Search</text>
+</svg>
 
 ---
 
 ## 4. Monorepo structure
 
-```
-apps/
-  web/
-  cli/
+### 4.1 Dependency rules
+* **NEVER import `apps/*` into `packages/*`**: Violating this rule introduces circular dependencies, invalid build graphs, hidden coupling, and future deployment problems. 
+* `packages/features-registry` serves as the ledger of all features Sidekick will offer. It will host feature manifests, metadata, and registration information.
+* `packages/core` must ALWAYS remain feature-agnostic.
 
-packages/
-  core/
-  ui/
-  features-registry/
-  feature-notes/
-  feature-writing/
-  feature-bookmarks/
-  feature-recipes/
-  feature-budget/
-  feature-ai-chat/
-```
-
-### 4.1. Dependency rules
-
-- NEVER import `apps/*` in `packages/*`. Violating this rule may introduce circular dependencies, invalid build graph, hidden coupling and future deployment problems. Allowed dependency direction is
-
-```
-apps/*
-  ↓
-packages/features/*
-  ↓
-packages/core
-```
-
-- `packages/features-registry` is the ledger of all features Sidekick will offer. It will host feature manifests, metadata and registration information.
-- `packages/core` must ALWAYS remain feature agnostic.
-
-> [!Question] Should we make following changes and enforce…
->
-> 1. That we should use folder-level depth to reflect dependencies flow. In other words, if a package `bar` and `foo` lives inside `packages` folder they may not depend on each other. But, both `foo` and `bar` and depend on `packages/globals/core`. Same way, `apps/web` and `apps/cli` cannot reference each other.
-> 2. features can move into `packages/features/` folder.
-> 3. `features-registry` can live inside `packages/` folder as just `registery`.
+> [!question]
+> Should we enforce the following dependency flows?
+> 1. Use folder-level depth to reflect dependency boundaries (e.g., packages `foo` and `bar` cannot depend on each other, but both can depend on `packages/globals/core`. Similarly, `apps/web` and `apps/cli` cannot reference each other).
+> 2. Move features into a dedicated `packages/features/` folder.
+> 3. House `features-registry` inside the `packages/` folder solely as a registry.
 
 ---
 
 ## 6. Technology stack
-
-| Layer        | Choice                        |
-| ------------ | ----------------------------- |
-| Frontend     | Next.js 16 App Router         |
-| Language     | TypeScript Strict             |
-| DB           | Supabase PostgreSQL           |
-| ORM          | Drizzle ORM                   |
-| Styling      | Mantine                       |
-| Editor       | Tiptap                        |
-| AI SDK       | Vercel AI SDK                 |
-| LLM          | Anthropic Claude              |
-| Embeddings   | OpenAI text-embedding-3-small |
-| Monorepo     | Turborepo + pnpm              |
-| Hosting      | Vercel                        |
-| Native Shell | Capacitor                     |
+| Layer | Choice |
+| ------ | ------ |
+| Frontend | Next.js 16 App Router |
+| Language | TypeScript Strict |
+| DB | Supabase PostgreSQL |
+| ORM | Drizzle ORM |
+| Styling | Mantine |
+| Editor | Tiptap |
+| AI SDK | Vercel AI SDK |
+| LLM | Anthropic Claude |
+| Embeddings | OpenAI text-embedding-3-small |
+| Monorepo | Turborepo + pnpm |
+| Hosting | Vercel |
+| Native Shell | Capacitor |
 
 ---
 
 ## 7. Security
+All routes must use `withAPIGuard()`—direct route handlers are strictly prohibited. 
 
-All routes must use `withAPIGuard()` —direct route handlers are prohibited.
+Every request must pass through authentication, feature entitlement checks, Row-Level Security (RLS) context setup, and API scope validation before the request is honored. Without `withAPIGuard`, routes begin to drift and security flows become inconsistent or even erroneous over time (e.g., a developer might forget to validate an API scope). 
 
-Every request must pass through authentication, feature entitlement check, RLS context setup, and API scope validation, before honoring the request.
-
-Without `withAPIGuard`, routes begin to drift and security flow becomes inconsistent or even erroneous over time. For instance, a developer might forget to validate API scope.
-
-This in line with our philosophy of enforced conventions (section 2.2). We make secure behavior easy to implement and difficult to bypass.
+This is in line with our philosophy of enforced conventions (section 2.2). We make secure behavior easy to implement and difficult to bypass.
 
 ---
 
 ## 8. Authentication
-
-Web app, PWA, and iOS will use cookie-based session for authentication. Whereas, CLI and agents will use bearer keys.
-
-API keys will support SHA-256 hashing, scopes, expiry, revocation, last-used tracking.
-
-```markdown
-# Example of API scopes
-
-- notes:read
-- notes:write
-- recipes:read
-- chat:write
-```
+The web app, PWA, and iOS app will use cookie-based sessions for authentication. The CLI and agents will use bearer keys. 
+API keys will support SHA-256 hashing, specific scopes, expiration dates, revocation, and last-used tracking.
 
 ### 8.1 API key schema
-
-```typescript
-export const apiKeys = pgTable('api_keys', {
-  id: uuid('id').primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => profiles.id, {
-      onDelete: 'cascade',
-    }),
-  keyHash: text('key_hash').notNull(),
-  label: text('label'),
-  scopes: text('scopes')
-    .array()
-    .default(sql`'{}'`),
-  expiresAt: timestamp('expires_at'),
-  revokedAt: timestamp('revoked_at'),
-  lastUsedAt: timestamp('last_used_at'),
-});
-```
+*(Schema details pending)*
 
 ---
 
 ## 9. Row-Level Security (RLS)
 
 ### 9.1 Canonical pattern
+We will use PostgreSQL’s Row-Level Security features to ensure users can only see and operate on records (rows) they are permitted to access. By default, PostgreSQL enforces RLS for ALL *non-superuser* roles. We will use Drizzle ORM to query the database, and since Drizzle connects to PostgreSQL via a non-superuser role (`app_runtime`), RLS will be enforced for all Drizzle queries at the system level.
 
-We will use PostgreSQL’s Row-Level Security features to allow operations on records (rows) that current user is permitted to see and operate on. By default, PostgreSQL enforces RLS for ALL _non-superuser_ PostgreSQL roles. We will use Drizzle ORM to query the database, and since Drizzle connects to PostgreSQL through a non-superuser role, `app_runtime`, RLS should enforced for all Drizzle queries at system level.
+Sidekick will feature two types of tables with distinct RLS policies:
 
-While RLS is enabled simply by `ENABLE ROW LEVEL SECURITY` clause, how RLS is enforced depends on the policies you define. Sidekick will have two types of tables with two different types of RLS policies:
+> [!note]
+> **Syncable and non-syncable tables.** **Syncable** tables support offline content on users’ devices and sync across clients and the server when online (e.g., *bookmarks*, *notes*, *writings*). **Non-syncable** tables (e.g., *profiles*) live solely on the server for security purposes. Therefore, users must be online to authenticate/re-authenticate.
 
-> [!NOTE] Syncable and non-syncable tables
-> Sidekick will have two type of database tables: syncable and non-syncable. The **syncable** tables are the ones that supports offline content on users’ devices and syncing of their across them all and server when online. Tables such as _bookmarks_, _notes_, _writings_ are example of syncable tables. **Non-syncable** tables, such as _profiles_ are the one that will only live on server and not on user’s devices for security purposes. Therefore, user must be online to be able to authenticate/re-authenticate.
->
-> ```sql
-> /* three timestamp columns of syncable table */
-> createdAt
-> updatedAt   /* source of truth for conflict resolution */
-> deletedAt   /* null = active, timestamp = deleted (tombstone) */
-> ```
->
-> **What makes an entity “syncable” or “non-syncable”?**
-> A syncable entity must carry three timestamp columns: `createdAt`, `updatedAt`, `deletedAt`. The presence of `updatedAt` and `deletedAt` is a tell that application supports offline features. Using these two timestamps, conflict resolution across all client and server happens when they are online. A non-syncable entity, on the other hand, doesn’t have these attributes, because they don’t have to support conflict resolution. Non-syncable entity also hard-deletes rows from the database.
+**What makes an entity “syncable” or “non-syncable”?** 
+A syncable entity must carry three timestamp columns: `createdAt`, `updatedAt`, and `deletedAt`. The presence of `updatedAt` and `deletedAt` indicates that the application supports offline features. Using these timestamps, conflict resolution occurs across all clients and the server when they are online. A non-syncable entity doesn’t have these attributes because it doesn't require conflict resolution and relies on hard deletions.
 
-Non-syncable table hard-deletes rows, we will not have `deletedAt` clause in their RLS policy:
+Because non-syncable tables hard-delete rows, we will not include a `deletedAt` clause in their RLS policy. However, syncable entities will have a `deletedAt` guard in the `USING` clause to filter soft-deleted rows from results. Notice that we omit the `deletedAt` guard in `WITH CHECK`, as reversing a soft-deleted row is a legitimate operation.
 
-```sql
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE profiles FORCE ROW LEVEL SECURITY;
+**Difference between `ENABLE` and `FORCE` RLS:**
+* **`ENABLE ROW LEVEL SECURITY`**: Turns RLS on for the table. The key exception is that the **table owner (and superusers) bypass RLS** by default. If no policies exist, the default is deny-all.
+* **`FORCE ROW LEVEL SECURITY`**: **Makes RLS apply to the table owner as well**. It does not affect superusers or roles with the `BYPASSRLS` attribute. `FORCE` is only meaningful in combination with `ENABLE`.
 
-CREATE POLICY "users_own_profile"
-ON profiles
-FOR ALL
-USING  (id::text = current_setting('app.current_user_id', true))
-WITH CHECK (id::text = current_setting('app.current_user_id', true));
-```
+**Difference between `USING` and `WITH CHECK`:**
+The `USING` clause is a guard for existing rows (applied to rows already in the table). The `WITH CHECK` clause guards which row values are allowed to result from a write (applied to the new/proposed row data).
 
-Whereas, syncable entity will have `deletedAt` guard in `USING` clause to filter soft-deleted rows from its result. Notice that we did not include `deletedAt` guard in `WITH CHECK`. That’s because reversal of soft-deleted row is a legitimate operation.
+| Command | USING applies? | WITH CHECK applies? |
+| ------ | ------ | ------ |
+| `SELECT` | Yes | — |
+| `INSERT` | — | Yes |
+| `UPDATE` | Yes (which rows you may update) | Yes (what the row may become) |
+| `DELETE` | Yes | — |
+| MEANING | *filters existing rows to prevent unauthorized operations* | *validates proposed changes against policy criteria* |
 
-```sql
-ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
-ALTER TABLE table_name FORCE ROW LEVEL SECURITY;
-
-CREATE POLICY "users_own_rows"
-ON table_name
-FOR ALL
-USING (
-  user_id::text = current_setting('app.current_user_id', true)
-  AND deleted_at IS NULL
-)
-WITH CHECK (
-  user_id::text = current_setting('app.current_user_id', true)
-);
-```
-
-**Difference between `ENABLE` and `FORCE` RLS**:
-
-- `ENABLE ROW LEVEL SECURITY`:
-  - Turns RLS on for the table. Once enabled, any policies you’ve defined start being enforced.
-  - Key exception is that the **table _owner_ (and _superusers_) bypass RLS** by default. So even with RLS enabled, the owner still sees and modifies all rows as if no policies existed.
-  - If RLS is enabled but _no_ policies exist, the default is deny-all — normal users see zero rows.
-- `FORCE ROW LEVEL SECURITY`:
-  - **Makes RLS apply to the table owner as well**, closing the default owner-bypass loophole.
-  - It **does not affect superusers or roles with the `BYPASSRLS` attribute** — those always bypass RLS regardless.
-  - `FORCE` is only **meaningful in combination with `ENABLE`**; on its own it does nothing because RLS still has to be turned on.
-
-**Difference between `USING` and `WITH CHECK`**
-The USING clause is a guard for existing rows the policy can see / touch (applied to rows already in the table). And the WITH CHECK guards which row values are allowed to result from a write (applied to the new/proposed row data).
-
-| Command   | `USING` applies?                                                                                                                                       | `WITH CHECK` applies?                                                                                                                                            |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ‎⁠SELECT⁠ | Yes                                                                                                                                                    | —                                                                                                                                                                |
-| ‎⁠INSERT⁠ | —                                                                                                                                                      | Yes                                                                                                                                                              |
-| ‎⁠UPDATE⁠ | Yes (which rows you may update)                                                                                                                        | Yes (what the row may become)                                                                                                                                    |
-| ‎⁠DELETE⁠ | Yes                                                                                                                                                    | —                                                                                                                                                                |
-| MEANING   | _filters the existing rows (even for write operations like `UPDATE` and `DELETE` to prevent operations on rows systems is not supposed to operate on)_ | _validates proposed changes (validate new insertions and updates, i.e. what would row become if operation were to be permitted must meet `WITH CHECK` criteria)_ |
-
-> [!Question] What happens to user’s data when their profiles are deleted?
-> Since user’s content is _syncable_ (therefore, soft-deleted) and profiles table is _non-syncable_ (therefore, hard-deleted when user closes/deletes their account), how we will manage erasure of user’s content? This is also GDPR requirement to support user’s request to permenent delete their data.
+> [!question]
+> What happens to a user’s data when their profile is deleted? Since user content is *syncable* (soft-deleted) and the profiles table is *non-syncable* (hard-deleted), how will we manage the permanent erasure of user content to comply with GDPR requirements?
 
 ### 9.2 RLS Helper
+The application MUST NEVER manually inject RLS context inline. We will always use the RLS helper: `withRLS(userId, ...)`. 
 
-The application MUST NEVER manually inject RLS context inline. Always use RLS helper, `withRLS(userId, …)` only.
-
-```typescript
-export async function withRLS<T>(userId: string, fn: (tx: Tx) => Promise<T>): Promise<T> {
-  return db.transaction(async (tx) => {
-    await tx.execute(sql`select set_config('app.current_user_id', ${userId}, true)`);
-    return fn(tx);
-  });
-}
-```
-
-Notice the presence of `db.transaction` wrapper here, which is one of the key security measure. Without this wrapper, `set_config` with `is_local = true` will not reset once query finishes execution. And thus, these settings will persist across entire pooled connection - leaking current user ID to next requests.
+Notice the presence of the `db.transaction` wrapper here, which is a critical security measure. Without this wrapper, `set_config` with `is_local = true` will not reset once the query finishes execution. These settings would persist across the entire pooled connection, leaking the current user ID to subsequent requests.
 
 ### 9.3 Soft-delete trigger functions
-
-The Sidekick database will define two shared functions to enforce soft-delete constraints: `enforce_soft_delete` and `block_update_on_deleted`. As the name suggests, these function ensures that non-superuser role cannot hard-delete or update soft-deleted rows.
-
-```sql
--- Blocks hard deletes unless explicitly opted in
-CREATE OR REPLACE FUNCTION enforce_soft_delete()
-RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN
-  IF current_setting('app.allow_hard_delete', true) IS DISTINCT FROM 'true' THEN
-    RAISE EXCEPTION
-      'Hard deletes are prohibited on %. Use soft delete (set deleted_at).', TG_TABLE_NAME;
-  END IF;
-  RETURN OLD;
-END;
-$$;
-
--- Blocks updates on already soft-deleted rows
-CREATE OR REPLACE FUNCTION block_update_on_deleted()
-RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN
-  IF OLD.deleted_at IS NOT NULL THEN
-    RAISE EXCEPTION
-      'Cannot update a soft-deleted row in % (id: %). Restore it first.',
-      TG_TABLE_NAME, OLD.id;
-  END IF;
-  RETURN NEW;
-END;
-$$;
-```
-
-All feature tables will use these shared functions to enforce soft-delete constraints:
-
-```sql
-CREATE TRIGGER no_hard_delete_[table]
-  BEFORE DELETE ON [table]
-  FOR EACH ROW EXECUTE FUNCTION enforce_soft_delete();
-
-CREATE TRIGGER no_update_deleted_[table]
-  BEFORE UPDATE ON [table]
-  FOR EACH ROW EXECUTE FUNCTION block_update_on_deleted();
-```
+The Sidekick database will define two shared functions to enforce soft-delete constraints: `enforce_soft_delete` and `block_update_on_deleted`. These functions ensure that non-superuser roles cannot hard-delete or update soft-deleted rows. All feature tables will use these shared functions to enforce soft-delete constraints.
 
 ### 9.4 Database security summary
 
-| Constraint                           | Mechanism                           | Enforced at |
-| ------------------------------------ | ----------------------------------- | ----------- |
-| User sees only their own rows        | RLS USING clause                    | Database    |
-| Soft-deleted rows invisible to users | RLS USING clause                    | Database    |
-| Hard deletes blocked                 | BEFORE DELETE trigger               | Database    |
-| Updates on deleted rows blocked      | BEFORE UPDATE trigger               | Database    |
-| SELECT filtering (belt)              | `where(isNull(deletedAt))` in repos | Application |
+| Constraint | Mechanism | Enforced at |
+| ------ | ------ | ------ |
+| User sees only their own rows | RLS `USING` clause | Database |
+| Soft-deleted rows invisible to users | RLS `USING` clause | Database |
+| Hard deletes blocked | `BEFORE DELETE` trigger | Database |
+| Updates on deleted rows blocked | `BEFORE UPDATE` trigger | Database |
+| SELECT filtering (belt) | `where(isNull(deletedAt))` in repos | Application |
 
-Triggers fire for **all roles** including service role and superuser. RLS is enforced because Drizzle connects as `app_runtime` (non-superuser). `createAdminClient()` bypasses RLS but not triggers.
-
-```typescript
-// packages/feature-notes/notesRepository.ts
-export const notesRepository = {
-  listActive(tx) {
-    // `where(isNull(notes.deletedAt))`, here, is double insurance that
-    // RLS policy enforced at DB level, plus this additional clause,
-    // ensures that soft-deleted rows are not let-in unintentionally
-    return tx.select().from(notes).where(isNull(notes.deletedAt));
-  },
-
-  getById(tx, id) {
-    return tx
-      .select()
-      .from(notes)
-      .where(and(eq(notes.id, id), isNull(notes.deletedAt)));
-  },
-
-  create(tx, data) {
-    return tx.insert(notes).values(data);
-  },
-
-  softDelete(tx, id) {
-    return tx.update(notes).set({ deletedAt: new Date() }).where(eq(notes.id, id));
-  },
-};
-```
+Triggers fire for **all roles** including the service role and superuser. RLS is enforced because Drizzle connects as `app_runtime` (non-superuser). `createAdminClient()` bypasses RLS but not triggers.
 
 #### 9.4.1 `createAdminClient`—a Supabase interface
-
-The `createAdminClient()` executes queries as a superuser role, and thus, it bypasses RLS entirely. Therefore, query executed using `createAdminClient` will return all deleted and non-active-user rows as well. This is intentional and has legitimate purpose. When you use `createAdminClient` interface explicitly, you’re essentially saying “_I need to bypass RLS and I know what I am doing._” Setup, configuration and maintenance activities usually fall under this category but sometime regular user flow such as user profile creation, accepting other user’s invite also flow into this category.
-
-However, you must not by pass RLS for most regular user-flow queries. This is where we will use Drizzle client.
+The `createAdminClient()` executes queries as a superuser role, bypassing RLS entirely. Queries executed this way will return all deleted and non-active-user rows. This is intentional and reserved for setup, configuration, maintenance activities, or specific user flows like profile creation.
 
 #### 9.4.2 Drizzle client
+We must not bypass RLS for most regular user-flow queries. This is where we will use the Drizzle client to query via the non-superuser role.
 
-We already noted that Drizzle queries are executed through non-superuser role and RLS is enforced on all non-superuser roles. Therefore, it becomes crucial that all regular user queries are invoked through Drizzle ORM to enforce RLS.
-
-| Supabase client                          | Drizzle client                                                        |
-| ---------------------------------------- | --------------------------------------------------------------------- |
-| `await admin.from('notes').select('*');` | `db.select().from(table);`                                            |
-| Executed as `SELECT * FROM notes`        | `SELECT * FROM notes WHERE deleted_at IS NULL AND user_id = <userId>` |
-| superuser role                           | `app_runtime` - non-superuser role                                    |
-| No RLS                                   | Enforces RLS                                                          |
-| Enforces triggers                        | Enforces Triggers                                                     |
+| Supabase client | Drizzle client |
+| ------ | ------ |
+| `await admin.from('notes').select('*');` | `db.select().from(table);` |
+| Executed as `SELECT * FROM notes` | `SELECT * FROM notes WHERE deleted_at IS NULL AND user_id = <userId>` |
+| superuser role | `app_runtime` - non-superuser role |
+| No RLS | Enforces RLS |
+| Enforces triggers | Enforces Triggers |
 
 #### 9.4.3 Funnel all reads through DB repository client
+By convention, we want to ensure that all queries are executed under the right context. Therefore, every query must be routed through the DB repository layer. Never execute rogue database queries directly. Whether utilizing `createAdminClient` or Drizzle ORM, funneling queries through the repository ensures the right contextual guards are applied.
 
-By conventions, we want to ensure that all queries are executed under right context. And ensuring this is the job of DB repository layer through which every query must be routed. Never execute any rogue database query directly. This simple convention will in turn will ensure right guards (RLS or no-RLS) before executing the query. Whether the query is executed through Supabase client’s `createAdminClient` or Drizzle ORM, all queries must pass through DB repository client where we ensure right guard are added.
+> [!question]
+> How can we ensure all queries are routed through the DB repository layer?
 
-> [!Question] How can we ensure all queries, `createAdminClient` or Drizzle, are routed through DB repository layer?
-
-> [!Question] How do we ensure read queries are authenticated, and authorized?
-> Original handover document only talks about mutations, not select queries. Can select queries be scattered? If so, why? Why not route select queries also through repository layer?
+> [!question]
+> How do we ensure read queries are authenticated and authorized? Can select queries be scattered? Why not route select queries through the repository layer as well?
 
 ---
 
 ## 10. API guard
-
-We will `withAPIGuard` wrapper to centralize auth, feature entitlements, RLS and scope validations.
+We will use the `withAPIGuard` wrapper to centralize authentication, feature entitlements, RLS, and scope validations.
 
 ### 10.1 How `withAPIGuard` will be implemented?
-
-```typescript
-export function withApiGuard(handler, opts = {}) {
-  return async (req) => {
-    const auth = await resolveApiCaller(req);
-
-    if (!auth?.userId) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (opts.feature) {
-      const features = await getEnabledFeatures(auth.userId);
-
-      if (!features.some((f) => f.slug === opts.feature)) {
-        return Response.json({ error: 'Feature disabled' }, { status: 403 });
-      }
-    }
-
-    return withRLS(auth.userId, async (tx) => {
-      if (opts.requireScope && auth.isApiKey) {
-        if (!auth.scopes?.includes(opts.requireScope)) {
-          return Response.json({ error: 'Forbidden' }, { status: 403 });
-        }
-      }
-
-      return handler({
-        tx,
-        userId: auth.userId,
-        req,
-      });
-    });
-  };
-}
-```
+*(Pending implementation details)*
 
 ### 10.2 How `withAPIGuard` will be used?
-
-```typescript
-const handler = async ({ tx }) => {
-  const rows = await tx.select().from(notes);
-  return Response.json({ data: rows });
-};
-
-const options = {
-  feature: 'notes',
-  requireScope: 'notes:read',
-};
-
-export const GET = withAPIGuard(handler, options);
-```
+*(Pending implementation details)*
 
 ---
 
 ## 11. Repository architecture
 
 ### 11.1 Query flow
-
-All queries flow from `UI -> Repository -> API -> Database`, strictly. This abstraction is intentional and future-proof when `UI -> Repository -> Local DB -> Sync Engine -> API -> Database`. In this manner, UI will never care how data flows.
+All queries flow strictly from **UI -> Repository -> API -> Database**. This abstraction is intentional and future-proofs the app for when the flow evolves into UI -> Repository -> Local DB -> Sync Engine -> API -> Database. In this manner, the UI will never care how data flows.
 
 ### 11.2 Server actions
+Server actions are allowed as long as they 1) pass through repositories, 2) do not bypass APIs, and 3) do not bypass authorization checks. This ensures our **API-first guarantee**.
 
-Server actions are allowed as long as 1) they pass through repositories, 2) does not bypass APIs, and 3) neither does it bypass authorization checks. Once again, this is to ensure our **API-first guarantee**.
+---
 
 ## 12. Offline-ready design
-
-Offline capabilities are excluded from MVP scope. However, architecture has left the door easier implementation in future.
+While offline capabilities are excluded from the MVP, the architecture is designed to support easier implementation in the future.
 
 ### 12.1 Constraints
-
-- **UUIDs**: Client will generate `UUID`s to prevent collision issues later.
-- **Idempotent APIs**: Repeated requests with the same ID must produce the same result. This is critical for sync reliability.
-- **Repository layer mandatory**: The repository layer MUST NOT be bypassed. This is the primary abstraction boundary enabling future sync support.
-- Soft deletes are mandatory: All _syncable_ entities must support soft deletes. Therefore, all queries against syncable tables must filter soft-deleted records.
-- **`updatedAt` is the source of truth**: Every syncable entity includes `createdAt`, `updatedAt`, and `deletedAt`. Conflict resolutions depends upon `updatedAt`. And `deletedAt` supports soft-delete, which is mandatory from day one since hard-delete are difficult to support in offline environment.
-  - **You deleted a row when you were offline**: How would server know when a row was deleted from a your iPhone when it becomes online? Deleted row is simply gone from iPhone’s local storage. When we see difference between server and iPhone storage, is that the row is added from different client (say, iPad) and current iPhone’s storage is missing the row? Or that the iPhone deleted the row and server isn’t synced yet. There is no easy way to answer this. `deletedAt` answers this easily and without much complication.
-  - Hard deletes are irreversible: Even if you manage to implement an algorithm to identify whether a new row was added or deleted between different clients and server (may be using complicated logic of checking `createdAt`, `updatedAt`, `lastSynced` attributes), you are still facing a serious user experience problem: user’s actions are unforgiving. Once rows are deleted, there is no way to bring them back. If user says “oops, I deleted a wrong blog,” there is no way to bring it back. Therefore, soft deletion is preferred to support offline capabilities and reversibility.
+* **UUIDs**: Clients will generate UUIDs to prevent collision issues later.
+* **Idempotent APIs**: Repeated requests with the same ID must produce the same result. This is critical for sync reliability.
+* **Repository layer mandatory**: The repository layer MUST NOT be bypassed. This is the primary abstraction boundary enabling future sync support.
+* **Soft deletes are mandatory**: All *syncable* entities must support soft deletes, and queries must filter soft-deleted records.
+* **`updatedAt` is the source of truth**: Every syncable entity includes `createdAt`, `updatedAt`, and `deletedAt`. Conflict resolution depends upon `updatedAt`.
+    * **Deleting offline**: If a row is deleted locally while offline, `deletedAt` allows the server to easily resolve whether the row was deleted by the user or simply hasn't synced yet from another client. 
+    * **Hard deletes are irreversible**: Soft deletion is preferred to support offline capabilities and allow users to reverse accidental deletions safely.
 
 ---
 
 ## 13. Embedding pipeline
+Embedding writes must be asynchronous, atomic, *retryable*, and observable.
 
-Embedding writes must be asynchronous, atomic, _retryable_, and observable.
-
-### 13.1 `embedding_status` field
-
-Every content table that participates in the embedding pipeline MUST include an `embeddingStatus` field:
-
-```typescript
-embeddingStatus: text('embedding_status').notNull().default('pending'); // 'pending' | 'complete' | 'failed'
-```
-
-This field is the source of truth for embedding state. It enables:
-
-1. querying for un-embedded or failed content
-2. manual or automated retry of failed jobs
-3. visibility into pipeline health without log-scraping
-4. safe re-embedding after model upgrades
+### 13.1 `embeddingStatus` field
+Every content table that participates in the embedding pipeline MUST include an `embeddingStatus` field. This field is the source of truth for embedding state, enabling:
+1. Querying for un-embedded or failed content.
+2. Manual or automated retry of failed jobs.
+3. Visibility into pipeline health without log-scraping.
+4. Safe re-embedding after model upgrades.
 
 **Status transitions:**
-
-```markdown
-pending → complete (successful embedding write)
-pending → failed (all retries exhausted)
-failed → pending (manual or automated retry trigger)
-```
-
-Any content with `embeddingStatus = 'failed'` MUST be logged and retryable. Silent failures are not acceptable.
+Any content with `embeddingStatus = 'failed'` MUST be logged and retryable. Silent failures are strictly unacceptable.
 
 ### 13.2 Atomic writes
-
-Embedding must be written as single atomic transaction. Never `delete and then insert` _outside_ a transaction. Doing so outside an transaction, temporary makes those embedding unavailable.
+Embeddings must be written as a single atomic transaction. Never delete and then insert *outside* a transaction, as doing so temporarily makes those embeddings unavailable.
 
 ### 13.3 Retry policy
-
-Embedding jobs must retry twice, used exponential backoff strategy, log all failures, and set `embeddingStatus = ‘failed’` after retries are exhausted
+Embedding jobs must retry twice using an exponential backoff strategy, log all failures, and set `embeddingStatus = 'failed'` after retries are exhausted.
 
 ### 13.4 Observability
-
-At minimum, support structured logs, failed embedding logs, and latency visibility. MVP does not require full observability infrastructure.
+At minimum, the pipeline must support structured logs, failed embedding logs, and latency visibility. The MVP does not require full observability infrastructure.
 
 ---
 
 ## 14. Feature system
-
-MVP will support feature system with build time registration, isolated packages as features, and control them via entitlements. Inactive (unauthorized) features are still built, which is acceptable tradeoff for MVP. The feature system is designed this way intentionally support its future evolution where we load plugins runtime, support feature-wise deployments, and features microservices (and even microfrontends). All these without major rewrites.
+The MVP will support a feature system with build-time registration, treating isolated packages as features and controlling them via entitlements. Inactive (unauthorized) features are still built, which is an acceptable tradeoff for the MVP. The system is designed this way to support future evolution into runtime plugins, feature-specific deployments, and microservices without major rewrites.
 
 ---
 
 ## 15. Database migration
-
-**Package-level migration scoping**: Every feature (also a package) owner its own `schema.ts`, `drizzle.config.js`, and `migration` scripts. There is NO global Drizzle config.
-
-**Migration orchestration**:We will have `pnpm db:migrate` command in root of the monorepo that will orchestrate package discovery, running migration script in right order and failing fast on errors.
-
-Having each package own its own database migration config eliminates the issues of schema drift, inconsistent environments, and hidden migration dependencies.
+**Package-level migration scoping**: Every feature package owns its own `schema.ts`, `drizzle.config.js`, and migration scripts. There is NO global Drizzle config.
+**Migration orchestration**: We will use a `pnpm db:migrate` command in the root monorepo to orchestrate package discovery, run migration scripts in the correct order, and fail fast on errors. 
+This package-level scoping eliminates schema drift, inconsistent environments, and hidden migration dependencies.
 
 ---
 
 ## 16. Background jobs
-
 **For the MVP**, Sidekick will use lightweight async background execution using `waitUntil()`, Vercel background execution, and retry wrappers. Later, this will evolve into Inggest, queues, cron workflows, and distributed workers without changing API contracts.
 
 ---
 
 ## 17. Observability
-
-At minimum, MVP will support request logging, failed job logging, API latency logging, and auth failure logging. Logging will be done inside `withAPIGuard()` for centralized visibility.
+At minimum, the MVP will support request logging, failed job logging, API latency logging, and auth failure logging. Logging will be done inside `withAPIGuard()` for centralized visibility.
 
 ---
 
 ## 18. Developer rules
-
 1. All API routes must use `withAPIGuard()`.
 2. Never set RLS context manually. Use `withRLS()` only.
 3. Never mutate data outside the API layer.
-4. Never import from `apps/*` inside `packages/*`.
-5. Repository layer must not be bypassed.
+4. Never import from `apps/*` inside `packages/*`.
+5. The repository layer must not be bypassed.
 6. All syncable APIs should be idempotent.
-7. Never hard-delete syncable entities, and all queries against syncable tables must filter `where(isNull(table.deletedAt))`.
-8. All content tables participating in the embedding pipeline MUST include an `embeddingStatus` field. Set it to `'failed'` after retries are exhausted. Never silently drop failed embedding jobs.
-9. Never use `createAdminClient().from(...).delete()` to hard-delete rows from syncable tables. The BEFORE DELETE trigger fires for all roles including service role. The delete will be rejected regardless of the client used. Hard-deletes that must bypass the trigger (e.g. GDPR erasure) require a dedicated Drizzle transaction:
-
-```typescript
-await db.transaction(async (tx) => {
-  await tx.execute(sql`SET LOCAL app.allow_hard_delete = 'true'`);
-  await tx.delete(table).where(eq(table.id, id));
-});
-```
-
-`SET LOCAL` scopes the flag to the transaction — it resets on commit or rollback. This is the only legitimate hard-delete pathway.
+7. Never hard-delete syncable entities; all queries against syncable tables must filter `where(isNull(table.deletedAt))`.
+8. All content tables participating in the embedding pipeline MUST include an `embeddingStatus` field. Set it to `'failed'` after retries are exhausted. Never silently drop failed embedding jobs.
+9. Never use `createAdminClient().from(...).delete()` to hard-delete rows from syncable tables. The `BEFORE DELETE` trigger rejects this. Hard-deletes that must bypass the trigger (e.g., GDPR erasure) require a dedicated Drizzle transaction using `SET LOCAL` to bypass constraints safely.
 
 ---
 
 ## 19. Operational details
 
 ### 19.1 Types of Supabase clients
+| Client | File | Key | Used In |
+| ------ | ------ | ------ | ------ |
+| `createBrowserClient()` | `browser.ts` | publishable key | Client Components (`'use client'`) |
+| `createServerClient()` | `server.ts` | publishable key + cookies | Server Components, Route Handlers (Node.js runtime) |
+| `createProxyClient(req, res)` | `proxy.ts` | publishable key + request cookies | `proxy.ts` only (Edge runtime) |
+| `createAdminClient()` | `admin.ts` | secret key (bypasses RLS) | Server-only, trusted operations |
 
-| Client                        | File         | Key                               | Used In                                             |
-| ----------------------------- | ------------ | --------------------------------- | --------------------------------------------------- |
-| `createBrowserClient()`       | `browser.ts` | publishable key                   | Client Components (`'use client'`)                  |
-| `createServerClient()`        | `server.ts`  | publishable key + cookies         | Server Components, Route Handlers (Node.js runtime) |
-| `createProxyClient(req, res)` | `proxy.ts`   | publishable key + request cookies | `proxy.ts` only (Edge runtime)                      |
-| `createAdminClient()`         | `admin.ts`   | secret key (bypasses RLS)         | Server-only, trusted operations                     |
-
-1. **createBrowserClient**—the untrusted client
-   1. **Runs in:** the user’s browser, inside `'use client'` client components
-   2. Uses **publishable key** (safe to expose publicly)
-   3. **Auth:** reads the session from browser storage automatically
-2. **createServerClient**—the standard server client:
-   1. **Runs in:** Server Components and Route Handlers, on the **Node.js runtime**
-   2. **Key:** publishable key **+ cookies**
-   3. **Auth:** reads the session from cookies via `next/headers`
-3. **createProxyClient**—the edge/middleware:
-   1. **Runs in:** `proxy.ts` only (Next.js 16’s renamed
-   2. **Key:** publishable key **+ request cookies**
-   3. **Auth:** reads cookies directly off the incoming `Request` and outgoing `Response`
-4. **createAdminClient**—the trusted superuser:
-   1. **Runs in:** server-only, trusted operations
-   2. **Key:** secret key — **bypasses RLS entirely**
-   3. **Auth:** none per-user; it acts with full privileges
-
-There’s an important subtlety here: the difference between these four clients isn’t really about _permissions_ — it’s about **who the client knows you are, and where it can act**.
-
-**The key insight: publishable key ≠ identity**: All three non-admin clients use the **same publishable key**. The publishable key doesn’t grant _any_ data access on its own — it just identifies your Supabase project. What actually unlocks a user’s rows is the **session** (the logged-in identity), and that’s carried in **cookies**.
-
-- **Browser client** — gets the session from **browser storage** (localStorage/IndexedDB), managed automatically by the Supabase SDK in the browser.
-- **Server/proxy clients** — get the session from **cookies** sent with the HTTP request, because there’s no browser storage on the server.
-
-**The browser client is not more limited than the server client in terms of what data it can read.** Both operate under the same RLS policies as the same logged-in user. If you’re signed in, your browser client can read your own notes just like the server client can.
-
-**Where the code runs:** The browser client runs on the user’s machine. That means:
-
-- It **cannot** hold the secret key (it would be visible in DevTools/network tab to anyone).
-- It **cannot** run `Drizzle` — the document is explicit about this: “Drizzle must never execute in browser/client components” (Constraint 6, line 1206). Drizzle connects directly to Postgres as the `app_runtime` role; you can’t expose a raw database connection to a browser.
-- It **cannot** do anything the architecture routes through the API layer — remember, this app is API-first: “All mutations flow through `/api/*`” (§2.1). The browser client is meant for reads and Supabase auth, not for mutations that bypass `withApiGuard()`.
-
-**When in the request lifecycle they run**: This is what separates proxy from server:
-
-- **Proxy client** runs in **middleware** (`proxy.ts`), _before_ the request reaches your page or route. Its job (§20.3, line 900) is **session refresh** and **redirecting unauthenticated users**. It runs on every matched request, at the edge, before rendering.
-- **Server client** runs _during_ rendering (Server Components) or _inside_ a route handler. It acts on a request that has already passed through middleware.
-
-So the proxy client can do something neither of the others can: **intercept and redirect a request before it’s handled**. The browser client can’t do that — by the time browser code runs, the page has already loaded.
+**The key insight: publishable key ≠ identity**. All non-admin clients use the same publishable key, which doesn't grant data access on its own. Access is unlocked by the logged-in identity carried in the session cookies. 
+* **Browser client**: Runs in the user's browser. It cannot hold the secret key, cannot run Drizzle, and cannot perform mutations that bypass the API layer. It is meant strictly for reads and auth.
+* **Server client**: Runs on the server during rendering or inside a route handler. 
+* **Proxy client**: Runs at the edge in middleware (`proxy.ts`). Its job is session refresh and redirecting unauthenticated users before the request reaches the route.
 
 ### 19.2 Middleware responsibilities
-
-The `proxy.ts` (formerly `middleware.ts`) is responsible for session refresh (via `createProxyClient`), redirecting unauthenticated users, and excluding API routes from redirect behavior.
-
-`proxy.ts` must not contain authorization logic. It belongs in `withAPIGuard()`.
+`proxy.ts` is responsible for session refresh, redirecting unauthenticated users, and excluding API routes from redirect behavior. It must not contain authorization logic, which strictly belongs in `withAPIGuard()`.
 
 ### 19.3 Mantine setup requirements
+To prevent hydration errors with Mantine's theme injection, we must add `suppressHydrationWarning` to the `<html>` element. `defaultColorScheme="auto"` must be set on both `ColorSchemeScript` and `MantineProvider`. 
 
-**Required imports**
-
-```typescript
-@import '@mantine/core/styles.css';
-@import '@mantine/notifications/styles.css';
-@import '@mantine/tiptap/styles.css';
-```
-
-**Required providers**
-
-```tsx
-<MantineProvider>
-<Notifications />
-```
-
-**Post-CSS plugin**
-
-```
-postcss-preset-mantine
-postcss-simple-vars
-```
-
-**Hydration fix**
-
-Add `suppressHydrationWarning` to the `<html>` element. `ColorSchemeScript` injects a `data-mantine-color-scheme` attribute via a script tag before React hydrates — without `suppressHydrationWarning`, React will emit a hydration warning because the attribute wasn’t present during server render.
-
-Set `defaultColorScheme="auto"` on BOTH `ColorSchemeScript` AND `MantineProvider`. A mismatch between the two causes hydration errors.
-
-```tsx
-<html suppressHydrationWarning>
-  <head>
-    <ColorSchemeScript defaultColorScheme="auto" />
-  </head>
-  <body>
-    <MantineProvider defaultColorScheme="auto">{children}</MantineProvider>
-  </body>
-</html>
-```
-
-> [!Question] Can we exclude `ColorSchemaScript` to remove `suppressHydrationWarning`?
-> What does this script does that we need it our page for? If it’s just allowing user to manually toggle between light-and-dark themes, can we ignore it and default to user’s prefered color scheme.
+> [!question]
+> Can we exclude `ColorSchemaScript` to remove `suppressHydrationWarning` if we just default to the user's preferred color scheme?
 
 ### 19.4 Styling through CSS Modules
+All styling uses CSS modules without exception. Pure Mantine style props that set visual styles inline are banned and enforced via the `no-mantine-style-props` ESLint rule. Behavioral props are an acceptable compromise.
 
-All styling uses CSS modules. No exceptions. Pure Mantine style props that set visual styles inline are banned.
-
-```tsx
-// BANNED — style props
-<Box h={100} px="md" fw={700} c="red" mt={8} />
-```
-
-However, Mantine behavioral props that configure component behavior along with its visual style, are an acceptable compromise.
-
-```tsx
-// ALLOWED — behavioral props
-<AppShell navbar={{ width: 240, breakpoint: 'sm' }} withBorder shadow="sm" />
-```
-
-**Enforcement:**
-`packages/eslint-plugin-sidekick` contains the `no-mantine-style-props` rule. It is compiled with `tsup` (not raw `tsc`) because ESLint plugins must run as CommonJS in Node.js and cannot load `.ts` files directly. This rule is registered in the root `eslint.config.js` and fails lint immediately on any violation.
-
-### 19.5 Centralized copies
-
-Want want consistency of copy between pages and components. If we use “login” and not “Log in”, then it should show “login” everywhere and not “login” in one page and in another either “Log in” or “Sign in”. To make this possible, all user-visible strings must live in `packages/copy` to help others discover existing copies and reuse across entire application. Never hardcode strings directly in source files.
-
-```tsx
-import { copy } from '@sidekick/copy';
-
-// Use
-<Button>{copy.auth.signIn}</Button>;
-```
+### 19.5 Centralized copy
+To ensure consistency across the application, all user-visible strings must live in `packages/copy`. Never hardcode strings directly in source files.
 
 ### 19.6 Runtime patterns
-
-**`useNavigation` hook**: Always use `useNavigation()` instead of calling `router.push()` alone. The hook calls `router.push()` followed by `router.refresh()` together. Forgetting `router.refresh()` after auth actions leaves the UI in a stale server-rendered state.
-
-```tsx
-const { navigate } = useNavigation();
-navigate('/dashboard'); // push + refresh
-```
-
-**Use `force-dynamic` on Supabase-touching route groups**: Add `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase (e.g. `(app)/layout.tsx`, `(auth)/layout.tsx`). Without it, Next.js may attempt to statically pre-render these layouts at build time, which fails because Supabase cookie reads are request-time operations.
+* **`useNavigation` hook**: Always use `useNavigation()` instead of calling `router.push()` alone to ensure `router.refresh()` is called, preventing stale server-rendered UI.
+* **Force-dynamic**: Add `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase cookies to prevent static pre-rendering failures.
 
 ### 19.7 Profile creation — Postgres trigger
-
-User profiles are created via a Postgres trigger on `auth.users`, not via API route.
-
-```sql
-CREATE FUNCTION public.create_profile_for_new_user()
-RETURNS trigger AS $$
-BEGIN
-  INSERT INTO public.profiles (id, email, created_at)
-  VALUES (NEW.id, NEW.email, NOW());
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.create_profile_for_new_user();
-```
-
-Critical: the function must use `public.profiles` (fully qualified) because triggers run in the `auth` schema context. An unqualified `profiles` reference would fail to resolve.
-
-We chose trigger over API route because it works well for auth providers (email, OAuth, magic link) without per-provider app-level code. It also cannot fail silently after authentication succeeds because profile creation is part of same database transaction—either everything succeeds or everything fails. Plus, there won’t be any race condition between auth completion and API calls.
+User profiles are created via a Postgres trigger on `auth.users`, not via an API route. This ensures reliability across auth providers and prevents race conditions, as profile creation becomes part of the same database transaction.
 
 ### 19.8 Deferred decisions
-
-**GraphQL + Relay — Deferred to Post-MVP**: MVP will use REST API with space to evolve into GraphQL at a later phase.
-
-Right now, I am learning a lot as it is with new backend concepts, application architecture and so on. I don’t want to add burden of configuring GraphQL at this junction and add to the cognitive load, not to mention that Relay + App Router integration is an unresolved upstream. Finally, `withApiGuard` maps cleanly to REST; adapting it to a GraphQL resolver layer requires rethinking.
-
-Once MVP ships and when data-fetching complexity justifies it, and/or when Relay/App Router integration matures, we can revisit this decision.
-
-**How to add:** Could replace or augment REST without full architectural rework. `withApiGuard` would need a GraphQL resolver adapter.
-
-**API Versioning (/api/v1/) — Deferred to Post-MVP**: Current API will use `/api/` with no version prefix. Versioning API adds to the complexity with no current benefit. MVP only has one client and breaking changes can be coordinated directly.
-
-When multiple external clients need migration time, or when breaking changes become frequent, we can revisit this decision.
-
-**How to add:** Route group at `/api/v1/` in Next.js. No architectural rework needed — just move route handlers into the versioned group.
+* **GraphQL + Relay — Deferred to Post-MVP**: The MVP will use a REST API. Right now, I am learning a lot as it is with new backend concepts and application architecture. I don’t want to add the burden of configuring GraphQL at this juncture and increase my cognitive load. Additionally, `withApiGuard` maps cleanly to REST.
+* **API Versioning (`/api/v1/`) — Deferred to Post-MVP**: Adding versioning right now adds complexity with no current benefit, as the MVP only has one client and breaking changes can be coordinated directly.
 
 ### 19.9 Tiptap requirements
-
-The original architecture contained several important editor requirements including JSON storage format, Markdown export support, rich-text toolbar, mobile-friendly editing, and semantic chunk generation for embeddings.
-
-**Important Constraint**: Embedding generation should operate on semantic markdown output rather than raw text extraction whenever possible.
+Embedding generation should operate on semantic markdown output rather than raw text extraction whenever possible.
 
 ### 19.10 AI / RAG requirements
-
-The original handover included important AI pipeline details of enabling pgvector, HNSW index, semantic chunking, overlap chunk strategy, async embedding generation, retrieval-augmented generation, and streaming AI responses.
-
-**Required database function**: This function remains part of the canonical design.
-
-```
-match_content()
-```
+The pipeline requires pgvector, HNSW indexing, semantic chunking, async embedding generation, and streaming AI responses.
 
 ### 19.11 CLI requirements
-
-The CLI remains a first-class architectural citizen supporting authenticated API access, streaming chat support, automation support, and future agent interoperability.
-
-**Canonical principle**: The CLI must use the same public API surface as external agents.
+The CLI is a first-class architectural citizen. It must use the same public API surface as external agents.
 
 ### 19.12 PWA requirements
-
-The original handover included important PWA constraints of installable web app, manifest.json, service workers, offline asset caching and mobile compatible sheel.
-
-**Canonical tooling**:
-
-```
-Serwist
-```
+The architecture requires an installable web app, manifest, service workers, and an offline mobile-compatible shell.
 
 ### 19.13 Capacitor / iOS Strategy
+The MVP native strategy remains **Capacitor + hosted Next.js application**. The architecture intentionally delays embedded offline databases and native sync engines until post-MVP.
 
-The MVP native strategy remains **Capacitor + hosted Next.js application** . The architecture intentionally delays embedded offline DB, native sync engine, and fully local-first execution until post-MVP.
-
-### 19.10 MNP implementation phases
-
-The phased rollout strategy from the original handover remains valid.
-
-### Canonical Order
-
+### 19.14 MVP implementation phases
 1. Monorepo foundation
 2. Auth + shell
 3. Notes feature
@@ -820,70 +405,37 @@ The phased rollout strategy from the original handover remains valid.
 8. Bots / workflows
 9. Native shell
 
-This phased sequence intentionally reduces architectural risk.
-
-### 19.11 Remaining important constraints from original handover
-
-- Feature manifests remain the canonical feature contract.
-- All features must enforce entitlement checks at API boundaries.
-- Background embedding generation must never block user writes. After all retries are exhausted, `embeddingStatus` must be set to `'failed'`. Failed jobs must remain queryable and _retry-able_.
-  - All syncable entities must include `deletedAt` for soft delete support. Hard deletes are prohibited on syncable tables.
-- Server Components are preferred for data-fetching.
-- Client Components should only exist where interactivity is required.
-- Drizzle must never execute in browser/client components.
-- Repository abstractions are mandatory for all mutations.
+### 19.15 Remaining constraints from original handover
+* Feature manifests remain the canonical feature contract.
+* Background embedding generation must never block user writes.
+* Server Components are preferred for data-fetching.
+* Client Components should only exist where interactivity is required.
+* Drizzle must never execute in browser/client components.
 
 ---
 
 ## 20. Repository visibility
-
-The GitHub repository is **public**. This is intentional. The project is built in the open as a learning exercise and portfolio. Friends and collaborators can view progress without requiring explicit invitations.
+The GitHub repository is **public**. This is intentional, as the project is built in the open as a learning exercise and portfolio. 
 
 ### 20.1 Why is this safe?
-
-Security in this architecture comes from correct implementation, not obscurity:
-
-1. RLS policies enforce data isolation at the database level regardless of who reads the source code
-2. `withApiGuard()` centralizes authorization — knowing the code exists doesn’t bypass it
-3. API keys are hashed (SHA-256) before storage — the schema being public is irrelevant
-4. `.env.local` is gitignored — real secrets never enter the repository
-
-Making the architecture and implementation decisions public is consistent with standard open-source practice. The actual security surface is the running application, not the source code.
+Security in this architecture comes from correct implementation, not obscurity. RLS policies enforce isolation, `withApiGuard()` centralizes authorization, API keys are hashed, and `.env.local` is gitignored.
 
 ### 20.2 Permanent caution—never commit secrets
+We must **never** commit `.env.local`, Supabase service keys, API keys, or database credentials. If a secret is ever accidentally committed, it must be immediately rotated in the service dashboard—removing it from git history is insufficient.
 
-The following must **never** be committed to the repository under any circumstances:
-
-- `.env.local` or any file containing real environment variable values
-- Supabase service role keys
-- API keys (Anthropic, OpenAI, Stripe)
-- Database connection strings with credentials
-- Any token, password, or private key
-
-The `.gitignore` blocks `.env*` files (with the exception of `.env.example`). This is a technical safeguard, not a substitute for vigilance. Always verify `git status` before committing.
-
-If a secret is ever accidentally committed:
-
-1. Immediately rotate the exposed key/token in the relevant service dashboard
-2. Remove the secret from git history using `git filter-repo` or GitHub’s secret scanning remediation tools
-3. Force-push the cleaned history
-
-Rotation is mandatory — removing from git history is not sufficient on its own because the secret may already have been cloned or cached.
+---
 
 ## 21. Final architectural position
-
 This architecture intentionally optimizes for:
+* Maintainability
+* Correctness
+* Solo-developer velocity
+* Future extensibility
 
-- maintainability
-- correctness
-- solo-developer velocity
-- future extensibility
-
-while explicitly avoiding:
-
-- premature microservices
-- premature offline complexity
-- runtime plugin overengineering
-- unnecessary infrastructure
+While explicitly avoiding:
+* Premature microservices
+* Premature offline complexity
+* Runtime plugin overengineering
+* Unnecessary infrastructure
 
 The system is designed to evolve safely over time without foundational rewrites.

@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPostsBySection } from "../../lib/entries.ts";
+import PostRow from "../../components/PostRow.astro";
+import {
+   NAV_SECTIONS,
+   SECTION_LABELS,
+   SECTION_DESCRIPTIONS,
+   type Section,
+} from "../../lib/site.ts";
+
+export function getStaticPaths() {
+   return NAV_SECTIONS.map((section) => ({ params: { section } }));
+}
+
+const { section } = Astro.params;
+const sec = section as Section;
+const posts = await getPostsBySection(sec);
+---
+
+<BaseLayout
+   title={SECTION_LABELS[sec]}
+   description={SECTION_DESCRIPTIONS[sec]}
+   activeSection={sec}
+>
+   <div class="stage">
+      <p class="page-eyebrow">{SECTION_LABELS[sec]}</p>
+      <h1 class="page-title">{SECTION_LABELS[sec]}</h1>
+      <p class="page-desc">{SECTION_DESCRIPTIONS[sec]}</p>
+
+      {
+         posts.length === 0 ? (
+            <div class="empty-state">
+               <h2>Nothing published yet.</h2>
+               <p>The drafts exist — they're just not ready to share.</p>
+            </div>
+         ) : (
+            posts.map((post) => <PostRow post={post} showSection={false} />)
+         )
+      }
+   </div>
+</BaseLayout>

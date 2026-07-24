@@ -14,8 +14,9 @@ tags:
   - growth
   - routine
   - execution
-category: decisions
-sourcePath: decisions/start-today.md
+section: core-drive
+type: core-drive
+sourcePath: core-drive/start-today.md
 wordCount: 6
 readingMinutes: 1
 author: Pratik Mehta

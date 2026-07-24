@@ -1,0 +1,29 @@
+---
+import HeroArt from "./HeroArt.astro";
+import { postUrl, type Post } from "../lib/entries.ts";
+import { SECTION_LABELS } from "../lib/site.ts";
+import { formatDate } from "../lib/reading.ts";
+
+interface Props {
+   post: Post;
+   showSection?: boolean;
+}
+
+const { post, showSection = false } = Astro.props;
+---
+
+<article class="post-row">
+   <a href={postUrl(post)} class="post-row__thumb">
+      <HeroArt post={post} width={320} />
+   </a>
+   <div class="post-row__body">
+      <h2>
+         <a href={postUrl(post)}>{post.data.title}</a>
+      </h2>
+      {post.data.deck && <p>{post.data.deck}</p>}
+      <span class="post-date">
+         {showSection && `${SECTION_LABELS[post.data.section]} · `}
+         {formatDate(post.data.created)}
+      </span>
+   </div>
+</article>

@@ -8,7 +8,17 @@ const entrySchema = z.object({
    updated: z.coerce.date().optional(),
    version: z.string().optional(),
    tags: z.array(z.string()).default([]),
-   category: z.enum(["essays", "plans", "decisions", "builds", "notes"]),
+   section: z.enum(["writings", "core-drive", "plans", "builds", "notes"]),
+   type: z.enum([
+      "essay",
+      "blog",
+      "core-drive",
+      "plan",
+      "decision",
+      "build",
+      "note",
+   ]),
+   seed: z.string().optional(),
    sourcePath: z.string(),
    wordCount: z.number(),
    readingMinutes: z.number(),
@@ -20,7 +30,7 @@ const entrySchema = z.object({
 });
 
 function collection(
-   name: "essays" | "plans" | "decisions" | "builds" | "notes",
+   name: "writings" | "core-drive" | "plans" | "builds" | "notes",
 ) {
    return defineCollection({
       loader: glob({ base: `./src/content/${name}`, pattern: "**/*.md" }),
@@ -29,9 +39,9 @@ function collection(
 }
 
 export const collections = {
-   essays: collection("essays"),
+   writings: collection("writings"),
+   "core-drive": collection("core-drive"),
    plans: collection("plans"),
-   decisions: collection("decisions"),
    builds: collection("builds"),
    notes: collection("notes"),
 };

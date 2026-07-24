@@ -4,11 +4,11 @@ import ThemeToggle from "./ThemeToggle.astro";
 import { type ContentMeta } from "../lib/site.ts";
 
 interface Props {
-   activeCategory?: string | null;
+   activeSection?: string | null;
    contentMeta: ContentMeta;
 }
 
-const { activeCategory = null, contentMeta } = Astro.props;
+const { activeSection = null, contentMeta } = Astro.props;
 const siteTitle = contentMeta.site.title ?? "ARKIVE";
 ---
 

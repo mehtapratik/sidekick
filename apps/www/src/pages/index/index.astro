@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, postUrl } from "../../lib/entries.ts";
+import { SECTION_LABELS, TYPE_LABELS } from "../../lib/site.ts";
+import { formatDate, formatDateYmd } from "../../lib/reading.ts";
+
+const posts = await getAllPosts();
+---
+
+<BaseLayout
+   title="Index"
+   description="Chronological index of every post — every section, every type."
+>
+   <div class="stage">
+      <p class="page-eyebrow">Index</p>
+      <h1 class="page-title">Index</h1>
+      <p class="page-desc">
+         Every post, in order — including the ones that don't fit a section.
+      </p>
+
+      <ul class="index-list">
+         {
+            posts.map((post) => (
+               <li class="index-row">
+                  <time datetime={formatDateYmd(post.data.created)}>
+                     {formatDate(post.data.created)}
+                  </time>
+                  <a href={postUrl(post)}>{post.data.title}</a>
+                  <span class="index-row__meta">
+                     {SECTION_LABELS[post.data.section]} ·{" "}
+                     {TYPE_LABELS[post.data.type]}
+                  </span>
+               </li>
+            ))
+         }
+      </ul>
+   </div>
+</BaseLayout>

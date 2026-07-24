@@ -1,9 +1,12 @@
 ---
-import { CATEGORIES, CATEGORY_LABELS } from "../lib/site.ts";
+import { NAV_SECTIONS, SECTION_LABELS } from "../lib/site.ts";
 
 const navItems = [
-   { href: "/", label: "Home" },
-   ...CATEGORIES.map((cat) => ({ href: `/${cat}/`, label: CATEGORY_LABELS[cat] })),
+   ...NAV_SECTIONS.map((section) => ({
+      href: `/${section}/`,
+      label: SECTION_LABELS[section],
+   })),
+   { href: "/index/", label: "Index" },
 ];
 
 interface Props {
@@ -20,9 +23,7 @@ const { type = "desktop" } = Astro.props;
       <a
          href={href}
          aria-current={
-            href === "/"
-               ? Astro.url.pathname === "/" ? "page" : undefined
-               : Astro.url.pathname.startsWith(href) ? "page" : undefined
+            Astro.url.pathname.startsWith(href) ? "page" : undefined
          }
       >
          {label}

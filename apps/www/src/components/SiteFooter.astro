@@ -1,7 +1,6 @@
 ---
 import { type ContentMeta } from "../lib/site.ts";
 
-
 interface Props {
    contentMeta: ContentMeta;
 }
@@ -15,9 +14,14 @@ const year = new Date().getFullYear();
    <div class="site-footer__inner">
       <span>© {year} Pratik Mehta · CC BY-NC 4.0</span>
       <div class="links">
-         {repoUrl && <a href={repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>}
+         {
+            repoUrl && (
+               <a href={repoUrl} target="_blank" rel="noopener noreferrer">
+                  GitHub
+               </a>
+            )
+         }
          <a href="/rss.xml">RSS</a>
-         <span class="footer-hint">press / to search</span>
       </div>
    </div>
 </footer>

@@ -1,0 +1,25 @@
+---
+import { heroArt } from "../lib/hero.ts";
+import type { Post } from "../lib/entries.ts";
+
+interface Props {
+   post: Post;
+   width: 640 | 320;
+   class?: string;
+}
+
+const { post, width, class: className } = Astro.props;
+const seed = post.data.seed ?? post.id;
+const { light, dark } = heroArt(post.data.type, seed, width);
+const aspect = width === 640 ? "8 / 3" : "4 / 3";
+---
+
+<figure
+   class={`hero-art${className ? ` ${className}` : ""}`}
+   aria-hidden="true"
+   data-pagefind-ignore
+   style={`aspect-ratio: ${aspect}`}
+>
+   <div class="hero-art__theme hero-art__theme--light" set:html={light} />
+   <div class="hero-art__theme hero-art__theme--dark" set:html={dark} />
+</figure>

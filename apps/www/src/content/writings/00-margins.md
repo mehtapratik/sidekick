@@ -9,7 +9,8 @@ version: 1.0.0
 tags:
   - essays
   - sidekick
-category: essays
+section: writings
+type: essay
 sourcePath: essays/00-margins.md
 wordCount: 740
 readingMinutes: 4

@@ -20,14 +20,20 @@ function slugify(name) {
    return name.replace(/\.md$/i, "").replace(/_/g, "-").toLowerCase();
 }
 
-function resolveCategory(relativePath) {
+const FOLDER_MAP = {
+   essays: { section: "writings", type: "essay" },
+   blogs: { section: "writings", type: "blog" },
+   "core-drive": { section: "core-drive", type: "core-drive" },
+   plans: { section: "plans", type: "plan" },
+   decisions: { section: "plans", type: "decision" },
+   builds: { section: "builds", type: "build" },
+   notes: { section: "notes", type: "note" },
+};
+
+function resolveTaxonomy(relativePath) {
    const norm = relativePath.split(path.sep).join("/");
-   if (norm.startsWith("essays/")) return "essays";
-   if (norm.startsWith("plans/")) return "plans";
-   if (norm.startsWith("decisions/")) return "decisions";
-   if (norm.startsWith("builds/")) return "builds";
-   if (norm.startsWith("notes/")) return "notes";
-   return null;
+   const folder = norm.split("/")[0];
+   return FOLDER_MAP[folder] ?? null;
 }
 
 function parseFrontmatter(raw) {
@@ -74,9 +80,11 @@ function walkMd(dir, base = "") {
    return entries;
 }
 
+const SECTIONS = ["writings", "core-drive", "plans", "builds", "notes"];
+
 function clearContentDir() {
-   for (const cat of ["essays", "plans", "decisions", "builds", "notes"]) {
-      const dir = path.join(CONTENT_DIR, cat);
+   for (const section of SECTIONS) {
+      const dir = path.join(CONTENT_DIR, section);
       fs.mkdirSync(dir, { recursive: true });
       for (const f of fs.readdirSync(dir)) {
          if (f.endsWith(".md")) fs.unlinkSync(path.join(dir, f));
@@ -95,12 +103,13 @@ function main() {
    let written = 0;
 
    for (const { full, rel } of walkMd(DOCS_ROOT)) {
-      const category = resolveCategory(rel);
-      if (!category) continue;
+      const taxonomy = resolveTaxonomy(rel);
+      if (!taxonomy) continue;
       if (path.basename(rel) === "index.md") continue;
 
+      const { section, type } = taxonomy;
       const slug = slugify(path.basename(rel));
-      const qualified = `${category}/${slug}`;
+      const qualified = `${section}/${slug}`;
       if (slugIndex.has(qualified)) {
          throw new Error(`Duplicate slug: ${qualified}`);
       }
@@ -120,6 +129,7 @@ function main() {
       const created = override.date ?? attrs.created ?? gitDate(full);
       const updated = override.updated ?? attrs.updated ?? created;
       const wc = wordCount(cleanBody);
+      const seed = override.seed ?? attrs.seed;
 
       const frontmatter = {
          title,
@@ -128,7 +138,9 @@ function main() {
          updated,
          version: override.version ?? attrs.version ?? defaults.version ?? 1,
          tags: override.tags ?? attrs.tags ?? [],
-         category,
+         section,
+         type,
+         ...(seed ? { seed } : {}),
          sourcePath: rel,
          wordCount: wc,
          readingMinutes: Math.max(1, Math.ceil(wc / 220)),
@@ -143,7 +155,7 @@ function main() {
          description: override.description ?? attrs.description ?? deck,
       };
 
-      const outPath = path.join(CONTENT_DIR, category, `${slug}.md`);
+      const outPath = path.join(CONTENT_DIR, section, `${slug}.md`);
       fs.writeFileSync(
          outPath,
          `---\n${dump(frontmatter).trim()}\n---\n\n${cleanBody.trim()}\n`,
@@ -157,7 +169,6 @@ function main() {
 
    let heroQualified = heroRef;
    if (!heroRef.includes("/")) {
-      console.log(heroRef, slugIndex.keys());
       const matches = [...slugIndex.keys()].filter((k) =>
          k.endsWith(`/${heroRef}`),
       );

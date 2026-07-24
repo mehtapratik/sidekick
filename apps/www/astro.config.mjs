@@ -63,14 +63,102 @@ function rehypeOrnament() {
         {
           type: "element",
           tagName: "svg",
-          properties: { viewBox: "0 0 32 12", fill: "none", stroke: "currentColor", strokeWidth: "1" },
+          properties: {
+            viewBox: "0 0 140 14",
+            fill: "none",
+            xmlns: "http://www.w3.org/2000/svg",
+          },
           children: [
-            { type: "element", tagName: "circle", properties: { cx: "6", cy: "6", r: "1.5", fill: "currentColor" }, children: [] },
-            { type: "element", tagName: "path", properties: { d: "M16 2l4 4-4 4-4-4z" }, children: [] },
-            { type: "element", tagName: "circle", properties: { cx: "26", cy: "6", r: "1.5", fill: "currentColor" }, children: [] },
+            {
+              type: "element",
+              tagName: "path",
+              properties: {
+                d: "M2 7c6-5 12 5 18 0s12-5 18 0 12 5 18 0 12-5 18 0 12 5 18 0 10-4 16-1",
+                stroke: "currentColor",
+                strokeWidth: "1.4",
+                strokeLinecap: "round",
+                strokeLinejoin: "round",
+              },
+              children: [],
+            },
           ],
         },
       ];
+    });
+  };
+}
+
+// Turns GitHub/Obsidian-style admonition blockquotes into styled callouts:
+//   > [!info]
+//   > Body text.
+// Unmarked blockquotes are left alone and keep the pull-quote treatment.
+const CALLOUT_TYPES = {
+  info: { className: "info", label: "Info" },
+  note: { className: "info", label: "Info" },
+  caution: { className: "caution", label: "Caution" },
+  warning: { className: "caution", label: "Caution" },
+  danger: { className: "danger", label: "Danger" },
+  alert: { className: "danger", label: "Danger" },
+  ref: { className: "reference", label: "See also" },
+  reference: { className: "reference", label: "See also" },
+  "see-also": { className: "reference", label: "See also" },
+  question: { className: "question", label: "Question" },
+};
+
+function rehypeCallout() {
+  const MARKER = /^\s*\[!([a-zA-Z-]+)\]\s?/;
+
+  return (tree) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName !== "blockquote") return;
+
+      const firstP = node.children.find(
+        (c) => c.type === "element" && c.tagName === "p",
+      );
+      if (!firstP) return;
+
+      const firstText = firstP.children.find((c) => c.type === "text");
+      if (!firstText) return;
+
+      const match = MARKER.exec(firstText.value);
+      if (!match) return;
+
+      const meta = CALLOUT_TYPES[match[1].toLowerCase()];
+      if (!meta) return;
+
+      firstText.value = firstText.value.slice(match[0].length);
+      // Drop the now-empty leading text node so the paragraph doesn't
+      // start with a blank run.
+      if (firstText.value === "") {
+        firstP.children = firstP.children.filter((c) => c !== firstText);
+      }
+
+      node.tagName = "div";
+      node.properties = {
+        className: ["callout", `callout--${meta.className}`],
+      };
+      node.children.unshift({
+        type: "element",
+        tagName: "p",
+        properties: { className: ["callout__label"] },
+        children: [{ type: "text", value: meta.label }],
+      });
+    });
+  };
+}
+
+// Wraps every markdown table in a scrollable container so wide tables
+// don't force layout to overflow the page on small viewports.
+function rehypeTableWrap() {
+  return (tree) => {
+    visit(tree, "element", (node, index, parent) => {
+      if (node.tagName !== "table" || !parent) return;
+      parent.children.splice(index, 1, {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["table-scroll"] },
+        children: [node],
+      });
     });
   };
 }
@@ -104,6 +192,8 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       rehypeTLDR,
+      rehypeCallout,
+      rehypeTableWrap,
       rehypePermalink,
       rehypeOrnament,
     ],

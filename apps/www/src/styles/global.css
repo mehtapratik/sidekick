@@ -2,10 +2,11 @@
     --color-base: #f7f3ec;
     --color-surface: #f1ebdf;
     --color-text: #2b2621;
-    --color-muted: #6e6459;
-    --color-border: rgb(0 0 0 / 0.2);
+    --color-muted: #55493d;
+    --color-border: rgb(0 0 0 / 0.14);
     --color-accent: hsla(350, 35%, 35%, 1);
     --color-accent-weak: hsla(350, 35%, 35%, 0.5);
+    --color-accent-strong: #783a44;
     --color-accent-moss: #5c6e3f;
     --color-accent-ochre: #9d884a;
     --color-accent-teal: #4f6e72;
@@ -14,7 +15,8 @@
     --color-header: hsla(41, 23%, 82%, 0.85);
 
     --ff-heading: "Bricolage Grotesque Variable", sans-serif;
-    --ff-body: "Barlow", serif;
+    --ff-body: "Newsreader Variable", serif;
+    --ff-chrome: "Space Mono", monospace;
     --ff-mono: "Space Mono", monospace;
 
     --fw-base: 400;
@@ -24,10 +26,16 @@
     --leading-body: 1.75;
     --leading-heading: 1.3;
 
-    --col: 45rem;
+    --col: 42rem;
+    --measure-prose: 36rem;
     --gutter: 0.6rem;
 
+    --art-ink: #55493d;
+    --art-accent: #783a44;
+    --art-ochre: #9d884a;
+    --art-paper: #f1ebdf;
 
+    --fs-base: 16px;
     --fs-body: 20px;
     --fs-ratio: 1.25;
 
@@ -46,12 +54,18 @@
     --space-base: 1em;
     --space-ratio: 1.25;
 
-    --space-2xs: calc(var(--space-base) / var(--space-ratio) / var(--space-ratio) / var(--space-ratio)); /* base * r^-2 ≈ 0.44em */
-    --space-xs: calc(var(--space-base) / var(--space-ratio) / var(--space-ratio)); /* base * r^-2 ≈ 0.44em */
-    --space-sm: calc(var(--space-base) / var(--space-ratio)); /* base * r^-1 ≈ 0.67em */
-    --space-lg: calc(var(--space-base) * var(--space-ratio)); /* base * r  = 1.5em  */
-    --space-xl: calc(var(--space-base) * var(--space-ratio) * var(--space-ratio)); /* base * r^2 = 2.25em */
-    --space-2xl: calc(var(--space-base) * var(--space-ratio) * var(--space-ratio) * var(--space-ratio)); /* r^3 ≈ 3.375em */
+    --space-2xs: calc(var(--space-base) / var(--space-ratio) / var(--space-ratio) / var(--space-ratio));
+    /* base * r^-2 ≈ 0.44em */
+    --space-xs: calc(var(--space-base) / var(--space-ratio) / var(--space-ratio));
+    /* base * r^-2 ≈ 0.44em */
+    --space-sm: calc(var(--space-base) / var(--space-ratio));
+    /* base * r^-1 ≈ 0.67em */
+    --space-lg: calc(var(--space-base) * var(--space-ratio));
+    /* base * r  = 1.5em  */
+    --space-xl: calc(var(--space-base) * var(--space-ratio) * var(--space-ratio));
+    /* base * r^2 = 2.25em */
+    --space-2xl: calc(var(--space-base) * var(--space-ratio) * var(--space-ratio) * var(--space-ratio));
+    /* r^3 ≈ 3.375em */
 }
 
 [data-theme="dark"] {
@@ -59,15 +73,21 @@
     --color-surface: #251f19;
     --color-text: #edead9;
     --color-muted: rgb(170, 162, 152);
-    --color-border: rgb(255 255 255 / 0.04);
+    --color-border: rgb(255 255 255 / 0.08);
     --color-accent: rgb(164, 100, 109);
     --color-accent-weak: rgba(99, 56, 62, 0.25);
+    --color-accent-strong: #6e3a40;
     --color-accent-moss: #9bb07a;
     --color-accent-ochre: #d4b65c;
     --color-accent-teal: #7fadb0;
     --color-link: rgb(174, 109, 118);
 
     --color-header: hsl(30, 19%, 12%, 0.85);
+
+    --art-ink: #aaa298;
+    --art-accent: #a4646d;
+    --art-ochre: #d4b65c;
+    --art-paper: #251f19;
 }
 
 @media (min-width: 50rem) {
@@ -152,8 +172,8 @@ textarea {
 }
 
 ::selection {
-    background: var(--color-accent-ochre);
-    color: var(--color-base);
+    background: var(--color-accent-weak);
+    /* color: var(--color-base); */
 }
 
 /* ---- Vertical rhythm: headings ---- */
@@ -177,7 +197,7 @@ h6 {
 
 /* remove top margin of anything after hr to balance make top and bottom margin hr look
 symetrical. Extra margin of headings after HR make it look asymetrical */
-hr + * {
+hr+* {
     margin-top: 0;
 }
 
@@ -223,25 +243,74 @@ li::marker {
     color: var(--color-muted);
 }
 
+/* Hand-drawn bullet: unordered lists only — ol keeps its numeric marker */
+.prose ul,
+.tldr-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.prose ul li,
+.tldr-card li {
+    position: relative;
+    padding-left: 1.2em;
+}
+
+.prose ul li::before,
+.tldr-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 9px;
+    height: 9px;
+    color: var(--color-muted);
+    background-color: currentColor;
+    -webkit-mask: url(/icons/bullet-dot.svg) no-repeat center / contain;
+    mask: url(/icons/bullet-dot.svg) no-repeat center / contain;
+}
+
 pre {
     margin: var(--space-lg) 0;
 }
 
 blockquote {
+    position: relative;
     margin: var(--space-lg) 0;
     font-family: var(--ff-heading);
     font-weight: var(--fw-bold);
     font-style: italic;
-    border-left: 5px solid var(--color-accent);
     background: var(--color-surface);
-    padding: var(--space-sm) var(--gutter);
-    border-radius: 0.25em;
+    padding: var(--space-sm) var(--gutter) var(--space-sm) calc(var(--gutter) + 18px);
+    border-radius: 3px 8px 4px 7px;
 }
 
-@media (min-width: 50rem) {
-    blockquote {
-        border-left-width: 3px;
-    }
+blockquote::before {
+    content: "\201C";
+    position: absolute;
+    left: 6px;
+    top: 0.15em;
+    font-family: var(--ff-chrome);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1;
+    color: var(--color-accent);
+    opacity: 0.35;
+}
+
+blockquote::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 9px;
+    height: 100%;
+    color: var(--color-accent);
+    opacity: 0.55;
+    background-color: currentColor;
+    -webkit-mask: url(/icons/blockquote-rule.svg) no-repeat left / 100% 100%;
+    mask: url(/icons/blockquote-rule.svg) no-repeat left / 100% 100%;
 }
 
 table {
@@ -329,15 +398,16 @@ code {
 }
 
 .nav a {
+    font-family: var(--ff-chrome);
     font-size: 0.65rem;
-    font-weight: var(--fw-bold);
+    font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-decoration: none;
     color: var(--color-text);
-    padding: 0 var(--space-base);
+    padding: 0 var(--space-xs);
     transition: color 0.12s,
-    border-color 0.12s;
+        border-color 0.12s;
 }
 
 nav a:hover,
@@ -349,9 +419,16 @@ nav a:active {
 }
 
 .nav a[aria-current="page"] {
-    background-color: var(--color-accent);
+    background-color: var(--color-accent-strong);
     color: var(--color-base);
     border-radius: 0.25em;
+}
+
+/* Dark mode's accent-strong is darker than base's text is light —
+   use --color-text (light) here instead of --color-base (near-black),
+   which is what keeps this pill at ~7.4:1 rather than regressing to ~1.7:1. */
+[data-theme="dark"] .nav a[aria-current="page"] {
+    color: var(--color-text);
 }
 
 .header-controls {
@@ -364,7 +441,7 @@ nav a:active {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    font-family: var(--ff-body);
+    font-family: var(--ff-chrome);
     font-size: var(--fs-xs);
     color: var(--color-muted);
     background: transparent;
@@ -382,11 +459,26 @@ nav a:active {
 }
 
 .theme-toggle {
+    display: flex;
+    align-items: center;
     background: none;
     border: 0;
     padding: 2px 10px;
     border-radius: 3px;
+    color: var(--color-muted);
     cursor: pointer;
+}
+
+.theme-toggle__icon--moon {
+    display: none;
+}
+
+[data-theme="dark"] .theme-toggle__icon--sun {
+    display: none;
+}
+
+[data-theme="dark"] .theme-toggle__icon--moon {
+    display: block;
 }
 
 .theme-toggle:hover {
@@ -398,7 +490,7 @@ nav a:active {
     background: transparent;
     border: 1px solid var(--color-base);
     color: var(--color-text);
-    font-family: var(--ff-body);
+    font-family: var(--ff-chrome);
     font-size: var(--fs-xs);
     padding: 6px 12px;
     border-radius: 3px;
@@ -417,6 +509,7 @@ nav a:active {
 }
 
 .mobile-nav a {
+    font-family: var(--ff-chrome);
     font-size: var(--fs-xs);
     text-decoration: none;
     color: var(--color-muted);
@@ -428,7 +521,7 @@ nav a:active {
 }
 
 .mobile-nav__search {
-    font-family: var(--ff-body);
+    font-family: var(--ff-chrome);
     font-size: var(--fs-xs);
     color: var(--color-muted);
     background: transparent;
@@ -459,7 +552,12 @@ main {
 
 /* ---- Prose (article body) ---- */
 
-.prose > :first-child {
+.prose {
+    max-width: var(--measure-prose);
+    margin-inline: auto;
+}
+
+.prose> :first-child {
     margin-top: var(--space-base);
 }
 
@@ -506,10 +604,26 @@ main {
     margin: 0;
 }
 
-/* Tables — full-width bleed */
-.prose table {
-    width: calc(100% + var(--gutter) * 2);
+/* Tables — full-width bleed + horizontal scroll on overflow, matching the
+   blockquote/callout/tldr-card treatment: the wrapper bleeds by -gutter and
+   reapplies gutter as its own padding, so the bled surface reaches the
+   viewport edge on mobile while the cell text stays aligned with prose.
+   The table itself uses min-width (not width) so it can grow past 100%
+   when content demands it — a fixed width would just force cells to wrap
+   instead of overflowing, defeating the scroll container entirely. */
+.prose .table-scroll {
+    background: var(--color-surface);
+    border-radius: 3px 8px 4px 7px;
+    padding-inline: var(--gutter);
+    margin-block: var(--space-lg);
     margin-inline: calc(-1 * var(--gutter));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.prose table {
+    min-width: 100%;
+    margin: 0;
     font-size: var(--fs-sm);
 }
 
@@ -521,9 +635,9 @@ main {
     vertical-align: top;
 }
 
-.prose th:first-child,
-.prose td:first-child {
-    padding-left: var(--gutter);
+.prose th:last-child,
+.prose td:last-child {
+    padding-right: 0;
 }
 
 .prose th {
@@ -537,19 +651,36 @@ main {
 
 /* TL;DR card — full-width bleed */
 .tldr-card {
+    position: relative;
     background: var(--color-surface);
     border-left: 2px solid var(--color-accent);
+    border-radius: 3px 8px 4px 7px;
     padding: 14px var(--gutter);
+    margin-block: var(--space-lg);
     margin-inline: calc(-1 * var(--gutter));
 }
 
 .tldr-card__label {
-    font-family: var(--ff-mono);
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--ff-chrome);
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-accent);
     margin: 0 0 10px;
+}
+
+.tldr-card__label::before {
+    content: "";
+    flex: none;
+    width: 11px;
+    height: 11px;
+    color: var(--color-accent);
+    background-color: currentColor;
+    -webkit-mask: url(/icons/callout-mark.svg) no-repeat center / contain;
+    mask: url(/icons/callout-mark.svg) no-repeat center / contain;
 }
 
 .tldr-card ul {
@@ -562,52 +693,90 @@ main {
     color: var(--color-muted);
 }
 
-.tldr-card li + li {
+.tldr-card li+li {
     margin-top: 0.3em;
 }
 
-/* Callout — full-width bleed */
+/* Callout — full-width bleed. Type is set by the rehype-callout plugin
+   (markdown: `> [!info]` / `[!caution]` / `[!danger]` / `[!ref]`), which
+   picks the modifier class; --callout-color carries the type's hue through
+   the border, label, and icon. */
 .callout {
-    background: var(--color-accent-weak);
-    border: 1px solid var(--color-border);
+    position: relative;
+    background: var(--color-surface);
+    border-left: 2px solid var(--callout-color, var(--color-accent));
+    border-radius: 3px 8px 4px 7px;
     padding: 14px var(--gutter);
+    margin-block: var(--space-lg);
     margin-inline: calc(-1 * var(--gutter));
 }
 
+.callout--info {
+    --callout-color: var(--color-accent-teal);
+}
+
+.callout--caution {
+    --callout-color: var(--color-accent-ochre);
+}
+
+.callout--danger {
+    --callout-color: var(--color-accent);
+}
+
+.callout--reference {
+    --callout-color: var(--color-accent-moss);
+}
+
+/* Open questions — quieter than the four hue-coded types above, since it
+   marks unresolved thinking rather than a signal to a reader. */
+.callout--question {
+    --callout-color: var(--color-muted);
+}
+
 .callout__label {
-    font-family: var(--ff-mono);
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--ff-chrome);
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--callout-color, var(--color-accent));
     margin-bottom: 8px;
+}
+
+.callout__label::before {
+    content: "";
+    flex: none;
+    width: 11px;
+    height: 11px;
+    color: var(--callout-color, var(--color-accent));
+    background-color: currentColor;
+    -webkit-mask: url(/icons/callout-mark.svg) no-repeat center / contain;
+    mask: url(/icons/callout-mark.svg) no-repeat center / contain;
 }
 
 .callout p {
     margin: 0;
 }
 
+.callout p+p {
+    margin-top: 0.6em;
+}
+
 /* Ornament divider (--- in markdown) */
 .ornament {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
     margin: 2.4em 0;
     color: var(--color-muted);
     opacity: 0.6;
 }
 
-.ornament::before,
-.ornament::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-}
-
 .ornament svg {
-    width: 32px;
-    height: 12px;
+    width: 140px;
+    height: 14px;
     flex: none;
 }
 
@@ -624,13 +793,52 @@ main {
     text-decoration: none;
     opacity: 0;
     transition: opacity 0.15s,
-    color 0.15s;
+        color 0.15s;
 }
 
 .prose h2:hover .permalink,
 .permalink:focus {
     opacity: 1;
     color: var(--color-accent);
+}
+
+/* ---- Hero art ---- */
+.hero-art {
+    margin: 0 0 24px;
+    border-radius: 4px;
+    background: var(--color-surface);
+    overflow: hidden;
+}
+
+.hero-art svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-art__theme--dark {
+    display: none;
+}
+
+[data-theme="dark"] .hero-art__theme--light {
+    display: none;
+}
+
+[data-theme="dark"] .hero-art__theme--dark {
+    display: block;
+}
+
+.featured-hero {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 40rem) {
+
+    .article-hero,
+    .featured-hero {
+        margin-inline: calc(-1 * var(--gutter));
+        border-radius: 0;
+    }
 }
 
 /* ---- Article ---- */
@@ -643,8 +851,29 @@ main {
     margin-bottom: 12px;
 }
 
+.article-eyebrow time {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.article-eyebrow time::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 90%;
+    height: 6px;
+    color: var(--color-accent-ochre);
+    opacity: 0.55;
+    background-color: currentColor;
+    -webkit-mask: url(/icons/dateline-underline.svg) no-repeat left / contain;
+    mask: url(/icons/dateline-underline.svg) no-repeat left / contain;
+}
+
 .article-title {
     margin-top: 0;
+    font-size: clamp(24px, 4.5vw, 30px);
 }
 
 .article-blurb {
@@ -730,6 +959,7 @@ main {
 
 .featured-title {
     margin: 0 0 12px;
+    font-size: clamp(24px, 4.5vw, 30px);
 }
 
 .featured-title a {
@@ -770,6 +1000,9 @@ main {
 }
 
 .post-row {
+    display: flex;
+    gap: var(--space-base);
+    align-items: flex-start;
     padding: 0 0 1.25em;
     /*border-bottom: 1px dashed var(--color-border);*/
 }
@@ -777,6 +1010,19 @@ main {
 .post-row:last-of-type {
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+.post-row__thumb {
+    display: block;
+    flex: none;
+    width: clamp(88px, 14vw, 124px);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.post-row__body {
+    flex: 1;
+    min-width: 0;
 }
 
 .post-row h2 {
@@ -886,6 +1132,53 @@ main {
     font-size: 15px;
     color: var(--color-muted);
     margin: 0;
+}
+
+/* ---- Index (chronological, no art) ---- */
+.index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.index-row {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.index-row time {
+    font-family: var(--ff-chrome);
+    font-size: 0.75em;
+    color: var(--color-muted);
+    flex: none;
+    width: 88px;
+}
+
+.index-row a {
+    font-family: var(--ff-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+    flex: 1;
+    min-width: 200px;
+}
+
+.index-row a:hover {
+    color: var(--color-accent);
+}
+
+.index-row__meta {
+    font-family: var(--ff-chrome);
+    font-size: 0.7em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    flex: none;
 }
 
 /* ---- Footer ---- */
@@ -1019,7 +1312,7 @@ main {
 .search-panel {
     width: min(640px, 100%);
     background: var(--color-base);
-    border: 1px solid var(--border);
+    border: 1px solid var(--color-border);
     padding: 1.1rem;
 }
 
@@ -1036,19 +1329,11 @@ main {
     .search-trigger {
         display: none;
     }
-
-    .article-title {
-        font-size: 32px;
-    }
-
-    .featured-title {
-        font-size: 32px;
-    }
 }
 
 /* ---- Utilities ---- */
 :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--color-accent);
     outline-offset: 3px;
     border-radius: 2px;
 }

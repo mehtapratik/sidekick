@@ -14,8 +14,9 @@ tags:
   - growth
   - willpower
   - courage
-category: decisions
-sourcePath: decisions/seek-closure.md
+section: core-drive
+type: core-drive
+sourcePath: core-drive/seek-closure.md
 wordCount: 63
 readingMinutes: 1
 author: Pratik Mehta

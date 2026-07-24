@@ -23,9 +23,10 @@ tags:
   - courage
   - perseverance
   - persistence
-category: decisions
-sourcePath: decisions/no-do-overs.md
-wordCount: 230
+section: core-drive
+type: core-drive
+sourcePath: core-drive/no-do-overs.md
+wordCount: 236
 readingMinutes: 2
 author: Pratik Mehta
 license: CC BY-NC 4.0
@@ -50,11 +51,11 @@ description: >-
 - Resume without starting over. A pause, however long it may be, is acceptable as long as the project is picked back up from where it was left off.
 - Redirect creative bursts. Whenever you get an urge to start a new project, redirect that energy back to unfinished projects waiting to be revived.
 
+> [!note]
+> - **Failure** occurs when a project meets fatal exit criteria: either the solution cannot be implemented technically, or it did not turn out to be as useful as originally thought.
+> - **Success** occurs when a project meets its positive exit criteria.
+> - **Abandonment = Pause:** There is no true concept of abandonment. When you stop working, you are technically just pausing.
 
-**Notes:**
+---
 
-- **Failure** occurs when a project meets fatal exit criteria: either the solution cannot be implemented technically, or it did not turn out to be as useful as originally thought.
-- **Success** occurs when a project meets its positive exit criteria.
-- **Abandonment = Pause:** There is no true concept of abandonment. When you stop working, you are technically just pausing.
-
-`West Windsor, NJ ▸ 10:47 PM`
+— `West Windsor, NJ ▸ 10:47 PM`

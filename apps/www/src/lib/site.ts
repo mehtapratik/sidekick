@@ -2,33 +2,73 @@ import { load } from "js-yaml";
 import fs from "node:fs";
 import path from "node:path";
 
-export type Category = "essays" | "plans" | "decisions" | "builds" | "notes";
+export type Section = "writings" | "core-drive" | "plans" | "builds" | "notes";
+export type PostType =
+   | "essay"
+   | "blog"
+   | "core-drive"
+   | "plan"
+   | "decision"
+   | "build"
+   | "note";
 
-export const CATEGORIES: Category[] = [
-   "essays",
+export const SECTIONS: Section[] = [
+   "writings",
+   "core-drive",
    "plans",
-   "decisions",
    "builds",
    "notes",
 ];
 
-export const CATEGORY_LABELS: Record<Category, string> = {
-   essays: "Essays",
+// Nav-visible sections, in display order. `notes` is Index-only.
+export const NAV_SECTIONS: Section[] = [
+   "writings",
+   "core-drive",
+   "plans",
+   "builds",
+];
+
+export const SECTION_LABELS: Record<Section, string> = {
+   writings: "Writings",
+   "core-drive": "Core Drive",
    plans: "Plans",
-   decisions: "Decisions",
-   builds: "Build",
+   builds: "Builds",
    notes: "Notes",
 };
 
-export const CATEGORY_DESCRIPTIONS: Record<Category, string> = {
-   essays:
-      "Non-technical writings about Sidekick and other ideas worth writing down.",
-   decisions:
-      "A registry of every decisions (technical and non-technical) made while building Sidekick.",
-   plans: "Overall implementation plan and phase-wise plans. What was planned and how it went.",
+export const SECTION_DESCRIPTIONS: Record<Section, string> = {
+   writings:
+      "Essays and technical blogs — non-technical and technical writing about Sidekick and other ideas worth writing down.",
+   "core-drive":
+      "Core principles driving my actions, behaviors, and Sidekick's implementations.",
+   plans:
+      "Original plans and the technical or tactical decisions made later that influenced them.",
    builds:
       "Step-by-step instructions to build the same thing yourself, from scratch.",
-   notes: "Learning notes taken while building Sidekick - mostly technical in nature, but not always.",
+   notes:
+      "Learning notes taken while building Sidekick — mostly technical in nature, but not always.",
+};
+
+export const TYPE_LABELS: Record<PostType, string> = {
+   essay: "Essay",
+   blog: "Blog",
+   "core-drive": "Core Drive",
+   plan: "Plan",
+   decision: "Decision",
+   build: "Build",
+   note: "Note",
+};
+
+// Maps a post's `type` to a hero-art motif. hero-art.js has no "Note" motif,
+// so notes fall back to the Blog treatment.
+export const TYPE_TO_MOTIF: Record<PostType, string> = {
+   essay: "Essay",
+   blog: "Blog",
+   "core-drive": "Core Drive",
+   plan: "Plan",
+   decision: "Decision",
+   build: "Build",
+   note: "Blog",
 };
 
 export type ContentMeta = {
@@ -57,6 +97,7 @@ export type ContentMeta = {
          description?: string;
          audience?: string;
          version?: string;
+         seed?: string;
       }
    >;
 };
