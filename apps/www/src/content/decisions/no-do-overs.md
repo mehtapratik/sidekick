@@ -1,11 +1,16 @@
 ---
-title: There are no do-overs
+title: No Do-overs — An Anti-Abandonment Algorithm
 deck: >-
-  I will no longer start over when things get convoluted and difficult. Nor will
-  I give up on an idea or project that I have invested significant time in, only
-  to find myself working on another exciting project that just crossed my mind.
-created: '2026-07-23'
-updated: '2026-07-23'
+  This algorithm is designed to prevent me from abandoning projects or starting
+  over from scratch when things get difficult or convoluted. A design that is
+  perfect today will soon be imperfect as it evolves to support more features.
+  Starting over only kicks off another phase of the
+  "perfect-start-soon-to-be-imperfect" cycle. This vicious cycle is the source
+  of wasted effort, frustration, hopelessness, and a stained image as an
+  innovator. Beautiful ideas and visions never get to see the light of day,
+  staying forever trapped in my head.
+created: '2026-07-24'
+updated: '2026-07-24'
 version: 1.0.0
 tags:
   - principle
@@ -20,22 +25,36 @@ tags:
   - persistence
 category: decisions
 sourcePath: decisions/no-do-overs.md
-wordCount: 236
+wordCount: 230
 readingMinutes: 2
 author: Pratik Mehta
 license: CC BY-NC 4.0
 audience: General
 status: active
 description: >-
-  I will no longer start over when things get convoluted and difficult. Nor will
-  I give up on an idea or project that I have invested significant time in, only
-  to find myself working on another exciting project that just crossed my mind.
+  This algorithm is designed to prevent me from abandoning projects or starting
+  over from scratch when things get difficult or convoluted. A design that is
+  perfect today will soon be imperfect as it evolves to support more features.
+  Starting over only kicks off another phase of the
+  "perfect-start-soon-to-be-imperfect" cycle. This vicious cycle is the source
+  of wasted effort, frustration, hopelessness, and a stained image as an
+  innovator. Beautiful ideas and visions never get to see the light of day,
+  staying forever trapped in my head.
 ---
 
-As I am writing this, I am fully aware of the past circumstances that kept me from working on my dreams for months or even years on end. These circumstances include work pressures, immigration challenges, family emergencies and so on. I fully expect things like this to come up in the future as well. What will be different this time is that I will not abandon an ongoing project. I will keep the fire of my passions burning—even at a slow simmer—to hold me back from forgetting while those circumstances prevent me from working on my dreams. And thus, when the situation gets back to normal, I pick up from where I left off instead of starting another brand new pet project.
+- Consider options carefully before making a decision, and learn to live with them afterward.
+- Accept that things will get messy and less-than-ideal as they evolve—no matter how perfect they were at the beginning. Embrace their flaws and make the best of them.
+- Stop going back to a blank slate on the same projects over and over to implement a perfect solution.
+- Finish current projects in the pipeline before starting new ones. Both success and failure are acceptable exit criteria for finishing a project gracefully.
+- Prevent abandonment by putting current projects on pause anytime you are burnt out or going through a difficult time.
+- Resume without starting over. A pause, however long it may be, is acceptable as long as the project is picked back up from where it was left off.
+- Redirect creative bursts. Whenever you get an urge to start a new project, redirect that energy back to unfinished projects waiting to be revived.
 
-1. Think very carefully and reflect on your priorities before starting a new project.
-2. Do not abandon the project, once started. Have the discipline and courage to learn to live with your very own decision and keep up the momentum. 
-3. Abandoning a project must mean the end of all of my personal pursuits in that domain. I will no longer start another side-pursuit in the same discipline again unless I revive and finish the abandoned project first. Therefore, giving up on Sidekick means the end to my dreams and the end of my plans to build my own products and code outside of my job.
 
-— West Windsor, NJ at 11:28 PM
+**Notes:**
+
+- **Failure** occurs when a project meets fatal exit criteria: either the solution cannot be implemented technically, or it did not turn out to be as useful as originally thought.
+- **Success** occurs when a project meets its positive exit criteria.
+- **Abandonment = Pause:** There is no true concept of abandonment. When you stop working, you are technically just pausing.
+
+`West Windsor, NJ ▸ 10:47 PM`
