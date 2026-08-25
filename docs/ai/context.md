@@ -29,6 +29,23 @@ pnpm --filter @sidekick/core lint
 
 ## Architecture
 
+### Product Modules
+
+Sidekick is a Personal Operating System. Features are **named product modules** — the module name is the canonical vocabulary for feature slugs, package names, entitlements, and scopes:
+
+| Module | Package | Purpose |
+|---|---|---|
+| Taxila | `packages/feature-taxila` | Knowledge management (notes + knowledge sources; a bookmark is a source of type `link`) |
+| Zinsser | `packages/feature-zinsser` | Writing + AI writing coach |
+| Core Drive | `packages/feature-core-drive` | Value system powering ALL AI behavior (principles, mental models, heuristics, identity, preferences) — loaded via the tiered context model; may fold into Taxila later |
+| Alter Ego | `packages/feature-alter-ego` | AI confidant grounded in Core Drive + Taxila RAG |
+| War Room | `packages/feature-war-room` | Planning / tasks |
+| Factory | `packages/feature-factory` | Push-button workflows + input defaults (MVP scope) |
+
+Product truth lives in `docs/prd/` — a per-feature PRD is written there **before** that feature's implementation starts. Do not invent feature scope; read the PRD. The high-level PRD is `docs/essays/01-sidekick-birds-eye-view.md`; the authoritative task breakdown is `docs/plans/00-living-plan/living-plan.md`.
+
+The MVP UI is **command-palette-first**: a single Cmd+P-style command box is the primary navigation surface, not a sidebar/menu layout.
+
 ### Monorepo
 
 ```
@@ -85,7 +102,7 @@ All `/api/*` route handlers must use `withApiGuard()` (implemented in Phase 2):
 ```ts
 export const GET = withApiGuard(
   async ({ tx, userId }) => { ... },
-  { feature: 'notes', requireScope: 'notes:read' }
+  { feature: 'taxila', requireScope: 'taxila:read' }
 )
 ```
 
@@ -142,6 +159,20 @@ These apply from day one to avoid blocking future sync support:
 - **Idempotent APIs** — same ID + same payload = same result
 - **Repository layer mandatory** — UI → Repository → API → DB. Never bypass
 
+### Graph Store & Global Metadata Service
+
+Cross-feature relationships and tags live in shared Postgres tables in `packages/core` (`edges`, `tags`, `entity_tags`) — a graph *pattern*, not a graph database. All access goes through `GraphRepository`; never query these tables directly from features. Edges store opaque typed IDs (`fromId`/`fromType`/`toId`/`toType`), so core stays feature-agnostic. Every feature entity registers an **entity type** in `packages/features-registry` alongside its feature manifest.
+
+### AI Layer — Provider-Agnostic
+
+Never call an LLM provider SDK directly from a feature. All model access goes through the static model router in `packages/core/ai`, which maps task types (capabilities like `chat`, `classify`, `coach`) to provider/model via config on top of the Vercel AI SDK's provider registry. Switching providers is a config change. Embedding models are the exception: switching one requires re-embedding all content (tracked via `embeddingStatus`).
+
+AI responses are **structured streams** (segments carrying a source class — internal knowledge vs. web — plus footnote citations), not plain text streams. See architecture overview §5.5–5.6.
+
+### Context Assembler & Effort Level
+
+Features never hand-roll AI context. The **Context Assembler** in `packages/core/ai` is the only way to obtain it: input `(feature, taskType, effortLevel)`, output a budgeted context bundle assembled from three tiers — Tier 0 kernel (Core Drive identity + universal principles, always injected, hard token cap), Tier 1 Core Drive entries retrieved by applicability tags (global tag service) with similarity as secondary, Tier 2 situational state from War Room/Factory via structured queries. `effortLevel` is a first-class parameter of the AI request contract: it controls assembly depth and may route to a more capable model. Boundary rule: **Core Drive never stores state; War Room/Factory never store values; domain knowledge lives in Taxila** (Core Drive links to it via the graph). Core Drive entries carry `category`, `directive` (compact injectable form — inject the directive, not the prose), `weight`, and `kernel`. See architecture overview §5.2.
+
 ### Embedding Pipeline
 
 Content tables in the embedding pipeline must include:
@@ -189,8 +220,11 @@ Note: Supabase renamed keys in 2025. `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` repl
 
 ## Adding a Feature Package
 
-1. `packages/feature-yourname/` with `package.json` name `@sidekick/feature-yourname`
+0. Confirm a PRD exists in `docs/prd/` for the module — write it first if not
+1. `packages/feature-<module>/` with `package.json` name `@sidekick/feature-<module>` — use the product module name (e.g. `feature-taxila`), never a generic name
 2. `tsconfig.json` extending `../../tsconfig.base.json`
-3. Define schema in `schema.ts`, Drizzle config in `drizzle.config.ts`
-4. Register in `packages/features-registry` (`ALL_FEATURES`)
-5. API routes at `apps/web/src/app/api/yourname/` using `withApiGuard()`
+3. Define schema in `schema.ts` (client-UUID `id`, `userId`, `createdAt`/`updatedAt`/`deletedAt`, `embeddingStatus` if content participates in embeddings), Drizzle config in `drizzle.config.ts`
+4. Migration binds the shared RLS combined policy + `no_hard_delete_*` / `no_update_deleted_*` triggers
+5. Register the feature **and its entity types** in `packages/features-registry` (`ALL_FEATURES`)
+6. API routes at `apps/web/src/app/api/<module>/` using `withApiGuard()` with `<module>:read` / `<module>:write` scopes
+7. Cross-feature links and tags go through `GraphRepository` — never feature-to-feature foreign keys

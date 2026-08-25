@@ -2,11 +2,33 @@
 title: Living Implementation Plan of Sidekick
 ---
 
-# Workspace App — Implementation Plan & Work Breakdown
+# Sidekick — Implementation Plan & Work Breakdown
 
 > Document Type: Master and Living Implementation Plan
 > Context: Solo developer, hobby-to-business trajectory, AI-assisted with full code review
-> Based on: [Production-Grade Architecture Handover (May 2026)](../../notes/architecture-handover/)
+> Based on: [Architecture Overview](../../notes/architecture-overview.md) and the high-level PRD, [Project Sidekick — A Bird's Eye View](../../essays/01-sidekick-birds-eye-view.md)
+
+---
+
+## Plan ↔ PRD Traceability
+
+Product truth lives in `docs/prd/` (the high-level PRD plus per-feature PRDs written before each feature's phase starts). This table maps PRD modules to plan phases; when a PRD changes, this table and the affected phases are revised — never the completed foundation phases.
+
+| PRD Module | Phase(s) | Notes |
+| ---------- | -------- | ----- |
+| *(infrastructure)* | 0, 1, 1.1, 2, 3 | Product-agnostic: monorepo, auth, RLS, API guard, graph/metadata service |
+| Taxila | 4 | Absorbs "Notes" and "Bookmarks" (bookmark = knowledge source of type `link`) |
+| Zinsser | 5 (editor), post-6 (AI coach) | Editor first; coach depends on AI layer |
+| Core Drive | 6 | Separate feature for now; may fold into Taxila later (see architecture §5.2) |
+| Alter Ego | 6 | Grounded in Core Drive + Taxila RAG |
+| War Room | 7 | Tasks / planning entity |
+| Factory | 7 (push-button workflows), post-MVP (rest) | MVP scope per PRD: push-button workflows + input defaults |
+| Parrot | — | Post-MVP, backlogged |
+
+**Changelog**
+
+- **2026-08-24** — Core Drive redesigned as a system-wide **tiered context model** (kernel / applicability-loaded / situational state) with a centralized **Context Assembler** and first-class **Effort Level** in the AI request contract (architecture §5.2). Domain knowledge assigned to Taxila; state/values boundary between Core Drive and War Room/Factory made explicit. Phase 6A/6B/7A tasks updated.
+- **2026-07-27** — Realigned the entire plan to the bird's-eye-view essay (high-level PRD). Adopted module names; rejected Bookmarks/Recipes/Budget as standalone features; added graph store & metadata service, Core Drive, command-palette shell, and provider-agnostic AI router; moved dogfooding/billing to optional tail. Phases 0–2 unchanged.
 
 ---
 
@@ -186,34 +208,56 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 
 ---
 
-## Phase 3 — First Feature: Notes (End-to-End Vertical)
+## Phase 3 — Graph Store & Metadata Service
 
-> **Milestone:** A fully working Notes feature — create, read, update, soft-delete. This is your "proof of architecture" feature. Every future feature follows this exact same pattern.
-> **Learning payoff:** The complete feature loop: schema → migration → API → repository → UI. This is the template you'll reuse for every other feature.
+> **Milestone:** The cross-feature relationship and metadata layer is live (architecture §5.3). Any entity can be linked to any other entity and tagged — the "power of synergies" substrate every module builds on. This is also the proof-of-architecture vertical: schema → migration → RLS → repository → guarded API.
+> **Learning payoff:** Graph modeling in relational databases, recursive CTEs, polymorphic references, designing a core service that stays feature-agnostic.
 
-| #    | Task                                                                                                                                                                                   | Complexity | Learning |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 3.1  | Create `packages/feature-notes` with its own `package.json`, tsconfig, and Drizzle config                                                                                              | 🟡         | 📦 🗄️    |
-| 3.2  | Define `notes` table schema in `packages/feature-notes/schema.ts` — include `id` (client UUID), `userId`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`, `embeddingStatus` | 🔴         | 🗄️       |
-| 3.3  | Run migration; verify table appears in Supabase dashboard                                                                                                                              | 🟢         | 🗄️       |
-| 3.4  | Enable RLS on `notes`; add canonical user-owns-rows policy                                                                                                                             | 🔴         | 🔐 🗄️    |
-| 3.5  | Register `notes` feature in `packages/features-registry/ALL_FEATURES`                                                                                                                  | 🟢         | 📦       |
-| 3.6  | Implement `NotesRepository` in `packages/feature-notes/repository.ts` — `list()`, `getById()`, `create()`, `update()`, `softDelete()`                                                  | 🔴         | 🗄️       |
-| 3.7  | Implement `GET /api/notes` route using `withApiGuard` + feature guard + `notes:read` scope                                                                                             | 🔴         | 🧩 🔐    |
-| 3.8  | Implement `POST /api/notes` route — accept client-generated UUID                                                                                                                       | 🔴         | 🧩 🔐    |
-| 3.9  | Implement `GET /api/notes/[id]` route                                                                                                                                                  | 🟡         | 🧩       |
-| 3.10 | Implement `PATCH /api/notes/[id]` route                                                                                                                                                | 🟡         | 🧩       |
-| 3.11 | Implement `DELETE /api/notes/[id]` route — soft delete only, set `deletedAt`                                                                                                           | 🟡         | 🧩 🗄️    |
-| 3.12 | Build Notes list page at `/notes` — server component fetching notes via repository                                                                                                     | 🟡         | 🧩 🎨    |
-| 3.13 | Build Note detail/edit page at `/notes/[id]`                                                                                                                                           | 🟡         | 🧩 🎨    |
-| 3.14 | Build "New Note" flow with client-generated UUID                                                                                                                                       | 🟡         | 🧩 🎨    |
-| 3.15 | Wire up soft-delete in the UI with confirmation                                                                                                                                        | 🟢         | 🎨       |
-| 3.16 | Enable the `notes` feature for your own user account via seed script                                                                                                                   | 🟢         |          |
-| 3.17 | Manually test the full CRUD loop via both UI and direct API calls (use curl or Postman)                                                                                                | 🟢         |          |
+| #    | Task                                                                                                                                          | Complexity | Learning |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 3.1  | Add `entityType` registration to `FeatureManifest` in `packages/features-registry` — the registry becomes the entity-type ledger              | 🟡         | 📦       |
+| 3.2  | Define `edges` schema in `packages/core` — `id`, `userId`, `fromId`, `fromType`, `toId`, `toType`, `relation`, timestamps (syncable)          | 🔴         | 🗄️       |
+| 3.3  | Define `tags` and `entity_tags` schemas in `packages/core` (syncable)                                                                         | 🟡         | 🗄️       |
+| 3.4  | Migration: RLS (combined user-isolation + soft-delete pattern from Phase 1.1) + trigger bindings on all three tables                          | 🔴         | 🔐 🗄️    |
+| 3.5  | Implement `GraphRepository` in `packages/core` — the ONLY access path: `link()`, `unlink()`, `neighbors()`, `tag()`, `untag()`, `byTag()`     | 🔴         | 🗄️       |
+| 3.6  | Implement traversal query with a recursive CTE — e.g., `related(entityId, depth)`                                                             | 🔴         | 🗄️       |
+| 3.7  | API routes `/api/graph/*` and `/api/tags/*` using `withApiGuard`                                                                              | 🟡         | 🧩 🔐    |
+| 3.8  | Validate `fromType`/`toType` against registered entity types at the repository boundary                                                       | 🟡         | 📦       |
+| 3.9  | Manually test: create edges/tags via API, verify RLS isolation and soft-delete behavior                                                       | 🟢         |          |
 
-**Phase 3 Exit Criteria:** Notes can be created, edited, listed, and soft-deleted through the UI. The API layer enforces auth and feature entitlement. All queries filter `where(isNull(notes.deletedAt))`.
+**Phase 3 Exit Criteria:** Entities can be linked and tagged through guarded APIs. `GraphRepository` is the sole access path. Entity types are registered in the feature registry. All graph data is user-isolated and soft-deletable.
 
-**Note on task 3.4:** The RLS policy for `notes` uses the combined pattern (user isolation + soft-delete in one USING clause) established in Phase 1.1. The migration must also bind the two shared trigger functions created in `0003`. See the Phase 3+ template in the architecture handover.
+> [!note]
+> **No graph database.** This is a graph *pattern* on plain Postgres — sufficient at MVP scale. If Sidekick grows to hundreds/thousands of users, `GraphRepository` is the swap boundary for a dedicated graph engine. See architecture §5.3.
+
+---
+
+## Phase 4 — Taxila v1 (Knowledge Management)
+
+> **Milestone:** The first product module, end-to-end: atomic notes and knowledge sources you can create, enrich with metadata, link, and browse — reached through the command-palette shell. Every future module follows this pattern.
+> **Learning payoff:** The complete feature loop: PRD → schema → migration → API → repository → UI. Polymorphic content design. Command-palette UX.
+> **Prerequisite:** Write the Taxila PRD in `docs/prd/` before starting (new convention).
+
+| #    | Task                                                                                                                                                                                       | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 4.1  | Write Taxila PRD in `docs/prd/` — source types, note anatomy, metadata model, MVP cut                                                                                                      | 🟡         |          |
+| 4.2  | Create `packages/feature-taxila` with its own `package.json`, tsconfig, and Drizzle config                                                                                                 | 🟡         | 📦 🗄️    |
+| 4.3  | Define `notes` table schema — `id` (client UUID), `userId`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`, `embeddingStatus`                                                   | 🔴         | 🗄️       |
+| 4.4  | Define `knowledge_sources` table — `sourceType: 'link' \| 'captured' \| 'markdown'`, `url`, `content`, same syncable + `embeddingStatus` columns (a bookmark is a `link` source)           | 🔴         | 🗄️       |
+| 4.5  | Migration: RLS combined pattern + trigger bindings on both tables (template established in Phase 3)                                                                                        | 🔴         | 🔐 🗄️    |
+| 4.6  | Register `taxila` feature + its entity types (`note`, `knowledge_source`) in `ALL_FEATURES`                                                                                                | 🟢         | 📦       |
+| 4.7  | Implement `TaxilaRepository` — `list()`, `getById()`, `create()`, `update()`, `softDelete()` for both entities                                                                             | 🔴         | 🗄️       |
+| 4.8  | API routes `/api/taxila/notes` and `/api/taxila/sources` (CRUD, soft-delete only) using `withApiGuard` + `taxila:read`/`taxila:write` scopes                                               | 🔴         | 🧩 🔐    |
+| 4.9  | Wire metadata enrichment: tag notes/sources and link related concepts via the Phase 3 graph service                                                                                        | 🟡         | 🗄️ 🧩    |
+| 4.10 | Build the **command-palette shell** — a single centered command box (Cmd+P style) for navigation and actions; replaces the placeholder sidebar dashboard as the primary surface            | 🔴         | 🧩 🎨    |
+| 4.11 | Build Taxila list + detail/edit pages, reachable via the palette                                                                                                                           | 🟡         | 🧩 🎨    |
+| 4.12 | "New note" / "new source" flows with client-generated UUIDs; soft-delete with confirmation                                                                                                 | 🟡         | 🧩 🎨    |
+| 4.13 | Enable the `taxila` feature for your own account via seed script                                                                                                                           | 🟢         |          |
+| 4.14 | Manually test the full loop via both palette-driven UI and direct API calls (curl/Postman)                                                                                                 | 🟢         |          |
+
+**Phase 4 Exit Criteria:** Notes and knowledge sources can be created, enriched with tags/links, edited, listed, and soft-deleted through the command-palette-driven UI. The API layer enforces auth and feature entitlement. All queries filter `where(isNull(table.deletedAt))`.
+
+**RLS template for all feature tables** (combined pattern from Phase 1.1; bind the shared trigger functions from migration `0003`):
 
 ```sql
 -- RLS (combined pattern)
@@ -232,224 +276,245 @@ CREATE TRIGGER no_update_deleted_notes
 
 ---
 
-## Phase 4 — Rich Text Editor (Writing Feature)
+## Phase 5 — Zinsser v1 (Writing — Editor First)
 
-> **Milestone:** A proper writing experience with Tiptap. Notes and Writing share the editor component. This is where the app starts feeling real.
+> **Milestone:** A proper writing experience with Tiptap. Taxila and Zinsser share the editor component. This is where the app starts feeling real.
 > **Learning payoff:** Tiptap configuration, rich text as JSON storage, markdown export, editor extensions.
+> **Prerequisite:** Write the Zinsser PRD in `docs/prd/` before starting.
+> **Scope note:** This phase is the editor only. Zinsser's AI-coach layer (style profile trained on your writing, point-by-point feedback, repeated-mistake tracking) depends on the AI layer and is sequenced after Phase 6 — see Backlogged item B2.
 
 | #    | Task                                                                                        | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 4.1  | Install Tiptap dependencies in `packages/ui`                                                | 🟢         | ✍️       |
-| 4.2  | Build a `<RichTextEditor>` component in `packages/ui` using `@mantine/tiptap`               | 🟡         | ✍️ 🎨    |
-| 4.3  | Configure extensions: Bold, Italic, Heading, BulletList, OrderedList, Code, Link, Image     | 🟡         | ✍️       |
-| 4.4  | Implement JSON storage — editor outputs `editor.getJSON()` for storage                      | 🔴         | ✍️       |
-| 4.5  | Implement markdown export — `editor.storage.markdown.getMarkdown()` for embedding pipeline  | 🔴         | ✍️       |
-| 4.6  | Make editor mobile-friendly (touch targets, mobile toolbar)                                 | 🟡         | ✍️ 📱    |
-| 4.7  | Swap plain textarea in Notes editor for `<RichTextEditor>`                                  | 🟢         |          |
-| 4.8  | Create `packages/feature-writing` with its own schema                                       | 🟡         | 📦 🗄️    |
-| 4.9  | Define `documents` table — similar shape to `notes` but with `type` (essay, journal, draft) | 🟡         | 🗄️       |
-| 4.10 | Implement full API routes for Writing feature (same pattern as Notes)                       | 🟡         | 🧩       |
-| 4.11 | Register `writing` feature in feature registry                                              | 🟢         |          |
-| 4.12 | Build Writing section in the app shell (`/writing`)                                         | 🟡         | 🧩 🎨    |
+| 5.1  | Install Tiptap dependencies in `packages/ui`                                                | 🟢         | ✍️       |
+| 5.2  | Build a `<RichTextEditor>` component in `packages/ui` using `@mantine/tiptap`               | 🟡         | ✍️ 🎨    |
+| 5.3  | Configure extensions: Bold, Italic, Heading, BulletList, OrderedList, Code, Link, Image     | 🟡         | ✍️       |
+| 5.4  | Implement JSON storage — editor outputs `editor.getJSON()` for storage                      | 🔴         | ✍️       |
+| 5.5  | Implement markdown export — `editor.storage.markdown.getMarkdown()` for embedding pipeline  | 🔴         | ✍️       |
+| 5.6  | Make editor mobile-friendly (touch targets, mobile toolbar)                                 | 🟡         | ✍️ 📱    |
+| 5.7  | Swap plain textarea in Taxila notes editor for `<RichTextEditor>`                           | 🟢         |          |
+| 5.8  | Create `packages/feature-zinsser` with its own schema                                       | 🟡         | 📦 🗄️    |
+| 5.9  | Define `documents` table — similar shape to `notes` but with `type` (essay, journal, draft) | 🟡         | 🗄️       |
+| 5.10 | Implement full API routes for Zinsser (same pattern as Taxila)                              | 🟡         | 🧩       |
+| 5.11 | Register `zinsser` feature + `document` entity type in feature registry                     | 🟢         |          |
+| 5.12 | Make Zinsser reachable via the command palette (`/writing`)                                 | 🟡         | 🧩 🎨    |
 
-**Phase 4 Exit Criteria:** The rich text editor is shared, reusable, stores JSON, exports markdown. Notes and Writing both use it.
-
----
-
-## Phase 5 — Content Features (Bookmarks, Recipes, Budget)
-
-> **Milestone:** The app is a multi-feature productivity tool. Three more features built using the established pattern.
-> **Learning payoff:** Repetition builds fluency. Schema design for varied content types. Simpler after Notes.
-
-Each sub-feature follows the same pattern: schema → migration → RLS → feature registry → API routes → repository → UI pages.
-
-### 5A — Bookmarks
-
-| #    | Task                                                                                                    | Complexity |
-| ---- | ------------------------------------------------------------------------------------------------------- | ---------- |
-| 5A.1 | Create `packages/feature-bookmarks`; define `bookmarks` schema (url, title, description, tags, favicon) | 🟡         |
-| 5A.2 | Migration, RLS, feature registry entry                                                                  | 🟡         |
-| 5A.3 | API routes: list, create, update, soft-delete                                                           | 🟡         |
-| 5A.4 | Implement `BookmarksRepository`                                                                         | 🟡         |
-| 5A.5 | UI: Bookmarks list with search/filter by tag                                                            | 🟡         |
-| 5A.6 | UI: Add bookmark form (URL, auto-fetch title/description via server action)                             | 🟡         |
-
-### 5B — Recipes
-
-| #    | Task                                                                                                   | Complexity |
-| ---- | ------------------------------------------------------------------------------------------------------ | ---------- |
-| 5B.1 | Create `packages/feature-recipes`; define `recipes` schema (title, ingredients, steps, tags, servings) | 🟡         |
-| 5B.2 | Migration, RLS, feature registry entry                                                                 | 🟡         |
-| 5B.3 | API routes: list, create, update, soft-delete                                                          | 🟡         |
-| 5B.4 | Implement `RecipesRepository`                                                                          | 🟡         |
-| 5B.5 | UI: Recipe list with search                                                                            | 🟡         |
-| 5B.6 | UI: Recipe detail with structured ingredients and steps                                                | 🟡         |
-
-### 5C — Budget
-
-| #    | Task                                                                                           | Complexity |
-| ---- | ---------------------------------------------------------------------------------------------- | ---------- |
-| 5C.1 | Create `packages/feature-budget`; define `transactions` schema (amount, category, date, notes) | 🟡         |
-| 5C.2 | Migration, RLS, feature registry entry                                                         | 🟡         |
-| 5C.3 | API routes: list (with date range filter), create, update, soft-delete                         | 🟡         |
-| 5C.4 | Implement `BudgetRepository`                                                                   | 🟡         |
-| 5C.5 | UI: Transaction list with monthly grouping                                                     | 🟡         |
-| 5C.6 | UI: Simple spending summary by category                                                        | 🟡         |
-
-**Phase 5 Exit Criteria:** All three content features are live, follow the same architectural patterns, and are protected by the feature entitlement system.
+**Phase 5 Exit Criteria:** The rich text editor is shared, reusable, stores JSON, exports markdown. Taxila and Zinsser both use it.
 
 ---
 
-## Phase 6 — AI Layer (Embeddings + RAG + Chat)
+## Phase 6 — Core Drive + AI Layer + Alter Ego
 
-> **Milestone:** Your content is semantically searchable. An AI chat interface can answer questions about your notes, bookmarks, and recipes. This is where the app becomes genuinely powerful.
-> **Learning payoff:** pgvector, HNSW indexes, semantic chunking, the Vercel AI SDK, streaming responses, RAG pipeline design.
+> **Milestone:** Sidekick gets its mind. Core Drive holds your principles, values, and mental models; your content is semantically searchable; and Alter Ego — grounded in Core Drive + Taxila — answers as the version of you who sees clearly.
+> **Learning payoff:** pgvector, HNSW indexes, semantic chunking, provider-agnostic AI routing, streaming structured responses, RAG pipeline design.
+> **Prerequisites:** Write the Core Drive and Alter Ego PRDs in `docs/prd/`. The Alter Ego PRD must specify the source-attribution contract (internal vs. web source classes, color coding, footnotes — architecture §5.6).
 
-| #    | Task                                                                                                     | Complexity | Learning |
-| ---- | -------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 6.1  | Enable `pgvector` extension in Supabase                                                                  | 🟢         | 🤖       |
-| 6.2  | Add `embedding` vector column to `notes`, `documents`, `bookmarks`, `recipes` tables                     | 🟡         | 🤖 🗄️    |
-| 6.3  | Create HNSW indexes on each embedding column                                                             | 🔴         | 🤖 🗄️    |
-| 6.4  | Implement `generateEmbedding(text)` in `packages/core/ai/embed.ts` using OpenAI `text-embedding-3-small` | 🟡         | 🤖       |
-| 6.5  | Implement semantic chunking strategy — split tiptap JSON → markdown → chunks with overlap                | 🔴         | 🤖 ✍️    |
-| 6.6  | Implement async background embedding job with retry (2 retries, exponential backoff) using `waitUntil()` | 🔴         | 🤖 🧩    |
-| 6.7  | Wire embedding generation into Notes create/update API routes — non-blocking, sets `embeddingStatus`     | 🔴         | 🤖 🔐    |
-| 6.8  | Implement `match_content()` PostgreSQL function for vector similarity search                             | 🔴         | 🤖 🗄️    |
-| 6.9  | Create `packages/feature-ai-chat` with its own schema (`chat_sessions`, `chat_messages`)                 | 🟡         | 📦 🗄️    |
-| 6.10 | Migration, RLS, feature registry entry for AI Chat                                                       | 🟡         |          |
-| 6.11 | Implement `POST /api/ai/chat` streaming route using Vercel AI SDK + Anthropic Claude                     | 🔴         | 🤖 🧩    |
-| 6.12 | Implement RAG context retrieval in the chat handler — retrieve top-k relevant chunks before calling LLM  | 🔴         | 🤖       |
-| 6.13 | Build AI Chat UI in `packages/feature-ai-chat` — streaming message display, input, loading states        | 🟡         | 🎨 🧩    |
-| 6.14 | Add `/chat` page to app shell                                                                            | 🟢         |          |
-| 6.15 | Implement `embeddingStatus` monitoring — a simple admin view showing failed embeddings                   | 🟡         | 🤖       |
-| 6.16 | Add retry trigger API endpoint for failed embeddings                                                     | 🟡         | 🤖       |
+### 6A — Core Drive (context layer)
 
-**Phase 6 Exit Criteria:** You can type a question in the chat, it retrieves relevant chunks from your notes/recipes/bookmarks, and streams a contextual answer from Claude. Failed embeddings are visible and retriable.
+| #    | Task                                                                                                                                       | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 6A.1 | Create `packages/feature-core-drive`; define entry schema with the anatomy from architecture §5.2.2 — `category` (identity/principle/mental-model/heuristic/tool/preference), `directive` (compact injectable form), `weight`, `kernel` flag, `lastLoadedAt` | 🔴 | 📦 🗄️ |
+| 6A.2 | Migration, RLS, trigger bindings, feature registry entry + entity type                                                                     | 🟡         | 🔐 🗄️    |
+| 6A.3 | Apply applicability metadata via the global tag service (`#principle`, `#domain:spending`, `#situation:planning`, …)                       | 🟡         | 🗄️       |
+| 6A.4 | Repository + API routes + minimal palette-reachable UI for authoring entries (full prose + directive form)                                 | 🟡         | 🧩 🎨    |
+| 6A.5 | Seed Core Drive from `docs/core-drive/` content — mark universal principles as `kernel`                                                    | 🟢         |          |
+
+> [!note]
+> Core Drive is a separate feature for now and may fold into Taxila later — see architecture §5.2 for the rationale and revisit criteria. Context is loaded via the **tiered model** (§5.2.1): kernel entries injected wholesale under a hard token budget; the rest retrieved by applicability tags. **Domain knowledge belongs in Taxila** — Core Drive entries link to it through the graph service, never store it. Hard boundary: *Core Drive never stores state; War Room/Factory never store values.*
+
+### 6B — Provider-agnostic AI foundation
+
+| #    | Task                                                                                                                                       | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 6B.1 | Implement the static model router in `packages/core/ai` — config map of task types → provider/model via AI SDK `createProviderRegistry()`  | 🔴         | 🤖       |
+| 6B.2 | Features request capabilities (`chat`, `classify`, `coach`), never concrete models — enforce via the router's public interface             | 🟡         | 🤖 📦    |
+| 6B.2a | Define the AI request contract with `effortLevel` as a first-class parameter — v1: tunes retrieval depth (k); router may later resolve higher effort to more capable models | 🟡 | 🤖 |
+| 6B.2b | Implement **Context Assembler v1** in `packages/core/ai` — input `(feature, taskType, effortLevel)`, output context bundle: kernel entries + top-k Tier 1 by applicability tags/similarity, within token budget. The ONLY way features obtain AI context (architecture §5.2.3) | 🔴 | 🤖 📦 |
+| 6B.3 | Enable `pgvector` extension in Supabase                                                                                                    | 🟢         | 🤖       |
+| 6B.4 | Add `embedding` vector column to `notes`, `knowledge_sources`, `documents`, and Core Drive entries                                         | 🟡         | 🤖 🗄️    |
+| 6B.5 | Create HNSW indexes on each embedding column                                                                                               | 🔴         | 🤖 🗄️    |
+| 6B.6 | Implement `generateEmbedding(text)` in `packages/core/ai/embed.ts` (default: OpenAI `text-embedding-3-small`, routed like any other model) | 🟡         | 🤖       |
+| 6B.7 | Implement semantic chunking strategy — split Tiptap JSON → markdown → chunks with overlap                                                  | 🔴         | 🤖 ✍️    |
+| 6B.8 | Implement async background embedding job with retry (2 retries, exponential backoff) using `waitUntil()`                                   | 🔴         | 🤖 🧩    |
+| 6B.9 | Wire embedding generation into Taxila/Zinsser create/update routes — non-blocking, sets `embeddingStatus`                                  | 🔴         | 🤖 🔐    |
+| 6B.10 | Implement `match_content()` PostgreSQL function for vector similarity search                                                              | 🔴         | 🤖 🗄️    |
+
+### 6C — Alter Ego
+
+| #    | Task                                                                                                                                       | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 6C.1 | Create `packages/feature-alter-ego` with its own schema (`chat_sessions`, `chat_messages`)                                                 | 🟡         | 📦 🗄️    |
+| 6C.2 | Migration, RLS, feature registry entry                                                                                                     | 🟡         |          |
+| 6C.3 | Design the **structured response contract** — segments carrying source class (internal vs. web) + footnote citations, streamed             | 🔴         | 🤖 🧩    |
+| 6C.4 | Implement `POST /api/alter-ego/chat` streaming route — context via the Context Assembler, model via the router                             | 🔴         | 🤖 🧩    |
+| 6C.5 | Implement RAG context retrieval — top-k relevant chunks from Taxila (+ tagged Core Drive expansions) before calling the LLM                | 🔴         | 🤖       |
+| 6C.6 | Build Alter Ego chat UI — streaming display honoring the response contract (source color coding + footnotes; web retrieval may ship later, but the UI renders the contract now) | 🔴 | 🎨 🧩 |
+| 6C.7 | Add `/chat` to the command palette                                                                                                         | 🟢         |          |
+| 6C.8 | Implement `embeddingStatus` monitoring — a simple admin view showing failed embeddings                                                     | 🟡         | 🤖       |
+| 6C.9 | Add retry trigger API endpoint for failed embeddings                                                                                       | 🟡         | 🤖       |
+
+**Phase 6 Exit Criteria:** You can ask Alter Ego a question; the Context Assembler loads your kernel principles plus applicable Core Drive entries, RAG retrieves relevant knowledge chunks, and the answer streams as a structured, source-attributed response. `effortLevel` is honored end-to-end (contract → assembler → router). Models are resolved via the router config — switching providers is a config change. Failed embeddings are visible and retriable.
 
 ---
 
-## Phase 7 — PWA & iOS Shell
+## Phase 7 — War Room & Factory v1
+
+> **Milestone:** Planning and push-button execution. Tasks exist; one click on a configured button (e.g., "School+Car") creates tomorrow's pickup task without typing a word.
+> **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through the graph service.
+> **Prerequisites:** War Room and Factory PRDs in `docs/prd/`.
+> **Context note:** War Room and Factory own **Tier 2 situational state** (current projects, priorities, goals, calendar, daily briefs — architecture §5.2.1). Once their entities exist, wire them into the Context Assembler as structured-query sources (task 7A.5). Boundary rule: they store state, never values — values live in Core Drive.
+
+### 7A — War Room
+
+| #    | Task                                                                                             | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 7A.1 | Create `packages/feature-war-room`; define `tasks` (and optionally `plans`) schema — syncable    | 🟡         | 📦 🗄️    |
+| 7A.2 | Migration, RLS, trigger bindings, registry entry + entity types                                  | 🟡         | 🔐 🗄️    |
+| 7A.3 | Repository + guarded API routes (CRUD, soft-delete)                                              | 🟡         | 🧩 🔐    |
+| 7A.4 | Palette-reachable UI: today view, task create/complete flows                                     | 🟡         | 🧩 🎨    |
+| 7A.5 | Wire War Room/Factory state into the Context Assembler as Tier 2 sources (structured queries: open tasks, priorities, goals)              | 🔴         | 🤖 🧩    |
+
+### 7B — Factory v1 (MVP scope only: push-button workflows + input defaults)
+
+| #    | Task                                                                                                                   | Complexity | Learning |
+| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| 7B.1 | Create `packages/feature-factory`; define `workflows` schema — name, icon, action definition (typed payload), enabled  | 🔴         | 📦 🗄️    |
+| 7B.2 | Migration, RLS, registry entry                                                                                         | 🟡         | 🔐 🗄️    |
+| 7B.3 | Implement workflow execution through public APIs only (API-first guarantee) — e.g., "create War Room task with preset payload" | 🔴 | 🧩 🔐 |
+| 7B.4 | UI: configure a push-button workflow; surface buttons in the command palette / toolbar                                 | 🟡         | 🧩 🎨    |
+| 7B.5 | Implement configurable input defaults — forms open pre-filled with previously typed inputs                             | 🟡         | 🧩       |
+
+**Phase 7 Exit Criteria:** The "School+Car" flow works end-to-end: one configured button creates a task for tomorrow. Input defaults reduce repeat typing. All execution flows through guarded public APIs. (Inbox management, IoT, webhooks, and durable workflow engines remain post-MVP — see Post-MVP section.)
+
+---
+
+## Phase 8 — PWA & iOS Shell
 
 > **Milestone:** The app is installable on your iPhone. It works as a PWA in the browser and as a side-loaded Capacitor app.
 > **Learning payoff:** Service workers, PWA manifest, Capacitor, mobile UX constraints.
 
 | #    | Task                                                                     | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------ | ---------- | -------- |
-| 7.1  | Install and configure `Serwist` for service worker support in `apps/web` | 🟡         | 📱       |
-| 7.2  | Create `manifest.json` — app name, icons, display mode, theme color      | 🟢         | 📱       |
-| 7.3  | Configure offline asset caching strategy in the service worker           | 🟡         | 📱       |
-| 7.4  | Test PWA install flow in Chrome DevTools and on iPhone via Safari        | 🟢         | 📱       |
-| 7.5  | Audit mobile UI — touch targets, viewport, safe areas, keyboard behavior | 🟡         | 📱 🎨    |
-| 7.6  | Initialize Capacitor in `apps/web`                                       | 🟡         | 📱       |
-| 7.7  | Configure Capacitor to point at the hosted Vercel Next.js URL            | 🟡         | 📱       |
-| 7.8  | Build and side-load the iOS app onto your iPhone using Xcode             | 🟡         | 📱       |
-| 7.9  | Test core flows (login, notes, chat) on device                           | 🟢         |          |
-| 7.10 | Handle iOS safe area insets in the layout                                | 🟡         | 📱       |
+| 8.1  | Install and configure `Serwist` for service worker support in `apps/web` | 🟡         | 📱       |
+| 8.2  | Create `manifest.json` — app name, icons, display mode, theme color      | 🟢         | 📱       |
+| 8.3  | Configure offline asset caching strategy in the service worker           | 🟡         | 📱       |
+| 8.4  | Test PWA install flow in Chrome DevTools and on iPhone via Safari        | 🟢         | 📱       |
+| 8.5  | Audit mobile UI — touch targets, viewport, safe areas, keyboard behavior | 🟡         | 📱 🎨    |
+| 8.6  | Initialize Capacitor in `apps/web`                                       | 🟡         | 📱       |
+| 8.7  | Configure Capacitor to point at the hosted Vercel Next.js URL            | 🟡         | 📱       |
+| 8.8  | Build and side-load the iOS app onto your iPhone using Xcode             | 🟡         | 📱       |
+| 8.9  | Test core flows (login, palette, Taxila, Alter Ego chat) on device       | 🟢         |          |
+| 8.10 | Handle iOS safe area insets in the layout                                | 🟡         | 📱       |
 
-**Phase 7 Exit Criteria:** App is installable as a PWA from Safari, side-loadable as an iOS app via Capacitor. Core features work on-device.
+**Phase 8 Exit Criteria:** App is installable as a PWA from Safari, side-loadable as an iOS app via Capacitor. Core features work on-device.
 
 ---
 
-## Phase 8 — API Keys & CLI
+## Phase 9 — API Keys & CLI
 
 > **Milestone:** You can use your own app from the terminal. API keys are manageable from the UI. The CLI is a real working tool.
 > **Learning payoff:** CLI tooling (commander.js or similar), API key security patterns, Bearer auth flows, streaming in a terminal context.
 
 | #    | Task                                                                                             | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------ | ---------- | -------- |
-| 8.1  | Create `api_keys` table in `packages/core` (see §8.3 canonical schema)                           | 🟡         | 🗄️ 🔐    |
-| 8.2  | Migration + RLS for `api_keys`                                                                   | 🟡         | 🗄️ 🔐    |
-| 8.3  | Implement API key generation — secure random bytes → raw key returned once → SHA-256 hash stored | 🔴         | 🔐       |
-| 8.4  | Wire Bearer API key lookup into `resolveApiCaller()` in `packages/core`                          | 🔴         | 🔐       |
-| 8.5  | Implement `POST /api/api-keys` — create key, return raw key once                                 | 🔴         | 🔐 🧩    |
-| 8.6  | Implement `GET /api/api-keys` — list keys (no raw key values, show label/scopes/last-used)       | 🟡         | 🧩       |
-| 8.7  | Implement `DELETE /api/api-keys/[id]` — revoke key by setting `revokedAt`                        | 🟡         | 🧩       |
-| 8.8  | Update `withApiGuard` to track `lastUsedAt` on successful API key auth                           | 🟡         | 🔐       |
-| 8.9  | Build API key management UI — list keys, create key (show raw key once), revoke                  | 🟡         | 🎨       |
-| 8.10 | Build `apps/cli` as a Node.js CLI tool — authenticate with API key from env/config file          | 🟡         | 🖥️       |
-| 8.11 | Implement `cli notes list` command                                                               | 🟡         | 🖥️       |
-| 8.12 | Implement `cli notes create` command (from stdin or file)                                        | 🟡         | 🖥️       |
-| 8.13 | Implement `cli chat` command with streaming output to terminal                                   | 🔴         | 🖥️ 🤖    |
-| 8.14 | Document CLI usage in README                                                                     | 🟢         |          |
+| 9.1  | Create `api_keys` table in `packages/core` (see §8.3 canonical schema)                           | 🟡         | 🗄️ 🔐    |
+| 9.2  | Migration + RLS for `api_keys`                                                                   | 🟡         | 🗄️ 🔐    |
+| 9.3  | Implement API key generation — secure random bytes → raw key returned once → SHA-256 hash stored | 🔴         | 🔐       |
+| 9.4  | Wire Bearer API key lookup into `resolveApiCaller()` in `packages/core`                          | 🔴         | 🔐       |
+| 9.5  | Implement `POST /api/api-keys` — create key, return raw key once                                 | 🔴         | 🔐 🧩    |
+| 9.6  | Implement `GET /api/api-keys` — list keys (no raw key values, show label/scopes/last-used)       | 🟡         | 🧩       |
+| 9.7  | Implement `DELETE /api/api-keys/[id]` — revoke key by setting `revokedAt`                        | 🟡         | 🧩       |
+| 9.8  | Update `withApiGuard` to track `lastUsedAt` on successful API key auth                           | 🟡         | 🔐       |
+| 9.9  | Build API key management UI — list keys, create key (show raw key once), revoke                  | 🟡         | 🎨       |
+| 9.10 | Build `apps/cli` as a Node.js CLI tool — authenticate with API key from env/config file          | 🟡         | 🖥️       |
+| 9.11 | Implement `cli taxila list` command                                                              | 🟡         | 🖥️       |
+| 9.12 | Implement `cli taxila create` command (from stdin or file)                                       | 🟡         | 🖥️       |
+| 9.13 | Implement `cli chat` command with streaming output to terminal                                   | 🔴         | 🖥️ 🤖    |
+| 9.14 | Document CLI usage in README                                                                     | 🟢         |          |
 
-**Phase 8 Exit Criteria:** You can generate an API key in the UI, set it as an env var, and run `cli notes list` and `cli chat` from your terminal.
+**Phase 9 Exit Criteria:** You can generate an API key in the UI, set it as an env var, and run `cli taxila list` and `cli chat` from your terminal.
 
 ---
 
-## Phase 9 — Observability & Hardening
+## Phase 10 — Observability & Hardening
 
 > **Milestone:** The app is reliable enough for friends and family. You have visibility into what's failing. Error handling is consistent.
 > **Learning payoff:** Structured logging, error boundaries, rate limiting, the operational side of running a web service.
 
 | #    | Task                                                                                     | Complexity | Learning |
 | ---- | ---------------------------------------------------------------------------------------- | ---------- | -------- |
-| 9.1  | Add structured request logging to `withApiGuard` — method, path, userId, latency, status | 🟡         | 🧩       |
-| 9.2  | Add auth failure logging — track 401/403 patterns                                        | 🟡         | 🔐       |
-| 9.3  | Add failed embedding logging with enough context to retry                                | 🟡         | 🤖       |
-| 9.4  | Add Next.js error boundaries to all main UI sections                                     | 🟡         | 🧩       |
-| 9.5  | Add global API error response normalization — consistent `{ error, code }` shape         | 🟡         | 🧩       |
-| 9.6  | Review and audit all API routes — confirm every route uses `withApiGuard`                | 🟢         | 🔐       |
-| 9.7  | Audit all queries — confirm `where(isNull(table.deletedAt))` on syncable tables          | 🟢         | 🗄️       |
-| 9.8  | Add basic rate limiting on auth routes and AI chat endpoint                              | 🟡         | 🔐       |
-| 9.9  | Run a manual penetration test of your own app — try to access another user's data        | 🔴         | 🔐       |
-| 9.10 | Add input validation (zod) on all API route handlers                                     | 🟡         | 🧩       |
+| 10.1  | Add structured request logging to `withApiGuard` — method, path, userId, latency, status | 🟡         | 🧩       |
+| 10.2  | Add auth failure logging — track 401/403 patterns                                        | 🟡         | 🔐       |
+| 10.3  | Add failed embedding logging with enough context to retry                                | 🟡         | 🤖       |
+| 10.4  | Add Next.js error boundaries to all main UI sections                                     | 🟡         | 🧩       |
+| 10.5  | Add global API error response normalization — consistent `{ error, code }` shape         | 🟡         | 🧩       |
+| 10.6  | Review and audit all API routes — confirm every route uses `withApiGuard`                | 🟢         | 🔐       |
+| 10.7  | Audit all queries — confirm `where(isNull(table.deletedAt))` on syncable tables          | 🟢         | 🗄️       |
+| 10.8  | Add basic rate limiting on auth routes and AI chat endpoint                              | 🟡         | 🔐       |
+| 10.9  | Run a manual penetration test of your own app — try to access another user's data        | 🔴         | 🔐       |
+| 10.10 | Add input validation (zod) on all API route handlers                                     | 🟡         | 🧩       |
 
-**Phase 9 Exit Criteria:** Logs are structured and useful. All routes are guarded. No RLS gaps. Input validation is consistent across the API.
+**Phase 10 Exit Criteria:** Logs are structured and useful. All routes are guarded. No RLS gaps. Input validation is consistent across the API.
 
 ---
 
-## Phase 10 — Dogfooding (Friends & Family Access)
+## Phase 11 — Dogfooding (Friends & Family Access) — Optional
 
 > **Milestone:** You can invite others to use the app. They have their own isolated data. You have a basic way to manage who has access.
 > **Learning payoff:** Multi-user ops, invite flows, feature management for different users.
 
 | #    | Task                                                                                     | Complexity | Learning |
 | ---- | ---------------------------------------------------------------------------------------- | ---------- | -------- |
-| 10.1 | Build an invite flow — generate invite link that pre-approves sign-up                    | 🔴         | 🔐 🧩    |
-| 10.2 | Build a simple admin page (your user only) to list users and manage feature entitlements | 🟡         | 🎨 🔐    |
-| 10.3 | Add `isAdmin` flag to `profiles` table; gate admin pages behind it                       | 🟡         | 🔐       |
-| 10.4 | Enable specific features for invited users from the admin panel                          | 🟡         |          |
-| 10.5 | Test full sign-up and feature access flow from a fresh incognito session                 | 🟢         |          |
-| 10.6 | Collect feedback from dogfood users; create a prioritized bug list                       | 🟢         |          |
+| 11.1 | Build an invite flow — generate invite link that pre-approves sign-up                    | 🔴         | 🔐 🧩    |
+| 11.2 | Build a simple admin page (your user only) to list users and manage feature entitlements | 🟡         | 🎨 🔐    |
+| 11.3 | Add `isAdmin` flag to `profiles` table; gate admin pages behind it                       | 🟡         | 🔐       |
+| 11.4 | Enable specific features for invited users from the admin panel                          | 🟡         |          |
+| 11.5 | Test full sign-up and feature access flow from a fresh incognito session                 | 🟢         |          |
+| 11.6 | Collect feedback from dogfood users; create a prioritized bug list                       | 🟢         |          |
 
-**Phase 10 Exit Criteria:** You can invite someone, they can sign up, they have access only to the features you enabled for them, and their data is fully isolated from yours.
+**Phase 11 Exit Criteria:** You can invite someone, they can sign up, they have access only to the features you enabled for them, and their data is fully isolated from yours.
 
 ---
 
-## Phase 11 — Billing & SaaS Readiness (Optional Path)
+## Phase 12 — Billing & SaaS Readiness (Optional Path)
+
+> [!note]
+> Per the PRD, Sidekick's motivation is "purely personal and utilitarian" — monetization is not a product goal. This phase exists because of the "built for one, designed for many" principle (architecture §2.4): the entitlement plumbing stays product-ready, but this phase runs only if Sidekick pursues the product path.
 
 > **Milestone:** The app can charge for access. Feature entitlement is tied to subscription tier. The foundation for a real business offering.
 > **Learning payoff:** Stripe integration, webhook handling, subscription state management, SaaS architecture patterns.
 
 | #    | Task                                                                                                    | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 11.1 | Create Stripe account; configure products and price tiers                                               | 🟢         | 💳       |
-| 11.2 | Add `subscriptions` table — `userId`, `stripeCustomerId`, `stripePriceId`, `status`, `currentPeriodEnd` | 🟡         | 🗄️ 💳    |
-| 11.3 | Implement Stripe checkout session creation in `POST /api/billing/checkout`                              | 🟡         | 💳 🧩    |
-| 11.4 | Implement Stripe webhook handler — sync subscription state into `subscriptions` table                   | 🔴         | 💳 🔐    |
-| 11.5 | Update `getEnabledFeatures()` to resolve features from subscription tier as well as manual entitlements | 🔴         | 💳 🗄️    |
-| 11.6 | Build billing settings page — current plan, upgrade CTA, portal link                                    | 🟡         | 🎨 💳    |
-| 11.7 | Implement Stripe customer portal redirect for managing subscriptions                                    | 🟡         | 💳       |
-| 11.8 | Add a landing page or marketing page explaining features per tier                                       | 🟢         | 🎨       |
-| 11.9 | End-to-end test: sign up → subscribe → gain feature access → cancel → lose access                       | 🟡         |          |
+| 12.1 | Create Stripe account; configure products and price tiers                                               | 🟢         | 💳       |
+| 12.2 | Add `subscriptions` table — `userId`, `stripeCustomerId`, `stripePriceId`, `status`, `currentPeriodEnd` | 🟡         | 🗄️ 💳    |
+| 12.3 | Implement Stripe checkout session creation in `POST /api/billing/checkout`                              | 🟡         | 💳 🧩    |
+| 12.4 | Implement Stripe webhook handler — sync subscription state into `subscriptions` table                   | 🔴         | 💳 🔐    |
+| 12.5 | Update `getEnabledFeatures()` to resolve features from subscription tier as well as manual entitlements | 🔴         | 💳 🗄️    |
+| 12.6 | Build billing settings page — current plan, upgrade CTA, portal link                                    | 🟡         | 🎨 💳    |
+| 12.7 | Implement Stripe customer portal redirect for managing subscriptions                                    | 🟡         | 💳       |
+| 12.8 | Add a landing page or marketing page explaining features per tier                                       | 🟢         | 🎨       |
+| 12.9 | End-to-end test: sign up → subscribe → gain feature access → cancel → lose access                       | 🟡         |          |
 
-**Phase 11 Exit Criteria:** A new user who subscribes to a paid plan automatically gains access to paid features. A cancelled user loses access at period end.
+**Phase 12 Exit Criteria:** A new user who subscribes to a paid plan automatically gains access to paid features. A cancelled user loses access at period end.
 
 ---
 
-## Phase 12 — Bots, Workflows & Agents (Future)
+## Post-MVP — Factory Extensions, Bots & Agents
 
-> **Milestone:** The app can execute automations on your behalf. External agents can interact with your data via the public API.
+> **Milestone:** Factory grows beyond push-button workflows: triggered and recurring automations, inbox management, IoT integrations. External agents interact with your data via the public API. Parrot (voice dictation) also lives here.
 > **Learning payoff:** Agent interoperability, webhook-driven automation, workflow design patterns.
 
 | #    | Task                                                                                     | Complexity | Learning |
 | ---- | ---------------------------------------------------------------------------------------- | ---------- | -------- |
-| 12.1 | Design a `workflows` schema — trigger type, actions, enabled flag                        | 🔴         | 🗄️       |
-| 12.2 | Implement a simple recurring workflow — e.g., weekly digest of bookmarks emailed to self | 🟡         | 🧩       |
-| 12.3 | Add webhook ingest endpoint — external services can push events to the app               | 🔴         | 🔐 🧩    |
-| 12.4 | Document the public API surface for agents — OpenAPI spec or equivalent                  | 🟡         | 🖥️       |
-| 12.5 | Evaluate Inngest for durable workflows if complexity warrants it                         | 🟡         |          |
-| 12.6 | Add agent-friendly scoped API keys for automation use cases                              | 🟡         | 🔐       |
+| PM.1 | Extend the Factory `workflows` schema with trigger types (schedule, event) beyond manual buttons | 🔴  | 🗄️       |
+| PM.2 | Implement a simple recurring workflow — e.g., weekly digest of knowledge sources emailed to self | 🟡  | 🧩       |
+| PM.3 | Add webhook ingest endpoint — external services can push events to the app               | 🔴         | 🔐 🧩    |
+| PM.4 | Document the public API surface for agents — OpenAPI spec or equivalent                  | 🟡         | 🖥️       |
+| PM.5 | Evaluate Inngest for durable workflows if complexity warrants it                         | 🟡         |          |
+| PM.6 | Add agent-friendly scoped API keys for automation use cases                              | 🟡         | 🔐       |
+| PM.7 | Inbox management automations (email/message triage) per the Factory PRD                  | 🔴         | 🧩       |
+| PM.8 | IoT integrations (blinds, garage door) per the Factory PRD                               | 🔴         | 🧩       |
+| PM.9 | **Parrot** — voice dictation with gesture support for punctuation/formatting (own PRD first) | 🔴     | 📱       |
 
 ---
 
@@ -462,12 +527,13 @@ If you're new to some of the tech in this stack, here's the minimum viable readi
 | Phase 0      | Turborepo docs getting started; pnpm workspaces                                      |
 | Phase 1      | Supabase Auth docs; Next.js App Router docs (routing, middleware, server components) |
 | Phase 2      | Next.js Route Handlers; how middleware chains work                                   |
-| Phase 3      | Drizzle ORM quickstart; PostgreSQL RLS basics                                        |
-| Phase 4      | Tiptap getting started; `@mantine/tiptap` docs                                       |
-| Phase 6      | pgvector README; Vercel AI SDK docs; Anthropic API docs                              |
-| Phase 7      | Serwist docs; Capacitor iOS quickstart                                               |
-| Phase 8      | Node.js CLI patterns (commander.js); API key security best practices                 |
-| Phase 11     | Stripe docs: Checkout, webhooks, customer portal                                     |
+| Phase 3      | Recursive CTEs in PostgreSQL; modeling graphs in relational databases                |
+| Phase 4      | Drizzle ORM quickstart; PostgreSQL RLS basics; command-palette UX patterns (cmdk)    |
+| Phase 5      | Tiptap getting started; `@mantine/tiptap` docs                                       |
+| Phase 6      | pgvector README; Vercel AI SDK docs (incl. provider registry); Anthropic API docs    |
+| Phase 8      | Serwist docs; Capacitor iOS quickstart                                               |
+| Phase 9      | Node.js CLI patterns (commander.js); API key security best practices                 |
+| Phase 12     | Stripe docs: Checkout, webhooks, customer portal                                     |
 
 ---
 
@@ -491,21 +557,22 @@ Before moving to the next phase, verify:
 
 ## Rough Effort Estimates (Solo, AI-assisted, Learning pace)
 
-| Phase    | Estimated Sessions | Notes                                    |
-| -------- | ------------------ | ---------------------------------------- |
-| Phase 0  | 2–3 sessions       | Mostly config, fast with AI help         |
-| Phase 1  | 3–5 sessions       | Auth has depth; worth going slow         |
-| Phase 2  | 2–4 sessions       | Conceptually dense; revisit often        |
-| Phase 3  | 4–6 sessions       | The learning payoff is highest here      |
-| Phase 4  | 2–4 sessions       | Tiptap is well-documented                |
-| Phase 5  | 4–8 sessions       | Repetition; gets faster each sub-feature |
-| Phase 6  | 6–10 sessions      | Most technically complex phase           |
-| Phase 7  | 2–4 sessions       | Mostly config and testing                |
-| Phase 8  | 3–5 sessions       | CLI is fun; API key crypto needs care    |
-| Phase 9  | 2–3 sessions       | Audit work; methodical                   |
-| Phase 10 | 2–3 sessions       | Satisfying milestone                     |
-| Phase 11 | 4–6 sessions       | Stripe webhooks need careful testing     |
-| Phase 12 | Open-ended         | Exploratory; do when ready               |
+| Phase    | Estimated Sessions | Notes                                          |
+| -------- | ------------------ | ---------------------------------------------- |
+| Phase 0  | 2–3 sessions       | Mostly config, fast with AI help ✅            |
+| Phase 1  | 3–5 sessions       | Auth has depth; worth going slow ✅            |
+| Phase 2  | 2–4 sessions       | Conceptually dense; revisit often              |
+| Phase 3  | 3–5 sessions       | Graph modeling + first full vertical           |
+| Phase 4  | 5–7 sessions       | Highest learning payoff; includes the palette  |
+| Phase 5  | 2–4 sessions       | Tiptap is well-documented                      |
+| Phase 6  | 8–12 sessions      | Most technically complex; three sub-phases     |
+| Phase 7  | 3–5 sessions       | Two smaller features on established patterns   |
+| Phase 8  | 2–4 sessions       | Mostly config and testing                      |
+| Phase 9  | 3–5 sessions       | CLI is fun; API key crypto needs care          |
+| Phase 10 | 2–3 sessions       | Audit work; methodical                         |
+| Phase 11 | 2–3 sessions       | Optional; satisfying milestone                 |
+| Phase 12 | 4–6 sessions       | Optional; Stripe webhooks need careful testing |
+| Post-MVP | Open-ended         | Exploratory; do when ready                     |
 
 > Sessions are loosely defined as focused 2–3 hour working blocks. Estimates assume you're reviewing every line and asking questions — that's the point.
 
@@ -536,3 +603,24 @@ These items are known, intentional gaps — deferred, not forgotten.
 - **Dedicated admin Drizzle client** in `packages/core` scoped exclusively to erasure operations, distinct from the runtime `db` instance
 
 **When to implement:** When onboarding external users, or when a compliance review requires a documented erasure process.
+
+### B2 — Zinsser AI Coach (after Phase 6)
+
+**What:** The AI half of Zinsser: a style profile trained on the user's own drafts, point-by-point feedback, repeated-mistake tracking, and "release-ready" copy that sounds like the user — with the coaching goal of needing fewer corrections over time.
+
+**Why deferred:** Depends on the AI foundation (model router, embeddings, structured responses) from Phase 6. The editor (Phase 5) delivers standalone value first.
+
+**When to implement:** After Phase 6, once Alter Ego has proven the AI patterns. Write the Zinsser coach section of the PRD first.
+
+### B3 — Bookmarks / Recipes / Budget (rejected as standalone features, 2026-07-27)
+
+**What:** Three content features from the original plan, cut during the PRD realignment.
+
+- **Bookmarks** — absorbed into Taxila: a bookmark is a knowledge source of `sourceType: 'link'`. Not coming back as a standalone feature.
+- **Recipes / Budget** — candidates for future "minions" (PRD: build-vs-buy consolidation features). Revive only if a PRD is written for them.
+
+### B4 — Parrot (voice dictation)
+
+**What:** Voice dictation with gesture support for punctuation and formatting — accent-friendly, replacing $100+/yr subscription services.
+
+**Why deferred:** Explicitly out of MVP scope per the PRD. Listed in the Post-MVP phase (PM.9).
