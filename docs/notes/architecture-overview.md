@@ -1,7 +1,6 @@
 ---
 title: Sidekick's Architectural Overview
-description: >- 
-  Sidekick's architectural overview — an API-first platform tuned for solo developers
+description: Sidekick's architectural overview — an API-first platform tuned for solo developers
 created: '2026-07-09'
 updated: '2026-08-24'
 version: 2.1.0

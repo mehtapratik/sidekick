@@ -1,6 +1,7 @@
 ---
 title: Model selection strategy
-description: >-  Which model to use for which kind of session based on the type of task, teaching value, and complexity
+description: >-  
+    Which model to use for which kind of session based on the type of task, teaching value, and complexity
 created: '2026-08-24'
 updated: '2026-08-24'
 version: 1.0.0
