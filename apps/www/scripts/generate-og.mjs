@@ -10,7 +10,7 @@ const ROOT = path.join(__dirname, "..");
 const CONTENT_DIR = path.join(ROOT, "src/content");
 const OG_DIR = path.join(ROOT, "public/og");
 
-const SECTIONS = ["writings", "core-drive", "plans", "builds", "notes"];
+const SECTIONS = ["writings", "core-drive", "plans", "builds"];
 
 // Maps a post's `type` to a hero-art motif; keep in sync with
 // TYPE_TO_MOTIF in src/lib/site.ts.

@@ -7,8 +7,7 @@ export type Post =
    | CollectionEntry<"writings">
    | CollectionEntry<"core-drive">
    | CollectionEntry<"plans">
-   | CollectionEntry<"builds">
-   | CollectionEntry<"notes">;
+   | CollectionEntry<"builds">;
 
 export async function getAllPosts(): Promise<Post[]> {
    const results = await Promise.all(

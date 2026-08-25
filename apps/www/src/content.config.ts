@@ -8,7 +8,7 @@ const entrySchema = z.object({
    updated: z.coerce.date().optional(),
    version: z.string().optional(),
    tags: z.array(z.string()).default([]),
-   section: z.enum(["writings", "core-drive", "plans", "builds", "notes"]),
+   section: z.enum(["writings", "core-drive", "plans", "builds"]),
    type: z.enum([
       "essay",
       "blog",
@@ -30,7 +30,7 @@ const entrySchema = z.object({
 });
 
 function collection(
-   name: "writings" | "core-drive" | "plans" | "builds" | "notes",
+   name: "writings" | "core-drive" | "plans" | "builds",
 ) {
    return defineCollection({
       loader: glob({ base: `./src/content/${name}`, pattern: "**/*.md" }),
@@ -43,5 +43,4 @@ export const collections = {
    "core-drive": collection("core-drive"),
    plans: collection("plans"),
    builds: collection("builds"),
-   notes: collection("notes"),
 };

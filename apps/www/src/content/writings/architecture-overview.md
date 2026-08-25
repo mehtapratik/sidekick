@@ -2,18 +2,18 @@
 title: Sidekick's Architectural Overview
 deck: ''
 created: '2026-07-09'
-updated: '2026-07-09'
-version: 1.0.0
+updated: '2026-08-24'
+version: 2.1.0
 tags:
   - sidekick
   - project
   - technical
   - architecture
-section: notes
+section: writings
 type: note
 sourcePath: notes/architecture-overview.md
-wordCount: 3542
-readingMinutes: 17
+wordCount: 5413
+readingMinutes: 25
 author: Pratik Mehta
 license: CC BY-NC 4.0
 audience: Software Engineers
@@ -24,8 +24,7 @@ description: >-
 ---
 
 ## 1. Executive summary
-
-> Sidekick will be a modular, API-first productivity platform designed with multiple types of clients in mind: a Next.js-powered web app, a Progressive Web Application (PWA), and above all, a programmable API platform for agents, automations, workflows, and CLI tooling.
+Sidekick will be a modular, API-first **Personal Operating System** designed with multiple types of clients in mind: a Next.js-powered web app, a Progressive Web Application (PWA), and above all, a programmable API platform for agents, automations, workflows, and CLI tooling. The product vision and its modules are defined in the high-level PRD, [Project Sidekick — A Bird's Eye View](../essays/01-sidekick-birds-eye-view.md); section 5 of this document maps that vision onto the technical architecture.
 
 The application architecture intentionally prioritizes security through enforceable structures, maintainability for a solo developer, incremental scalability, future support for offline capabilities, and API parity across browsers, CLIs, and agents. The system is NOT designed as a hyper-scale enterprise platform from day one. Instead, it is designed to evolve safely without requiring major architectural rewrites.
 
@@ -54,6 +53,13 @@ We want to implement every possible guardrail to enforce architectural guideline
 Sidekick’s architecture is intentionally designed to balance complexity and simplicity in a way that works efficiently for a solo developer today, while remaining open enough to introduce necessary complexity later. For example, whether a specific feature is authorized or not, the MVP will build all features, deploy everything, and share the same runtime (i.e., features are not containerized). 
 
 This avoids premature complexity and supports a rapid development cycle. The architecture remains open enough to support runtime feature loading, microservices, independent deployments, and offline sync engines without large-scale rewrites.
+
+### 2.4 Built for one, designed for many
+The MVP serves an audience of one, but Sidekick is intended to grow into a real product. This principle governs every design choice:
+1. Never bake single-user assumptions into schemas or services. Every user-data table is keyed by `userId` under RLS — multi-tenancy is already real, not aspirational.
+2. Feature entitlements, invites, and billing remain in the plan — sequenced late, but never removed.
+3. Quotas, limits, and usage tracking are designed as per-user concerns from the start.
+4. Prefer reversible choices: a Postgres-based graph pattern now that can become a dedicated graph database at scale; a static model router now that can become a routing gateway at scale.
 
 ---
 
@@ -130,6 +136,122 @@ This avoids premature complexity and supports a rapid development cycle. The arc
 
 ---
 
+## 5. Product context — the module system
+
+Sidekick's features are **named product modules**, defined in the high-level PRD ([Bird's Eye View](../essays/01-sidekick-birds-eye-view.md)). Module names are the canonical vocabulary everywhere: feature slugs, package names, entitlements, and plan phases all use them. Detailed per-module PRDs live in `docs/prd/` and are written before each module's implementation begins.
+
+### 5.1 Module → package mapping
+
+| Module | Purpose | Package | MVP |
+| ------ | ------ | ------ | ------ |
+| **Taxila** | Knowledge management: atomic notes + knowledge sources (live links, captured content, markdown), metadata enrichment, RAG substrate | `packages/feature-taxila` | Yes |
+| **Zinsser** | Writing app + AI writing coach trained on the user's own style | `packages/feature-zinsser` | Yes (editor first; coach after AI layer) |
+| **Core Drive** | The value system: principles, mental models, priorities, plans — context layer for all AI features | `packages/feature-core-drive` | Yes |
+| **Alter Ego** | AI confidant grounded in Core Drive + Taxila | `packages/feature-alter-ego` | Yes |
+| **War Room** | Planning and strategy (tasks, day planning) | `packages/feature-war-room` | Yes |
+| **Factory** | Execution and automation. MVP scope: push-button workflows + configurable input defaults | `packages/feature-factory` | Partial |
+| **Parrot** | Voice dictation with gesture support | — | No (post-MVP) |
+
+Bookmarks are not a standalone feature: a bookmark is a Taxila *knowledge source* of type `link`. Recipes and Budget are backlogged as future "minions".
+
+### 5.2 Core Drive & context assembly
+
+Core Drive is not a feature that only Alter Ego talks to — it is **baked into the entire system**. How War Room plans, how Factory executes, how automations run: all of it is conditioned by Core Drive. It starts as a handful of principles but will grow into thousands of entries across categories:
+
+| Category | Nature | Loading behavior |
+| ------ | ------ | ------ |
+| Identity | Who the user is, brief history | Kernel (always loaded) |
+| Principles | Universal truths ("No do-overs") — apply almost everywhere | Kernel (always loaded) |
+| Communication styles | How the user prefers to communicate and write | Kernel (always loaded) |
+| Mental models | Situational algorithms ("never shop hungry" → spending tasks only) | By applicability metadata |
+| Heuristics | Mental shortcuts for low-consequence situations | By applicability metadata |
+| Tools & systems | The user's day-to-day toolchain | By applicability metadata |
+| Preferences & constraints | Standing preferences and hard limits | By applicability metadata |
+| Domain knowledge | Subject-matter knowledge | **Lives in Taxila**, not Core Drive — Core Drive entries link to it via the graph service |
+
+Because Core Drive powers every AI-touched operation, it must be **context-size efficient**. That drives the design below.
+
+#### 5.2.1 Tiered context model
+
+Context for any AI-touched operation is assembled from three tiers:
+
+* **Tier 0 — the kernel.** Identity, universal principles, communication style. Always injected, under a hard token budget (~1–2K tokens). The budget creates deliberate curation pressure: an entry *earns* kernel status and is demoted when it stops being universal.
+* **Tier 1 — conditionally loaded Core Drive.** Mental models, heuristics, tools, preferences — retrieved primarily by **applicability metadata** (domain, situation, task type — implemented as global tags from 5.3, e.g. `#domain:spending`, `#situation:planning`), with vector similarity as a secondary net. Applicability tags are the primary key precisely because "never shop hungry" must load when the *task* is about spending, not when the prompt happens to resemble it.
+* **Tier 2 — situational state.** Current projects, roles, prioritized backlog, goals, calendar, daily brief — owned by War Room and Factory. Assembled via ordinary structured repository queries (not embeddings).
+
+**Hard boundary rule:** *Core Drive never stores state; War Room and Factory never store values.* Core Drive is timeless; Tier 2 is operational and current.
+
+#### 5.2.2 Entry anatomy
+
+Each Core Drive entry stores, from day one:
+* `category` — drives tier rules (identity | principle | mental-model | heuristic | tool | preference | …)
+* `directive` — a compact one-line imperative form used for injection ("Never restart a project from scratch; pause and resume"), alongside the full prose the user reads. This is the primary context-size lever: thousands of entries stay affordable because the *distilled* form is what gets injected.
+* `weight` — priority for conflict resolution when two loaded entries clash in a situation
+* `kernel` — boolean marking Tier 0 membership
+* Applicability via global tags (5.3); usage tracking (e.g. `lastLoadedAt`) so dead-weight entries become visible for curation
+
+#### 5.2.3 The Context Assembler
+
+A single **Context Assembler** service in `packages/core/ai` (alongside the model router, 5.5) is the only way features obtain AI context. Input: a task descriptor `(feature, taskType, effortLevel)`. Output: an assembled context bundle (kernel + applicable Tier 1 entries + relevant Tier 2 state, within budget). No feature ever hand-rolls its own context gathering — the same enforced-convention philosophy as `withApiGuard`: one choke point, impossible to drift.
+
+**Effort Level** is a first-class parameter in the AI request contract. It is a budget knob on the assembler — how many tiers are consulted, retrieval depth (k), how much situational state — and the model router responds to it too (higher effort can route to a more capable model). One parameter; two systems respond.
+
+**MVP cut:** the schema fields above and a v1 assembler (kernel + top-k by tag/similarity) ship with the first AI feature; `effortLevel` exists in the contract from day one but initially only tunes retrieval depth. Tier 2 assembly arrives when War Room/Factory exist. The interface is the investment; the sophistication arrives later.
+
+#### 5.2.4 Relationship to Taxila
+
+* **Taxila** is a large, growing corpus consumed via top-k similarity retrieval.
+* **Core Drive** is curated and assembled by tier — kernel entries are injected wholesale, never gambled on a vector-similarity match.
+* Core Drive follows a reflective write pattern: when reality forces a deviation from a principle, the deviation becomes a data point that refines the value system.
+
+> [!note]
+> **Revisit point:** Core Drive *could* fold into Taxila later as tagged knowledge entries. It is kept physically separate for now because (a) its retrieval semantics differ (tiered assembly vs. similarity search), (b) its write pattern differs, and (c) the user should see their Core Drive as its own entity. Folding in later is a cheap data migration (entries already carry global tags); extracting it out later would be hard. Decision deferred to implementation experience.
+
+### 5.3 Graph store & global metadata service
+
+New possibilities emerge when features combine ("power of synergies" in the PRD). While each feature owns its data tables, **relationships between entities and global metadata live in a shared service** — built in the MVP so Taxila uses it from day one.
+
+**This is a graph *pattern*, not a graph *database*.** At MVP scale, plain PostgreSQL tables with recursive CTEs for traversal are sufficient. All access goes through a `GraphRepository` in `packages/core` — the swap boundary if scale ever demands a dedicated graph engine.
+
+Design constraints:
+1. All feature entities use client-generated UUIDs (existing invariant) and register an **entity type** in `packages/features-registry` — the registry doubles as the entity-type ledger.
+2. The `edges` table (`fromId`, `fromType`, `toId`, `toType`, `relation`, timestamps) lives in `packages/core`. Core stays feature-agnostic because it stores opaque typed IDs, never feature schemas.
+3. Global `tags` and `entity_tags` tables provide metadata across all entity types.
+4. Edges and tags are user data: RLS by `userId`, syncable (soft-delete + trigger) rules apply.
+
+### 5.4 Interaction model — command palette first
+
+The MVP UI is a single command box in the center of the page (think Cmd+P in VS Code or `/` in Notion): type the command to run or the page to open. No site layout, navigation chrome, or logo. Conventional layouts are deferred.
+
+This makes the MVP keyboard-heavy, and undiscoverable to anyone who doesn't know what they're looking for — an accepted tradeoff for an audience of one.
+
+### 5.5 Provider-agnostic AI layer
+
+Sidekick's AI capabilities must not be coupled to any single LLM provider. A **static model router** in `packages/core/ai` maps task types to provider/model via configuration, built on the Vercel AI SDK's unified `LanguageModel` interface and `createProviderRegistry()`:
+* Features request **capabilities** (`chat`, `classify`, `coach`) — never concrete models.
+* Switching providers or models is a configuration change, not a code change.
+* The router honors `effortLevel` from the AI request contract (5.2.3): higher effort may resolve to a more capable model for the same task type.
+
+**Designed extension point:** dynamic prompt-classifying routing and gateways (Vercel AI Gateway, OpenRouter, LiteLLM, NotDiamond) compose with the AI SDK. Adopting one later replaces only the router's resolution function — features are untouched.
+
+> [!warning]
+> Embedding models are **not** hot-swappable. Vectors from different embedding models are incompatible; switching requires re-embedding all content. The `embeddingStatus` field (section 13) supports this re-embed flow.
+
+### 5.6 Source attribution in AI responses
+
+AI responses may blend two source classes: **internal knowledge** (RAG over Taxila/Core Drive) and **live web retrieval**. The response contract must carry per-segment source class — enabling color-coded rendering of sentences by origin — plus footnoted citations to sources.
+
+Architectural implication: AI responses are **structured streams (segments + sources), not plain text streams**. The streaming protocol must be designed with this in mind from the first AI feature, even if web retrieval itself ships later. First consumer: Alter Ego (see its PRD in `docs/prd/` when written).
+
+### 5.7 Evolvability — how product changes flow
+
+Requirements will keep evolving as clarity grows. To keep both this document and the plan flexible:
+1. **`docs/prd/` is product truth** — the high-level PRD plus per-feature PRDs written before each feature starts.
+2. **This document describes mechanisms and invariants, not feature lists.** Module-level product changes should only ever touch section 5 (this mapping) — never the security, RLS, repository, or offline sections.
+3. Changes flow one way: **PRD → section 5 mapping → living plan phases**.
+
+---
+
 ## 6. Technology stack
 | Layer | Choice |
 | ------ | ------ |
@@ -140,7 +262,7 @@ This avoids premature complexity and supports a rapid development cycle. The arc
 | Styling | Mantine |
 | Editor | Tiptap |
 | AI SDK | Vercel AI SDK |
-| LLM | Anthropic Claude |
+| LLM | Provider-agnostic router (default: Anthropic Claude) |
 | Embeddings | OpenAI text-embedding-3-small |
 | Monorepo | Turborepo + pnpm |
 | Hosting | Vercel |
@@ -395,15 +517,20 @@ The architecture requires an installable web app, manifest, service workers, and
 The MVP native strategy remains **Capacitor + hosted Next.js application**. The architecture intentionally delays embedded offline databases and native sync engines until post-MVP.
 
 ### 19.14 MVP implementation phases
-1. Monorepo foundation
-2. Auth + shell
-3. Notes feature
-4. Writing feature
-5. Content features
-6. AI layer
-7. Billing
-8. Bots / workflows
-9. Native shell
+1. Monorepo foundation ✅
+2. Auth + security shell (incl. DB-level RLS enforcement) ✅
+3. Core infrastructure — `withApiGuard` + feature system
+4. Graph store & metadata service
+5. Taxila v1 (+ command-palette shell)
+6. Zinsser v1 (editor)
+7. Core Drive + AI layer + Alter Ego
+8. War Room + Factory v1 (push-button workflows)
+9. PWA & native shell
+10. API keys & CLI
+11. Observability & hardening
+12. Dogfooding, then billing (optional — not a product goal per PRD)
+
+See the [living plan](../plans/00-living-plan/living-plan.md) for the authoritative task breakdown.
 
 ### 19.15 Remaining constraints from original handover
 * Feature manifests remain the canonical feature contract.

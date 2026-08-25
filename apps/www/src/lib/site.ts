@@ -2,7 +2,7 @@ import { load } from "js-yaml";
 import fs from "node:fs";
 import path from "node:path";
 
-export type Section = "writings" | "core-drive" | "plans" | "builds" | "notes";
+export type Section = "writings" | "core-drive" | "plans" | "builds";
 export type PostType =
    | "essay"
    | "blog"
@@ -17,10 +17,9 @@ export const SECTIONS: Section[] = [
    "core-drive",
    "plans",
    "builds",
-   "notes",
 ];
 
-// Nav-visible sections, in display order. `notes` is Index-only.
+// Nav-visible sections, in display order.
 export const NAV_SECTIONS: Section[] = [
    "writings",
    "core-drive",
@@ -33,20 +32,17 @@ export const SECTION_LABELS: Record<Section, string> = {
    "core-drive": "Core Drive",
    plans: "Plans",
    builds: "Builds",
-   notes: "Notes",
 };
 
 export const SECTION_DESCRIPTIONS: Record<Section, string> = {
    writings:
-      "Essays and technical blogs — non-technical and technical writing about Sidekick and other ideas worth writing down.",
+      "Essays and notes — non-technical and technical writing about Sidekick and other ideas worth writing down.",
    "core-drive":
       "Core principles driving my actions, behaviors, and Sidekick's implementations.",
    plans:
       "Original plans and the technical or tactical decisions made later that influenced them.",
    builds:
       "Step-by-step instructions to build the same thing yourself, from scratch.",
-   notes:
-      "Learning notes taken while building Sidekick — mostly technical in nature, but not always.",
 };
 
 export const TYPE_LABELS: Record<PostType, string> = {

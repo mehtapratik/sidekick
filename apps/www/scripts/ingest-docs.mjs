@@ -27,7 +27,7 @@ const FOLDER_MAP = {
    plans: { section: "plans", type: "plan" },
    decisions: { section: "plans", type: "decision" },
    builds: { section: "builds", type: "build" },
-   notes: { section: "notes", type: "note" },
+   notes: { section: "writings", type: "note" },
 };
 
 function resolveTaxonomy(relativePath) {
@@ -80,9 +80,14 @@ function walkMd(dir, base = "") {
    return entries;
 }
 
-const SECTIONS = ["writings", "core-drive", "plans", "builds", "notes"];
+const SECTIONS = ["writings", "core-drive", "plans", "builds"];
+const RETIRED_SECTIONS = ["notes"];
 
 function clearContentDir() {
+   for (const section of RETIRED_SECTIONS) {
+      const dir = path.join(CONTENT_DIR, section);
+      if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
+   }
    for (const section of SECTIONS) {
       const dir = path.join(CONTENT_DIR, section);
       fs.mkdirSync(dir, { recursive: true });
