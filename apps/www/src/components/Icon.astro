@@ -1,0 +1,30 @@
+---
+// The design's icon set (src/lib/icons.js), as 24×24 stroke icons. Always
+// decorative — pair with visible text or an aria-label on the control.
+import { ICONS } from "../lib/icons.js";
+
+export type IconName = keyof typeof ICONS;
+
+interface Props {
+   name: IconName;
+   class?: string;
+   size?: number;
+}
+
+const { name, class: className, size } = Astro.props;
+---
+
+<svg
+   class={className}
+   viewBox="0 0 24 24"
+   width={size}
+   height={size}
+   fill="none"
+   stroke="currentColor"
+   stroke-width="1.6"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   aria-hidden="true"
+   focusable="false"
+   set:html={ICONS[name]}
+/>

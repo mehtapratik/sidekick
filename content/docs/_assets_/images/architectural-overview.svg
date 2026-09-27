@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-pattern-1" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1E293B" stroke-width="0.5" stroke-opacity="0.4"/>
+    </pattern>
+
+    <!-- Glow Filters -->
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-indigo" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Gradients -->
+    <linearGradient id="grad-cyan-card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#1E293B" stop-opacity="0.7"/>
+    </linearGradient>
+
+    <linearGradient id="grad-guard-body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0B0F17" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="line-cyan-indigo" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+
+    <linearGradient id="line-indigo-emerald" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; font-weight: 700; fill: #F8FAFC; letter-spacing: 1.5px; }
+    .sub-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; fill: #94A3B8; }
+    .label-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #F1F5F9; }
+    .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; fill: #38BDF8; font-weight: 600; }
+    .tag-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 10px; font-weight: 600; }
+  </style>
+
+  <!-- Deep Void Canvas -->
+  <rect width="1000" height="960" rx="16" fill="#080C14"/>
+  <rect width="1000" height="960" rx="16" fill="url(#grid-pattern-1)"/>
+
+  <!-- Canvas Outer Stroke -->
+  <rect x="1" y="1" width="998" height="958" rx="15" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+
+  <!-- Header Section -->
+  <g transform="translate(50, 35)">
+    <text x="0" y="0" class="title-text" font-size="16" fill="#818CF8">01 // CYBERNETIC FLOW PIPELINE</text>
+    <text x="0" y="20" class="sub-text" font-size="12">Sidekick System Architecture — Enforced Central Choke-Point Pipeline</text>
+  </g>
+
+  <!-- ==================== TIER 1: CLIENT SURFACES ==================== -->
+  <g transform="translate(0, 75)">
+    <!-- Group Container -->
+    <rect x="50" y="0" width="900" height="105" rx="12" fill="#0E1626" fill-opacity="0.6" stroke="#38BDF8" stroke-width="1" stroke-opacity="0.3"/>
+    <text x="70" y="24" class="tag-text" fill="#38BDF8" letter-spacing="1">TIER 1 // OMNICHANNEL CLIENTS</text>
+
+    <!-- Client 1: Browser -->
+    <g transform="translate(70, 38)">
+      <rect width="150" height="50" rx="8" fill="url(#grad-cyan-card)" stroke="#38BDF8" stroke-width="1.2"/>
+      <circle cx="22" cy="25" r="5" fill="#38BDF8" filter="url(#glow-cyan)"/>
+      <text x="35" y="23" class="label-text">Browser</text>
+      <text x="35" y="38" class="code-text" font-size="10" fill="#94A3B8">Next.js Web</text>
+    </g>
+
+    <!-- Client 2: PWA -->
+    <g transform="translate(245, 38)">
+      <rect width="150" height="50" rx="8" fill="url(#grad-cyan-card)" stroke="#38BDF8" stroke-width="1.2"/>
+      <circle cx="22" cy="25" r="5" fill="#38BDF8" filter="url(#glow-cyan)"/>
+      <text x="35" y="23" class="label-text">PWA</text>
+      <text x="35" y="38" class="code-text" font-size="10" fill="#94A3B8">Mobile Web App</text>
+    </g>
+
+    <!-- Client 3: CLI -->
+    <g transform="translate(425, 38)">
+      <rect width="150" height="50" rx="8" fill="url(#grad-cyan-card)" stroke="#38BDF8" stroke-width="1.5" filter="url(#glow-cyan)"/>
+      <circle cx="22" cy="25" r="5" fill="#38BDF8"/>
+      <text x="35" y="23" class="label-text">CLI Tooling</text>
+      <text x="35" y="38" class="code-text" font-size="10" fill="#38BDF8">apps/cli</text>
+    </g>
+
+    <!-- Client 4: Agents -->
+    <g transform="translate(605, 38)">
+      <rect width="150" height="50" rx="8" fill="url(#grad-cyan-card)" stroke="#38BDF8" stroke-width="1.2"/>
+      <circle cx="22" cy="25" r="5" fill="#38BDF8" filter="url(#glow-cyan)"/>
+      <text x="35" y="23" class="label-text">AI Agents</text>
+      <text x="35" y="38" class="code-text" font-size="10" fill="#94A3B8">Automations</text>
+    </g>
+
+    <!-- Client 5: iOS -->
+    <g transform="translate(780, 38)">
+      <rect width="150" height="50" rx="8" fill="url(#grad-cyan-card)" stroke="#38BDF8" stroke-width="1.2"/>
+      <circle cx="22" cy="25" r="5" fill="#38BDF8" filter="url(#glow-cyan)"/>
+      <text x="35" y="23" class="label-text">iOS Native</text>
+      <text x="35" y="38" class="code-text" font-size="10" fill="#94A3B8">Swift Client</text>
+    </g>
+  </g>
+
+  <!-- ==================== CONVERGENCE FLOW PATHS ==================== -->
+  <g stroke="url(#line-cyan-indigo)" stroke-width="1.5" fill="none" opacity="0.8">
+    <path d="M 145 163 L 145 190 Q 145 205 175 205 L 480 205 Q 500 205 500 220 L 500 230" />
+    <path d="M 320 163 L 320 185 Q 320 205 350 205 L 480 205" />
+    <path d="M 500 163 L 500 230" stroke="#38BDF8" stroke-width="2" filter="url(#glow-cyan)"/>
+    <path d="M 680 163 L 680 185 Q 680 205 650 205 L 520 205" />
+    <path d="M 855 163 L 855 190 Q 855 205 825 205 L 520 205 Q 500 205 500 220 L 500 230" />
+  </g>
+
+  <!-- Protocol Badge -->
+  <g transform="translate(425, 208)">
+    <rect width="150" height="22" rx="11" fill="#0B0F19" stroke="#818CF8" stroke-width="1"/>
+    <text x="75" y="15" text-anchor="middle" class="tag-text" fill="#C7D2FE">PUBLIC HTTPS / REST</text>
+  </g>
+
+  <!-- ==================== TIER 2: API LAYER (WITHAPIGUARD) ==================== -->
+  <g transform="translate(140, 245)">
+    <!-- Outer Guard Box -->
+    <rect width="720" height="470" rx="16" fill="url(#grad-guard-body)" stroke="#818CF8" stroke-width="2" filter="url(#glow-indigo)"/>
+    
+    <!-- Header Badge -->
+    <rect x="20" y="20" width="680" height="44" rx="8" fill="#1E1B4B" fill-opacity="0.8" stroke="#6366F1" stroke-width="1"/>
+    <text x="40" y="47" class="title-text" font-size="14" fill="#A5B4FC">API LAYER (/api/*) — withApiGuard()</text>
+    <rect x="560" y="30" width="120" height="24" rx="6" fill="#312E81"/>
+    <text x="620" y="46" text-anchor="middle" class="tag-text" fill="#E0E7FF">CENTRAL CHOKE</text>
+
+    <!-- Flow Pipeline (5 Micro-stages) -->
+    <!-- Stage 1 -->
+    <g transform="translate(40, 82)">
+      <rect width="640" height="58" rx="8" fill="#131C31" stroke="#38BDF8" stroke-width="1.2"/>
+      <rect x="15" y="14" width="30" height="30" rx="6" fill="#0369A1"/>
+      <text x="30" y="34" text-anchor="middle" class="title-text" font-size="13" fill="#E0F2FE">1</text>
+      <text x="60" y="28" class="label-text">Authentication &amp; Session Check</text>
+      <text x="60" y="44" class="sub-text">Resolves bearer token / cookie session; validates caller identity integrity</text>
+      <circle cx="605" cy="29" r="4" fill="#38BDF8" filter="url(#glow-cyan)"/>
+    </g>
+
+    <!-- Connector 1->2 -->
+    <path d="M 360 140 L 360 155" stroke="#818CF8" stroke-width="2" stroke-dasharray="3 3"/>
+
+    <!-- Stage 2 -->
+    <g transform="translate(40, 155)">
+      <rect width="640" height="58" rx="8" fill="#131C31" stroke="#818CF8" stroke-width="1.2"/>
+      <rect x="15" y="14" width="30" height="30" rx="6" fill="#4338CA"/>
+      <text x="30" y="34" text-anchor="middle" class="title-text" font-size="13" fill="#EDE9FE">2</text>
+      <text x="60" y="28" class="label-text">Feature Entitlement Validation</text>
+      <text x="60" y="44" class="sub-text">Inspects packages/features-registry to confirm caller plan entitlements</text>
+      <circle cx="605" cy="29" r="4" fill="#818CF8"/>
+    </g>
+
+    <!-- Connector 2->3 -->
+    <path d="M 360 213 L 360 228" stroke="#818CF8" stroke-width="2" stroke-dasharray="3 3"/>
+
+    <!-- Stage 3 -->
+    <g transform="translate(40, 228)">
+      <rect width="640" height="58" rx="8" fill="#131C31" stroke="#A855F7" stroke-width="1.2"/>
+      <rect x="15" y="14" width="30" height="30" rx="6" fill="#7E22CE"/>
+      <text x="30" y="34" text-anchor="middle" class="title-text" font-size="13" fill="#FAF5FF">3</text>
+      <text x="60" y="28" class="label-text">RLS Context Injection</text>
+      <text x="60" y="44" class="sub-text">Sets tenant claims &amp; userId in database runtime session (SET LOCAL)</text>
+      <circle cx="605" cy="29" r="4" fill="#A855F7"/>
+    </g>
+
+    <!-- Connector 3->4 -->
+    <path d="M 360 286 L 360 301" stroke="#818CF8" stroke-width="2" stroke-dasharray="3 3"/>
+
+    <!-- Stage 4 -->
+    <g transform="translate(40, 301)">
+      <rect width="640" height="58" rx="8" fill="#131C31" stroke="#EC4899" stroke-width="1.2"/>
+      <rect x="15" y="14" width="30" height="30" rx="6" fill="#BE185D"/>
+      <text x="30" y="34" text-anchor="middle" class="title-text" font-size="13" fill="#FDF2F8">4</text>
+      <text x="60" y="28" class="label-text">API Scope Validation</text>
+      <text x="60" y="44" class="sub-text">Validates request permissions against granular route operation permissions</text>
+      <circle cx="605" cy="29" r="4" fill="#EC4899"/>
+    </g>
+
+    <!-- Connector 4->5 -->
+    <path d="M 360 359 L 360 374" stroke="#818CF8" stroke-width="2" stroke-dasharray="3 3"/>
+
+    <!-- Stage 5 -->
+    <g transform="translate(40, 374)">
+      <rect width="640" height="74" rx="8" fill="#11222C" stroke="#34D399" stroke-width="1.8" filter="url(#glow-emerald)"/>
+      <rect x="15" y="22" width="30" height="30" rx="6" fill="#047857"/>
+      <text x="30" y="42" text-anchor="middle" class="title-text" font-size="13" fill="#ECFDF5">5</text>
+      <text x="60" y="33" class="label-text" fill="#6EE7B7">Handler Execution &amp; Domain Business Logic</text>
+      <text x="60" y="52" class="sub-text">Invokes module handler with safe context (Taxila, Zinsser, War Room, Core Drive)</text>
+      <circle cx="605" cy="37" r="5" fill="#34D399"/>
+    </g>
+  </g>
+
+  <!-- ==================== DIVERGENCE FLOW TO STORAGE ==================== -->
+  <g stroke="url(#line-indigo-emerald)" stroke-width="2" fill="none" opacity="0.9">
+    <path d="M 500 715 L 500 755" />
+    <path d="M 500 735 L 205 735 Q 185 735 185 755 L 185 765" />
+    <path d="M 500 735 L 815 735 Q 835 735 835 755 L 835 765" />
+  </g>
+
+  <!-- ==================== TIER 3: PERSISTENCE (SUPABASE) ==================== -->
+  <g transform="translate(0, 765)">
+    <!-- Group Container -->
+    <rect x="50" y="0" width="900" height="150" rx="14" fill="#0A161E" stroke="#34D399" stroke-width="1.5" filter="url(#glow-emerald)"/>
+    
+    <!-- Tier Header -->
+    <text x="75" y="28" class="tag-text" fill="#34D399" letter-spacing="1">TIER 3 // POSTGRESQL (SUPABASE PERSISTENCE)</text>
+    <rect x="740" y="14" width="190" height="20" rx="4" fill="#064E3B"/>
+    <text x="835" y="28" text-anchor="middle" class="tag-text" fill="#A7F3D0">MULTI-TENANT ISOLATION</text>
+
+    <!-- Sub-module 1: RLS Policies -->
+    <g transform="translate(70, 42)">
+      <rect width="260" height="88" rx="8" fill="#0F2328" stroke="#10B981" stroke-width="1"/>
+      <text x="20" y="28" class="label-text" fill="#A7F3D0">🔒 RLS Policies</text>
+      <text x="20" y="48" class="sub-text">Row-Level Security on all tables</text>
+      <text x="20" y="66" class="code-text" font-size="11">userId = auth.uid()</text>
+    </g>
+
+    <!-- Sub-module 2: Feature Tables -->
+    <g transform="translate(370, 42)">
+      <rect width="260" height="88" rx="8" fill="#0F2328" stroke="#10B981" stroke-width="1"/>
+      <text x="20" y="28" class="label-text" fill="#A7F3D0">🗄️ Feature Tables</text>
+      <text x="20" y="48" class="sub-text">Dedicated domain schemas</text>
+      <text x="20" y="66" class="code-text" font-size="11">Taxila, Zinsser, Core Drive</text>
+    </g>
+
+    <!-- Sub-module 3: Vector Search -->
+    <g transform="translate(670, 42)">
+      <rect width="260" height="88" rx="8" fill="#0F2328" stroke="#10B981" stroke-width="1"/>
+      <text x="20" y="28" class="label-text" fill="#A7F3D0">🧠 Vector Search</text>
+      <text x="20" y="48" class="sub-text">pgvector substrate for AI RAG</text>
+      <text x="20" y="66" class="code-text" font-size="11">HNSW Cosine Similarity</text>
+    </g>
+  </g>
+</svg>

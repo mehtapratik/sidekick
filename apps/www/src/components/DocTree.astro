@@ -1,0 +1,111 @@
+---
+// The vault's document tree: one <details> per section (the reader's
+// current section open, the rest collapsed to label + count) plus a
+// client-side filter. Rendered twice by DocsLayout — as the sticky desktop
+// sidebar and inside the mobile "Browse the vault" disclosure — so every
+// id is prefixed.
+import DocTreeNode, { type TreeNode } from "./DocTreeNode.astro";
+import docTree from "../lib/doc-tree.json";
+
+interface Props {
+   idPrefix: string;
+   currentSectionSlug?: string;
+   currentId?: string;
+}
+
+const { idPrefix, currentSectionSlug, currentId } = Astro.props;
+const sections = docTree as { slug: string; label: string; count: number; children: TreeNode[] }[];
+---
+
+<div class="tree-body" data-doc-tree>
+   <div class="tree-filter">
+      <label class="sr-only" for={`${idPrefix}-filter`}>Filter documents</label>
+      <input
+         type="search"
+         id={`${idPrefix}-filter`}
+         placeholder="Filter documents"
+         autocomplete="off"
+         spellcheck="false"
+         data-tree-filter
+      />
+   </div>
+   <p class="tree-empty" hidden data-tree-empty>No documents match.</p>
+   {
+      sections.map((section) => (
+         <details class="tree-sec" open={section.slug === currentSectionSlug} data-tree-sec>
+            <summary class="tree-sum">
+               <span>{section.label}</span>
+               <span class="tree-count">{section.count}</span>
+            </summary>
+            <ul class="tree-list">
+               {section.children.map((node) => (
+                  <DocTreeNode node={node} currentId={currentId} />
+               ))}
+               <li class="tree-more-item">
+                  <a
+                     class="tree-more"
+                     href={`/docs/${section.slug}/`}
+                     aria-current={currentId === section.slug ? "page" : undefined}
+                  >
+                     View all {section.count}
+                  </a>
+               </li>
+            </ul>
+         </details>
+      ))
+   }
+</div>
+
+<script>
+   // Filter: hide items whose title doesn't match (keeping the folders that
+   // lead to a match), open everything while a query is active, and put
+   // the original open/closed state back when it's cleared.
+   document.querySelectorAll<HTMLElement>("[data-doc-tree]").forEach((tree) => {
+      const input = tree.querySelector<HTMLInputElement>("[data-tree-filter]");
+      const empty = tree.querySelector<HTMLElement>("[data-tree-empty]");
+      const details = Array.from(tree.querySelectorAll<HTMLDetailsElement>("details"));
+      const items = Array.from(tree.querySelectorAll<HTMLElement>("[data-tree-item]"));
+      const sections = Array.from(tree.querySelectorAll<HTMLElement>("[data-tree-sec]"));
+      const more = Array.from(tree.querySelectorAll<HTMLElement>(".tree-more-item"));
+      if (!input) return;
+      let saved: boolean[] | null = null;
+
+      input.addEventListener("input", () => {
+         const q = input.value.trim().toLowerCase();
+         if (!q) {
+            items.forEach((i) => (i.hidden = false));
+            sections.forEach((s) => (s.hidden = false));
+            more.forEach((m) => (m.hidden = false));
+            if (saved) details.forEach((d, i) => (d.open = saved![i]));
+            saved = null;
+            if (empty) empty.hidden = true;
+            return;
+         }
+         if (!saved) saved = details.map((d) => d.open);
+         more.forEach((m) => (m.hidden = true));
+         // Leaves first, deepest folders before their parents.
+         for (const item of [...items].reverse()) {
+            if (item.hasAttribute("data-tree-folder")) {
+               const title = item.querySelector("summary [data-tree-title]")?.textContent ?? "";
+               const childVisible = Array.from(
+                  item.querySelectorAll<HTMLElement>(":scope > details > ul > [data-tree-item]"),
+               ).some((c) => !c.hidden);
+               item.hidden = !(childVisible || title.toLowerCase().includes(q));
+            } else {
+               const title = item.querySelector("[data-tree-title]")?.textContent ?? "";
+               item.hidden = !title.toLowerCase().includes(q);
+            }
+         }
+         let any = false;
+         sections.forEach((s) => {
+            const visible = Array.from(
+               s.querySelectorAll<HTMLElement>(":scope > ul > [data-tree-item]"),
+            ).some((c) => !c.hidden);
+            s.hidden = !visible;
+            any ||= visible;
+         });
+         details.forEach((d) => (d.open = true));
+         if (empty) empty.hidden = any;
+      });
+   });
+</script>

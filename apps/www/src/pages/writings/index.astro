@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostRow from "../../components/PostRow.astro";
+import { getAllWritings, writingUrl, tagSlug } from "../../lib/entries.ts";
+import { WRITING_TYPE_LABELS } from "../../lib/site.ts";
+
+const posts = await getAllWritings();
+
+// Filter chips: every writing tag, most-used first.
+const tagCounts = new Map<string, { tag: string; n: number }>();
+for (const post of posts) {
+   for (const tag of post.data.tags) {
+      const slug = tagSlug(tag);
+      const cur = tagCounts.get(slug) ?? { tag, n: 0 };
+      tagCounts.set(slug, { tag: cur.tag, n: cur.n + 1 });
+   }
+}
+const chips = [...tagCounts.entries()]
+   .sort((a, b) => b[1].n - a[1].n || a[1].tag.localeCompare(b[1].tag))
+   .map(([slug, { tag }]) => ({ slug, tag }));
+const countLabel = (n: number) => `${n} ${n === 1 ? "entry" : "entries"}`;
+---
+
+<BaseLayout
+   title="Writings"
+   description="Essays and long-form notes on building Sidekick."
+>
+   <div class="wrap">
+      <div class="phd">
+         <div>
+            <p class="eyebrow">01 · Writings</p>
+            <h1>Writings</h1>
+            <p class="sec-sub">Essays and long-form notes on building Sidekick.</p>
+         </div>
+         <p class="count" aria-live="polite" data-writings-count>{countLabel(posts.length)}</p>
+      </div>
+
+      {
+         posts.length === 0 ? (
+            <p class="sec-sub page-end">Nothing published yet.</p>
+         ) : (
+            <>
+               {chips.length > 0 && (
+                  <ul class="chips" aria-label="Filter by tag" hidden data-writings-chips>
+                     <li>
+                        <button class="chip" type="button" aria-pressed="true" data-tag="">
+                           All
+                        </button>
+                     </li>
+                     {chips.map((c) => (
+                        <li>
+                           <button class="chip" type="button" aria-pressed="false" data-tag={c.slug}>
+                              #{c.tag}
+                           </button>
+                        </li>
+                     ))}
+                  </ul>
+               )}
+               <ol class="rows page-end" data-writings-rows>
+                  {posts.map((post) => (
+                     <PostRow
+                        href={writingUrl(post)}
+                        title={post.data.title}
+                        kind={WRITING_TYPE_LABELS[post.data.type]}
+                        minutes={post.data.readingMinutes}
+                        deck={post.data.deck}
+                        date={post.data.created}
+                        tags={post.data.tags}
+                     />
+                  ))}
+               </ol>
+            </>
+         )
+      }
+   </div>
+</BaseLayout>
+
+<script>
+   // Progressive enhancement: without JS the chips stay hidden and every
+   // row is visible.
+   const chips = document.querySelector<HTMLElement>("[data-writings-chips]");
+   const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-writings-rows] > .row"));
+   const count = document.querySelector<HTMLElement>("[data-writings-count]");
+   if (chips && count) {
+      chips.hidden = false;
+      const buttons = Array.from(chips.querySelectorAll<HTMLButtonElement>("button[data-tag]"));
+      buttons.forEach((btn) =>
+         btn.addEventListener("click", () => {
+            const tag = btn.dataset.tag ?? "";
+            buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+            let shown = 0;
+            for (const row of rows) {
+               const match = !tag || (row.dataset.tags ?? "").split(" ").includes(tag);
+               row.hidden = !match;
+               if (match) shown++;
+            }
+            count.textContent = `${shown} ${shown === 1 ? "entry" : "entries"}`;
+         }),
+      );
+   }
+</script>

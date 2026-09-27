@@ -1,0 +1,199 @@
+/* ==========================================================================
+   ARKIVE theme tokens — "Arkive" = Archive type roles on the Folio palette
+   Source of truth for the redesign. Drop into src/styles/ and import first
+   from global.css (or paste at the top of global.css).
+
+   Mode selection
+   - <html data-theme="light|dark"> is set by the no-flash script in
+     BaseLayout.astro from localStorage["arkive-theme"] ∈ {light, dark, system}.
+   - No attribute / "system" → follow prefers-color-scheme (light fallback).
+   - All text tokens ≥ 4.5:1 against --bg AND --surface (ratios noted).
+   ========================================================================== */
+
+/* ---------- Type (identical in both modes) ---------- */
+:root {
+   --f-serif: "Newsreader Variable", "Newsreader", Georgia, "Times New Roman", serif;
+   --f-code: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+   --f-display: var(--f-serif); /* headings, titles, big numbers */
+   --f-body: var(--f-serif); /* prose, decks, excerpts */
+   --f-ui: var(--f-code); /* nav, labels, kickers, buttons */
+
+   --ui-size: 13px;
+   --ui-track: 0.06em;
+   --ui-case: uppercase;
+   --meta-size: 13px; /* dates, tags, counts — mono, never below 12px */
+
+   --d-weight: 400;
+   --d-track: -0.02em;
+   --hero: 92px;
+   --hero-lh: 1;
+   --h1: 64px;
+   --h2: 40px;
+   --h3: 31px; /* list titles */
+   --p-h2: 1.55em; /* prose headings, relative to body */
+   --p-h3: 1.2em;
+   --h3w: 500;
+
+   --body-size: 20px;
+   --body-lh: 1.65;
+   --deck-size: 19px;
+   --lead: 23px;
+   --measure: 34em; /* ≈ 66ch of Newsreader at 20px */
+
+   /* Layout */
+   --container: 1312px;
+   --gutter: 64px;
+   --header-h: 72px;
+   --toc-width: 248px;
+   --tree-width: 288px;
+   --radius: 2px;
+   --radius-card: 3px;
+   --target: 44px;
+   --transition: 150ms ease;
+}
+
+@media (max-width: 720px) {
+   :root {
+      --gutter: 20px;
+      --hero: 46px; /* ×0.5 */
+      --h1: 42px; /* ×0.66 */
+      --h2: 31px; /* ×0.78 */
+      --h3: 24px; /* ×0.78 */
+      --body-size: 19px;
+      --lead: 19px;
+   }
+}
+
+/* ---------- Light (Folio light) ---------- */
+:root,
+:root[data-theme="light"] {
+   color-scheme: light;
+   --bg: #ffffff;
+   --surface: #f6f4f0;
+   --raised: #edeae4;
+   --line: #e2ded7;
+   --line-strong: #bdb8af;
+   --ink: #0e0e0e; /* 19.3:1 */
+   --body: #1e1e1e; /* 16.7:1 */
+   --muted: #5a5752; /*  7.2:1 */
+   --faint: #6e6b65; /*  5.3:1 */
+   --accent: #8a1f43; /*  8.9:1 — oxblood */
+   --accent-wash: rgb(138 31 67 / 0.06);
+   --on-accent: #ffffff;
+   --code-bg: #f6f4f0;
+
+   /* Callouts — label/icon colour; tint = color-mix(var(--c) 7%, var(--bg)); all ≥ 5.2:1 on tint */
+   --c-note: #2f5d86;
+   --c-info: #1f6a73;
+   --c-question: #5b4a9e;
+   --c-see-also: #2e6b4f;
+   --c-caution: #8a5a00;
+   --c-warning: #a64b12;
+   --c-danger: #a12c2c;
+
+   /* Syntax (for the Shiki light theme) */
+   --tk-keyword: #8a1f43;
+   --tk-string: #2f5d86;
+   --tk-function: #5b4a9e;
+   --tk-number: #8a5a00;
+   --tk-comment: #6e6b65; /* italic */
+   --tk-plain: #0e0e0e;
+}
+
+/* ---------- Dark (Folio dark) ---------- */
+:root[data-theme="dark"] {
+   color-scheme: dark;
+   --bg: #0b0b0b;
+   --surface: #151515;
+   --raised: #1f1f1f;
+   --line: #2a2a2a;
+   --line-strong: #454545;
+   --ink: #f4f2ee; /* 17.6:1 */
+   --body: #dad7d1; /* 13.7:1 */
+   --muted: #a6a29b; /*  7.7:1 */
+   --faint: #8b877f; /*  5.5:1 */
+   --accent: #f08fb0; /*  8.7:1 */
+   --accent-wash: rgb(240 143 176 / 0.11);
+   --on-accent: #1a0a10;
+   --code-bg: #141414;
+
+   --c-note: #9dc0e3;
+   --c-info: #86d0d8;
+   --c-question: #bbaef2;
+   --c-see-also: #8fd1b0;
+   --c-caution: #e3b55e;
+   --c-warning: #f0a070;
+   --c-danger: #f2948a;
+
+   --tk-keyword: #f08fb0;
+   --tk-string: #9dc0e3;
+   --tk-function: #bbaef2;
+   --tk-number: #e3b55e;
+   --tk-comment: #8b877f;
+   --tk-plain: #f4f2ee;
+}
+
+/* System: no explicit choice → follow the OS */
+@media (prefers-color-scheme: dark) {
+   :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0b0b0b;
+      --surface: #151515;
+      --raised: #1f1f1f;
+      --line: #2a2a2a;
+      --line-strong: #454545;
+      --ink: #f4f2ee;
+      --body: #dad7d1;
+      --muted: #a6a29b;
+      --faint: #8b877f;
+      --accent: #f08fb0;
+      --accent-wash: rgb(240 143 176 / 0.11);
+      --on-accent: #1a0a10;
+      --code-bg: #141414;
+      --c-note: #9dc0e3;
+      --c-info: #86d0d8;
+      --c-question: #bbaef2;
+      --c-see-also: #8fd1b0;
+      --c-caution: #e3b55e;
+      --c-warning: #f0a070;
+      --c-danger: #f2948a;
+      --tk-keyword: #f08fb0;
+      --tk-string: #9dc0e3;
+      --tk-function: #bbaef2;
+      --tk-number: #e3b55e;
+      --tk-comment: #8b877f;
+      --tk-plain: #f4f2ee;
+   }
+}
+
+/* ---------- Global interaction baseline ---------- */
+a,
+button,
+summary,
+label[for],
+[role="button"] {
+   cursor: pointer;
+}
+:focus-visible {
+   outline: 2px solid var(--accent);
+   outline-offset: 3px;
+   border-radius: var(--radius);
+}
+::selection {
+   background: var(--accent);
+   color: var(--on-accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+   html {
+      scroll-behavior: smooth;
+   }
+}
+@media (prefers-reduced-motion: reduce) {
+   *,
+   *::before,
+   *::after {
+      transition: none !important;
+      animation: none !important;
+   }
+}

@@ -2,70 +2,74 @@ import { load } from "js-yaml";
 import fs from "node:fs";
 import path from "node:path";
 
-export type Section = "writings" | "core-drive" | "plans" | "builds";
-export type PostType =
-   | "essay"
-   | "blog"
-   | "core-drive"
-   | "plan"
+export type DocKind =
+   | "spec"
+   | "prd"
    | "decision"
-   | "build"
-   | "note";
+   | "plan"
+   | "guidance"
+   | "glossary"
+   | "opportunity";
 
-export const SECTIONS: Section[] = [
-   "writings",
-   "core-drive",
-   "plans",
-   "builds",
+export type DocStatus =
+   | "draft"
+   | "approved"
+   | "building"
+   | "built"
+   | "rejected"
+   | "cancelled";
+
+export type WritingType = "essay" | "blog" | "note";
+
+// Top-level nav destinations. Docs' five vault sections live one level
+// down, in the document tree — they are not top-nav items.
+export const NAV_ITEMS = [
+   { href: "/writings/", label: "Writings", num: "01" },
+   { href: "/docs/", label: "Docs", num: "02" },
+   { href: "/index/", label: "Index", num: "03" },
 ];
 
-// Nav-visible sections, in display order.
-export const NAV_SECTIONS: Section[] = [
-   "writings",
-   "core-drive",
-   "plans",
-   "builds",
-];
-
-export const SECTION_LABELS: Record<Section, string> = {
-   writings: "Writings",
-   "core-drive": "Core Drive",
-   plans: "Plans",
-   builds: "Builds",
-};
-
-export const SECTION_DESCRIPTIONS: Record<Section, string> = {
-   writings:
-      "Essays and notes — non-technical and technical writing about Sidekick and other ideas worth writing down.",
-   "core-drive":
-      "Core principles driving my actions, behaviors, and Sidekick's implementations.",
-   plans:
-      "Original plans and the technical or tactical decisions made later that influenced them.",
-   builds:
-      "Step-by-step instructions to build the same thing yourself, from scratch.",
-};
-
-export const TYPE_LABELS: Record<PostType, string> = {
+export const WRITING_TYPE_LABELS: Record<WritingType, string> = {
    essay: "Essay",
    blog: "Blog",
-   "core-drive": "Core Drive",
-   plan: "Plan",
-   decision: "Decision",
-   build: "Build",
    note: "Note",
 };
 
-// Maps a post's `type` to a hero-art motif. hero-art.js has no "Note" motif,
-// so notes fall back to the Blog treatment.
-export const TYPE_TO_MOTIF: Record<PostType, string> = {
-   essay: "Essay",
-   blog: "Blog",
-   "core-drive": "Core Drive",
-   plan: "Plan",
+export const KIND_LABELS: Record<DocKind, string> = {
+   spec: "Spec",
+   prd: "PRD",
    decision: "Decision",
-   build: "Build",
-   note: "Blog",
+   plan: "Plan",
+   guidance: "Guidance",
+   glossary: "Glossary",
+   opportunity: "Opportunity",
 };
+
+export const STATUS_LABELS: Record<DocStatus, string> = {
+   draft: "Draft",
+   approved: "Approved",
+   building: "Building",
+   built: "Built",
+   rejected: "Rejected",
+   cancelled: "Cancelled",
+};
+
+// Maps a document's `kind` to a hero-art motif. Two further writings
+// motifs (Margin, Drift) exist in hero-art.js but are held in reserve and
+// intentionally unmapped here. Keep in sync with generate-og.mjs.
+export const KIND_TO_MOTIF: Record<DocKind, string> = {
+   spec: "Frame stack",
+   prd: "Requirement grid",
+   decision: "Branch",
+   plan: "Gantt",
+   guidance: "Radar",
+   glossary: "Lattice",
+   opportunity: "Scatter",
+};
+
+export const WRITINGS_MOTIF = "Contour";
+
+export type DocSection = { slug: string; label: string };
 
 export type ContentMeta = {
    site: {
@@ -81,6 +85,17 @@ export type ContentMeta = {
       license?: string;
       version?: string;
    };
+   vault: {
+      root: string;
+      exclude: string[];
+      sections: Record<string, DocSection>;
+      statusMap: Record<string, string>;
+      titleDictionary: string[];
+   };
+   writings: {
+      root: string;
+      exclude: string[];
+   };
    entries: Record<
       string,
       {
@@ -94,6 +109,8 @@ export type ContentMeta = {
          audience?: string;
          version?: string;
          seed?: string;
+         type?: string;
+         author?: string;
       }
    >;
 };
@@ -101,4 +118,14 @@ export type ContentMeta = {
 export function loadContentMeta(root = process.cwd()): ContentMeta {
    const file = path.join(root, "content-meta.yaml");
    return load(fs.readFileSync(file, "utf8")) as ContentMeta;
+}
+
+// Ordered list of the vault's doc sections, in the order configured in
+// content-meta.yaml (object key order — YAML preserves insertion order).
+export function docSections(meta: ContentMeta): DocSection[] {
+   return Object.values(meta.vault.sections);
+}
+
+export function sectionLabel(meta: ContentMeta, slug: string): string | undefined {
+   return docSections(meta).find((s) => s.slug === slug)?.label;
 }

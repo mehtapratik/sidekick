@@ -1,10 +1,16 @@
 ---
-import "@fontsource-variable/bricolage-grotesque/wght.css";
+// Self-hosted fonts only: Newsreader (optical-size axis, roman + italic)
+// and IBM Plex Mono.
 import "@fontsource-variable/newsreader/opsz.css";
 import "@fontsource-variable/newsreader/opsz-italic.css";
-import "@fontsource/space-mono/400.css";
-import "@fontsource/space-mono/700.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/400-italic.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
+import newsreaderLatin from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url";
+import plexMonoLatin from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url";
 
+import "../styles/tokens.css";
 import "../styles/global.css";
 
 import { loadContentMeta } from "../lib/site.ts";
@@ -19,16 +25,9 @@ interface Props {
    description?: string;
    ogType?: "website" | "article";
    ogImage?: string | null;
-   activeSection?: string | null;
 }
 
-const {
-   title,
-   description,
-   ogType = "website",
-   ogImage = null,
-   activeSection = null,
-} = Astro.props;
+const { title, description, ogType = "website", ogImage = null } = Astro.props;
 const contentMeta = loadContentMeta();
 ---
 
@@ -37,6 +36,8 @@ const contentMeta = loadContentMeta();
    <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
+      <link rel="preload" href={plexMonoLatin} as="font" type="font/woff2" crossorigin />
       <SiteMeta
          title={title}
          description={description}
@@ -45,56 +46,97 @@ const contentMeta = loadContentMeta();
          contentMeta={contentMeta}
       />
 
-      <!-- Theme init: runs before first paint to prevent flash -->
+      <!-- Appearance init, before first paint (no flash). "light"/"dark" set
+           data-theme; "system" or nothing stored leaves it unset so the
+           prefers-color-scheme block in tokens.css applies — and follows the
+           OS live. Pre-redesign stored values ("light"/"dark") still work. -->
       <script is:inline>
          (function () {
-            const stored = localStorage.getItem("arkive-theme");
-            const prefersDark = window.matchMedia(
-               "(prefers-color-scheme: dark)",
-            ).matches;
-            document.documentElement.dataset.theme =
-               stored ?? (prefersDark ? "dark" : "light");
-            if (!stored) {
-               window
-                  .matchMedia("(prefers-color-scheme: dark)")
-                  .addEventListener("change", (e) => {
-                     if (!localStorage.getItem("arkive-theme")) {
-                        document.documentElement.dataset.theme = e.matches
-                           ? "dark"
-                           : "light";
-                     }
-                  });
+            var v = null;
+            try {
+               v = localStorage.getItem("arkive-theme");
+            } catch (e) {}
+            if (v === "light" || v === "dark") {
+               document.documentElement.dataset.theme = v;
+               var c = v === "dark" ? "#0b0b0b" : "#ffffff";
+               document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+                  m.content = c;
+               });
             }
          })();
       </script>
    </head>
 
    <body>
-      <a href="#main" class="skip-link">Skip to content</a>
-      <SiteHeader activeSection={activeSection} contentMeta={contentMeta} />
+      <a href="#main" class="skip">Skip to content</a>
+      <SiteHeader contentMeta={contentMeta} />
       <SearchDialog />
 
-      <main id="main">
+      <main id="main" tabindex="-1">
          <slot />
       </main>
 
       <SiteFooter contentMeta={contentMeta} />
 
-      <!-- Permalink copy-to-clipboard -->
+      <p class="sr-only" aria-live="polite" data-announce></p>
+
+      <!-- Prose enhancements: permalink copy, code-block Copy, YouTube facade -->
       <script>
+         const announce = (msg: string) => {
+            const el = document.querySelector<HTMLElement>("[data-announce]");
+            if (!el) return;
+            el.textContent = "";
+            requestAnimationFrame(() => (el.textContent = msg));
+         };
+
          document.addEventListener("click", (e) => {
-            const link = (e.target as HTMLElement).closest("[data-permalink]");
-            if (!link) return;
-            e.preventDefault();
-            navigator.clipboard
-               .writeText((link as HTMLAnchorElement).href)
-               .catch(() => {});
-            const el = link as HTMLElement;
-            const prev = el.textContent;
-            el.textContent = "✓";
-            setTimeout(() => {
-               el.textContent = prev;
-            }, 1200);
+            const target = e.target as HTMLElement;
+
+            const permalink = target.closest<HTMLAnchorElement>("[data-permalink]");
+            if (permalink) {
+               e.preventDefault();
+               history.replaceState(null, "", permalink.hash);
+               navigator.clipboard?.writeText(permalink.href).then(
+                  () => {
+                     permalink.textContent = "✓";
+                     announce("Link copied");
+                     setTimeout(() => (permalink.textContent = "#"), 1200);
+                  },
+                  () => {},
+               );
+               return;
+            }
+
+            const copy = target.closest<HTMLButtonElement>("[data-copy-code]");
+            if (copy) {
+               const lines = copy.closest("figure")?.querySelectorAll("pre .line") ?? [];
+               const text = Array.from(lines, (l) => l.textContent ?? "").join("\n");
+               navigator.clipboard?.writeText(text).then(
+                  () => {
+                     const label = copy.querySelector("span");
+                     if (label) label.textContent = "Copied";
+                     announce("Copied to clipboard");
+                     setTimeout(() => label && (label.textContent = "Copy"), 1600);
+                  },
+                  () => announce("Couldn’t copy"),
+               );
+               return;
+            }
+
+            const yt = target.closest<HTMLAnchorElement>("a[data-yt]");
+            if (yt && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+               e.preventDefault();
+               const iframe = document.createElement("iframe");
+               const start = yt.dataset.ytStart ? `&start=${yt.dataset.ytStart}` : "";
+               iframe.src = `https://www.youtube-nocookie.com/embed/${yt.dataset.yt}?autoplay=1${start}`;
+               iframe.title = "YouTube video player";
+               iframe.allow =
+                  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+               iframe.allowFullscreen = true;
+               iframe.className = "yt yt-frame";
+               yt.replaceWith(iframe);
+               iframe.focus();
+            }
          });
       </script>
    </body>

@@ -1,21 +1,24 @@
 export type HeroArtType =
-   | "Essay"
-   | "Blog"
-   | "Core Drive"
-   | "Plan"
-   | "Decision"
-   | "Build";
+   | "Frame stack"
+   | "Requirement grid"
+   | "Branch"
+   | "Gantt"
+   | "Radar"
+   | "Lattice"
+   | "Scatter"
+   | "Contour"
+   | "Margin"
+   | "Drift";
 
 export type HeroArtPalette = {
    ink: string;
    accent: string;
-   ochre: string;
    paper: string;
 };
 
 export function renderHeroSVG(
    type: HeroArtType,
-   slug: string,
+   seed: string,
    width: number,
    palette: HeroArtPalette,
 ): string;

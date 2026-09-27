@@ -1,0 +1,132 @@
+---
+// Light / Dark / System appearance control. Rendered twice by SiteHeader:
+// `part="trigger"` in the header tools, `part="panel"` as the drop-down
+// below the header row. The stored choice lives in
+// localStorage["arkive-theme"]; BaseLayout's no-flash script applies it.
+import Icon from "./Icon.astro";
+
+interface Props {
+   part: "trigger" | "panel";
+}
+
+const { part } = Astro.props;
+const OPTIONS = [
+   { value: "light", label: "Light", icon: "sun" },
+   { value: "dark", label: "Dark", icon: "moon" },
+   { value: "system", label: "System", icon: "monitor" },
+] as const;
+---
+
+{
+   part === "trigger" ? (
+      <button
+         class="tool"
+         type="button"
+         aria-expanded="false"
+         aria-controls="appearance-panel"
+         aria-label="Appearance: light, dark or system"
+         data-appearance-trigger
+      >
+         <Icon name="contrast" />
+         <span class="tool-label">Theme</span>
+      </button>
+   ) : (
+      <div class="panel" id="appearance-panel" hidden data-appearance-panel>
+         <div class="wrap panel-in">
+            <div class="panel-row">
+               <p class="panel-label" id="appearance-label">
+                  Appearance
+               </p>
+               <button class="close" type="button" data-appearance-close>
+                  <span>Close</span>
+                  <kbd>Esc</kbd>
+               </button>
+            </div>
+            <div class="seg" role="group" aria-labelledby="appearance-label">
+               {OPTIONS.map((o) => (
+                  <button type="button" aria-pressed="false" data-appearance-value={o.value}>
+                     <Icon name={o.icon} />
+                     {o.label}
+                  </button>
+               ))}
+            </div>
+         </div>
+      </div>
+   )
+}
+
+<script>
+         const KEY = "arkive-theme";
+         const COLORS = { light: "#ffffff", dark: "#0b0b0b" };
+         const root = document.documentElement;
+         const trigger = document.querySelector<HTMLButtonElement>("[data-appearance-trigger]");
+         const panel = document.querySelector<HTMLElement>("[data-appearance-panel]");
+         const buttons = Array.from(
+            document.querySelectorAll<HTMLButtonElement>("[data-appearance-value]"),
+         );
+
+         function stored(): string {
+            try {
+               const v = localStorage.getItem(KEY);
+               return v === "light" || v === "dark" ? v : "system";
+            } catch {
+               return "system";
+            }
+         }
+
+         function apply(choice: string) {
+            if (choice === "light" || choice === "dark") root.dataset.theme = choice;
+            else delete root.dataset.theme;
+            // Explicit choice pins both theme-color metas; System restores the
+            // per-scheme values.
+            document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((m) => {
+               const scheme = m.media.includes("dark") ? "dark" : "light";
+               m.content = COLORS[choice === "light" || choice === "dark" ? choice : scheme];
+            });
+            buttons.forEach((b) =>
+               b.setAttribute("aria-pressed", String(b.dataset.appearanceValue === choice)),
+            );
+         }
+
+         function open() {
+            if (!panel || !trigger) return;
+            document.dispatchEvent(new CustomEvent("arkive:panel", { detail: "appearance" }));
+            panel.hidden = false;
+            trigger.setAttribute("aria-expanded", "true");
+            (buttons.find((b) => b.getAttribute("aria-pressed") === "true") ?? buttons[0])?.focus();
+         }
+
+         function close(restoreFocus = true) {
+            if (!panel || !trigger || panel.hidden) return;
+            panel.hidden = true;
+            trigger.setAttribute("aria-expanded", "false");
+            if (restoreFocus) trigger.focus();
+         }
+
+         apply(stored());
+
+         trigger?.addEventListener("click", () => (panel?.hidden ? open() : close()));
+         document
+            .querySelector("[data-appearance-close]")
+            ?.addEventListener("click", () => close());
+         buttons.forEach((b) =>
+            b.addEventListener("click", () => {
+               const choice = b.dataset.appearanceValue ?? "system";
+               try {
+                  if (choice === "system") localStorage.removeItem(KEY);
+                  else localStorage.setItem(KEY, choice);
+               } catch {}
+               apply(choice);
+            }),
+         );
+         document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && panel && !panel.hidden) close();
+         });
+         document.addEventListener("click", (e) => {
+            const t = e.target as Node;
+            if (panel && !panel.hidden && !panel.contains(t) && !trigger?.contains(t)) close(false);
+         });
+         document.addEventListener("arkive:panel", (e) => {
+            if ((e as CustomEvent).detail !== "appearance") close(false);
+         });
+</script>

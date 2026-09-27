@@ -11,15 +11,14 @@
         "predev": "npm run ingest && npm run generate-og",
         "dev": "astro dev",
         "prebuild": "npm run ingest && npm run generate-og",
-        "build": "astro build && pagefind --site dist",
+        "build": "astro build && pagefind --site dist && node scripts/check-privacy-gate.mjs",
         "preview": "astro preview"
     },
     "dependencies": {
         "@astrojs/mdx": "7.0.2",
         "@astrojs/rss": "4.0.19",
-        "@fontsource-variable/bricolage-grotesque": "5.2.10",
         "@fontsource-variable/newsreader": "5.3.0",
-        "@fontsource/space-mono": "5.2.9",
+        "@fontsource/ibm-plex-mono": "5.3.0",
         "@resvg/resvg-js": "2.6.2",
         "astro": "7.0.6",
         "js-yaml": "5.2.1",
@@ -28,6 +27,7 @@
         "unist-util-visit": "5.1.0"
     },
     "devDependencies": {
+        "@shikijs/transformers": "4.3.1",
         "@types/node": "26.1.0",
         "prettier": "3.9.4",
         "prettier-plugin-astro": "0.14.1"

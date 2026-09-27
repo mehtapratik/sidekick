@@ -1,38 +1,44 @@
 ---
 import SiteNav from "./SiteNav.astro";
-import ThemeToggle from "./ThemeToggle.astro";
+import Appearance from "./Appearance.astro";
+import Icon from "./Icon.astro";
 import { type ContentMeta } from "../lib/site.ts";
 
 interface Props {
-   activeSection?: string | null;
    contentMeta: ContentMeta;
 }
 
-const { activeSection = null, contentMeta } = Astro.props;
-const siteTitle = contentMeta.site.title ?? "ARKIVE";
+const { contentMeta } = Astro.props;
+const host = new URL(contentMeta.site.url ?? "https://arkive.blog").host;
+const [name, ...rest] = host.split(".");
 ---
 
-<header class="site-header">
-   <div class="site-header__inner">
-      <a href="/" class="logo">{siteTitle}</a>
+<header class="hdr" data-site-header>
+   <div class="wrap hdr-in">
+      <a class="brand" href="/" aria-label={`${host}, home`}>
+         <span class="brand-mark" aria-hidden="true">a/</span>
+         <span aria-hidden="true">{name}<span class="brand-dot">.</span>{rest.join(".")}</span>
+      </a>
 
-      <SiteNav type="desktop" />
+      <SiteNav />
 
-      <div class="header-controls">
-         <button class="search-trigger" id="search-btn" data-open-search aria-label="Search">
-            Press / to search
-         </button>
-         <ThemeToggle />
+      <div class="tools">
          <button
-            class="menu-btn"
-            id="menu-btn"
+            class="tool"
+            type="button"
+            aria-haspopup="dialog"
             aria-expanded="false"
-            aria-controls="mobile-nav"
+            aria-controls="search-dialog"
+            aria-label="Search the archive"
+            data-open-search
          >
-            Menu
+            <Icon name="search" />
+            <span class="tool-label">Search</span>
+            <kbd aria-hidden="true">/</kbd>
          </button>
+         <Appearance part="trigger" />
       </div>
    </div>
 
-   <SiteNav type="mobile" />
+   <Appearance part="panel" />
 </header>

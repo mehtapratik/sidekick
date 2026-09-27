@@ -1,7 +1,7 @@
 ---
 title: Project Sidekick - A Bird's Eye View
 deck: >-
-  An introduction to Project Sidekick. What it is? What problem does it solve?
+  An introduction to Project Sidekick. What is it? What problem does it solve?
   Why am I building it?
 created: '2026-07-19'
 updated: '2026-07-19'
@@ -9,9 +9,8 @@ version: 1.0.0
 tags:
   - essays
   - sidekick
-section: writings
 type: essay
-sourcePath: essays/01-sidekick-birds-eye-view.md
+sourcePath: sources/writings/01-sidekick-birds-eye-view.md
 wordCount: 2402
 readingMinutes: 11
 author: Pratik Mehta
@@ -19,11 +18,11 @@ license: CC BY-NC 4.0
 audience: General
 status: active
 description: >-
-  An introduction to Project Sidekick. What it is? What problem does it solve?
+  An introduction to Project Sidekick. What is it? What problem does it solve?
   Why am I building it?
 ---
 
-I am working on Project Sidekick to solve the challenges of my current digital setup and workflows. My goal is to build an ERP that runs my life. The motivation here is not the monetization or the mass appeal. Instead, the motivation is purely personal and utilitarian. I covered the journey – and my past failures – in my confessional essay: **[Building in Margins of Reality](../00-margins)**.
+I am working on Project Sidekick to solve the challenges of my current digital setup and workflows. My goal is to build an ERP that runs my life. The motivation here is not the monetization or the mass appeal. Instead, the motivation is purely personal and utilitarian. I covered the journey – and my past failures – in my confessional essay: **[Building in Margins of Reality](/writings/00-margins/)**.
 
 > In one sentence, Sidekick is an AI-powered Personal Operating System carefully calibrated to my lifestyle and workflows to help me become a better version of myself.
 

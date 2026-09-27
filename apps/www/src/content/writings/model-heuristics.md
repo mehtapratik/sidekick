@@ -9,9 +9,8 @@ tags:
   - project
   - technical
   - ai
-section: writings
 type: note
-sourcePath: notes/model-heuristics.md
+sourcePath: sources/writings/model-heuristics.md
 wordCount: 999
 readingMinutes: 5
 author: Pratik Mehta

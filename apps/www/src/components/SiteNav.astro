@@ -1,35 +1,18 @@
 ---
-import { NAV_SECTIONS, SECTION_LABELS } from "../lib/site.ts";
+import { NAV_ITEMS } from "../lib/site.ts";
 
-const navItems = [
-   ...NAV_SECTIONS.map((section) => ({
-      href: `/${section}/`,
-      label: SECTION_LABELS[section],
-   })),
-   { href: "/index/", label: "Index" },
-];
-
-interface Props {
-   type: "mobile" | "desktop";
-}
-const { type = "desktop" } = Astro.props;
+const path = Astro.url.pathname;
 ---
-<nav
-   class={type === "desktop" ? "nav" : "mobile-nav"}
-   id={type === "mobile" ? "mobile-nav" : undefined}
-   aria-label="Navigation"
->
-   {navItems.map(({ href, label }) => (
-      <a
-         href={href}
-         aria-current={
-            Astro.url.pathname.startsWith(href) ? "page" : undefined
-         }
-      >
-         {label}
-      </a>
-   ))}
-   {type === "mobile" && (
-      <button class="mobile-nav__search" data-open-search>Search</button>
-   )}
+
+<nav class="nav" aria-label="Primary">
+   {
+      NAV_ITEMS.map(({ href, label, num }) => (
+         <a class="nav-a" href={href} aria-current={path.startsWith(href) ? "page" : undefined}>
+            <span class="nav-num" aria-hidden="true">
+               {num}
+            </span>
+            {label}
+         </a>
+      ))
+   }
 </nav>

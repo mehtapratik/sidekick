@@ -1,29 +1,53 @@
 ---
-import HeroArt from "./HeroArt.astro";
-import { postUrl, type Post } from "../lib/entries.ts";
-import { SECTION_LABELS } from "../lib/site.ts";
-import { formatDate } from "../lib/reading.ts";
+// One list row: date · (kicker, title, deck, tags) · arrow. The title is
+// the row's only link, stretched over the whole row with ::after.
+import Icon from "./Icon.astro";
+import { formatDate, formatDateYmd } from "../lib/reading.ts";
+import { tagSlug } from "../lib/entries.ts";
 
 interface Props {
-   post: Post;
-   showSection?: boolean;
+   href: string;
+   title: string;
+   kind: string;
+   minutes?: number;
+   deck?: string;
+   date: Date;
+   tags?: string[];
+   /** Heading level of the title within the page outline. */
+   level?: 2 | 3;
 }
 
-const { post, showSection = false } = Astro.props;
+const { href, title, kind, minutes, deck, date, tags = [], level = 2 } = Astro.props;
+const Heading = `h${level}`;
 ---
 
-<article class="post-row">
-   <a href={postUrl(post)} class="post-row__thumb">
-      <HeroArt post={post} width={320} />
-   </a>
-   <div class="post-row__body">
-      <h2>
-         <a href={postUrl(post)}>{post.data.title}</a>
-      </h2>
-      {post.data.deck && <p>{post.data.deck}</p>}
-      <span class="post-date">
-         {showSection && `${SECTION_LABELS[post.data.section]} · `}
-         {formatDate(post.data.created)}
-      </span>
+<li class="row" data-tags={tags.map(tagSlug).join(" ")}>
+   <div class="row-date"><time datetime={formatDateYmd(date)}>{formatDate(date)}</time></div>
+   <div>
+      <p class="kicker">
+         <span class="kind">{kind}</span>
+         {
+            minutes && (
+               <>
+                  <span class="dot" aria-hidden="true">
+                     ·
+                  </span>
+                  <span>{minutes} min read</span>
+               </>
+            )
+         }
+      </p>
+      <Heading class="row-title"><a href={href}>{title}</a></Heading>
+      {deck && <p class="row-deck">{deck}</p>}
+      {
+         tags.length > 0 && (
+            <ul class="tags" aria-label="Tags">
+               {tags.map((t) => (
+                  <li>#{t}</li>
+               ))}
+            </ul>
+         )
+      }
    </div>
-</article>
+   <span class="row-arrow" aria-hidden="true"><Icon name="arrow-up-right" /></span>
+</li>

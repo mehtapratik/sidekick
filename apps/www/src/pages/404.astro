@@ -1,12 +1,21 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
 ---
 
 <BaseLayout title="Page not found">
-   <div class="stage">
-      <p class="page-eyebrow">404</p>
-      <h1 class="page-title">Page not found.</h1>
-      <p class="page-desc">This page doesn't exist or was moved.</p>
-      <a href="/">← Back to home</a>
+   <div class="wrap page-end">
+      <div class="phd">
+         <div>
+            <p class="eyebrow">404</p>
+            <h1>Page not found</h1>
+            <p class="sec-sub">
+               This page doesn’t exist or was moved. Try <a href="/writings/">Writings</a>, the
+               <a href="/docs/">vault</a>, or the <a href="/index/">Index</a> — or search with
+               <kbd>/</kbd>.
+            </p>
+         </div>
+      </div>
+      <a class="btn btn-primary" href="/">Back to the archive<Icon name="arrow-right" /></a>
    </div>
 </BaseLayout>

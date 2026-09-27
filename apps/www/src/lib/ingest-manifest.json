@@ -1,7 +1,21 @@
 {
-  "hero": "writings/00-margins",
-  "heroImage": null,
-  "count": 7,
-  "docsRoot": "/Users/pratikgmehta/Projects/sidekick/docs",
-  "generatedAt": "2026-08-25T04:37:30.092Z"
+  "generatedAt": "2026-09-27T04:33:41.479Z",
+  "lastSync": "2026-09-27",
+  "lastContentChange": "2026-09-27",
+  "counts": {
+    "documents": 206,
+    "sections": 7,
+    "writings": 4,
+    "bySection": {
+      "prd": 19,
+      "system-design": 94,
+      "plans": 38,
+      "builds": 7,
+      "decisions": 20,
+      "glossary": 6,
+      "harness": 22
+    }
+  },
+  "hero": "00-margins",
+  "heroImage": null
 }

@@ -1,0 +1,164 @@
+---
+// The article template shared by essays (writings/[slug]) and leaf docs:
+// breadcrumb → hero-art band → kicker → h1 → deck → meta <dl> → prose +
+// sticky TOC → tags → extras → prev/next.
+import Breadcrumb from "./Breadcrumb.astro";
+import HeroArt from "./HeroArt.astro";
+import Icon from "./Icon.astro";
+import StatusIndicator from "./StatusIndicator.astro";
+import TableOfContents from "./TableOfContents.astro";
+import { tagUrl } from "../lib/entries.ts";
+import { formatDate, formatDateYmd } from "../lib/reading.ts";
+import type { DocStatus } from "../lib/site.ts";
+
+type MetaItem =
+   | { label: string; text: string }
+   | { label: string; date: Date }
+   | { label: string; status: DocStatus };
+
+type Neighbour = { href: string; title: string; label: string };
+
+interface Props {
+   crumbs: { label: string; href?: string }[];
+   kind: string;
+   kickerExtra?: { text: string; date?: Date }[];
+   title: string;
+   deck?: string;
+   meta: MetaItem[];
+   headings: { depth: number; slug: string; text: string }[];
+   tags?: string[];
+   band?: { motif: string; seed: string };
+   neighbours?: { label: string; prev?: Neighbour; next?: Neighbour };
+   /** Pagefind result row: kind label + a short meta string (date/status). */
+   searchMeta: string;
+   /** Inside DocsShell the page container already exists. */
+   contained?: boolean;
+}
+
+const {
+   crumbs,
+   kind,
+   kickerExtra = [],
+   title,
+   deck,
+   meta,
+   headings,
+   tags = [],
+   band,
+   neighbours,
+   searchMeta,
+   contained = true,
+} = Astro.props;
+
+const tocHeadings = headings.filter(
+   (h) =>
+      (h.depth === 2 || h.depth === 3) &&
+      h.text.replace(/\s*#$/, "") !== "TL;DR" &&
+      h.slug !== "footnote-label",
+);
+const showToc = tocHeadings.filter((h) => h.depth === 2).length >= 2;
+// Pagefind meta values are comma-separated; keep ours comma-free.
+const pagefindMeta = `kind:${kind.replace(/,/g, "")}, meta:${searchMeta.replace(/,/g, "")}`;
+---
+
+<div class:list={{ wrap: contained }}>
+   <article class="art" aria-labelledby="art-title" data-pagefind-body data-pagefind-meta={pagefindMeta}>
+      <div data-pagefind-ignore>
+         <Breadcrumb items={crumbs} />
+         {band && <HeroArt motif={band.motif} seed={band.seed} class="art-band" />}
+      </div>
+
+      <header class="art-hd">
+         <p class="kicker" data-pagefind-ignore>
+            <span class="kind">{kind}</span>
+            {
+               kickerExtra.map((k) => (
+                  <>
+                     <span class="dot" aria-hidden="true">
+                        ·
+                     </span>
+                     {k.date ? (
+                        <time datetime={formatDateYmd(k.date)}>{k.text}</time>
+                     ) : (
+                        <span>{k.text}</span>
+                     )}
+                  </>
+               ))
+            }
+         </p>
+         <h1 class="art-title" id="art-title">{title}</h1>
+         {deck && <p class="art-deck">{deck}</p>}
+         <dl class="meta" data-pagefind-ignore>
+            {
+               meta.map((m) => (
+                  <div>
+                     <dt>{m.label}</dt>
+                     <dd>
+                        {"status" in m ? (
+                           <StatusIndicator status={m.status} />
+                        ) : "date" in m ? (
+                           <time datetime={formatDateYmd(m.date)}>{formatDate(m.date)}</time>
+                        ) : (
+                           m.text
+                        )}
+                     </dd>
+                  </div>
+               ))
+            }
+         </dl>
+      </header>
+
+      <div class:list={["art-grid", { "art-grid--toc": showToc }]}>
+         <div class="art-main">
+            <div class="prose">
+               <slot />
+            </div>
+
+            <div data-pagefind-ignore>
+               {
+                  tags.length > 0 && (
+                     <ul class="art-tags" aria-label="Tags">
+                        {tags.map((t) => (
+                           <li>
+                              <a class="tag" href={tagUrl(t)}>
+                                 #{t}
+                              </a>
+                           </li>
+                        ))}
+                     </ul>
+                  )
+               }
+               <slot name="after" />
+            </div>
+         </div>
+         {showToc && <TableOfContents headings={tocHeadings} />}
+      </div>
+
+      {
+         neighbours && (neighbours.prev || neighbours.next) && (
+            <nav class="pn" aria-label={neighbours.label} data-pagefind-ignore>
+               {neighbours.prev ? (
+                  <a href={neighbours.prev.href}>
+                     <span class="pn-l">
+                        <Icon name="arrow-left" />
+                        {neighbours.prev.label}
+                     </span>
+                     <span class="pn-t">{neighbours.prev.title}</span>
+                  </a>
+               ) : (
+                  <span />
+               )}
+               {neighbours.next && (
+                  <a class="next" href={neighbours.next.href}>
+                     <span class="pn-l">
+                        {neighbours.next.label}
+                        <Icon name="arrow-right" />
+                     </span>
+                     <span class="pn-t">{neighbours.next.title}</span>
+                  </a>
+               )}
+            </nav>
+         )
+      }
+   </article>
+</div>

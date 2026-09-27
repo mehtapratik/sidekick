@@ -10,12 +10,16 @@ interface Props {
 
 const {
    title,
-   description,
+   description: pageDescription,
    ogType = "website",
    contentMeta,
    ogImage = null,
 } = Astro.props;
 const siteTitle = contentMeta.site.title ?? "ARKIVE";
+// Many vault docs have no deck/description; fall back to the site intro so
+// every page still carries a meta description. (Deliberately not a body
+// excerpt: a doc body can mention redacted wikilink targets.)
+const description = pageDescription || contentMeta.site.intro || undefined;
 const siteUrl = contentMeta.site.url ?? "https://arkive.blog";
 const pageTitle = title === siteTitle ? siteTitle : `${title} — ${siteTitle}`;
 const canonical = new URL(Astro.url.pathname, siteUrl).href;
@@ -34,16 +38,8 @@ const resolvedOgImage = ogImage
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<meta
-   name="theme-color"
-   content="#f7f3ec"
-   media="(prefers-color-scheme: light)"
-/>
-<meta
-   name="theme-color"
-   content="#1b1714"
-   media="(prefers-color-scheme: dark)"
-/>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0b0b0b" media="(prefers-color-scheme: dark)" />
 
 <!-- Open Graph -->
 <meta property="og:title" content={pageTitle} />

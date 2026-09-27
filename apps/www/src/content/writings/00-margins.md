@@ -9,9 +9,8 @@ version: 1.0.0
 tags:
   - essays
   - sidekick
-section: writings
 type: essay
-sourcePath: essays/00-margins.md
+sourcePath: sources/writings/00-margins.md
 wordCount: 740
 readingMinutes: 4
 author: Pratik Mehta

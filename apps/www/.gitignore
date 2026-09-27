@@ -3,3 +3,7 @@ dist
 .astro
 public/og
 .idea
+
+.DS_Store
+.obsidian
+.claude/settings.local.json

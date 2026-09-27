@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DocsShell from "../../components/DocsShell.astro";
+import DocList from "../../components/DocList.astro";
+import Icon from "../../components/Icon.astro";
+import { getDocChildren, getFolderLeafCounts } from "../../lib/entries.ts";
+import { STATUS_LABELS, type DocStatus } from "../../lib/site.ts";
+import docTree from "../../lib/doc-tree.json";
+
+const PREVIEW = 6;
+const folderCounts = getFolderLeafCounts();
+const sections = await Promise.all(
+   docTree.map(async (s) => ({ ...s, docs: (await getDocChildren(s.slug)).slice(0, PREVIEW) })),
+);
+const statuses = Object.keys(STATUS_LABELS) as DocStatus[];
+---
+
+<BaseLayout
+   title="Docs"
+   description="Specifications, decisions, and plans behind Sidekick, published straight from my notes."
+>
+   <DocsShell>
+      <div class="vhead">
+         <p class="eyebrow">02 · Docs</p>
+         <h1>The vault</h1>
+         <p class="sec-sub">
+            Specifications, decisions, and plans behind Sidekick, published straight from my notes.
+            Each document carries its status.
+         </p>
+         <ul class="legend" aria-label="Status legend">
+            {
+               statuses.map((st) => (
+                  <li class="status">
+                     <span class={`st st-${st}`} aria-hidden="true" />
+                     {STATUS_LABELS[st]}
+                  </li>
+               ))
+            }
+         </ul>
+      </div>
+
+      {
+         sections.map((s) => (
+            <section class="vsec" aria-labelledby={`vsec-${s.slug}`}>
+               <div class="sec-hd vsec-hd">
+                  <h2 id={`vsec-${s.slug}`}>
+                     <a href={`/docs/${s.slug}/`}>{s.label}</a>
+                  </h2>
+                  <span class="count">{s.count} docs</span>
+               </div>
+               <DocList docs={s.docs} folderCounts={folderCounts} />
+               <a class="more" href={`/docs/${s.slug}/`}>
+                  View all {s.count}
+                  <span class="sr-only"> in {s.label}</span>
+                  <Icon name="arrow-right" />
+               </a>
+            </section>
+         ))
+      }
+   </DocsShell>
+</BaseLayout>

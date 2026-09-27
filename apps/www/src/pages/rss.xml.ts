@@ -1,11 +1,11 @@
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
-import { getAllPosts, postUrl } from "../lib/entries.ts";
+import { getAllWritings, writingUrl } from "../lib/entries.ts";
 import { loadContentMeta } from "../lib/site.ts";
 
 export async function GET(context: APIContext) {
    const meta = loadContentMeta();
-   const posts = await getAllPosts();
+   const posts = await getAllWritings();
 
    return rss({
       title: meta.site.title ?? "ARKIVE",
@@ -15,7 +15,7 @@ export async function GET(context: APIContext) {
          title: post.data.title,
          description: post.data.deck ?? post.data.description ?? "",
          pubDate: post.data.created,
-         link: postUrl(post),
+         link: writingUrl(post),
       })),
    });
 }

@@ -1,0 +1,13 @@
+---
+import { KIND_LABELS, type DocKind } from "../lib/site.ts";
+
+interface Props {
+   kind: DocKind;
+   /** Own kind (the document's own) vs. a kind referenced in a list. */
+   variant?: "own" | "referenced";
+}
+
+const { kind, variant = "own" } = Astro.props;
+---
+
+<span class={`kind-chip kind-chip--${variant}`}>{KIND_LABELS[kind]}</span>

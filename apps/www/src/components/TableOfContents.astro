@@ -1,0 +1,98 @@
+---
+// "On this page": h2s with their h3s nested, a 1px rail, and the section
+// currently in view marked aria-current="location" (accent rail segment).
+// Hidden on mobile via CSS.
+interface Heading {
+   depth: number;
+   slug: string;
+   text: string;
+}
+
+interface Props {
+   headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+type Entry = Heading & { subs: Heading[] };
+const entries: Entry[] = [];
+for (const raw of headings) {
+   // Heading text includes the "#" permalink rehypePermalink appends.
+   const h = { ...raw, text: raw.text.replace(/\s*#$/, "") };
+   if (h.depth === 2) entries.push({ ...h, subs: [] });
+   else if (h.depth === 3 && entries.length > 0) entries.at(-1)!.subs.push(h);
+}
+---
+
+<aside class="toc" aria-labelledby="toc-label" data-pagefind-ignore>
+   <p class="panel-label" id="toc-label">On this page</p>
+   <ol>
+      {
+         entries.map((h) => (
+            <li>
+               <a href={`#${h.slug}`} data-toc-link>
+                  {h.text}
+               </a>
+               {h.subs.length > 0 && (
+                  <ol class="sub">
+                     {h.subs.map((s) => (
+                        <li>
+                           <a href={`#${s.slug}`} data-toc-link>
+                              {s.text}
+                           </a>
+                        </li>
+                     ))}
+                  </ol>
+               )}
+            </li>
+         ))
+      }
+   </ol>
+</aside>
+
+<script>
+   const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"));
+   const targets = links
+      .map((l) => document.getElementById(decodeURIComponent(l.hash.slice(1))))
+      .filter((el): el is HTMLElement => !!el);
+
+   if (targets.length > 0) {
+      let current = -1;
+      function setCurrent(idx: number) {
+         if (idx === current) return;
+         current = idx;
+         links.forEach((l, i) =>
+            i === idx ? l.setAttribute("aria-current", "location") : l.removeAttribute("aria-current"),
+         );
+      }
+
+      // The current section is the last heading scrolled above a line a
+      // little below the sticky header.
+      function update() {
+         const line = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) + 48;
+         const atBottom =
+            window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+         if (atBottom) return setCurrent(targets.length - 1);
+         let idx = 0;
+         targets.forEach((t, i) => {
+            if (t.getBoundingClientRect().top <= line) idx = i;
+         });
+         setCurrent(idx);
+      }
+
+      let ticking = false;
+      window.addEventListener(
+         "scroll",
+         () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+               update();
+               ticking = false;
+            });
+         },
+         { passive: true },
+      );
+      update();
+   }
+</script>

@@ -1,75 +1,112 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getAllPosts, getHeroPost, postUrl } from "../lib/entries.ts";
-import HeroArt from "../components/HeroArt.astro";
 import PostRow from "../components/PostRow.astro";
-import {
-   loadContentMeta,
-   NAV_SECTIONS,
-   SECTION_LABELS,
-   SECTION_DESCRIPTIONS,
-} from "../lib/site.ts";
-import { formatDate } from "../lib/reading.ts";
+import Icon from "../components/Icon.astro";
+import { getAllWritings, getHeroPost, writingUrl } from "../lib/entries.ts";
+import { loadContentMeta, WRITING_TYPE_LABELS } from "../lib/site.ts";
+import docTree from "../lib/doc-tree.json";
 
 const meta = loadContentMeta();
 const heroPost = await getHeroPost();
-const allPosts = await getAllPosts();
-const latestPosts = allPosts.filter((p) => p.id !== heroPost?.id);
+const latest = (await getAllWritings()).slice(0, 4);
 ---
 
 <BaseLayout title={meta.site.title ?? "ARKIVE"} description={meta.site.intro}>
-   <div class="stage">
-      {meta.site.intro && <p class="lede">{meta.site.intro}</p>}
-      {
-         heroPost && (
-            <section class="featured">
-               <p class="eyebrow">Featured post</p>
-               <HeroArt post={heroPost} width={640} class="featured-hero" />
-               <h1 class="featured-title">
-                  <a href={postUrl(heroPost)}>{heroPost.data.title}</a>
-               </h1>
-               {heroPost.data.deck && (
-                  <p class="featured-blurb">{heroPost.data.deck}</p>
-               )}
-               <p class="featured-meta">
-                  {SECTION_LABELS[heroPost.data.section]} ·{" "}
-                  {formatDate(heroPost.data.created)}
-               </p>
-            </section>
-         )
-      }
-
-      {
-         latestPosts.length > 0 && (
-            <>
-               <div class="rule" />
-               <p class="section-label">Most recent posts</p>
-               {latestPosts.map((post) => (
-                  <PostRow post={post} showSection={true} />
-               ))}
-            </>
-         )
-      }
-
-      <div class="rule"></div>
-      <p class="section-label">Sections</p>
-      <div class="cat-grid">
-         {
-            NAV_SECTIONS.map((section) => (
-               <div class="cat-cell">
-                  <h3>
-                     <a href={`/${section}/`}>{SECTION_LABELS[section]}</a>
-                  </h3>
-                  <p>{SECTION_DESCRIPTIONS[section]}</p>
-               </div>
-            ))
-         }
-         <div class="cat-cell">
-            <h3>
-               <a href="/index/">Index</a>
-            </h3>
-            <p>Chronological index of every post, across every section.</p>
+   <div class="wrap">
+      <section class="hero" aria-labelledby="hero-title">
+         <div>
+            <p class="eyebrow">Project Sidekick · built in the open</p>
+            <h1 id="hero-title">Notes, decisions &amp; progress, <em>written as it happens.</em></h1>
+            {meta.site.intro && <p class="lead">{meta.site.intro}</p>}
+            <div class="cta">
+               {
+                  heroPost && (
+                     <a class="btn btn-primary" href={writingUrl(heroPost)}>
+                        Read the kick-off essay
+                        <Icon name="arrow-right" />
+                     </a>
+                  )
+               }
+               <a class="btn btn-ghost" href="/docs/">Browse the vault</a>
+            </div>
          </div>
-      </div>
+         {
+            heroPost && (
+               <article class="feature">
+                  <p class="panel-label">Start here</p>
+                  <h2 class="f-title">
+                     <a href={writingUrl(heroPost)}>{heroPost.data.title}</a>
+                  </h2>
+                  {heroPost.data.deck && <p class="f-deck">{heroPost.data.deck}</p>}
+                  <p class="f-meta">
+                     <span>{WRITING_TYPE_LABELS[heroPost.data.type]}</span>
+                     <span class="dot" aria-hidden="true">
+                        ·
+                     </span>
+                     <span>{heroPost.data.readingMinutes} min read</span>
+                  </p>
+               </article>
+            )
+         }
+      </section>
+
+      <section class="sec" aria-labelledby="latest-title">
+         <div class="sec-hd">
+            <div>
+               <h2 id="latest-title">Latest writing</h2>
+               <p class="sec-sub">Essays and long-form notes, newest first.</p>
+            </div>
+            <a class="more" href="/writings/">All writings<Icon name="arrow-right" /></a>
+         </div>
+         <ol class="rows">
+            {
+               latest.map((post) => (
+                  <PostRow
+                     level={3}
+                     href={writingUrl(post)}
+                     title={post.data.title}
+                     kind={WRITING_TYPE_LABELS[post.data.type]}
+                     minutes={post.data.readingMinutes}
+                     deck={post.data.deck}
+                     date={post.data.created}
+                     tags={post.data.tags}
+                  />
+               ))
+            }
+         </ol>
+      </section>
+
+      <section class="sec" aria-labelledby="vault-title">
+         <div class="sec-hd">
+            <div>
+               <h2 id="vault-title">From the vault</h2>
+               <p class="sec-sub">
+                  Specifications, decisions, and plans behind Sidekick, published straight from my
+                  notes.
+               </p>
+            </div>
+            <a class="more" href="/docs/">Open the vault<Icon name="arrow-right" /></a>
+         </div>
+         <div class="vgrid">
+            {
+               docTree.map((s) => (
+                  <a class="vcard" href={`/docs/${s.slug}/`}>
+                     <span class="vcard-n" aria-hidden="true">
+                        {s.count}
+                     </span>
+                     <span class="vcard-b">
+                        <span class="vcard-l">
+                           {s.label}
+                           <span class="sr-only"> — {s.count} documents</span>
+                        </span>
+                        <span class="vcard-go" aria-hidden="true">
+                           <Icon name="arrow-up-right" />
+                        </span>
+                     </span>
+                  </a>
+               ))
+            }
+         </div>
+      </section>
    </div>
 </BaseLayout>

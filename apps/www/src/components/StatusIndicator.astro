@@ -1,0 +1,25 @@
+---
+// A 10px shape + text label — status is never conveyed by colour alone.
+// Shapes: draft hollow ring · approved half-filled · building quarter-
+// filled · built filled · rejected struck-through ring · cancelled dashed.
+import { STATUS_LABELS, type DocStatus } from "../lib/site.ts";
+
+interface Props {
+   status: DocStatus;
+   /** Render only the shape (the caller supplies the label, e.g. as sr-only). */
+   shapeOnly?: boolean;
+}
+
+const { status, shapeOnly = false } = Astro.props;
+---
+
+{
+   shapeOnly ? (
+      <span class={`st st-${status}`} aria-hidden="true" />
+   ) : (
+      <span class="status">
+         <span class={`st st-${status}`} aria-hidden="true" />
+         {STATUS_LABELS[status]}
+      </span>
+   )
+}
