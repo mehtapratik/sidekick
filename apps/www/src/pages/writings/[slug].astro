@@ -30,21 +30,18 @@ const deck = data.deck || data.description || undefined;
    <Article
       crumbs={[{ label: "Writings", href: "/writings/" }, { label: data.title }]}
       kind={WRITING_TYPE_LABELS[data.type]}
-      kickerExtra={[
-         { text: formatDate(data.created), date: data.created },
-         { text: `${data.readingMinutes} min read` },
-      ]}
+      kickerExtra={[{ text: formatDate(data.created), date: data.created }]}
       title={data.title}
       deck={deck}
       meta={[
-         { label: "Author", text: data.author },
          { label: "Published", date: data.created },
          ...(updated.getTime() !== data.created.getTime()
             ? [{ label: "Updated", date: updated }]
             : []),
          { label: "Version", text: data.version ?? "1.0.0" },
          ...(data.audience ? [{ label: "Audience", text: data.audience }] : []),
-         { label: "License", text: data.license ?? "CC BY-NC 4.0" },
+         { label: "Words", text: data.wordCount.toLocaleString("en-US") },
+         { label: "Reading time", text: `${data.readingMinutes} min` },
       ]}
       headings={headings}
       tags={data.tags}

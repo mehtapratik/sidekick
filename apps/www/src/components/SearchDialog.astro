@@ -78,6 +78,8 @@ const recent = (await getChronological()).slice(0, 4).map((item) =>
 </dialog>
 
 <script>
+   import { isEditing, shortcutsEnabled } from "../lib/shortcuts.ts";
+
    type PagefindResult = {
       url: string;
       meta: { title?: string; kind?: string; meta?: string };
@@ -213,9 +215,8 @@ const recent = (await getChronological()).slice(0, 4).map((item) =>
    });
 
    document.addEventListener("keydown", (e) => {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey || dialog.open) return;
-      const t = e.target as HTMLElement;
-      if (t.closest("input, textarea, select, [contenteditable]")) return;
+      if (e.key !== "/" || isEditing(e) || !shortcutsEnabled()) return;
+      if (document.querySelector("dialog[open]")) return;
       e.preventDefault();
       open();
    });

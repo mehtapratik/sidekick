@@ -4,8 +4,8 @@
   "description": "Notes, decisions, and progress on Sidekick — written as it's built, not after.",
   "start_url": "/",
   "display": "minimal-ui",
-  "background_color": "#F7F3EC",
-  "theme_color": "#F1EBDF",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/favicon.svg",

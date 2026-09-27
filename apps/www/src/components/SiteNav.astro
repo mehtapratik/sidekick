@@ -7,7 +7,13 @@ const path = Astro.url.pathname;
 <nav class="nav" aria-label="Primary">
    {
       NAV_ITEMS.map(({ href, label, num }) => (
-         <a class="nav-a" href={href} aria-current={path.startsWith(href) ? "page" : undefined}>
+         <a
+            class="nav-a"
+            href={href}
+            aria-current={path.startsWith(href) ? "page" : undefined}
+            aria-keyshortcuts={String(Number(num))}
+            data-shortcut={Number(num)}
+         >
             <span class="nav-num" aria-hidden="true">
                {num}
             </span>

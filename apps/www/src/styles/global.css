@@ -325,9 +325,10 @@ pre {
    border: 1.5px solid var(--ink);
    border-radius: var(--radius);
    color: var(--accent);
-   font-size: 13px;
-   font-weight: 600;
-   letter-spacing: -0.08em;
+   font-family: var(--f-display);
+   font-size: 20px;
+   font-weight: 500;
+   line-height: 1;
    transition: background-color var(--transition);
 }
 
@@ -337,6 +338,7 @@ pre {
 
 .brand:hover .brand-mark {
    background: var(--ink);
+   color: var(--bg);
 }
 
 .nav {
@@ -476,6 +478,71 @@ pre {
 
 .search::backdrop {
    background: rgb(0 0 0 / 0.28);
+}
+
+/* Keyboard-shortcuts panel: same drop-down as search. */
+.keys-list {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+   gap: 4px 32px;
+   margin: 0 0 24px;
+}
+
+.keys-list > div {
+   display: flex;
+   align-items: center;
+   gap: 16px;
+   min-height: var(--target);
+   border-bottom: 1px solid var(--line);
+}
+
+.keys-list dt {
+   display: flex;
+   gap: 4px;
+   min-width: 56px;
+}
+
+.keys-list dd {
+   margin: 0;
+   color: var(--ink);
+   font-family: var(--f-code);
+   font-size: 13px;
+}
+
+.keys-toggle {
+   display: inline-flex;
+   align-items: center;
+   gap: 10px;
+   min-height: var(--target);
+   color: var(--ink);
+   font-family: var(--f-code);
+   font-size: 13px;
+   cursor: pointer;
+}
+
+.keys-toggle input {
+   width: 18px;
+   height: 18px;
+   accent-color: var(--accent);
+   cursor: pointer;
+}
+
+/* Reading progress: a 2px accent line on the viewport's top edge, filled
+   by --p (0–1) from Article.astro's script. Decorative (aria-hidden). */
+.progress {
+   position: fixed;
+   inset: 0 0 auto;
+   z-index: 40;
+   height: 2px;
+   pointer-events: none;
+}
+
+.progress span {
+   display: block;
+   height: 100%;
+   background: var(--accent);
+   transform: scaleX(var(--p, 0));
+   transform-origin: left;
 }
 
 .search-field {
@@ -643,21 +710,33 @@ pre {
    gap: 4px;
 }
 
-.ftr a {
+.ftr a,
+.ftr button {
    display: inline-flex;
    align-items: center;
    gap: 8px;
    min-height: var(--target);
    padding: 0 10px;
    border-radius: var(--radius);
+   border: 0;
+   background: transparent;
    color: var(--ink);
+   font: inherit;
    text-decoration: none;
    transition:
       background-color var(--transition),
       color var(--transition);
 }
 
-.ftr a:hover {
+/* Shortcuts are keyboard-only; don't offer them on touch screens. */
+@media (hover: none) {
+   .ftr [data-open-keys] {
+      display: none;
+   }
+}
+
+.ftr a:hover,
+.ftr button:hover {
    background: var(--raised);
    color: var(--accent);
 }
@@ -716,14 +795,30 @@ pre {
    height: 18px;
 }
 
-.panel {
-   border-top: 1px solid var(--line);
-   background: var(--surface);
-   box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.35);
+/* Theme toggle: show the icon for the theme a click switches to. Light is
+   the default; dark comes from data-theme or, with no explicit choice, the
+   OS media query. */
+.theme-icon {
+   display: inline-flex;
 }
 
-.panel[hidden] {
+.theme-icon--to-light,
+:root[data-theme="dark"] .theme-icon--to-dark {
    display: none;
+}
+
+:root[data-theme="dark"] .theme-icon--to-light {
+   display: inline-flex;
+}
+
+@media (prefers-color-scheme: dark) {
+   :root:not([data-theme="light"]) .theme-icon--to-dark {
+      display: none;
+   }
+
+   :root:not([data-theme="light"]) .theme-icon--to-light {
+      display: inline-flex;
+   }
 }
 
 .panel-in {
@@ -756,53 +851,6 @@ pre {
 .close:hover {
    color: var(--ink);
    background: var(--raised);
-}
-
-.seg {
-   display: inline-flex;
-   flex-wrap: wrap;
-   gap: 3px;
-   padding: 3px;
-   border: 1px solid var(--line-strong);
-   border-radius: var(--radius-card);
-}
-
-.seg button {
-   display: inline-flex;
-   align-items: center;
-   gap: 8px;
-   height: var(--target);
-   padding: 0 16px;
-   border: 0;
-   border-radius: var(--radius);
-   background: transparent;
-   color: var(--muted);
-   font-family: var(--f-code);
-   font-size: 13px;
-   transition:
-      background-color var(--transition),
-      color var(--transition);
-}
-
-.seg button:hover {
-   color: var(--ink);
-   background: var(--raised);
-}
-
-.seg button[aria-pressed="true"] {
-   background: var(--ink);
-   color: var(--bg);
-}
-
-.seg svg {
-   width: 16px;
-   height: 16px;
-}
-
-@media (max-width: 720px) {
-   .seg button {
-      padding: 0 12px;
-   }
 }
 
 /* ============================================================
@@ -1989,10 +2037,6 @@ details[open] > .tree-sub-sum::before {
 .art-grid--toc {
    grid-template-columns: minmax(0, 1fr) var(--toc-width);
    gap: 96px;
-}
-
-.docs .art-grid--toc {
-   gap: 56px;
 }
 
 .art-main {

@@ -19,6 +19,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteMeta from "../components/SiteMeta.astro";
 import SearchDialog from "../components/SearchDialog.astro";
+import Shortcuts from "../components/Shortcuts.astro";
 
 interface Props {
    title: string;
@@ -71,6 +72,7 @@ const contentMeta = loadContentMeta();
       <a href="#main" class="skip">Skip to content</a>
       <SiteHeader contentMeta={contentMeta} />
       <SearchDialog />
+      <Shortcuts />
 
       <main id="main" tabindex="-1">
          <slot />

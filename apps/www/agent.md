@@ -304,7 +304,9 @@ docs as `docs--<id-with-slashes-as-dashdash>.png`.
 - **Appearance** is Light / Dark / **System (default)**. `localStorage["arkive-theme"]` holds
   `light` or `dark`; System = key absent. The inline no-flash script in `BaseLayout.astro` sets
   `data-theme` only for an explicit choice, so System follows the OS live. The control is
-  `Appearance.astro` (header trigger + drop-down panel, segmented `aria-pressed` buttons).
+  `Appearance.astro`: one header button that flips light ↔ dark. A flip that lands on the OS
+  scheme *removes* the key (back to System) instead of storing it, so System is always one click
+  away without a third option.
   Anything theme-dependent in CSS (Shiki colours, hero-art light/dark copies) must handle all
   three states — explicit attribute *and* the no-attribute media query.
 - **Fonts:** only Newsreader (variable, optical-size axis, roman + italic) for display and body,
@@ -349,12 +351,13 @@ extend this check, keep it structural/precise for the same reason.
 
 | Component | Role |
 |---|---|
-| `SiteHeader.astro` / `SiteNav.astro` | Sticky header: brand, numbered 3-item nav, Search + Appearance tools |
-| `Appearance.astro` | Light / Dark / System control (`part="trigger"` / `part="panel"`) |
+| `SiteHeader.astro` / `SiteNav.astro` | Sticky header: boxed-§ brand mark, numbered 3-item nav, Search + theme toggle |
+| `Appearance.astro` | Light ↔ dark toggle button (see Theming) |
+| `Shortcuts.astro` | Keyboard shortcuts + `?` panel: `1`/`2`/`3` → `[data-shortcut]` nav links, `←`/`→` → `a[data-nav]` prev/next. One off switch (`localStorage["arkive-shortcuts"]="off"`, `src/lib/shortcuts.ts`) also gates `/` search — WCAG 2.1.4 |
 | `SiteFooter.astro`, `SiteMeta.astro` | Footer, `<title>`/OG/meta tags (incl. theme-color) |
 | `SearchDialog.astro` | Pagefind search as a `<dialog>` panel under the header (`/`, ↑/↓, Esc) |
 | `Icon.astro` | The design's icon set (`src/lib/icons.js`), always decorative |
-| `Article.astro` | Shared essay / leaf-doc template: crumbs, band, kicker, h1, deck, meta, prose + TOC, tags, prev/next |
+| `Article.astro` | Shared essay / leaf-doc template: reading-progress bar, crumbs, band, kicker, h1, deck, meta (… Words, Reading time), prose + TOC (`toc={false}` on docs — the vault tree is their only sidebar), tags, prev/next |
 | `DocsShell.astro` | Docs layout: sticky tree + content; mobile "Browse the vault" disclosure |
 | `HeroArt.astro` | Light/dark SVG band (cropped to fill), given a `motif` + `seed` |
 | `DocTree.astro` / `DocTreeNode.astro` | Vault tree as `<details>` sections/folders + client-side filter |

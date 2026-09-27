@@ -16,7 +16,7 @@ const [name, ...rest] = host.split(".");
 <header class="hdr" data-site-header>
    <div class="wrap hdr-in">
       <a class="brand" href="/" aria-label={`${host}, home`}>
-         <span class="brand-mark" aria-hidden="true">a/</span>
+         <span class="brand-mark" aria-hidden="true">§</span>
          <span aria-hidden="true">{name}<span class="brand-dot">.</span>{rest.join(".")}</span>
       </a>
 
@@ -36,9 +36,8 @@ const [name, ...rest] = host.split(".");
             <span class="tool-label">Search</span>
             <kbd aria-hidden="true">/</kbd>
          </button>
-         <Appearance part="trigger" />
+         <Appearance />
       </div>
    </div>
 
-   <Appearance part="panel" />
 </header>

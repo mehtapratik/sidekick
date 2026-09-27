@@ -101,9 +101,9 @@ const kindWord = kindLabel.toLowerCase();
          <DocsShell currentSectionSlug={sectionSlug} currentId={entry.id}>
             <Article
                contained={false}
+               toc={false}
                crumbs={breadcrumb}
                kind={kindLabel}
-               kickerExtra={[{ text: `${data.readingMinutes} min read` }]}
                title={data.title}
                deck={data.deck || data.description || undefined}
                meta={[
@@ -111,7 +111,8 @@ const kindWord = kindLabel.toLowerCase();
                   { label: "Version", text: data.version ?? "1.0.0" },
                   { label: "Created", date: data.created },
                   { label: "Updated", date: data.updated ?? data.created },
-                  { label: "License", text: data.license ?? "CC BY-NC 4.0" },
+                  { label: "Words", text: data.wordCount.toLocaleString("en-US") },
+                  { label: "Reading time", text: `${data.readingMinutes} min` },
                ]}
                headings={headings}
                tags={data.tags}
