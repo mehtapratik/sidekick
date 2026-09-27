@@ -8,17 +8,17 @@ Sidekick is designed to evolve safely: every feature is isolated into its own pa
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Frontend | Next.js 16 App Router |
-| Language | TypeScript (strict) |
-| Database | Supabase PostgreSQL |
-| ORM | Drizzle ORM |
-| Styling | Mantine |
-| Editor | Tiptap |
-| AI | Vercel AI SDK + Anthropic Claude |
-| Monorepo | Turborepo + pnpm |
-| Hosting | Vercel |
+| Layer    | Choice                           |
+| -------- | -------------------------------- |
+| Frontend | Next.js 16 App Router            |
+| Language | TypeScript (strict)              |
+| Database | Supabase PostgreSQL              |
+| ORM      | Drizzle ORM                      |
+| Styling  | Mantine                          |
+| Editor   | Tiptap                           |
+| AI       | Vercel AI SDK + Anthropic Claude |
+| Monorepo | Turborepo + pnpm                 |
+| Hosting  | Vercel                           |
 
 ---
 
@@ -89,10 +89,14 @@ packages/
   feature-budget/       # Budget tracking feature
   feature-ai-chat/      # AI chat feature
 
-docs/
-  learn/                # Explainers for every technology and decision in this codebase
-  decisions/            # Architecture decision records
-  progress/             # Phase-by-phase progress log
+docs/                    # Symlink to ../arkive/sources/docs — Sidekick's canonical documentation
+  02-prd/                # Product requirements
+  03-system-design/      # System design (functional and non-functional)
+  04-plans/              # Living plan and phase work breakdowns
+  05-builds/             # Step-by-step build walkthroughs per phase
+  06-decisions/          # Architecture and technical decisions
+  07-glossary/           # Shared vocabulary
+  08-ai-coding-harness/  # Task-specific implementation guidance
 ```
 
 ---
