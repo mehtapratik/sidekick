@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.api.idempotent-api
 created: 2026-09-19
 kind: spec

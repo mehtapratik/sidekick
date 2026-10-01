@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.code-quality-checks.prettier-at-repo-level
 created: 2026-09-19
 kind: spec
@@ -23,4 +24,4 @@ Sidekick to have repo level prettier formatting commands instead of fanning out 
 }
 ```
 
-[[why-prettier-at-repo-level?]]
+[[why-prettier-at-repo-level]]

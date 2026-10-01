@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-1-supabase-auth-shell-complete
 created: 2026-09-19
 kind: plan

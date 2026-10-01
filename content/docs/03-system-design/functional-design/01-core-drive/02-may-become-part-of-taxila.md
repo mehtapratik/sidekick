@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.functional-design.core-drive.may-become-part-of-taxila
 created: 2026-09-19
 kind: spec

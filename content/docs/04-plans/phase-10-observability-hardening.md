@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-10-observability-hardening
 created: 2026-09-19
 kind: plan

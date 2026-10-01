@@ -1,4 +1,5 @@
 ---
+publish: true
 title: Sidekick's Architectural Overview
 description: Sidekick's architectural overview — an API-first platform tuned for solo developers
 created: "2026-07-09"

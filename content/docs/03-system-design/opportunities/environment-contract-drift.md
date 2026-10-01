@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.environment-contract-drift
 created: 2026-09-19
 kind: opportunity

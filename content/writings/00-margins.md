@@ -1,4 +1,5 @@
 ---
+publish: true
 title: Building in the margins of reality
 version: 1.0.0
 audience: General

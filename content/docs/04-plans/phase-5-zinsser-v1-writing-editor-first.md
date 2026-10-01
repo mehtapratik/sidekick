@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-5-zinsser-v1-writing-editor-first
 created: 2026-09-19
 kind: plan

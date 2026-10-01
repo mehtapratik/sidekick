@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-12-billing-saas-readiness-optional-path
 created: 2026-09-19
 kind: plan

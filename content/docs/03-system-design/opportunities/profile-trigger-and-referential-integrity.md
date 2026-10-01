@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.profile-trigger-and-referential-integrity
 created: 2026-09-19
 kind: opportunity

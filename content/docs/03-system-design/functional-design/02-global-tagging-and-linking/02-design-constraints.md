@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.functional-design.global-tagging-and-llinking.design-constraints
 created: 2026-09-19
 kind: spec

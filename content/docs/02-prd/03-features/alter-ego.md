@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.features.alter-ego
 created: 2026-09-19
 kind: prd

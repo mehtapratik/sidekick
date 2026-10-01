@@ -1,4 +1,5 @@
 ---
+publish: true
 id: harness.database-and-security
 created: 2026-09-19
 kind: guidance

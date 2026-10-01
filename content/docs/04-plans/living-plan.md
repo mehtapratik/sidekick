@@ -1,4 +1,6 @@
 ---
+publish: true
+title: "Living implementation plan"
 id: plan.living
 created: 2026-09-19
 kind: plan

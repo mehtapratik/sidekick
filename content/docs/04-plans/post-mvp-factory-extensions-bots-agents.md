@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.post-mvp-factory-extensions-bots-agents
 created: 2026-09-19
 kind: plan

@@ -1,4 +1,5 @@
 ---
+publish: true
 id: harness.best-practices
 created: 2026-09-19
 kind: guidance

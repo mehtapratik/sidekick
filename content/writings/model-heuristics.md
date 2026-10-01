@@ -1,4 +1,5 @@
 ---
+publish: true
 title: Model selection strategy
 description: >-  
     Which model to use for which kind of session based on the type of task, teaching value, and complexity

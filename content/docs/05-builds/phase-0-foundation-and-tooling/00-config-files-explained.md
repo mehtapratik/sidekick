@@ -1,4 +1,5 @@
 ---
+publish: true
 id: build.phase-0.config-files
 title: Config files explained
 created: 2026-05-29

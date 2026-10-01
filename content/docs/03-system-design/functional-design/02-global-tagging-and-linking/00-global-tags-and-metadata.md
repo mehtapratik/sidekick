@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.functional-design.global-tagging-and-llinking.global-tags-and-metadata
 created: 2026-09-19
 kind: spec

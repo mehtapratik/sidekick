@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.technology-stack
 created: 2026-09-19
 kind: spec

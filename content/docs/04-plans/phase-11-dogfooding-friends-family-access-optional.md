@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-11-dogfooding-friends-family-access-optional
 created: 2026-09-19
 kind: plan

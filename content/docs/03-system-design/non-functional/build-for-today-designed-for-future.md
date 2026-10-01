@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.build-for-today-designed-for-future
 created: 2026-09-19
 kind: spec

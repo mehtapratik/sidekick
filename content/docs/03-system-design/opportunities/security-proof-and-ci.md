@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.security-proof-and-ci
 created: 2026-09-19
 kind: opportunity

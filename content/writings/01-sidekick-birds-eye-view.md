@@ -1,4 +1,5 @@
 ---
+publish: true
 title: Project Sidekick - A Bird's Eye View
 version: 1.0.0
 audience: General

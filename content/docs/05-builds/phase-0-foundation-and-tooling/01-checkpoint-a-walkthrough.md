@@ -1,4 +1,5 @@
 ---
+publish: true
 id: build.phase-0.checkpoint-a
 title: Checkpoint A walkthrough
 created: 2026-05-29

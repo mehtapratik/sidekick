@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.lifecycle-and-traceability
 created: 2026-09-19
 kind: guidance

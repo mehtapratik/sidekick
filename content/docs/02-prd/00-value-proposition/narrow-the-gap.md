@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.value-proposition.narrow-the-gap
 created: 2026-09-19
 kind: prd

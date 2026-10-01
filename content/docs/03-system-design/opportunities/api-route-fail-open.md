@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.api-route-fail-open
 created: 2026-09-19
 kind: opportunity

@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.api.never-mutate-outside-api-layer
 created: 2026-09-19
 kind: spec

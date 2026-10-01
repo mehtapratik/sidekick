@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.features.core-drive.anatomy-of-a-core-drive-entry
 created: 2026-09-19
 kind: prd

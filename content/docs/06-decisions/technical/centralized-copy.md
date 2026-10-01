@@ -1,4 +1,5 @@
 ---
+publish: true
 id: decision.technical.centralized-copy
 created: 2026-09-19
 kind: decision

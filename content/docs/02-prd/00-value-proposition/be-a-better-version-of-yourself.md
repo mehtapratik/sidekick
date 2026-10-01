@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.value-proposition.be-better-version-of-yourself
 created: 2026-09-19
 kind: prd

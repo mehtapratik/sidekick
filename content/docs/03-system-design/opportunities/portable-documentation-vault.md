@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.portable-documentation-vault
 created: 2026-09-19
 kind: opportunity

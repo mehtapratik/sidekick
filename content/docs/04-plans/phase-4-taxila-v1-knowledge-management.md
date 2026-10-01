@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-4-taxila-v1-knowledge-management
 created: 2026-09-19
 kind: plan

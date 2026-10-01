@@ -1,4 +1,5 @@
 ---
+publish: true
 id: prd.value-proposition.make-right-behavior-easier
 created: 2026-09-19
 kind: prd

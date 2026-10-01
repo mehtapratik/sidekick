@@ -1,4 +1,5 @@
 ---
+publish: true
 id: decision.technical.edge-runtime
 created: 2026-09-19
 kind: decision

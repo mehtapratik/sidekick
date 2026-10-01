@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-6-core-drive-ai-layer-alter-ego
 created: 2026-09-19
 kind: plan

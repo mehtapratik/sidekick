@@ -1,4 +1,5 @@
 ---
+publish: true
 id: build.phase-1
 title: Phase 1 walkthrough
 created: 2026-05-29

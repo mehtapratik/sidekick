@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.code-quality-checks.eslint.flat-config
 created: 2026-09-19
 kind: spec

@@ -1,4 +1,5 @@
 ---
+publish: true
 id: decision.technical.user-profile-creation-by-db-trigger
 created: 2026-09-19
 kind: decision

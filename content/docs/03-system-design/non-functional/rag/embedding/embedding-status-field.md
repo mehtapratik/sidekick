@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.rag.embedding.embedding-status-field
 created: 2026-09-19
 kind: spec

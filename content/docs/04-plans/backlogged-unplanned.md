@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.backlogged-unplanned
 created: 2026-09-19
 kind: plan

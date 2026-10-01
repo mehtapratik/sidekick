@@ -1,4 +1,5 @@
 ---
+publish: true
 id: harness.architecture-invariants
 created: 2026-09-19
 kind: guidance

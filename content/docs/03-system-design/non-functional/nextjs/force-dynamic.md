@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.non-functional.nextjs.force-dynamic
 created: 2026-09-19
 kind: spec

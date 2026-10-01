@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-7-war-room-factory-v1
 created: 2026-09-19
 kind: plan

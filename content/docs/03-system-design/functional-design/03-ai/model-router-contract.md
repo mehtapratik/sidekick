@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.functional-design.ai.model-router-contract
 created: 2026-09-19
 kind: spec

@@ -1,4 +1,5 @@
 ---
+publish: true
 id: glossary.present-state
 created: 2026-09-19
 kind: glossary

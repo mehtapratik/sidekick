@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-0-foundation-tooling-complete
 created: 2026-09-19
 kind: plan

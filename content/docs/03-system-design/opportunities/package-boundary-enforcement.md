@@ -1,4 +1,5 @@
 ---
+publish: true
 id: opportunity.package-boundary-enforcement
 created: 2026-09-19
 kind: opportunity

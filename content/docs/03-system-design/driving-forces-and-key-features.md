@@ -1,4 +1,5 @@
 ---
+publish: true
 id: system-design.driving-forces-and-key-features
 created: 2026-09-19
 kind: spec

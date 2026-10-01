@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-1-1
 created: 2026-09-19
 kind: guidance

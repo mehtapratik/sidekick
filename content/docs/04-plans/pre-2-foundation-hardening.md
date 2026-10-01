@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.pre-2-foundation-hardening
 created: 2026-09-20
 kind: plan

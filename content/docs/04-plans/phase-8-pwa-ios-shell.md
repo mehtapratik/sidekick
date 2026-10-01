@@ -1,4 +1,5 @@
 ---
+publish: true
 id: plan.phase-8-pwa-ios-shell
 created: 2026-09-19
 kind: plan
