@@ -1,6 +1,11 @@
-/core-drive/no-do-overs/   /   301
-/core-drive/seek-closure/  /   301
-/core-drive/start-today/   /   301
-/core-drive/               /   301
-/builds/                   /docs/builds/   301
+# Retired URLs. Docs section landings (/docs/prd/ and so on) are gone on purpose: no redirect.
+/core-drive/no-do-overs/        /   301
+/core-drive/seek-closure/       /   301
+/core-drive/start-today/        /   301
+/core-drive/                    /   301
 /notes/architecture-overview/   /writings/architecture-overview/   301
+# The old top-level nav destinations: Writings, Docs, Index. The Index is now a popover on every page.
+/writings/                      /   301
+/docs/                          /   301
+/index/                         /   301
+/tags/                          /   301

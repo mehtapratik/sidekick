@@ -16,7 +16,9 @@ const { prev, next, total } = Astro.props;
          <span data-slot="prev">
             {
                prev ? (
-                  <a rel="prev" href={prev.url}>{prev.title}</a>
+                  <a rel="prev" href={prev.url}>
+                     {prev.title}
+                  </a>
                ) : (
                   <span class="muted">None. This is the earliest entry.</span>
                )
@@ -28,7 +30,9 @@ const { prev, next, total } = Astro.props;
          <span data-slot="next">
             {
                next ? (
-                  <a rel="next" href={next.url}>{next.title}</a>
+                  <a rel="next" href={next.url}>
+                     {next.title}
+                  </a>
                ) : (
                   <span class="muted">None. This is the latest entry.</span>
                )
@@ -37,7 +41,10 @@ const { prev, next, total } = Astro.props;
       </p>
    </div>
    <p>
-      <small class="muted" data-scope>Previous and next follow all {total.toLocaleString("en-US")} entries, by as-of date.</small>
+      <small class="muted" data-scope
+         >Previous and next follow all {total.toLocaleString("en-US")} entries, by
+         as-of date.</small
+      >
       <button type="button" data-clear hidden>Clear filter</button>
    </p>
 </nav>

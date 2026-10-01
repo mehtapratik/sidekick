@@ -6,32 +6,62 @@ interface Props {
    current?: string;
 }
 const { entries, current } = Astro.props;
-const search = (e: Entry) => [e.title, e.deck, e.kind, e.tags.join(" ")].join(" ").toLowerCase();
+const search = (e: Entry) =>
+   [e.title, e.deck, e.kind, e.tags.join(" ")].join(" ").toLowerCase();
 ---
 
 <table class="entries">
-   <thead><tr><th scope="col">As of</th><th scope="col">Title</th><th scope="col">Kind</th></tr></thead>
+   <thead
+      ><tr
+         ><th scope="col">As of</th><th scope="col">Title</th><th scope="col"
+            >Kind</th
+         ></tr
+      ></thead
+   >
    <tbody>
       {
          entries.map((e) => (
-            <tr data-url={e.url} data-title={e.title} data-tags={e.tags.join(" ")} data-search={search(e)}>
+            <tr
+               data-url={e.url}
+               data-title={e.title}
+               data-tags={e.tags.join(" ")}
+               data-search={search(e)}
+            >
                <td>{e.asOf}</td>
                <td>
-                  <a href={e.url} aria-current={e.url === current ? "page" : undefined}>{e.title}</a>
-                  {e.url === current && <>{" "}<small class="muted">(reading)</small></>}
-                  {e.deck && <><br /><small class="muted">{e.deck}</small></>}
-                  {
-                     e.tags.length > 0 && (
-                        <>
-                           <br />
-                           <small>
-                              {e.tags.map((t, i) => (
-                                 <>{i > 0 && ", "}<a href={tagUrl(t)} data-tag={t}>{t}</a></>
-                              ))}
-                           </small>
-                        </>
-                     )
-                  }
+                  <a
+                     href={e.url}
+                     aria-current={e.url === current ? "page" : undefined}
+                  >
+                     {e.title}
+                  </a>
+                  {e.url === current && (
+                     <>
+                        {" "}
+                        <small class="muted">(reading)</small>
+                     </>
+                  )}
+                  {e.deck && (
+                     <>
+                        <br />
+                        <small class="muted">{e.deck}</small>
+                     </>
+                  )}
+                  {e.tags.length > 0 && (
+                     <>
+                        <br />
+                        <small>
+                           {e.tags.map((t, i) => (
+                              <>
+                                 {i > 0 && ", "}
+                                 <a href={tagUrl(t)} data-tag={t}>
+                                    {t}
+                                 </a>
+                              </>
+                           ))}
+                        </small>
+                     </>
+                  )}
                </td>
                <td>{e.kind}</td>
             </tr>

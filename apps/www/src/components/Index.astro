@@ -26,30 +26,61 @@ const tree = buildTree(entries);
             <input id="index-search" type="search" autocomplete="off" />
             <button type="button" data-clear hidden>Clear</button>
          </div>
-         <p class="active-tag" data-active-tag hidden>Tag: <b></b> (<a href="/" data-remove-tag>remove</a>)</p>
+         <p class="active-tag" data-active-tag hidden>
+            Tag: <b></b> (<a href="/" data-remove-tag>remove</a>)
+         </p>
       </form>
       <details>
          <summary>Tags ({tags.length})</summary>
          <ul class="cloud">
             {
                tags.map(([tag, n]) => (
-                  <li><a href={tagUrl(tag)} data-tag={tag}>{tag}</a> <span class="muted">({n})</span></li>
+                  <li>
+                     <a href={tagUrl(tag)} data-tag={tag}>
+                        {tag}
+                     </a>{" "}
+                     <span class="muted">({n})</span>
+                  </li>
                ))
             }
          </ul>
       </details>
       <p class="view-switch" role="radiogroup" aria-labelledby="view-label">
          <span id="view-label">View:</span>
-         <label><input type="radio" name="index-view" id="view-date" value="date" checked /> By date</label>
-         <label><input type="radio" name="index-view" id="view-folder" value="folder" /> By folder</label>
+         <label
+            ><input
+               type="radio"
+               name="index-view"
+               id="view-date"
+               value="date"
+               checked
+            /> By date</label
+         >
+         <label
+            ><input
+               type="radio"
+               name="index-view"
+               id="view-folder"
+               value="folder"
+            /> By folder</label
+         >
       </p>
       <p data-count>{plural(entries.length, "entry", "entries")}.</p>
       <div class="by-folder">
-         <ul class="tree">{tree.map((folder) => <TreeFolder folder={folder} current={current} />)}</ul>
+         <ul class="tree">
+            {
+               tree.map((folder) => (
+                  <TreeFolder folder={folder} current={current} />
+               ))
+            }
+         </ul>
       </div>
       <div class="by-date">
          <EntriesTable entries={entries} current={current} />
       </div>
-      <p data-none hidden>No entries match. <button type="button" data-clear>Clear filter</button></p>
+      <p data-none hidden>
+         No entries match. <button type="button" data-clear
+            >Clear filter</button>
+      </p>
    </div>
 </div>

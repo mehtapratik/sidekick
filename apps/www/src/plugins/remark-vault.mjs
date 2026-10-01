@@ -25,16 +25,24 @@ function imageSize(file) {
       const w = s.match(/<svg[^>]*\swidth="([\d.]+)(?:px)?"/);
       const h = s.match(/<svg[^>]*\sheight="([\d.]+)(?:px)?"/);
       if (w && h) return { width: +w[1], height: +h[1] };
-      const vb = s.match(/viewBox="[\d.\-]+[ ,]+[\d.\-]+[ ,]+([\d.]+)[ ,]+([\d.]+)"/);
+      const vb = s.match(
+         /viewBox="[\d.\-]+[ ,]+[\d.\-]+[ ,]+([\d.]+)[ ,]+([\d.]+)"/,
+      );
       return vb ? { width: +vb[1], height: +vb[2] } : null;
    }
-   if (ext === ".png") return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-   if (ext === ".gif") return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+   if (ext === ".png")
+      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+   if (ext === ".gif")
+      return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
    if (ext === ".jpg" || ext === ".jpeg") {
-      for (let i = 2; i < buf.length; ) {
+      for (let i = 2; i < buf.length;) {
          if (buf[i] !== 0xff) return null;
          const marker = buf[i + 1];
-         if (marker >= 0xc0 && marker <= 0xc3) return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+         if (marker >= 0xc0 && marker <= 0xc3)
+            return {
+               height: buf.readUInt16BE(i + 5),
+               width: buf.readUInt16BE(i + 7),
+            };
          i += 2 + buf.readUInt16BE(i + 2);
       }
    }
@@ -65,12 +73,19 @@ function embed(raw) {
    const props = { loading: "lazy" };
    if (size) {
       props.width = asNumber ?? size.width;
-      props.height = asNumber ? Math.round((asNumber * size.height) / size.width) : size.height;
+      props.height = asNumber
+         ? Math.round((asNumber * size.height) / size.width)
+         : size.height;
    }
    return {
       type: "image",
-      url: "/vault-assets/" + path.relative(ASSETS_DIR, file).split(path.sep).join("/"),
-      alt: option && !asNumber ? option : path.basename(target, path.extname(target)),
+      url:
+         "/vault-assets/" +
+         path.relative(ASSETS_DIR, file).split(path.sep).join("/"),
+      alt:
+         option && !asNumber
+            ? option
+            : path.basename(target, path.extname(target)),
       data: { hProperties: props },
    };
 }
@@ -89,7 +104,9 @@ function resolveTarget(targetAndHeading, fromRel, fromCollection) {
 function wikilink(raw, fromRel, fromCollection) {
    const [targetAndHeading, ...rest] = raw.split("|");
    const label = rest.join("|").trim();
-   const typed = targetAndHeading.split("#")[0].trim().split("/").pop() || targetAndHeading.split("#")[1];
+   const typed =
+      targetAndHeading.split("#")[0].trim().split("/").pop() ||
+      targetAndHeading.split("#")[1];
    const hit = resolveTarget(targetAndHeading, fromRel, fromCollection);
    // Unpublished, private or missing: plain text, never a dead link.
    // A private note's own title is never used as the text.
@@ -97,7 +114,14 @@ function wikilink(raw, fromRel, fromCollection) {
    return {
       type: "link",
       url: hit.url,
-      children: [{ type: "text", value: label || (hit.heading ? `${hit.title} > ${hit.heading}` : hit.title) }],
+      children: [
+         {
+            type: "text",
+            value:
+               label ||
+               (hit.heading ? `${hit.title} > ${hit.heading}` : hit.title),
+         },
+      ],
    };
 }
 
@@ -113,7 +137,11 @@ function spanningWikilinks(parent, fromRel, fromCollection) {
       const open = first.value.lastIndexOf("[[");
       if (open < 0 || first.value.indexOf("]]", open) >= 0) continue;
       let j = i + 1;
-      while (j < kids.length && !(kids[j].type === "text" && kids[j].value.includes("]]"))) j++;
+      while (
+         j < kids.length &&
+         !(kids[j].type === "text" && kids[j].value.includes("]]"))
+      )
+         j++;
       if (j >= kids.length) continue;
       const inner1 = first.value.slice(open + 2);
       const bar = inner1.indexOf("|");
@@ -138,7 +166,9 @@ function callouts(tree) {
    visit(tree, "blockquote", (node) => {
       const p = node.children[0];
       const t = p?.type === "paragraph" ? p.children[0] : null;
-      const m = t?.type === "text" && t.value.match(/^\[!([\w-]+)\][+-]?[ \t]*([^\n]*)(?:\n|$)/);
+      const m =
+         t?.type === "text" &&
+         t.value.match(/^\[!([\w-]+)\][+-]?[ \t]*([^\n]*)(?:\n|$)/);
       if (!m) return;
       const title = m[2].trim() || m[1][0].toUpperCase() + m[1].slice(1);
       t.value = t.value.slice(m[0].length);
@@ -159,13 +189,19 @@ export function remarkVault() {
       const collection = abs.startsWith(WRITINGS_DIR) ? "writings" : "docs";
       const root = collection === "writings" ? WRITINGS_DIR : DOCS_DIR;
       const rel = path.relative(root, abs).split(path.sep).join("/");
-      const record = scanVault().find((f) => f.collection === collection && f.rel === rel);
+      const record = scanVault().find(
+         (f) => f.collection === collection && f.rel === rel,
+      );
 
       // The page template renders the h1. Drop a leading "# Title" that repeats it.
       // A vault note's own H1 is a duplicate even when worded differently; in an essay it may be a heading.
       const first = tree.children[0];
       if (first?.type === "heading" && first.depth === 1) {
-         if (collection === "docs" || norm(textOf(first)) === norm(record?.title ?? "")) tree.children.shift();
+         if (
+            collection === "docs" ||
+            norm(textOf(first)) === norm(record?.title ?? "")
+         )
+            tree.children.shift();
       }
       visit(tree, "heading", (h) => {
          if (h.depth === 1) h.depth = 2;
@@ -173,20 +209,28 @@ export function remarkVault() {
 
       callouts(tree);
 
-      visit(tree, (n) => Array.isArray(n.children) && n.type !== "link", (n) =>
-         spanningWikilinks(n, rel, collection),
+      visit(
+         tree,
+         (n) => Array.isArray(n.children) && n.type !== "link",
+         (n) => spanningWikilinks(n, rel, collection),
       );
 
       visit(tree, "text", (node, index, parent) => {
-         if (!parent || parent.type === "link" || !node.value.includes("[[")) return;
+         if (!parent || parent.type === "link" || !node.value.includes("[["))
+            return;
          const out = [];
          let last = 0;
          for (const m of node.value.matchAll(WIKI)) {
-            if (m.index > last) out.push({ type: "text", value: node.value.slice(last, m.index) });
+            if (m.index > last)
+               out.push({
+                  type: "text",
+                  value: node.value.slice(last, m.index),
+               });
             out.push(m[1] ? embed(m[2]) : wikilink(m[2], rel, collection));
             last = m.index + m[0].length;
          }
-         if (last < node.value.length) out.push({ type: "text", value: node.value.slice(last) });
+         if (last < node.value.length)
+            out.push({ type: "text", value: node.value.slice(last) });
          parent.children.splice(index, 1, ...out);
          return [SKIP, index + out.length];
       });

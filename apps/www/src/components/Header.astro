@@ -15,9 +15,17 @@ const { close = false, tagline = false } = Astro.props;
       <p>
          {
             close ? (
-               <button type="button" popovertarget="index" popovertargetaction="hide">Close</button>
+               <button
+                  type="button"
+                  popovertarget="index"
+                  popovertargetaction="hide"
+               >
+                  Close
+               </button>
             ) : (
-               <button type="button" popovertarget="index" data-index-button>Index</button>
+               <button type="button" popovertarget="index" data-index-button>
+                  Index
+               </button>
             )
          }
       </p>

@@ -2,10 +2,30 @@
 import { visit, SKIP } from "unist-util-visit";
 
 const LABELS = {
-   ts: "TypeScript", typescript: "TypeScript", tsx: "TSX", js: "JavaScript", javascript: "JavaScript",
-   jsx: "JSX", json: "JSON", jsonc: "JSON", bash: "Shell", sh: "Shell", shell: "Shell", shellscript: "Shell",
-   zsh: "Shell", sql: "SQL", yaml: "YAML", yml: "YAML", md: "Markdown", markdown: "Markdown",
-   css: "CSS", html: "HTML", plaintext: "Code", text: "Code", txt: "Code", "": "Code",
+   ts: "TypeScript",
+   typescript: "TypeScript",
+   tsx: "TSX",
+   js: "JavaScript",
+   javascript: "JavaScript",
+   jsx: "JSX",
+   json: "JSON",
+   jsonc: "JSON",
+   bash: "Shell",
+   sh: "Shell",
+   shell: "Shell",
+   shellscript: "Shell",
+   zsh: "Shell",
+   sql: "SQL",
+   yaml: "YAML",
+   yml: "YAML",
+   md: "Markdown",
+   markdown: "Markdown",
+   css: "CSS",
+   html: "HTML",
+   plaintext: "Code",
+   text: "Code",
+   txt: "Code",
+   "": "Code",
 };
 const label = (lang) =>
    LABELS[lang] ?? (lang ? lang[0].toUpperCase() + lang.slice(1) : "Code");
@@ -13,7 +33,11 @@ const label = (lang) =>
 const isLine = (n) =>
    n.type === "element" &&
    n.tagName === "span" &&
-   [].concat(n.properties?.class ?? n.properties?.className ?? []).join(" ").split(" ").includes("line");
+   []
+      .concat(n.properties?.class ?? n.properties?.className ?? [])
+      .join(" ")
+      .split(" ")
+      .includes("line");
 
 /**
  * Shiki transformer: the <pre> carries only `data-language` (the page's own text colour and
@@ -25,7 +49,9 @@ export const shikiArkive = {
       node.properties = { "data-language": this.options.lang ?? "" };
    },
    code(node) {
-      node.children = node.children.flatMap((c) => (isLine(c) ? c.children : [c]));
+      node.children = node.children.flatMap((c) =>
+         isLine(c) ? c.children : [c],
+      );
    },
 };
 
@@ -44,7 +70,8 @@ export function rehypeArkive() {
             return [SKIP, index + 1];
          }
 
-         const lang = node.properties?.["data-language"] ?? node.properties?.dataLanguage;
+         const lang =
+            node.properties?.["data-language"] ?? node.properties?.dataLanguage;
          if (node.tagName === "pre" && lang !== undefined) {
             parent.children[index] = {
                type: "element",
@@ -56,8 +83,24 @@ export function rehypeArkive() {
                      tagName: "div",
                      properties: { className: ["code-head"] },
                      children: [
-                        { type: "element", tagName: "span", properties: { className: ["muted"] }, children: [{ type: "text", value: label(String(lang)) }] },
-                        { type: "element", tagName: "button", properties: { type: "button", "data-copy": "", hidden: true }, children: [{ type: "text", value: "Copy" }] },
+                        {
+                           type: "element",
+                           tagName: "span",
+                           properties: { className: ["muted"] },
+                           children: [
+                              { type: "text", value: label(String(lang)) },
+                           ],
+                        },
+                        {
+                           type: "element",
+                           tagName: "button",
+                           properties: {
+                              type: "button",
+                              "data-copy": "",
+                              hidden: true,
+                           },
+                           children: [{ type: "text", value: "Copy" }],
+                        },
                      ],
                   },
                   node,

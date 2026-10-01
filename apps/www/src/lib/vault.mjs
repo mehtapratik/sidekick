@@ -34,12 +34,53 @@ export const SECTIONS = [
 
 /** Acronyms and proper nouns for titles derived from file names (whole words, any case). */
 const TITLE_DICTIONARY = [
-   "API", "PRD", "RLS", "AI", "UX", "UI", "CLI", "DB", "PWA", "RAG", "SQL", "JSON", "YAML",
-   "HTTP", "URL", "ID", "OG", "RSS", "SEO", "CSS", "HTML", "JS", "TS", "ESLint", "GraphQL",
-   "Relay", "TypeScript", "Turborepo", "Vercel", "Supabase", "Postgres", "Next.js", "pnpm",
-   "tsup", "dotenv", "Drizzle", "Capacitor", "Tiptap", "Taxila", "Zinsser", "Parrot", "SaaS", "iOS",
+   "API",
+   "PRD",
+   "RLS",
+   "AI",
+   "UX",
+   "UI",
+   "CLI",
+   "DB",
+   "PWA",
+   "RAG",
+   "SQL",
+   "JSON",
+   "YAML",
+   "HTTP",
+   "URL",
+   "ID",
+   "OG",
+   "RSS",
+   "SEO",
+   "CSS",
+   "HTML",
+   "JS",
+   "TS",
+   "ESLint",
+   "GraphQL",
+   "Relay",
+   "TypeScript",
+   "Turborepo",
+   "Vercel",
+   "Supabase",
+   "Postgres",
+   "Next.js",
+   "pnpm",
+   "tsup",
+   "dotenv",
+   "Drizzle",
+   "Capacitor",
+   "Tiptap",
+   "Taxila",
+   "Zinsser",
+   "Parrot",
+   "SaaS",
+   "iOS",
 ];
-const dictionary = new Map(TITLE_DICTIONARY.map((w) => [w.toLowerCase().replace(".", " "), w]));
+const dictionary = new Map(
+   TITLE_DICTIONARY.map((w) => [w.toLowerCase().replace(".", " "), w]),
+);
 
 /** Does a path relative to a collection's root match one of its exclude globs? */
 export function isExcluded(rel, patterns) {
@@ -136,14 +177,22 @@ export function scanVault() {
          const rel = path.relative(root, abs).split(path.sep).join("/");
          const excluded = isExcluded(rel, exclude);
          const fm = parseFrontmatter(fs.readFileSync(abs, "utf8"));
-         const slug = excluded ? null : collection === "docs" ? docSlug(rel) : writingSlug(rel);
+         const slug = excluded
+            ? null
+            : collection === "docs"
+              ? docSlug(rel)
+              : writingSlug(rel);
          files.push({
             collection,
             rel,
             abs,
             excluded,
             slug,
-            url: slug && (collection === "docs" ? `/docs/${slug}/` : `/writings/${slug}/`),
+            url:
+               slug &&
+               (collection === "docs"
+                  ? `/docs/${slug}/`
+                  : `/writings/${slug}/`),
             published: !excluded && fm.publish === true,
             title: fm.title ? String(fm.title) : deriveTitle(rel),
             stem: rel.replace(/\.md$/, ""),
@@ -153,7 +202,10 @@ export function scanVault() {
    const urls = new Map();
    for (const f of files) {
       if (!f.url) continue;
-      if (urls.has(f.url)) throw new Error(`URL collision: ${f.rel} and ${urls.get(f.url)} -> ${f.url}`);
+      if (urls.has(f.url))
+         throw new Error(
+            `URL collision: ${f.rel} and ${urls.get(f.url)} -> ${f.url}`,
+         );
       urls.set(f.url, f.rel);
    }
    cache = files;
@@ -171,11 +223,15 @@ export function resolveWikilink(target, fromRel, fromCollection) {
    if (!clean) return null;
    const byStem = new Map(files.map((f) => [f.stem.toLowerCase(), f]));
    if (fromCollection === "docs") {
-      const here = path.posix.normalize(path.posix.join(path.posix.dirname(fromRel), clean));
+      const here = path.posix.normalize(
+         path.posix.join(path.posix.dirname(fromRel), clean),
+      );
       if (byStem.has(here)) return byStem.get(here);
    }
    if (byStem.has(clean)) return byStem.get(clean);
    const base = clean.split("/").pop();
-   const hits = files.filter((f) => f.stem.toLowerCase().split("/").pop() === base);
+   const hits = files.filter(
+      (f) => f.stem.toLowerCase().split("/").pop() === base,
+   );
    return hits.length === 1 ? hits[0] : null;
 }

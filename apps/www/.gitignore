@@ -1,7 +1,6 @@
 node_modules
 dist
 .astro
-public/og
 .idea
 
 .DS_Store

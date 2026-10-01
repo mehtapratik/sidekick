@@ -15,18 +15,29 @@ export interface Folder {
 }
 
 const WORDS: Record<string, string> = {
-   ai: "AI", api: "API", cli: "CLI", pwa: "PWA", rag: "RAG", css: "CSS", ux: "UX",
-   nextjs: "Next.js", typescript: "TypeScript", eslint: "ESLint",
+   ai: "AI",
+   api: "API",
+   cli: "CLI",
+   pwa: "PWA",
+   rag: "RAG",
+   css: "CSS",
+   ux: "UX",
+   nextjs: "Next.js",
+   typescript: "TypeScript",
+   eslint: "ESLint",
 };
 
 function human(slug: string): string {
    if (slug === "non-functional") return "Non-functional";
    if (slug.startsWith("phase-")) {
       const parts = slug.split("-");
-      return parts.length > 2 ? `Phase ${parts[1]}: ${human(parts.slice(2).join("-"))}` : `Phase ${parts[1]}`;
+      return parts.length > 2
+         ? `Phase ${parts[1]}: ${human(parts.slice(2).join("-"))}`
+         : `Phase ${parts[1]}`;
    }
    const words = slug.split("-").map((w) => WORDS[w] ?? w);
-   if (words[0] === words[0].toLowerCase()) words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+   if (words[0] === words[0].toLowerCase())
+      words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
    return words.join(" ");
 }
 
@@ -43,7 +54,12 @@ export function buildTree(entries: Entry[]): Folder[] {
    const folders = new Map<string, Folder>();
    const folder = (path: string, label?: string) => {
       if (!folders.has(path)) {
-         folders.set(path, { path, label: label ?? human(path.split("/").pop()!), children: [], entries: [] });
+         folders.set(path, {
+            path,
+            label: label ?? human(path.split("/").pop()!),
+            children: [],
+            entries: [],
+         });
       }
       return folders.get(path)!;
    };
@@ -68,16 +84,20 @@ export function buildTree(entries: Entry[]): Folder[] {
    }
 
    const byOrder = (a: Leaf, b: Leaf) =>
-      Number(!a.own) - Number(!b.own) || order.get(a.entry)! - order.get(b.entry)!;
+      Number(!a.own) - Number(!b.own) ||
+      order.get(a.entry)! - order.get(b.entry)!;
 
    function finish(f: Folder) {
       f.children.forEach(finish);
-      f.children.sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
+      f.children.sort((a, b) =>
+         a.label.toLowerCase().localeCompare(b.label.toLowerCase()),
+      );
       f.entries.sort(byOrder);
       // A sub-folder holding exactly one entry and nothing else is removed; its entry moves up.
       const keep: Folder[] = [];
       for (const c of f.children) {
-         if (!c.children.length && c.entries.length === 1) f.entries.push(c.entries[0]);
+         if (!c.children.length && c.entries.length === 1)
+            f.entries.push(c.entries[0]);
          else keep.push(c);
       }
       f.children = keep;
@@ -101,5 +121,8 @@ export function countLeaves(f: Folder): number {
 
 export function containsUrl(f: Folder, url: string | undefined): boolean {
    if (!url) return false;
-   return f.entries.some((l) => l.entry.url === url) || f.children.some((c) => containsUrl(c, url));
+   return (
+      f.entries.some((l) => l.entry.url === url) ||
+      f.children.some((c) => containsUrl(c, url))
+   );
 }

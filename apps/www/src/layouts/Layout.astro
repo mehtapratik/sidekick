@@ -16,7 +16,14 @@ interface Props {
    tagline?: boolean;
    pager?: { prev?: Entry; next?: Entry };
 }
-const { title, description, entry, canonical, tagline = false, pager } = Astro.props;
+const {
+   title,
+   description,
+   entry,
+   canonical,
+   tagline = false,
+   pager,
+} = Astro.props;
 const entries = await getEntries();
 ---
 
@@ -27,8 +34,17 @@ const entries = await getEntries();
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>{title} · {SITE_TITLE}</title>
       {description && <meta name="description" content={description} />}
-      {canonical && <link rel="canonical" href={new URL(canonical, Astro.site)} />}
-      <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+      {
+         canonical && (
+            <link rel="canonical" href={new URL(canonical, Astro.site)} />
+         )
+      }
+      <link
+         rel="alternate"
+         type="application/rss+xml"
+         title={SITE_TITLE}
+         href="/rss.xml"
+      />
       <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       <link rel="stylesheet" href="/arkive.css" />
       <script is:inline type="module" src="/arkive.js"></script>
@@ -40,13 +56,20 @@ const entries = await getEntries();
       {
          pager && (
             <>
-               <Pager prev={pager.prev} next={pager.next} total={entries.length} />
+               <Pager
+                  prev={pager.prev}
+                  next={pager.next}
+                  total={entries.length}
+               />
                <hr />
             </>
          )
       }
       <footer>
-         <p><small class="muted">Pratik Mehta · CC BY-NC 4.0 · <a href="/rss.xml">RSS</a></small></p>
+         <p>
+            <small class="muted"
+               >Pratik Mehta · CC BY-NC 4.0 · <a href="/rss.xml">RSS</a></small>
+         </p>
       </footer>
       <Index entries={entries} current={entry?.url} />
    </body>

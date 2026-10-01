@@ -34,7 +34,10 @@ const schema = z.object({
       .transform((t) => t ?? []),
 });
 
-const patterns = (exclude: string[]) => ["**/*.md", ...exclude.map((p) => `!${p}`)];
+const patterns = (exclude: string[]) => [
+   "**/*.md",
+   ...exclude.map((p) => `!${p}`),
+];
 
 export const collections = {
    writings: defineCollection({
