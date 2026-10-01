@@ -12,7 +12,7 @@ tags:
   - ai
 ---
 
-Core Drive is one of the foundational layer upon which entire [[02-prd/00-value-proposition/index|value proposition]] of Sidekick rests. It holds the most private and sensitive information about user’s identity, principles, moral values, heuristics, communication styles, current projects, tools and system, preferences and constraints. This information is what makes Sidekick different from other AI-agents. It will define entire system’s behavior and influence how [[war-room]] plans, how [[factory]] executes, and how [[alter-ego]] reasons and synthesizes responses.
+Core Drive is one of the foundational layer upon which entire value proposition of Sidekick rests. It holds the most private and sensitive information about user’s identity, principles, moral values, heuristics, communication styles, current projects, tools and system, preferences and constraints. This information is what makes Sidekick different from other AI-agents. It will define entire system’s behavior and influence how [[war-room]] plans, how [[factory]] executes, and how [[alter-ego]] reasons and synthesizes responses.
 
 - Contributes to [[00-what-is-it]] as it learns more to iterate and improve upon principles, mental models, and heuristics as we learn from previous experiences.
 - Just like any venture (startup, business or personal goal), the idea is to build a system that starts with slow/negligible gains but starts giving exponential results in its users life as if they trust the process, stick to the system, learn from their mistakes and patterns to improve their “algorithm of life”.

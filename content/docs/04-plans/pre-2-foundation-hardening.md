@@ -13,8 +13,6 @@ tags:
    - testing
 depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
-applies_to:
-   - "[[03-system-design/opportunities/index]]"
 ---
 
 > **Milestone:** The Phase 1 foundation is reproducible, runtime-safe, and behaviorally proven before the first API guard or feature-system query is written.

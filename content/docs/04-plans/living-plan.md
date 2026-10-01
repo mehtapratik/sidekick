@@ -19,7 +19,7 @@ tags:
 
 > Document Type: Master and Living Implementation Plan
 > Context: Solo developer, hobby-to-business trajectory, AI-assisted with full code review
-> Based on: [[03-system-design/index|System design]] and the high-level PRD, [[02-prd/index|product requirements]]
+> Based on: System design and the high-level PRD (product requirements)
 
 ---
 
