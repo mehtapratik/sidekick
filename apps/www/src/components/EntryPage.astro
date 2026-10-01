@@ -1,0 +1,24 @@
+---
+import { getEntries, neighbours, type Entry } from "../lib/entries";
+import Layout from "../layouts/Layout.astro";
+import EntryView from "./Entry.astro";
+
+interface Props {
+   entry: Entry;
+   /** Home: show the tagline and point the canonical link at the entry's own URL. */
+   home?: boolean;
+}
+const { entry, home = false } = Astro.props;
+const entries = await getEntries();
+---
+
+<Layout
+   title={entry.title}
+   description={entry.deck || undefined}
+   entry={entry}
+   canonical={home ? entry.url : undefined}
+   tagline={home}
+   pager={neighbours(entries, entry)}
+>
+   <EntryView entry={entry} />
+</Layout>

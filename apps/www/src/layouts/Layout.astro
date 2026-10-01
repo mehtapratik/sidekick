@@ -1,0 +1,53 @@
+---
+import { getEntries } from "../lib/entries";
+import { SITE_TITLE } from "../lib/site";
+import Header from "../components/Header.astro";
+import Index from "../components/Index.astro";
+import Pager from "../components/Pager.astro";
+import type { Entry } from "../lib/entries";
+
+interface Props {
+   title: string;
+   description?: string;
+   /** The entry this page shows. Gives the Index its "(reading)" row and the script its pager position. */
+   entry?: Entry;
+   /** `/` points at the entry's permanent URL. */
+   canonical?: string;
+   tagline?: boolean;
+   pager?: { prev?: Entry; next?: Entry };
+}
+const { title, description, entry, canonical, tagline = false, pager } = Astro.props;
+const entries = await getEntries();
+---
+
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>{title} · {SITE_TITLE}</title>
+      {description && <meta name="description" content={description} />}
+      {canonical && <link rel="canonical" href={new URL(canonical, Astro.site)} />}
+      <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      <link rel="stylesheet" href="/arkive.css" />
+      <script is:inline type="module" src="/arkive.js"></script>
+   </head>
+   <body data-entry={entry?.url}>
+      <Header tagline={tagline} />
+      <main><slot /></main>
+      <hr />
+      {
+         pager && (
+            <>
+               <Pager prev={pager.prev} next={pager.next} total={entries.length} />
+               <hr />
+            </>
+         )
+      }
+      <footer>
+         <p><small class="muted">Pratik Mehta · CC BY-NC 4.0 · <a href="/rss.xml">RSS</a></small></p>
+      </footer>
+      <Index entries={entries} current={entry?.url} />
+   </body>
+</html>

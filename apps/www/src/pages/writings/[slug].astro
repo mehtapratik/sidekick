@@ -1,0 +1,14 @@
+---
+import { getEntries } from "../../lib/entries";
+import EntryPage from "../../components/EntryPage.astro";
+
+export async function getStaticPaths() {
+   const entries = await getEntries();
+   return entries
+      .filter((e) => e.collection === "writings")
+      .map((entry) => ({ params: { slug: entry.url.split("/")[2] }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+
+<EntryPage entry={entry} />

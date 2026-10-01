@@ -1,0 +1,28 @@
+---
+import { countLeaves, containsUrl, type Folder } from "../lib/tree";
+
+interface Props {
+   folder: Folder;
+   current?: string;
+}
+const { folder, current } = Astro.props;
+const total = countLeaves(folder);
+---
+
+<li class="folder" data-total={total}>
+   <details open={containsUrl(folder, current)}>
+      <summary>{folder.label} <span class="muted">(<span data-folder-count>{total}</span>)</span></summary>
+      <ul>
+         {folder.children.map((child) => <Astro.self folder={child} current={current} />)}
+         {
+            folder.entries.map(({ entry }) => (
+               <li data-url={entry.url}>
+                  <a href={entry.url} aria-current={entry.url === current ? "page" : undefined}>{entry.title}</a>
+                  {entry.url === current && <>{" "}<small class="muted">(reading)</small></>}
+                  <br /><small class="muted"><time datetime={entry.asOf}>{entry.asOf}</time></small>
+               </li>
+            ))
+         }
+      </ul>
+   </details>
+</li>

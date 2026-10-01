@@ -1,0 +1,43 @@
+---
+import type { Entry } from "../lib/entries";
+
+interface Props {
+   prev?: Entry;
+   next?: Entry;
+   total: number;
+}
+const { prev, next, total } = Astro.props;
+---
+
+<nav aria-label="Previous and next entries">
+   <div class="pager">
+      <p>
+         <small class="muted">← Previous</small><br />
+         <span data-slot="prev">
+            {
+               prev ? (
+                  <a rel="prev" href={prev.url}>{prev.title}</a>
+               ) : (
+                  <span class="muted">None. This is the earliest entry.</span>
+               )
+            }
+         </span>
+      </p>
+      <p>
+         <small class="muted">Next →</small><br />
+         <span data-slot="next">
+            {
+               next ? (
+                  <a rel="next" href={next.url}>{next.title}</a>
+               ) : (
+                  <span class="muted">None. This is the latest entry.</span>
+               )
+            }
+         </span>
+      </p>
+   </div>
+   <p>
+      <small class="muted" data-scope>Previous and next follow all {total.toLocaleString("en-US")} entries, by as-of date.</small>
+      <button type="button" data-clear hidden>Clear filter</button>
+   </p>
+</nav>

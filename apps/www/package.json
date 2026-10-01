@@ -1,35 +1,22 @@
 {
-    "name": "arkive",
-    "type": "module",
-    "version": "0.0.0",
-    "engines": {
-        "node": ">=22.0.0"
-    },
-    "scripts": {
-        "ingest": "node scripts/ingest-docs.mjs",
-        "generate-og": "node scripts/generate-og.mjs",
-        "predev": "npm run ingest && npm run generate-og",
-        "dev": "astro dev",
-        "prebuild": "npm run ingest && npm run generate-og",
-        "build": "astro build && pagefind --site dist && node scripts/check-privacy-gate.mjs",
-        "preview": "astro preview"
-    },
-    "dependencies": {
-        "@astrojs/mdx": "7.0.2",
-        "@astrojs/rss": "4.0.19",
-        "@fontsource-variable/newsreader": "5.3.0",
-        "@fontsource/ibm-plex-mono": "5.3.0",
-        "@resvg/resvg-js": "2.6.2",
-        "astro": "7.0.6",
-        "js-yaml": "5.2.1",
-        "pagefind": "1.5.2",
-        "rehype-slug": "6.0.0",
-        "unist-util-visit": "5.1.0"
-    },
-    "devDependencies": {
-        "@shikijs/transformers": "4.3.1",
-        "@types/node": "26.1.0",
-        "prettier": "3.9.4",
-        "prettier-plugin-astro": "0.14.1"
-    }
+   "name": "arkive",
+   "type": "module",
+   "version": "0.0.0",
+   "private": true,
+   "engines": { "node": ">=22.12.0" },
+   "scripts": {
+      "dev": "astro dev",
+      "build": "astro build && node scripts/check-privacy.mjs",
+      "preview": "astro preview"
+   },
+   "dependencies": {
+      "@astrojs/rss": "4.0.19",
+      "astro": "7.0.6",
+      "js-yaml": "5.2.1",
+      "unist-util-visit": "5.1.0"
+   },
+   "devDependencies": {
+      "prettier": "3.9.4",
+      "prettier-plugin-astro": "0.14.1"
+   }
 }

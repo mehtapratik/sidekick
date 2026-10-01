@@ -1,0 +1,55 @@
+---
+import { BLURB } from "../lib/site";
+import { plural, tagCounts, tagUrl, type Entry } from "../lib/entries";
+import { buildTree } from "../lib/tree";
+import Header from "./Header.astro";
+import EntriesTable from "./EntriesTable.astro";
+import TreeFolder from "./TreeFolder.astro";
+
+interface Props {
+   entries: Entry[];
+   current?: string;
+}
+const { entries, current } = Astro.props;
+const tags = tagCounts(entries);
+const tree = buildTree(entries);
+---
+
+<div id="index" popover aria-labelledby="index-heading">
+   <div class="stage">
+      <Header close />
+      <h2 id="index-heading">Index</h2>
+      <p class="blurb">{BLURB}</p>
+      <form role="search" hidden>
+         <label for="index-search">Search titles, tags and kinds</label>
+         <div class="searchrow">
+            <input id="index-search" type="search" autocomplete="off" />
+            <button type="button" data-clear hidden>Clear</button>
+         </div>
+         <p class="active-tag" data-active-tag hidden>Tag: <b></b> (<a href="/" data-remove-tag>remove</a>)</p>
+      </form>
+      <details>
+         <summary>Tags ({tags.length})</summary>
+         <ul class="cloud">
+            {
+               tags.map(([tag, n]) => (
+                  <li><a href={tagUrl(tag)} data-tag={tag}>{tag}</a> <span class="muted">({n})</span></li>
+               ))
+            }
+         </ul>
+      </details>
+      <p class="view-switch" role="radiogroup" aria-labelledby="view-label">
+         <span id="view-label">View:</span>
+         <label><input type="radio" name="index-view" id="view-date" value="date" checked /> By date</label>
+         <label><input type="radio" name="index-view" id="view-folder" value="folder" /> By folder</label>
+      </p>
+      <p data-count>{plural(entries.length, "entry", "entries")}.</p>
+      <div class="by-folder">
+         <ul class="tree">{tree.map((folder) => <TreeFolder folder={folder} current={current} />)}</ul>
+      </div>
+      <div class="by-date">
+         <EntriesTable entries={entries} current={current} />
+      </div>
+      <p data-none hidden>No entries match. <button type="button" data-clear>Clear filter</button></p>
+   </div>
+</div>

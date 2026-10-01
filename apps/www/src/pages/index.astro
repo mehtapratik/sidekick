@@ -1,0 +1,17 @@
+---
+import { getEntries } from "../lib/entries";
+import EntryPage from "../components/EntryPage.astro";
+import Layout from "../layouts/Layout.astro";
+
+const [newest] = await getEntries();
+---
+
+{
+   newest ? (
+      <EntryPage entry={newest} home />
+   ) : (
+      <Layout title="Arkive" tagline>
+         <p>Nothing is published yet.</p>
+      </Layout>
+   )
+}

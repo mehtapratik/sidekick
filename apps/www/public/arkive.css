@@ -1,0 +1,218 @@
+/* ==========================================================================
+   Arkive — the whole stylesheet.
+
+   Rule of the house: start from browser defaults and only ADD.
+   Nothing here undoes an earlier rule, and nothing needs a media query.
+   If a change needs a media query to look right, the change is wrong.
+
+   Units: `rlh` = one line of body text (root font-size × root line-height).
+   Every vertical gap is a multiple of 1rlh or 0.5rlh — that is the rhythm.
+   ========================================================================== */
+
+:root {
+   color-scheme: light dark;            /* light + dark come from the OS, via system colours */
+   font-family: system-ui;
+   line-height: 1.6;
+
+   --measure: 60ch;                     /* reading column; also used by the Index */
+   --muted: color-mix(in srgb, CanvasText 72%, Canvas);
+   --hairline: color-mix(in srgb, CanvasText 18%, Canvas);
+}
+
+body {
+   overflow-wrap: break-word;           /* long URLs wrap instead of widening the page */
+   max-width: var(--measure);
+   margin: 0 auto;
+   padding: 0.5rlh 1em 1rlh;
+}
+
+/* --- Links ---------------------------------------------------------------
+   Browser default colours, including the visited colour.
+   Chrome, Safari and Firefox each pick their own dark-scheme link colours.
+   Only if a browser shows #0000EE on a dark background, add:
+     a:link    { color: light-dark(#0000ee, #9e9eff); }
+     a:visited { color: light-dark(#551a8b, #d0adf0); }
+   ------------------------------------------------------------------------- */
+
+/* --- Vertical rhythm ---------------------------------------------------- */
+:where(p, ul, ol, dl, blockquote, pre, figure, details, form, aside, table, .wide) {
+   margin-block: 1rlh;
+}
+:where(li ul, li ol) { margin-block: 0; }
+
+:where(h1, h2, h3, h4, h5, h6) { margin-block: 2rlh 0.5rlh; }
+h1 { line-height: 1.5rlh; margin-top: 1rlh; }
+h2 { line-height: 1.5rlh; }
+:where(h3, h4, h5, h6) { line-height: 1rlh; margin-top: 1.5rlh; }
+
+hr {
+   border: 0;
+   border-top: 1px solid GrayText;
+   margin-block: calc(1.5rlh - 0.5px);   /* 1px rule + margins = exactly 3 lines */
+}
+
+/* --- Quiet text ---------------------------------------------------------- */
+.deck  { font-size: 1.125em; line-height: 1rlh; margin-top: 0; }   /* entry summary under the title */
+.deck, .blurb, .muted { color: var(--muted); }
+.blurb { font-style: italic; }                                      /* site description */
+
+/* --- Site header ---------------------------------------------------------- */
+.site {
+   padding-bottom: 0.5rlh;
+   box-shadow: inset 0 -1px 0 var(--hairline);     /* shadows, not borders: no layout shift */
+}
+.masthead {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   justify-content: space-between;
+   gap: 0.5em 1em;
+}
+.masthead p { margin: 0; }
+.wordmark {
+   color: inherit;
+   text-decoration: none;
+   font-weight: bold;
+   font-size: 1.25em;
+   letter-spacing: 0.02em;
+}
+.tagline { margin: 0.5rlh 0 0; font-size: 0.9375em; line-height: 1rlh; }   /* home page only */
+
+/* --- Controls: browser buttons, body-sized --------------------------------- */
+button, input, select { font: inherit; }
+button { padding: 0.25em 1em; }
+input[type="search"] { padding: 0.25em 0.5em; }
+
+/* --- Tables: research-paper rules (booktabs), no vertical lines ------------ */
+table { border-collapse: collapse; }
+th, td {
+   padding: 0.25rlh 1em 0.25rlh 0;
+   text-align: left;
+   vertical-align: top;
+   box-shadow: inset 0 -1px 0 var(--hairline);
+}
+:where(th, td):last-child { padding-inline-end: 0; }
+thead th { box-shadow: inset 0 1px 0 CanvasText, inset 0 -1px 0 CanvasText; }
+tbody:first-child tr:first-child > * { box-shadow: inset 0 1px 0 CanvasText, inset 0 -1px 0 var(--hairline); }
+tbody tr:last-child > * { box-shadow: inset 0 -1px 0 CanvasText; }
+th[scope="row"] { font-weight: normal; color: var(--muted); white-space: nowrap; }
+
+/* A wide table may leave the reading column, up to the viewport minus gutters,
+   centred on the column; beyond that it scrolls sideways inside its wrapper.
+   The Markdown pipeline wraps every content table in <div class="wide">. */
+.wide {
+   width: max-content;
+   min-width: 100%;
+   max-width: calc(100vw - 2em);
+   margin-inline-start: 50%;
+   transform: translateX(-50%);
+   overflow-x: auto;
+}
+.wide > table { margin: 0; }
+
+/* --- Quotes and callouts --------------------------------------------------- */
+blockquote {
+   margin-inline: 0;
+   padding-inline-start: 1em;
+   border-inline-start: 3px solid GrayText;
+}
+.callout {                                         /* Obsidian `> [!kind] Title` */
+   padding: 0.5rlh 1em;
+   box-shadow: inset 0 0 0 1px GrayText;
+   background: color-mix(in srgb, CanvasText 5%, Canvas);
+}
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+.callout-title { font-weight: bold; margin-bottom: 0; }
+
+/* --- Code ------------------------------------------------------------------
+   Plain `monospace` triggers the browsers' 13px legacy size; naming a font first avoids it. */
+code, kbd, samp, pre { font-family: ui-monospace, monospace; font-size: 0.9em; }
+pre code { font-size: inherit; }
+
+/* ---------------------------------------------------------------------------
+   Highlighting is done at build time by Shiki with two themes and
+   defaultColor: false, so every token carries --shiki-light / --shiki-dark. */
+pre {
+   overflow-x: auto;
+   padding: 0.5rlh 1em;
+   box-shadow: inset 0 0 0 1px GrayText;
+}
+pre, pre span {
+   color: light-dark(var(--shiki-light, CanvasText), var(--shiki-dark, CanvasText));
+   font-style: var(--shiki-light-font-style, normal);
+   background: none !important;                    /* ignore Shiki's theme background */
+}
+figure.code { margin-inline: 0; box-shadow: inset 0 0 0 1px GrayText; }
+figure.code pre { margin: 0; box-shadow: none; }
+.code-head {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   gap: 1em;
+   padding-inline-start: 1em;
+   font-size: 0.875em;
+   line-height: 1rlh;
+   box-shadow: inset 0 -1px 0 var(--hairline);
+}
+.code-head button {
+   padding: 0 1em;
+   line-height: 1rlh;
+   border: 0;
+   border-radius: 0;
+   background: transparent;
+   color: inherit;
+   box-shadow: inset 1px 0 0 var(--hairline);
+   cursor: pointer;
+}
+.code-head button:hover { background: color-mix(in srgb, CanvasText 6%, Canvas); }
+
+/* --- Media ----------------------------------------------------------------- */
+img, svg, video { max-width: 100%; height: auto; }
+
+/* --- Previous / next ------------------------------------------------------- */
+.pager { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 2em; }
+.pager p { flex: 1 1 14em; margin-block: 0; }   /* flex items don't collapse margins with the <hr> above */
+.pager p + p { text-align: end; }
+
+/* --- Index (a full-screen popover) ------------------------------------------ */
+#index {
+   width: 100%;
+   height: 100%;
+   max-width: none;
+   max-height: none;
+   margin: 0;
+   padding: 0;
+   border: 0;
+   overflow: auto;
+}
+#index > .stage { max-width: var(--measure); margin: 0 auto; padding: 0.5rlh 1em 1rlh; }
+#index h2 { margin-top: 1rlh; }
+.searchrow { display: flex; gap: 0.5em; }
+.searchrow input { flex: 1; min-width: 0; }
+.active-tag { margin: 0.5rlh 0 0; }
+.cloud {
+   list-style: none;
+   padding: 0;
+   display: flex;
+   flex-wrap: wrap;
+   gap: 0.25rlh 1.25em;
+}
+.cloud li { white-space: nowrap; }
+.cloud a[aria-current] { font-weight: bold; }
+summary { cursor: pointer; }
+
+/* View switch: two native radios. CSS alone shows the matching view; without :has() both show. */
+.view-switch label + label { margin-inline-start: 1em; }
+#index:has(#view-date:checked) .by-folder,
+#index:has(#view-folder:checked) .by-date { display: none; }
+
+/* By folder: nested <ul>/<li>/<details>/<summary>. Folder triangles hang where leaf bullets do. */
+.tree, .tree ul { padding-inline-start: 1.25em; }
+.tree li { margin-block: 0.5rlh; }
+.tree li.folder { list-style: none; }
+.tree summary { list-style-position: outside; }
+
+/* By date */
+.entries { width: 100%; }
+.entries td:first-child { white-space: nowrap; }

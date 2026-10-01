@@ -1,0 +1,26 @@
+---
+import { BLURB, SITE_TITLE } from "../lib/site";
+
+interface Props {
+   /** Inside the Index: a Close button instead of the Index button. */
+   close?: boolean;
+   tagline?: boolean;
+}
+const { close = false, tagline = false } = Astro.props;
+---
+
+<header class="site">
+   <div class="masthead">
+      <a class="wordmark" href="/">{SITE_TITLE}</a>
+      <p>
+         {
+            close ? (
+               <button type="button" popovertarget="index" popovertargetaction="hide">Close</button>
+            ) : (
+               <button type="button" popovertarget="index" data-index-button>Index</button>
+            )
+         }
+      </p>
+   </div>
+   {tagline && <p class="tagline blurb">{BLURB}</p>}
+</header>

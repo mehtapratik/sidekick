@@ -1,0 +1,45 @@
+---
+import { render } from "astro:content";
+import { tagUrl, type Entry } from "../lib/entries";
+
+interface Props {
+   entry: Entry;
+}
+const { entry: e } = Astro.props;
+const { Content } = await render(e.source);
+
+const version = e.version && e.status ? `${e.version} (${e.status})` : e.version || e.status;
+const kind = e.audience ? `${e.kind}, for ${e.audience}` : e.kind;
+const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "words"}, about ${e.minutes} min`;
+---
+
+<article>
+   <h1>{e.title}</h1>
+   {e.deck && <p class="deck">{e.deck}</p>}
+   <table>
+      <tbody>
+         <tr><th scope="row">As of</th><td><time datetime={e.asOf}>{e.asOf}</time></td></tr>
+         {
+            e.created !== e.asOf && (
+               <tr><th scope="row">First written</th><td><time datetime={e.created}>{e.created}</time></td></tr>
+            )
+         }
+         {version && <tr><th scope="row">Version</th><td>{version}</td></tr>}
+         <tr><th scope="row">Kind</th><td>{kind}</td></tr>
+         <tr><th scope="row">Length</th><td>{length}</td></tr>
+         {
+            e.tags.length > 0 && (
+               <tr>
+                  <th scope="row">Tags</th>
+                  <td>
+                     {e.tags.map((t, i) => (
+                        <>{i > 0 && ", "}<a href={tagUrl(t)} data-tag={t}>{t}</a></>
+                     ))}
+                  </td>
+               </tr>
+            )
+         }
+      </tbody>
+   </table>
+   <Content />
+</article>
