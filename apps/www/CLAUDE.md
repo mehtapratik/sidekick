@@ -52,6 +52,12 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   (`design/reference/entries.sample.json` is the URL contract).
 - **Privacy gate** compares long lines from the two private vault folders only. `_archive/` is
   superseded text that legitimately lives on in newer notes.
+- **Math** (`$x$`, `$$…$$`): `remark-math` + `rehype-katex` with `output: "mathml"`, so the browser draws
+  it and no KaTeX stylesheet, fonts or script ship. Inline `$…$` follows Obsidian's rule (no space just
+  inside either `$`, no digit right after the closing one); anything else, such as prices like
+  `$2 / $12`, is restored to plain text (`obsidianInlineMath` in `remark-vault.mjs`). Display math is
+  wrapped in `.wide` so a long equation scrolls instead of widening the page. TeX drops spaces:
+  write `\text{Core Drive}`, not `Core Drive`.
 - **Redirects:** no redirects for the old `/docs/<section>/` landings (removed on purpose).
   `/writings/`, `/docs/`, `/index/` and `/tags/` go to `/`.
 

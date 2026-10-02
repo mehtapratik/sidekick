@@ -183,6 +183,24 @@ function callouts(tree) {
    });
 }
 
+/**
+ * remark-math pairs any two `$`, so prices ("$2 / $12", "$20 Pro … $60") become broken equations.
+ * Obsidian's rule is stricter: no space just inside either `$`, and no digit right after the closing
+ * one. Anything that fails it goes back to the exact text the author wrote.
+ */
+function obsidianInlineMath(tree, source) {
+   visit(tree, "inlineMath", (node, index, parent) => {
+      const { start, end } = node.position ?? {};
+      if (!start || !parent) return;
+      const raw = source.slice(start.offset, end.offset);
+      if (!raw.startsWith("$") || raw.startsWith("$$")) return;
+      const inner = raw.slice(1, -1);
+      if (/^\s|\s$/.test(inner) || /\d/.test(source[end.offset] ?? "")) {
+         parent.children[index] = { type: "text", value: raw };
+      }
+   });
+}
+
 export function remarkVault() {
    return (tree, file) => {
       const abs = file.path ?? "";
@@ -208,6 +226,7 @@ export function remarkVault() {
       });
 
       callouts(tree);
+      obsidianInlineMath(tree, String(file.value));
 
       visit(
          tree,

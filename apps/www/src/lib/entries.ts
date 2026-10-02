@@ -36,6 +36,7 @@ function firstParagraph(html: string): string {
 function textOf(html: string): string {
    // Block-level tags separate words; inline tags (<strong>, <a>, token <span>s) do not.
    return html
+      .replace(/<annotation\b[\s\S]*?<\/annotation>/g, "") // MathML keeps its TeX source here
       .replace(
          /<\/?(?:p|li|ul|ol|h[1-6]|tr|td|th|div|table|thead|tbody|br|figure|pre|aside|blockquote|hr)\b[^>]*>/g,
          " ",

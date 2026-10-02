@@ -1,4 +1,4 @@
-// hast tweaks (SPEC 6): wide-table wrapper and the code figure with its Copy button.
+// hast tweaks (SPEC 6): wide-table wrapper, the code figure with its Copy button, and wide display math.
 import { visit, SKIP } from "unist-util-visit";
 
 const LABELS = {
@@ -60,7 +60,16 @@ export function rehypeArkive() {
       visit(tree, "element", (node, index, parent) => {
          if (!parent || index == null) return;
 
-         if (node.tagName === "table") {
+         // Display math is MathML, which cannot scroll by itself. Give it the same
+         // "may leave the column, then scroll" wrapper as a wide table; arkive.css already has it.
+         const isDisplayMath =
+            node.tagName === "span" &&
+            [].concat(node.properties?.className ?? []).includes("katex") &&
+            node.children.some(
+               (c) => c.tagName === "math" && c.properties?.display === "block",
+            );
+
+         if (node.tagName === "table" || isDisplayMath) {
             parent.children[index] = {
                type: "element",
                tagName: "div",
