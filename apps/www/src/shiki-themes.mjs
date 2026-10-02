@@ -1,4 +1,4 @@
-// Two deliberately small Shiki themes for Arkive.
+// Two deliberately small Shiki themes for Arkive (polished: types use the peacock accent).
 // Five token colours, everything else in the page's own text colour.
 // Use with Astro's built-in Shiki:
 //
@@ -25,7 +25,7 @@ function theme(name, type, fg, c) {
    return {
       name,
       type,
-      colors: { "editor.foreground": fg, "editor.background": type === "light" ? "#ffffff" : "#121212" },
+      colors: { "editor.foreground": fg, "editor.background": type === "light" ? "#f4f4f2" : "#1a1b1d" },
       tokenColors: [
          { scope: scopes.comment, settings: { foreground: c.comment, fontStyle: "italic" } },
          { scope: scopes.keyword, settings: { foreground: c.keyword } },
@@ -38,8 +38,8 @@ function theme(name, type, fg, c) {
 
 // All five colours pass 4.5:1 against the browser's light / dark Canvas.
 export const arkiveLight = theme("arkive-light", "light", "#000000", {
-   comment: "#6a6a6a", keyword: "#7a3e00", string: "#1d6b2f", number: "#8a1c7c", type: "#0b5a6b",
+   comment: "#6a6a6a", keyword: "#7a3e00", string: "#1d6b2f", number: "#8a1c7c", type: "#0a6c80",
 });
 export const arkiveDark = theme("arkive-dark", "dark", "#ffffff", {
-   comment: "#9a9a9a", keyword: "#e6b17a", string: "#8fd19e", number: "#e3a3dc", type: "#7fd3e0",
+   comment: "#8f8f8c", keyword: "#e6b17a", string: "#8fd19e", number: "#e3a3dc", type: "#5ec4d4",
 });

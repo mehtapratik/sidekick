@@ -9,7 +9,8 @@
 //   4. "Index (filtered)" on the button while a filter is on,
 //   5. the By folder tree following the filter (hidden folders, counts, auto-open),
 //   6. remembering the chosen view (By date / By folder) for the session,
-//   7. copy buttons on code blocks.
+//   7. copy buttons on code blocks,
+//   8. keyboard shortcuts: "/" opens the Index (search focused), ← / → previous / next.
 // Load it with <script type="module" src="/arkive.js"></script>.
 
 const KEY = "arkive:filter";
@@ -64,6 +65,7 @@ function renderPagerSlot(slot, row, noneText) {
       const a = document.createElement("a");
       a.href = row.dataset.url;
       a.rel = slot.dataset.slot;                       // "prev" | "next"
+      a.setAttribute("aria-keyshortcuts", slot.dataset.slot === "prev" ? "ArrowLeft" : "ArrowRight");
       a.textContent = row.dataset.title;
       slot.append(a);
    } else {
@@ -126,7 +128,8 @@ function apply() {
 
    // 3. Index button label
    for (const btn of $$("[data-index-button]")) {
-      btn.textContent = on ? "Index (filtered)" : "Index";
+      const label = $("[data-index-label]", btn) || btn;   // keep the icon: only the label text changes
+      label.textContent = on ? "Index (filtered)" : "Index";
       btn.setAttribute("aria-label", on ? `Index, filtered by ${text}, ${plural(n)}` : "Index of all entries");
    }
 
@@ -192,6 +195,30 @@ document.addEventListener("click", (e) => {
 });
 
 for (const b of $$("button[data-copy]")) b.hidden = !navigator.clipboard;
+
+// Keyboard shortcuts. Ignored while typing, with Ctrl/Cmd/Alt held, and (for the arrows) while the
+// Index is open or while a wide table or code block has focus, where arrows scroll sideways.
+document.addEventListener("keydown", (e) => {
+   if (e.defaultPrevented || e.isComposing || e.metaKey || e.ctrlKey || e.altKey) return;
+   const t = e.target;
+   const open = Boolean(index?.matches(":popover-open"));
+   // Esc always closes the Index, even from the search box (where it would otherwise clear the filter).
+   if (e.key === "Escape" && open) { e.preventDefault(); index.hidePopover(); return; }
+   const typing = t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+   if (typing) return;
+   if (e.key === "/") {
+      if (!index) return;
+      e.preventDefault();
+      if (!open) index.showPopover();
+      $("#index-search")?.focus();
+      return;
+   }
+   if (open || e.shiftKey) return;
+   if (t instanceof Element && t.closest(".wide, pre")) return;
+   const slot = e.key === "ArrowLeft" ? "prev" : e.key === "ArrowRight" ? "next" : null;
+   const link = slot && $(`[data-slot="${slot}"] a`);
+   if (link) { e.preventDefault(); link.click(); }
+});
 
 // View switch: CSS does the switching; the script only remembers the choice for the session.
 try {

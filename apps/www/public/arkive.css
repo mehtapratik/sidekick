@@ -1,218 +1,330 @@
 /* ==========================================================================
-   Arkive — the whole stylesheet.
+   Arkive — polished stylesheet (replaces the spartan public/arkive.css).
 
-   Rule of the house: start from browser defaults and only ADD.
-   Nothing here undoes an earlier rule, and nothing needs a media query.
-   If a change needs a media query to look right, the change is wrong.
-
-   Units: `rlh` = one line of body text (root font-size × root line-height).
-   Every vertical gap is a multiple of 1rlh or 0.5rlh — that is the rhythm.
+   Faces:   General Sans (interface) · Sentient (prose) · IBM Plex Mono (code, dates)
+   Colour:  neutral greys + one accent (peacock), each defined once with light-dark()
+   Rhythm:  `rlh` = one line of body text; vertical gaps are multiples of 1 or ½ line
+   Rule:    style only. Markup semantics, the native popover/details/radios and
+            accessibility stay exactly as the spec describes.
    ========================================================================== */
 
-:root {
-   color-scheme: light dark;            /* light + dark come from the OS, via system colours */
-   font-family: system-ui;
-   line-height: 1.6;
+/* --- Fonts (self-hosted, /fonts) ----------------------------------------------- */
+@font-face { font-family: "General Sans"; src: url("/fonts/GeneralSans-Variable.woff2") format("woff2"); font-weight: 200 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "General Sans"; src: url("/fonts/GeneralSans-VariableItalic.woff2") format("woff2"); font-weight: 200 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Sentient"; src: url("/fonts/Sentient-Variable.woff2") format("woff2"); font-weight: 200 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sentient"; src: url("/fonts/Sentient-VariableItalic.woff2") format("woff2"); font-weight: 200 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 
-   --measure: 60ch;                     /* reading column; also used by the Index */
-   --muted: color-mix(in srgb, CanvasText 72%, Canvas);
-   --hairline: color-mix(in srgb, CanvasText 18%, Canvas);
+/* --- Tokens ------------------------------------------------------------------------ */
+:root {
+   color-scheme: light dark;
+
+   --bg:      light-dark(#fdfdfc, #111213);
+   --text:    light-dark(#1b1b1b, #e9e9e7);   /* 16.9:1 · 15.4:1 */
+   --muted:   light-dark(#5f5f5f, #a5a5a2);   /*  6.3:1 ·  7.6:1 */
+   --faint:   light-dark(#9a9a98, #5f605f);   /* decoration only, never text */
+   --rule:    light-dark(#e3e3e0, #2a2b2d);
+   --subtle:  light-dark(#f4f4f2, #1a1b1d);
+   --accent:  light-dark(#0a6c80, #5ec4d4);   /* peacock · 5.9:1 · 9.2:1 */
+   --visited: light-dark(#4f7178, #86a6ab);   /*  5.2:1 ·  7.2:1 */
+   --tint:    color-mix(in srgb, var(--accent) 10%, var(--bg));
+
+   --sans:  "General Sans", system-ui, sans-serif;
+   --serif: "Sentient", Georgia, serif;
+   --mono:  "IBM Plex Mono", ui-monospace, monospace;
+   --ui: 0.9375em;   /* General Sans x-height 0.538 vs Sentient 0.504: this size makes them match */
+   --measure: 60ch;
+
+   font-family: var(--sans);
+   font-size: clamp(1.0625rem, 0.98rem + 0.3vw, 1.1875rem);   /* 17px on phones → 19px on desktops */
+   line-height: 1.6;
+   font-kerning: normal;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   background: var(--bg);
+   color: var(--text);
 }
 
 body {
-   overflow-wrap: break-word;           /* long URLs wrap instead of widening the page */
    max-width: var(--measure);
    margin: 0 auto;
-   padding: 0.5rlh 1em 1rlh;
+   padding: 0.75rlh 1.25em 2rlh;
+   overflow-wrap: break-word;
+}
+::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* --- Icons: <span class="icon"> and pseudo-elements, masked so they take currentColor ---- */
+.icon {
+   display: inline-block; flex: none; width: 1.1em; height: 1.1em; vertical-align: -0.2em;
+   background: currentColor;
+   -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat;
 }
 
-/* --- Links ---------------------------------------------------------------
-   Browser default colours, including the visited colour.
-   Chrome, Safari and Firefox each pick their own dark-scheme link colours.
-   Only if a browser shows #0000EE on a dark background, add:
-     a:link    { color: light-dark(#0000ee, #9e9eff); }
-     a:visited { color: light-dark(#551a8b, #d0adf0); }
-   ------------------------------------------------------------------------- */
-
-/* --- Vertical rhythm ---------------------------------------------------- */
-:where(p, ul, ol, dl, blockquote, pre, figure, details, form, aside, table, .wide) {
-   margin-block: 1rlh;
-}
+/* --- Rhythm -------------------------------------------------------------------------- */
+:where(p, ul, ol, dl, blockquote, pre, figure, details, form, aside, table, .wide) { margin-block: 1rlh; }
 :where(li ul, li ol) { margin-block: 0; }
 
-:where(h1, h2, h3, h4, h5, h6) { margin-block: 2rlh 0.5rlh; }
-h1 { line-height: 1.5rlh; margin-top: 1rlh; }
-h2 { line-height: 1.5rlh; }
-:where(h3, h4, h5, h6) { line-height: 1rlh; margin-top: 1.5rlh; }
+/* --- Links: only content links carry the accent ---------------------------------------- */
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+:where(.prose, .tagline) a:not([data-tag]) { color: var(--accent); }
+.prose a:not([data-tag]):visited { color: var(--visited); }
 
-hr {
-   border: 0;
-   border-top: 1px solid GrayText;
-   margin-block: calc(1.5rlh - 0.5px);   /* 1px rule + margins = exactly 3 lines */
-}
-
-/* --- Quiet text ---------------------------------------------------------- */
-.deck  { font-size: 1.125em; line-height: 1rlh; margin-top: 0; }   /* entry summary under the title */
-.deck, .blurb, .muted { color: var(--muted); }
-.blurb { font-style: italic; }                                      /* site description */
-
-/* --- Site header ---------------------------------------------------------- */
-.site {
-   padding-bottom: 0.5rlh;
-   box-shadow: inset 0 -1px 0 var(--hairline);     /* shadows, not borders: no layout shift */
-}
-.masthead {
-   display: flex;
-   flex-wrap: wrap;
-   align-items: center;
-   justify-content: space-between;
-   gap: 0.5em 1em;
-}
+/* --- Header ------------------------------------------------------------------------------ */
+.site { padding-bottom: 0.5rlh; box-shadow: inset 0 -1px 0 var(--rule); }
+.masthead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5em 1em; }
 .masthead p { margin: 0; }
-.wordmark {
-   color: inherit;
-   text-decoration: none;
-   font-weight: bold;
-   font-size: 1.25em;
-   letter-spacing: 0.02em;
-}
-.tagline { margin: 0.5rlh 0 0; font-size: 0.9375em; line-height: 1rlh; }   /* home page only */
+.wordmark { display: inline-flex; align-items: center; gap: 0.45em; font-weight: 600; font-size: 1.0625em; letter-spacing: 0.01em; color: var(--text); }
+.wordmark:hover { text-decoration: none; }
+.wordmark .mark { width: auto; height: 1.35em; color: var(--accent); }
+.tagline { margin: 0.5rlh 0 0; font-family: var(--serif); font-style: italic; color: var(--muted); font-size: var(--ui); line-height: 1rlh; }
 
-/* --- Controls: browser buttons, body-sized --------------------------------- */
-button, input, select { font: inherit; }
-button { padding: 0.25em 1em; }
-input[type="search"] { padding: 0.25em 0.5em; }
+/* --- Buttons -------------------------------------------------------------------------------- */
+button {
+   font: inherit; font-size: 0.875em; font-weight: 500; letter-spacing: 0.01em; line-height: 1.2; color: var(--text);
+   display: inline-flex; align-items: center; gap: 0.45em; padding: 0.45em 0.95em;
+   background: var(--bg); border: 1px solid var(--rule); border-radius: 999px; cursor: pointer;
+   transition: border-color .15s, color .15s, background-color .15s;
+}
+button:hover { border-color: color-mix(in srgb, var(--text) 35%, var(--bg)); }
+button:active { background: var(--subtle); }
+button[hidden] { display: none; }
+.index-btn .icon { --i: url("/icons/index.svg"); }
+.close-btn .icon { --i: url("/icons/close.svg"); }
 
-/* --- Tables: research-paper rules (booktabs), no vertical lines ------------ */
-table { border-collapse: collapse; }
-th, td {
-   padding: 0.25rlh 1em 0.25rlh 0;
-   text-align: left;
-   vertical-align: top;
-   box-shadow: inset 0 -1px 0 var(--hairline);
+/* --- Keyboard-shortcut hints: on hover or keyboard focus only ----------------------------------- */
+[data-key] { position: relative; }
+[data-key]::after {
+   content: "Press " attr(data-key);
+   position: absolute; z-index: 5; top: calc(100% + 8px); left: 50%; translate: -50% -2px;
+   font: 500 0.6875rem/1 var(--mono); letter-spacing: 0.02em; white-space: nowrap;
+   padding: 0.45em 0.65em; border-radius: 6px; background: var(--text); color: var(--bg);
+   opacity: 0; pointer-events: none; transition: opacity .15s .3s, translate .15s .3s;
 }
-:where(th, td):last-child { padding-inline-end: 0; }
-thead th { box-shadow: inset 0 1px 0 CanvasText, inset 0 -1px 0 CanvasText; }
-tbody:first-child tr:first-child > * { box-shadow: inset 0 1px 0 CanvasText, inset 0 -1px 0 var(--hairline); }
-tbody tr:last-child > * { box-shadow: inset 0 -1px 0 CanvasText; }
-th[scope="row"] { font-weight: normal; color: var(--muted); white-space: nowrap; }
+/* header hints sit beside the button, so they never cover the tagline or title below */
+.masthead [data-key]::after { top: 50%; left: auto; right: calc(100% + 10px); translate: 6px -50%; }
+.pager .older [data-key]::after { left: 0; translate: 0 -2px; }
+.pager .newer [data-key]::after { left: auto; right: 0; translate: 0 -2px; }
+[data-key]:is(:hover, :focus-visible, :focus-within)::after { opacity: 1; translate: -50% 0; transition-delay: 0s; }
+.masthead [data-key]:is(:hover, :focus-visible)::after { translate: 0 -50%; }
+.pager [data-key]:is(:hover, :focus-within)::after { translate: 0 0; }
+@media (hover: none), (max-width: 30em) { [data-key]::after { display: none; } }
 
-/* A wide table may leave the reading column, up to the viewport minus gutters,
-   centred on the column; beyond that it scrolls sideways inside its wrapper.
-   The Markdown pipeline wraps every content table in <div class="wide">. */
-.wide {
-   width: max-content;
-   min-width: 100%;
-   max-width: calc(100vw - 2em);
-   margin-inline-start: 50%;
-   transform: translateX(-50%);
-   overflow-x: auto;
-}
-.wide > table { margin: 0; }
+/* --- Entry head ---------------------------------------------------------------------------- */
+:where(h1, h2, h3, h4, h5, h6) { font-family: var(--sans); font-weight: 600; margin-block: 1.75rlh 0.5rlh; }
+h1 { font-size: 2.25em; line-height: 1.12; letter-spacing: -0.025em; margin-top: 1rlh; text-wrap: balance; }
+h2 { font-size: 1.5em; line-height: 1.25; letter-spacing: -0.015em; text-wrap: balance; }
+h3 { font-size: 1.1875em; line-height: 1rlh; letter-spacing: -0.008em; margin-top: 1.5rlh; }
+h4 { font-size: 1em; line-height: 1rlh; margin-top: 1.5rlh; }
+.deck { font-family: var(--serif); font-style: italic; font-size: 1.1875em; line-height: 1.45; color: var(--muted); margin: 0.5rlh 0 1rlh; text-wrap: pretty; }
+.muted { color: var(--muted); }
 
-/* --- Quotes and callouts --------------------------------------------------- */
-blockquote {
-   margin-inline: 0;
-   padding-inline-start: 1em;
-   border-inline-start: 3px solid GrayText;
+/* Metadata: a quiet two-column register between hairlines */
+table.meta { font-size: 0.8125em; line-height: 1.5; margin-block: 1rlh 1.5rlh; border-collapse: collapse; border-block: 1px solid var(--rule); }
+table.meta :where(th, td) { padding: 0.4em 1.5em 0.4em 0; text-align: left; vertical-align: baseline; }
+table.meta tr:first-child > * { padding-top: 0.8em; }
+table.meta tr:last-child > * { padding-bottom: 0.8em; }
+table.meta th { font-weight: 500; font-size: 0.8125em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+table.meta time { font-family: var(--mono); font-size: 0.9375em; letter-spacing: -0.01em; }
+
+/* Tag chips (metadata) and the Index tag list */
+.chips { display: flex; flex-wrap: wrap; gap: 0.35em; }
+.chips a[data-tag], .cloud li {
+   display: inline-flex; align-items: baseline; gap: 0.35em; padding: 0.2em 0.7em; border-radius: 999px;
+   border: 1px solid var(--rule); color: var(--text); font-size: 0.9375em; line-height: 1.4; white-space: nowrap;
+   transition: border-color .15s, color .15s, background-color .15s;
 }
-.callout {                                         /* Obsidian `> [!kind] Title` */
-   padding: 0.5rlh 1em;
-   box-shadow: inset 0 0 0 1px GrayText;
-   background: color-mix(in srgb, CanvasText 5%, Canvas);
+.chips a[data-tag]:hover, .cloud li:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.chips a[data-tag]::before { content: "#"; color: var(--faint); }
+
+/* --- Prose (Sentient) ------------------------------------------------------------------------ */
+.prose { font-family: var(--serif); letter-spacing: 0.002em; hanging-punctuation: first; }
+@media (prefers-color-scheme: dark) { .prose { font-weight: 370; } }   /* light-on-dark reads heavier */
+.prose :where(p, li) { text-wrap: pretty; }
+.prose :where(strong, b) { font-weight: 600; }
+.prose :where(ul, ol) { padding-inline-start: 1.4em; }
+.prose li::marker { color: var(--muted); font-family: var(--sans); font-size: 0.9em; }
+.prose li + li { margin-top: 0.25rlh; }
+
+.prose blockquote {
+   margin-inline: 0; padding: 0 0 0 1.25em; border-inline-start: 2px solid var(--accent);
+   font-style: italic; font-size: 1.0625em; color: color-mix(in srgb, var(--text) 85%, var(--bg));
 }
+
+.callout { font-size: 0.9375em; padding: 0.75rlh 1.25em; background: var(--subtle); border-radius: 12px; }
 .callout > :first-child { margin-top: 0; }
 .callout > :last-child { margin-bottom: 0; }
-.callout-title { font-weight: bold; margin-bottom: 0; }
+.callout a:not([data-tag]) { color: var(--accent); }
+.callout-title {
+   display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.25rlh;
+   font-family: var(--sans); font-weight: 600; font-size: 0.8125em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+}
+.callout-title::before {
+   content: ""; width: 1.35em; height: 1.35em; background: currentColor;
+   -webkit-mask: var(--i, url("/icons/note.svg")) center / contain no-repeat; mask: var(--i, url("/icons/note.svg")) center / contain no-repeat;
+}
+.callout[data-kind="question"] { --i: url("/icons/question.svg"); }
+.callout:is([data-kind="warning"], [data-kind="caution"], [data-kind="danger"]) { --i: url("/icons/warning.svg"); }
+.callout:is([data-kind="tip"], [data-kind="hint"]) { --i: url("/icons/tip.svg"); }
 
-/* --- Code ------------------------------------------------------------------
-   Plain `monospace` triggers the browsers' 13px legacy size; naming a font first avoids it. */
-code, kbd, samp, pre { font-family: ui-monospace, monospace; font-size: 0.9em; }
-pre code { font-size: inherit; }
+hr {
+   border: 0; height: 1rlh; margin-block: 1.5rlh; background: var(--faint);
+   -webkit-mask: url("/icons/ornament.svg") center / 4.5em auto no-repeat; mask: url("/icons/ornament.svg") center / 4.5em auto no-repeat;
+}
 
-/* ---------------------------------------------------------------------------
-   Highlighting is done at build time by Shiki with two themes and
-   defaultColor: false, so every token carries --shiki-light / --shiki-dark. */
+/* --- Code -------------------------------------------------------------------------------------- */
+:where(code, kbd, samp) { font-family: var(--mono); font-size: 0.85em; }
+:not(pre) > code { padding: 0.12em 0.38em; border-radius: 5px; background: var(--subtle); font-size: 0.82em; }
+figure.code { margin-inline: 0; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.code-head { display: flex; justify-content: space-between; align-items: center; gap: 1em; padding: 0.35em 0.5em 0.35em 1.1em; box-shadow: inset 0 -1px 0 var(--rule); }
+.code-head .muted { font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+.code-head button { font-size: 0.75em; padding: 0.3em 0.75em; border-color: transparent; background: transparent; color: var(--muted); }
+.code-head button:hover { color: var(--text); background: var(--subtle); }
+.code-head button::before {
+   content: ""; width: 1.15em; height: 1.15em; background: currentColor;
+   -webkit-mask: url("/icons/copy.svg") center / contain no-repeat; mask: url("/icons/copy.svg") center / contain no-repeat;
+}
 pre {
-   overflow-x: auto;
-   padding: 0.5rlh 1em;
-   box-shadow: inset 0 0 0 1px GrayText;
+   overflow-x: auto; padding: 0.6rlh 1.1em; background: var(--subtle);
+   font-size: 0.8125em; line-height: 1.65; tab-size: 3;
 }
-pre, pre span {
-   color: light-dark(var(--shiki-light, CanvasText), var(--shiki-dark, CanvasText));
+figure.code pre { margin: 0; }
+pre code { font-size: inherit; }
+/* Shiki (defaultColor: false) gives every token --shiki-light / --shiki-dark; pick one per scheme */
+pre span {
+   color: light-dark(var(--shiki-light, var(--text)), var(--shiki-dark, var(--text)));
    font-style: var(--shiki-light-font-style, normal);
-   background: none !important;                    /* ignore Shiki's theme background */
 }
-figure.code { margin-inline: 0; box-shadow: inset 0 0 0 1px GrayText; }
-figure.code pre { margin: 0; box-shadow: none; }
-.code-head {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   gap: 1em;
-   padding-inline-start: 1em;
-   font-size: 0.875em;
-   line-height: 1rlh;
-   box-shadow: inset 0 -1px 0 var(--hairline);
+
+/* --- Tables in entries ----------------------------------------------------------------------------- */
+.prose table { font-family: var(--sans); font-size: 0.8125em; line-height: 1.5; border-collapse: collapse; }
+.prose :where(th, td) { padding: 0.55em 1.25em 0.55em 0; text-align: left; vertical-align: top; box-shadow: inset 0 -1px 0 var(--rule); }
+.prose :where(th, td):last-child { padding-inline-end: 0; }
+.prose thead th { font-weight: 600; font-size: 0.9em; letter-spacing: 0.04em; box-shadow: inset 0 -1px 0 var(--text); }
+.prose tbody tr:last-child > * { box-shadow: none; }
+/* A wide table (or display equation) may leave the column, up to the viewport minus gutters, then scrolls */
+.wide { width: max-content; min-width: 100%; max-width: calc(100vw - 2.5em); margin-inline-start: 50%; transform: translateX(-50%); overflow-x: auto; }
+.wide > table { margin: 0; }
+img, video { max-width: 100%; height: auto; border-radius: 8px; }
+svg { max-width: 100%; }
+
+/* --- Previous / next ------------------------------------------------------------------------------- */
+.pager { display: grid; grid-template-columns: repeat(auto-fit, minmax(14em, 1fr)); gap: 0.75em; margin-top: 1.5rlh; }
+.pager p { margin: 0; padding: 0.8em 1em 0.9em; border: 1px solid var(--rule); border-radius: 12px; transition: border-color .15s; }
+.pager p:has(a):hover { border-color: var(--accent); }
+.pager .newer { text-align: end; }
+.pager .label { display: flex; align-items: center; gap: 0.4em; margin-bottom: 0.35em; font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.pager .newer .label { justify-content: flex-end; }
+.pager .older .label .icon { --i: url("/icons/arrow-left.svg"); }
+.pager .newer .label .icon { --i: url("/icons/arrow-right.svg"); }
+.pager a { display: inline-block; font-weight: 500; line-height: 1.35; }
+.pager a:hover { color: var(--accent); text-decoration: none; }
+.pager .muted { font-size: 0.875em; }
+.scope { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-top: 1rlh; font-size: 0.8125em; color: var(--muted); }
+.scope button { font-size: 1em; }
+
+/* --- Footer ------------------------------------------------------------------------------------- */
+footer {
+   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5em 1em;
+   margin-top: 2rlh; padding-top: 1rlh; box-shadow: inset 0 1px 0 var(--rule); font-size: 0.8125em; color: var(--muted);
 }
-.code-head button {
-   padding: 0 1em;
-   line-height: 1rlh;
-   border: 0;
-   border-radius: 0;
-   background: transparent;
-   color: inherit;
-   box-shadow: inset 1px 0 0 var(--hairline);
-   cursor: pointer;
-}
-.code-head button:hover { background: color-mix(in srgb, CanvasText 6%, Canvas); }
+footer p { margin: 0; }
+footer a { display: inline-flex; align-items: center; gap: 0.3em; }
+footer a:hover { color: var(--text); }
+footer .icon { --i: url("/icons/rss.svg"); width: 1em; height: 1em; }
 
-/* --- Media ----------------------------------------------------------------- */
-img, svg, video { max-width: 100%; height: auto; }
-
-/* --- Previous / next ------------------------------------------------------- */
-.pager { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 2em; }
-.pager p { flex: 1 1 14em; margin-block: 0; }   /* flex items don't collapse margins with the <hr> above */
-.pager p + p { text-align: end; }
-
-/* --- Index (a full-screen popover) ------------------------------------------ */
+/* --- The Index (native popover) --------------------------------------------------------------------- */
 #index {
-   width: 100%;
-   height: 100%;
-   max-width: none;
-   max-height: none;
-   margin: 0;
-   padding: 0;
-   border: 0;
-   overflow: auto;
+   width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+   overflow: auto; background: var(--bg); color: var(--text);
 }
-#index > .stage { max-width: var(--measure); margin: 0 auto; padding: 0.5rlh 1em 1rlh; }
-#index h2 { margin-top: 1rlh; }
-.searchrow { display: flex; gap: 0.5em; }
-.searchrow input { flex: 1; min-width: 0; }
-.active-tag { margin: 0.5rlh 0 0; }
-.cloud {
-   list-style: none;
-   padding: 0;
-   display: flex;
-   flex-wrap: wrap;
-   gap: 0.25rlh 1.25em;
-}
-.cloud li { white-space: nowrap; }
-.cloud a[aria-current] { font-weight: bold; }
-summary { cursor: pointer; }
+#index:popover-open { animation: index-in .22s cubic-bezier(.2, .7, .2, 1); }
+@keyframes index-in { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { #index:popover-open { animation: none; } * { transition: none !important; } }
+#index > .stage { max-width: var(--measure); margin: 0 auto; padding: 0.75rlh 1.25em 2rlh; }
+#index h2 { font-size: 1.75em; letter-spacing: -0.02em; margin: 1rlh 0 0.25rlh; }
+#index .blurb { font-family: var(--serif); font-style: italic; color: var(--muted); margin-top: 0; font-size: var(--ui); }
 
-/* View switch: two native radios. CSS alone shows the matching view; without :has() both show. */
-.view-switch label + label { margin-inline-start: 1em; }
+.search { margin-bottom: 0; }
+.search label, #view-label { font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.search label { display: block; margin-bottom: 0.5em; }
+.searchrow { position: relative; display: flex; gap: 0.5em; }
+.searchrow::before {
+   content: ""; position: absolute; left: 0.85em; top: 50%; translate: 0 -50%; width: 1.05em; height: 1.05em; pointer-events: none;
+   background: var(--muted); -webkit-mask: url("/icons/search.svg") center / contain no-repeat; mask: url("/icons/search.svg") center / contain no-repeat;
+}
+.searchrow input {
+   flex: 1; min-width: 0; font: inherit; font-size: var(--ui); color: var(--text);
+   padding: 0.6em 0.9em 0.6em 2.4em; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg);
+   transition: border-color .15s, box-shadow .15s;
+}
+.searchrow input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.searchrow input::placeholder { color: var(--faint); }
+.active-tag { margin: 0.5rlh 0 0; font-size: 0.8125em; color: var(--muted); }
+.active-tag b { color: var(--accent); font-weight: 600; }
+.active-tag a { text-decoration: underline; text-underline-offset: 0.2em; }
+
+/* Disclosure: a chevron instead of the triangle */
+summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45em; font-weight: 500; }
+summary::-webkit-details-marker { display: none; }
+summary::before {
+   content: ""; width: 0.95em; height: 0.95em; background: var(--muted); transition: rotate .15s;
+   -webkit-mask: url("/icons/chevron.svg") center / contain no-repeat; mask: url("/icons/chevron.svg") center / contain no-repeat;
+}
+details[open] > summary::before { rotate: 90deg; }
+.tags-panel > summary { font-size: 0.8125em; }
+
+.cloud { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.45em; margin-top: 0.5rlh; font-size: 0.8125em; }
+.cloud li { position: relative; padding: 0.25em 0.75em; }
+.cloud li a::after { content: ""; position: absolute; inset: 0; border-radius: 999px; }   /* whole chip is the link */
+.cloud li a:hover { text-decoration: none; }
+.cloud li .muted { font-family: var(--mono); font-size: 0.85em; }
+.cloud li:has(a[aria-current]) { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.cloud li:has(a[aria-current]) .muted { color: color-mix(in srgb, var(--bg) 75%, var(--accent)); }
+
+/* View switch: the native radios, drawn as a segmented control */
+.view-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em; }
+.view-switch .seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--subtle); }
+.view-switch label { position: relative; padding: 0.35em 0.95em; border-radius: 999px; font-size: 0.8125em; font-weight: 500; color: var(--muted); cursor: pointer; transition: color .15s, background-color .15s; }
+.view-switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.view-switch label:has(input:checked) { background: var(--bg); color: var(--text); box-shadow: 0 1px 2px rgb(0 0 0 / .12), 0 0 0 1px var(--rule); }
+.view-switch label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 #index:has(#view-date:checked) .by-folder,
 #index:has(#view-folder:checked) .by-date { display: none; }
+.count { margin-bottom: 0.5rlh; font-size: 0.8125em; color: var(--muted); }
 
-/* By folder: nested <ul>/<li>/<details>/<summary>. Folder triangles hang where leaf bullets do. */
-.tree, .tree ul { padding-inline-start: 1.25em; }
-.tree li { margin-block: 0.5rlh; }
-.tree li.folder { list-style: none; }
-.tree summary { list-style-position: outside; }
+/* By date: the register (also used on /tags/<tag>/) */
+table.entries { width: 100%; margin-top: 0; border-collapse: collapse; font-size: var(--ui); }
+table.entries th { padding: 0 1em 0.6em 0; text-align: left; font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); box-shadow: inset 0 -1px 0 var(--rule); }
+table.entries td { padding: 0.8em 1em 0.8em 0; vertical-align: baseline; box-shadow: inset 0 -1px 0 var(--rule); }
+table.entries :where(th, td):last-child { padding-right: 0; text-align: right; }
+table.entries td:first-child { font-family: var(--mono); font-size: 0.75em; color: var(--muted); white-space: nowrap; }
+table.entries td:last-child { font-size: 0.6875em; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+table.entries .title { font-weight: 500; }
+table.entries .title:visited { color: var(--muted); }
+table.entries .title:hover { color: var(--accent); }
+table.entries .deck-line { display: block; margin-top: 0.2em; font-family: var(--serif); font-style: italic; font-size: 0.9375em; line-height: 1.45; color: var(--muted); }
+table.entries .tag-line { display: block; margin-top: 0.3em; font-size: 0.75em; color: var(--muted); }
+table.entries .tag-line a::before { content: "#"; color: var(--faint); }
+table.entries .tag-line a:hover { color: var(--accent); }
+.reading {
+   display: inline-block; margin-left: 0.5em; padding: 0.1em 0.55em; border-radius: 999px; vertical-align: 0.15em;
+   font-size: 0.6875em; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: var(--tint);
+}
 
-/* By date */
-.entries { width: 100%; }
-.entries td:first-child { white-space: nowrap; }
+/* By folder: the tree, one guide line per level */
+.tree { list-style: none; padding: 0; margin: 0; font-size: var(--ui); }
+.tree ul { list-style: none; margin: 0.15em 0 0 0.45em; padding: 0 0 0 1.1em; border-left: 1px solid var(--rule); }
+.tree li { margin-block: 0.4em; }
+.tree details { margin: 0; }
+.tree summary .muted { font-family: var(--mono); font-size: 0.75em; font-weight: 400; }
+.tree li[data-url] a:visited { color: var(--muted); }
+.tree li[data-url] a:hover { color: var(--accent); }
+.tree li[data-url] small.muted { display: block; margin-top: 0.1em; font-family: var(--mono); font-size: 0.7em; }
+
+/* --- Math (MathML from KaTeX) ---------------------------------------------------------------------- */
+math { font-size: 1.05em; }
