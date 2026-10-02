@@ -14,13 +14,14 @@ differs from it, and what is not obvious from the code.
 | Serve the build | `npm run preview` |
 
 Node >= 22.12. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
-`public/arkive.js`, `src/shiki-themes.mjs` and `design/`: those ship as given.
+`public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs` and `design/`: those ship as given.
 
 ## Layout
 
 ```
 sources/writings, sources/docs   authored Markdown (the Obsidian vault is sources/docs)
 public/arkive.css, arkive.js     the handover's stylesheet and script, unmodified
+public/fonts/, public/icons/     self-hosted typefaces and line icons, ship as given
 src/shiki-themes.mjs             the handover's two code themes, unmodified
 src/lib/vault.mjs                slug rules, exclude globs, title derivation, vault scan, wikilink resolution
 src/lib/entries.ts               published gate, asOf, the one comparator, neighbours, tags
@@ -67,6 +68,6 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   or `astro.config.mjs`, run `rm -rf .astro node_modules/.astro` (stop the dev server first), or
   Markdown renders from the old plugin.
 - Search, the By-folder tree filter and Copy buttons need `arkive.js`; the rest works without it.
-- No media queries and no other client JS (see `design/AGENTS.md`).
+- No media queries for layout (see `design/AGENTS.md`); no client JS beyond `public/arkive.js`.
 - Cloudflare: build command `npm run build`, output `dist`. There is no ingest step and nothing
   generated is committed.

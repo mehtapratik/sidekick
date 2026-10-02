@@ -4,14 +4,19 @@ Arkive (https://arkive.blog) is Pratik Mehta's online journal: essays, notes and
 of Project Sidekick. This spec describes a **from-scratch rebuild**. Do not port the old
 implementation or its workarounds. Where this spec and the old code disagree, this spec wins.
 
+> **Revision 2, the polished pass (2026-10-02).** The structure, content rules and behaviour are unchanged.
+> What changed: custom typefaces, a grey-and-peacock palette, styled controls with small line icons,
+> keyboard shortcuts, and the small markup hooks those need. `design/polish/UPGRADE.md` lists every change.
+
 Files in this handover:
 
 | File | What it is |
 | --- | --- |
 | `SPEC.md` | This document: what to build and why. |
-| `arkive.css` | The complete stylesheet. Ship it as-is; change it only to fix a bug. |
-| `arkive.js` | The complete client script: progressive enhancement only. |
-| `shiki-themes.mjs` | The two code-highlighting themes for Astro's Shiki. |
+| `public/arkive.css` | The complete stylesheet. Ship it as-is; change it only to fix a bug. |
+| `public/arkive.js` | The complete client script: progressive enhancement only. |
+| `src/shiki-themes.mjs` | The two code-highlighting themes for Astro's Shiki. |
+| `public/fonts/`, `public/icons/` | Self-hosted typefaces (woff2) and the line icons (SVG, used as CSS masks). |
 | `reference/entry.html` | **The markup contract** for an entry page, with real content and the real Index. |
 | `reference/home.html` | Same contract for `/` (newest entry + site tagline). |
 | `reference/specimen.html` | Every element an entry body can contain. Use it as the visual regression page. |
@@ -35,22 +40,31 @@ the finished behaviour. Your Astro output should produce the **same HTML structu
    visit matching entries.
 5. **Each entry shows its metadata as a table under the title.** Tag names in it are links that set
    the Index filter.
-6. **Start from browser defaults; only add.** HTML is responsive by itself. Never add a style and
-   then override it to get responsiveness back. **No media queries.** If something seems to need
-   one, rethink it.
+6. **Start from browser behaviour; style only to remove crudeness.** HTML is responsive by itself, and
+   the native popover, `details`, radios and links do the work. Styling may decorate them (type, colour,
+   icons, small ornaments), but must never change content semantics or accessibility. **Layout never
+   needs a media query.** Media queries are allowed only for preferences and input
+   (`prefers-color-scheme`, `prefers-reduced-motion`, `hover`) and for hiding shortcut hints on very
+   narrow screens.
 7. **The same rule applies to scripts.** Use native behaviour (popover, details, forms, links) first.
    Script only what the platform can't do, and make it optional.
-8. **Light and dark** follow the OS, through `color-scheme` and system colours.
+8. **Light and dark** follow the OS. Every colour is a token defined once with `light-dark()`.
 
-The look is deliberately close to a research paper or a Wikipedia article: system fonts, the
-browser's own link colours (including visited), native buttons, ruled tables.
+The look stays close to a research paper or an essay: a serif for reading, a quiet sans for the
+interface, ruled tables, generous space. It's polished, not decorated. There are no hero images: an
+entry is its text.
 
 ## 2. Stack
 
 - **Astro**, current major version, `output: "static"`. No UI framework integration (no React, Vue
   or Svelte). No Tailwind, no CSS-in-JS, no CSS preprocessor.
 - **One stylesheet** (`/arkive.css`), linked in `<head>`. **One script** (`/arkive.js`), loaded with
-  `<script type="module">`. No other client JS, no web fonts, no third-party requests.
+  `<script type="module">`. No other client JS and no third-party requests.
+- **Self-hosted fonts** in `/fonts` (woff2, `font-display: swap`): General Sans and Sentient (variable,
+  weights 200–700, roman and italic; Fontshare), and IBM Plex Mono 400/400 italic/500/600 (OFL, via
+  Fontsource). Preload the two upright variable files.
+- **Icons** are tiny SVGs in `/icons`, applied as CSS masks so they take the current text colour.
+  Never use an icon font or emoji.
 - Markdown through Astro content collections (glob loaders), plus small remark/rehype plugins you
   write (§6).
 - Code highlighting with Astro's built-in Shiki and `shiki-themes.mjs` (`defaultColor: false`).
@@ -149,23 +163,27 @@ all of those.
 body[data-entry="<this entry's URL>"]
   header.site
     div.masthead
-      a.wordmark[href="/"]                 "Arkive"
-      p > button[popovertarget=index][data-index-button]   "Index"
+      a.wordmark[href="/"] > svg.mark[aria-hidden] + span "Arkive"
+      p > button.index-btn[popovertarget=index][data-index-button][data-key="/"][aria-keyshortcuts="/"]
+            > span.icon[aria-hidden] + span[data-index-label] "Index"
     p.tagline.blurb                        (on / only)
   main > article
     h1, p.deck?
-    table > tbody                          metadata rows (below)
-    …rendered Markdown…
-  hr
+    table.meta > tbody                     metadata rows (below)
+    div.prose > …rendered Markdown…
   nav[aria-label="Previous and next entries"]
     div.pager
-      p  "← Previous" <br> span[data-slot=prev] > a[rel=prev] | span.muted "None. This is the earliest entry."
-      p  "Next →"     <br> span[data-slot=next] > a[rel=next] | span.muted "None. This is the latest entry."
-    p  small.muted[data-scope]  button[data-clear][hidden] "Clear filter"
-  hr
-  footer > p > small.muted   "Pratik Mehta · CC BY-NC 4.0 · RSS"
-  div#index[popover]         (the Index, §5.2)
+      p.older > span.label (span.icon + "Previous")
+              + span.slot[data-slot=prev][data-key="←"] > a[rel=prev][aria-keyshortcuts=ArrowLeft] | span.muted "None. This is the earliest entry."
+      p.newer > span.label ("Next" + span.icon)
+              + span.slot[data-slot=next][data-key="→"] > a[rel=next][aria-keyshortcuts=ArrowRight] | span.muted "None. This is the latest entry."
+    p.scope > span[data-scope] + button[data-clear][hidden] "Clear filter"
+  footer > p "Pratik Mehta · CC BY-NC 4.0" + p > a[href=/rss.xml] (span.icon + "RSS")
+  div#index[popover]                       (the Index, §5.2)
 ```
+
+There are no `<hr>`s around the pager any more: `<hr>` is now a section-break ornament inside entries.
+`data-key` holds the text of the shortcut hint ("Press /"); `aria-keyshortcuts` announces it.
 
 ### 5.1 Metadata table
 
@@ -175,10 +193,10 @@ Rows, in order, with `th[scope=row]` labels. Omit a row whose value is missing.
 | --- | --- |
 | As of | `asOf` as `YYYY-MM-DD` in `<time datetime>` |
 | First written | `created`, only when it differs from `asOf` |
-| Version | `version (status)` |
+| Version | `version · status` |
 | Kind | `kind`, plus `, for <audience>` when there is an audience |
 | Length | `1,234 words, about 6 min` |
-| Tags | `a[href="/tags/<tag>/"][data-tag="<tag>"]`, comma-separated |
+| Tags | `span.chips` > `a[href="/tags/<tag>/"][data-tag="<tag>"]`, no separators (they render as chips) |
 
 No author row (always the owner) and no license row (the footer states it once for the site).
 
@@ -187,26 +205,29 @@ No author row (always the owner) and no license row (the footer states it once f
 A `<div id="index" popover>` **server-rendered on every page**, so it works without JS and opens
 instantly. It covers the viewport, and its content uses the same reading column. Contents, in order:
 
-1. The same header, with `button[popovertarget=index][popovertargetaction=hide]` "Close" in place of Index.
+1. The same header, with `button.close-btn[popovertarget=index][popovertargetaction=hide][data-key="Esc"][aria-keyshortcuts=Escape]`
+   (`span.icon` + "Close") in place of the Index button.
 2. `h2#index-heading` "Index", then `p.blurb` with the site description:
    *Notes, decisions, and progress on my journey as I build Project Sidekick — built in the open; written as it happens.*
-3. `form[role=search][hidden]`: a label, `.searchrow` (`input#index-search[type=search]` + `button[data-clear][hidden]` "Clear"),
-   and `p.active-tag[data-active-tag][hidden]` "Tag: <b></b> (remove)". The form ships hidden because
-   search needs JS. The script reveals it.
-4. `<details>` (closed) `<summary>Tags (N)</summary>` and `ul.cloud`, alphabetical:
-   `li > a[href="/tags/<t>/"][data-tag="<t>"]` + ` <span class="muted">(count)</span>`.
-5. The view switch: two native radios in one row, **By date** checked by default:
-   `p.view-switch[role=radiogroup]` > "View:" + `label > input[type=radio][name=index-view]#view-date[value=date][checked]`
-   + `label > input…#view-folder[value=folder]`. CSS alone shows the matching view, with `:has()`;
+3. `form.search[role=search][hidden]`: a label, `.searchrow` (`input#index-search[type=search]` with the
+   placeholder "Try “rls”, “essay”, or a title", + `button[data-clear][hidden]` "Clear"), and
+   `p.active-tag[data-active-tag][hidden]` "Filtered by tag <b></b> · remove". The form ships hidden
+   because search needs JS. The script reveals it.
+4. `details.tags-panel` (closed) `<summary>Tags <span class="muted">(N)</span></summary>` and `ul.cloud`,
+   alphabetical: `li > a[href="/tags/<t>/"][data-tag="<t>"]` + `<span class="muted">count</span>`. Each
+   `li` renders as a chip, and the whole chip is the link.
+5. The view switch: two native radios, **By date** checked by default, drawn as a segmented control:
+   `p.view-switch[role=radiogroup]` > `span#view-label` "View" + `span.seg` > (`label > input[type=radio][name=index-view]#view-date[value=date][checked]` "By date")
+   (`label > input…#view-folder[value=folder]` "By folder"). CSS alone shows the matching view, with `:has()`;
    browsers without `:has()` show both views. These are deliberately not ARIA tabs, which would need
    JS to work at all.
-6. `p[data-count]` "N entries."
+6. `p.count[data-count]` "N entries."
 7. `div.by-folder > ul.tree`: the folder tree (§5.3).
 8. `div.by-date > table.entries`: columns As of, Title, Kind, newest first. Each `tr` carries `data-url`,
    `data-title`, `data-tags` (space-separated) and `data-search` (lower-cased title + deck + kind + tags).
-   The title cell has the link (with `aria-current="page"` and ` (reading)` on the current entry), the
-   deck in `small.muted`, and the tag links in `small`.
-9. `p[data-none][hidden]` "No entries match." + Clear filter.
+   The title cell has `a.title` (with `aria-current="page"` and `span.reading` "Reading" on the current
+   entry), the deck in `span.deck-line`, and the tag links, space-separated, in `span.tag-line`.
+9. `p.count[data-none][hidden]` "No entries match." + Clear filter.
 
 At about 210 entries the Index (table plus tree) adds about 220 KB raw, roughly 20 KB compressed, per page. That's fine.
 If the site passes about 1,000 published entries, render the Index once at `/index/` and have the
@@ -224,7 +245,7 @@ Only native disclosure, no ARIA tree role and no custom keyboard handling:
       <ul>
         …sub-folders first (alphabetical by label), then entries in the global order…
         <li data-url="/docs/system-design/opportunities/api-route-fail-open/">
-          <a href="…">API route fail open</a><br><small class="muted"><time datetime="2026-09-19">2026-09-19</time></small>
+          <a href="…">API route fail open</a><small class="muted"><time datetime="2026-09-19">2026-09-19</time></small>
         </li>
       </ul>
     </details>
@@ -261,14 +282,15 @@ Write these as small remark/rehype plugins. Each one's output must match `refere
 
 - **Tables**: wrap every `<table>` in `<div class="wide">`. That lets a wide table extend past the column to
   the viewport edge and then scroll.
-- **Callouts**: Obsidian `> [!kind] Optional title` becomes `<aside class="callout"><p class="callout-title">Title or Kind</p>…</aside>`.
-  Same look for every kind. No icons.
+- **Callouts**: Obsidian `> [!kind] Optional title` becomes
+  `<aside class="callout" data-kind="kind"><p class="callout-title">Title or Kind</p>…</aside>` (`kind` lower-cased).
+  CSS picks the title icon from `data-kind`: note (default), question, warning/caution/danger, tip/hint.
 - **Code blocks**: Shiki output wrapped as
   `<figure class="code"><div class="code-head"><span class="muted">TypeScript</span><button type="button" data-copy hidden>Copy</button></div><pre …>…</pre></figure>`.
   The label comes from the fence language (ts → TypeScript, tsx → TSX, js → JavaScript, json → JSON,
   bash/sh/shell → Shell, sql → SQL, yaml → YAML, md → Markdown, none → Code).
 - **Headings** get `id`s for deep links. Show no visible anchor glyph.
-- **Thematic breaks** (`---`) stay plain `<hr>`.
+- **Thematic breaks** (`---`) stay plain `<hr>`. CSS draws them as a small three-diamond ornament.
 - **Wikilinks** `[[Note]]` / `[[Note|label]]` / `[[Note#Heading]]` resolve to the target's URL. A
   target that is unpublished or missing renders as plain text, never a dead link.
 - **Embeds** `![[image.png]]` resolve from the vault's `_assets_/`, are copied to the output, and get
@@ -300,21 +322,34 @@ With `arkive.js` (already written; don't rewrite it, fix it if needed):
   nearest older and newer matching entries, the scope line names the filter, and "Clear filter" shows.
 - Clicking the wordmark clears the filter and goes to `/`.
 - Copy buttons copy the block's text and read "Copied" for 1.6 s.
+- **Keyboard shortcuts:** `/` opens the Index and focuses search. `←` and `→` follow the previous and
+  next links, so they respect the filter. `Esc` closes the Index, even from the search box, where Chrome
+  would otherwise just clear the field. Shortcuts are ignored while typing in a field, with Ctrl, Cmd or
+  Alt held, and with Shift held for the arrows. The arrows are also ignored while the Index is open and
+  while focus is inside a wide table or code block, where they scroll sideways.
+- **Hints:** elements with `data-key` show "Press <key>" in a small tooltip on hover or keyboard focus,
+  after 0.3 s. Header hints sit beside the button so they never cover content. Hints are hidden on
+  touch screens (`hover: none`) and below 30em.
 
 ## 8. Visual decisions (encoded in `arkive.css`)
 
 | Decision | Why |
 | --- | --- |
-| `system-ui`, 1.6 line height, 60ch column | Chosen by the owner on the design canvas. Measure and leading are the reading experience. |
-| Rhythm in `rlh` (1 and ½ lines) | Every gap is a multiple of one body line. Borders are drawn as inset shadows so they don't shift the grid. |
-| Browser link colours, including visited | The owner asked for defaults. Visited state helps readers of a journal. |
-| Research-paper tables (horizontal rules only) | Matches the academic register. Fewer lines than a full grid. |
-| Wide tables leave the column, then scroll | Squeezing many columns into 60ch hurts reading more than a wider table does. |
-| Native buttons at body size with padding | Noticeable without a custom control. |
-| Header hairline, home-only tagline | Separates chrome from text. Tells first-time visitors what the site is. |
-| Five-colour code theme | "Basic" highlighting. Readable in both schemes. |
+| Sentient for prose (`div.prose`, the deck, blurbs); General Sans for everything else; IBM Plex Mono for code and dates | The serif carries long reading. The sans keeps the interface quiet. Mono dates line up in columns, because neither text face has tabular figures. |
+| Body 17px on phones → 19px on desktops (`clamp()`), line height 1.6, 60ch column | Fluid size without media queries. Sentient needs the larger size to breathe. |
+| General Sans at 0.9375em next to Sentient | Matches x-heights (0.538 vs 0.504). |
+| Headings semibold with negative tracking; small labels uppercase with +0.08–0.1em tracking | The usual optical corrections for each size. |
+| Prose weight 370 in dark mode | Light text on dark reads heavier. |
+| Palette: near-black/near-white, three greys, one peacock accent | Every text pair meets WCAG AA. `--faint` is for decoration only. |
+| Accent only on links inside entries; navigation links (Index, tree, chips, pager) stay in the text colour, turning peacock on hover | Colour stays meaningful. Link-heavy regions don't turn into a wall of blue. |
+| Underline only on hover. Visited content links are a muted grey-teal; visited Index entries turn grey | Keeps the visited state without the noise. |
+| Rhythm in `rlh` (1 and ½ lines) | Every gap is a multiple of one body line. |
+| Quiet outlined pill buttons with line icons; chips for tags; a segmented control for the view switch | Native controls, polished. |
+| Research-paper tables; wide tables leave the column, then scroll | Unchanged from revision 1. |
+| Callouts on a soft grey panel with a kind icon; blockquotes italic with a peacock rule; `<hr>` as an ornament | Distinct roles, one quiet style. |
+| A 0.22 s fade-in for the Index; short colour transitions | Removed under `prefers-reduced-motion`. |
 
-No theme toggle: the OS setting decides. No icons, no images in the chrome, no animation.
+No theme toggle: the OS setting decides. No hero images or illustrations in the chrome.
 
 ## 9. Accessibility
 
@@ -324,6 +359,9 @@ No theme toggle: the OS setting decides. No icons, no images in the chrome, no a
 - The current Index row's link has `aria-current="page"`. The active tag has `aria-current="true"`.
 - Every colour pair meets WCAG AA in both schemes. Check `--muted` against `Canvas` in Chrome, Safari and Firefox.
 - Everything works by keyboard: Tab order is header → article → pager → footer, and the Index traps nothing.
+- Shortcuts are declared with `aria-keyshortcuts` on the controls they trigger. The hints are visual only.
+- Focus is always visible: a 2px peacock outline. The segmented control shows focus on the label of the focused radio.
+- Icons are `aria-hidden`. Every icon sits next to a text label.
 
 ## 10. Acceptance checks
 
@@ -345,6 +383,12 @@ Automate these with Playwright, run against `astro preview`, at 1280×900 and 39
 10. No built file contains an excluded private path (§3.1).
 11. Write a Markdown fixture with the same elements as `reference/specimen.html`, render it through the
     real pipeline in a test-only page (not built for production), and compare it with the reference page.
+12. Fonts: `document.fonts` reports General Sans, Sentient and IBM Plex Mono as loaded. Prose computes to Sentient, and the Index to General Sans.
+13. Shortcuts: `/` opens the Index with `#index-search` focused. Typing `/` in the box just types it. `Esc` from the box
+    closes the Index and keeps the filter. `→` on an entry goes to the next entry, the next matching one when a filter is on.
+    Arrows do nothing while the Index is open or while focus is in a `.wide`.
+14. Hints: hovering the Index button at 1280px shows its `::after` (opacity 1). At 390px it is `display: none`.
+15. With a filter on, the Index button still contains its icon (`.index-btn .icon`) and reads "Index (filtered)".
 
 ## 11. Out of scope
 
@@ -356,7 +400,7 @@ share buttons, OG image generation (can come later), a manual theme toggle, full
 
 - `100vw` in `.wide` includes the classic scrollbar on Windows, so a full-bleed table can be a few
   pixels too wide there. If that shows up, make `html` a size container and use `100cqi` instead.
-- Browsers differ on default link colours in dark mode. If one shows `#0000EE` on a dark background,
-  add the two `light-dark()` lines noted in `arkive.css`.
+- `light-dark()`, `:has()`, `rlh`, `text-wrap` and CSS masks need 2024-or-later browsers. Older
+  browsers get readable text with plainer controls. Nothing breaks.
 - The vault still contains link-only stub notes (for example the AI-coding-harness standards). With
   `publish: true` as the gate, they stay off the site until the owner marks them.
