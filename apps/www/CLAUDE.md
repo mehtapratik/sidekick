@@ -80,5 +80,6 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   Markdown renders from the old plugin.
 - Search, the By-folder tree filter and Copy buttons need `arkive.js`; the rest works without it.
 - No media queries for layout (see House rules); no client JS beyond `public/arkive.js`.
-- Cloudflare: build command `npm run build`, output `dist`. There is no ingest step and nothing
+- Cloudflare: build command `bash scripts/cf-build.sh` (a wrapper around `npm run build`; `npm run build`
+  works too), output `dist`. There is no ingest step and nothing
   generated is committed.
