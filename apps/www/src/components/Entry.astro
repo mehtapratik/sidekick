@@ -9,7 +9,7 @@ const { entry: e } = Astro.props;
 const { Content } = await render(e.source);
 
 const version =
-   e.version && e.status ? `${e.version} (${e.status})` : e.version || e.status;
+   e.version && e.status ? `${e.version} · ${e.status}` : e.version || e.status;
 const kind = e.audience ? `${e.kind}, for ${e.audience}` : e.kind;
 const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "words"}, about ${e.minutes} min`;
 ---
@@ -17,7 +17,7 @@ const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "w
 <article>
    <h1>{e.title}</h1>
    {e.deck && <p class="deck">{e.deck}</p>}
-   <table>
+   <table class="meta">
       <tbody>
          <tr
             ><th scope="row">As of</th><td
@@ -53,19 +53,20 @@ const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "w
                <tr>
                   <th scope="row">Tags</th>
                   <td>
-                     {e.tags.map((t, i) => (
-                        <>
-                           {i > 0 && ", "}
+                     <span class="chips">
+                        {e.tags.map((t) => (
                            <a href={tagUrl(t)} data-tag={t}>
                               {t}
                            </a>
-                        </>
-                     ))}
+                        ))}
+                     </span>
                   </td>
                </tr>
             )
          }
       </tbody>
    </table>
-   <Content />
+   <div class="prose">
+      <Content />
+   </div>
 </article>

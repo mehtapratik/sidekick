@@ -30,37 +30,25 @@ const search = (e: Entry) =>
                <td>{e.asOf}</td>
                <td>
                   <a
+                     class="title"
                      href={e.url}
                      aria-current={e.url === current ? "page" : undefined}
                   >
                      {e.title}
                   </a>
-                  {e.url === current && (
-                     <>
-                        {" "}
-                        <small class="muted">(reading)</small>
-                     </>
-                  )}
-                  {e.deck && (
-                     <>
-                        <br />
-                        <small class="muted">{e.deck}</small>
-                     </>
-                  )}
+                  {e.url === current && <span class="reading">Reading</span>}
+                  {e.deck && <span class="deck-line">{e.deck}</span>}
                   {e.tags.length > 0 && (
-                     <>
-                        <br />
-                        <small>
-                           {e.tags.map((t, i) => (
-                              <>
-                                 {i > 0 && ", "}
-                                 <a href={tagUrl(t)} data-tag={t}>
-                                    {t}
-                                 </a>
-                              </>
-                           ))}
-                        </small>
-                     </>
+                     <span class="tag-line">
+                        {e.tags.map((t, i) => (
+                           <>
+                              {i > 0 && " "}
+                              <a href={tagUrl(t)} data-tag={t}>
+                                 {t}
+                              </a>
+                           </>
+                        ))}
+                     </span>
                   )}
                </td>
                <td>{e.kind}</td>

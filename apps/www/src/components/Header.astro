@@ -1,5 +1,6 @@
 ---
 import { BLURB, SITE_TITLE } from "../lib/site";
+import Mark from "./Mark.astro";
 
 interface Props {
    /** Inside the Index: a Close button instead of the Index button. */
@@ -11,20 +12,32 @@ const { close = false, tagline = false } = Astro.props;
 
 <header class="site">
    <div class="masthead">
-      <a class="wordmark" href="/">{SITE_TITLE}</a>
+      <a class="wordmark" href="/"><Mark /><span>{SITE_TITLE}</span></a>
       <p>
          {
             close ? (
                <button
                   type="button"
+                  class="close-btn"
                   popovertarget="index"
                   popovertargetaction="hide"
+                  data-key="Esc"
+                  aria-keyshortcuts="Escape"
                >
+                  <span class="icon" aria-hidden="true" />
                   Close
                </button>
             ) : (
-               <button type="button" popovertarget="index" data-index-button>
-                  Index
+               <button
+                  type="button"
+                  class="index-btn"
+                  popovertarget="index"
+                  data-index-button
+                  data-key="/"
+                  aria-keyshortcuts="/"
+               >
+                  <span class="icon" aria-hidden="true" />
+                  <span data-index-label>Index</span>
                </button>
             )
          }

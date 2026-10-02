@@ -32,17 +32,11 @@ const total = countLeaves(folder);
                      {entry.title}
                   </a>
                   {entry.url === current && (
-                     <>
-                        {" "}
-                        <small class="muted">(reading)</small>
-                     </>
+                     <span class="reading">Reading</span>
                   )}
-                  <>
-                     <br />
-                     <small class="muted">
-                        <time datetime={entry.asOf}>{entry.asOf}</time>
-                     </small>
-                  </>
+                  <small class="muted">
+                     <time datetime={entry.asOf}>{entry.asOf}</time>
+                  </small>
                </li>
             ))
          }

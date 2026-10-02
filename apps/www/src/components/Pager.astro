@@ -11,12 +11,14 @@ const { prev, next, total } = Astro.props;
 
 <nav aria-label="Previous and next entries">
    <div class="pager">
-      <p>
-         <small class="muted">← Previous</small><br />
-         <span data-slot="prev">
+      <p class="older">
+         <span class="label"
+            ><span class="icon" aria-hidden="true"></span>Previous</span
+         >
+         <span class="slot" data-slot="prev" data-key="←">
             {
                prev ? (
-                  <a rel="prev" href={prev.url}>
+                  <a rel="prev" href={prev.url} aria-keyshortcuts="ArrowLeft">
                      {prev.title}
                   </a>
                ) : (
@@ -25,12 +27,14 @@ const { prev, next, total } = Astro.props;
             }
          </span>
       </p>
-      <p>
-         <small class="muted">Next →</small><br />
-         <span data-slot="next">
+      <p class="newer">
+         <span class="label"
+            >Next<span class="icon" aria-hidden="true"></span></span
+         >
+         <span class="slot" data-slot="next" data-key="→">
             {
                next ? (
-                  <a rel="next" href={next.url}>
+                  <a rel="next" href={next.url} aria-keyshortcuts="ArrowRight">
                      {next.title}
                   </a>
                ) : (
@@ -40,10 +44,10 @@ const { prev, next, total } = Astro.props;
          </span>
       </p>
    </div>
-   <p>
-      <small class="muted" data-scope
+   <p class="scope">
+      <span data-scope
          >Previous and next follow all {total.toLocaleString("en-US")} entries, by
-         as-of date.</small
+         as-of date.</span
       >
       <button type="button" data-clear hidden>Clear filter</button>
    </p>
