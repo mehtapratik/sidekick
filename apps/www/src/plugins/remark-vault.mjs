@@ -179,7 +179,13 @@ function callouts(tree) {
          data: { hProperties: { className: ["callout-title"] } },
          children: [{ type: "text", value: title }],
       });
-      node.data = { hName: "aside", hProperties: { className: ["callout"] } };
+      node.data = {
+         hName: "aside",
+         hProperties: {
+            className: ["callout"],
+            "data-kind": m[1].toLowerCase(),
+         },
+      };
    });
 }
 
