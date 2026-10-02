@@ -1,4 +1,4 @@
-// The folder tree for the Index (SPEC 5.3). A port of design/reference/tree.py: match its output.
+// The folder tree for the Index (SPEC 5.3). A port of the handover's tree.py: match its output.
 import { SECTIONS } from "./vault.mjs";
 import type { Entry } from "./entries";
 

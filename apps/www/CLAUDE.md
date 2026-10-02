@@ -1,9 +1,23 @@
-@design/AGENTS.md
-
 # Arkive: repository notes
 
-`design/` holds the handover (spec, house rules, reference pages). This file records where the repo
-differs from it, and what is not obvious from the code.
+The design handover (SPEC, house rules, reference pages) was removed from the tree; it lives in git
+history (`git show c91121d:design/SPEC.md`, likewise `design/AGENTS.md`, `design/reference/`). This file
+keeps the rules that still bind and what is not obvious from the code.
+
+## House rules
+
+- No CSS framework, no UI framework, no third-party requests. Fonts and icons are self-hosted.
+- Native behaviour first: popover, `details`, radios and links do the work; styling never changes
+  semantics or accessibility.
+- No media queries for layout. Allowed only for `prefers-color-scheme`, `prefers-reduced-motion`,
+  `hover`, and hiding shortcut hints below 30em.
+- No client JS beyond `public/arkive.js`. Everything works without it except search, the filter, copy
+  and the keyboard shortcuts.
+- Peacock (`--accent`) colours links inside `.prose` only. No hero images or illustrations in the chrome.
+- "As of" = `updated` ?? `created`, from frontmatter only. Never file or build time.
+- Ship `public/arkive.css`, `arkive.js`, `src/shiki-themes.mjs`, `public/fonts/` and `public/icons/` as
+  given; change them only to fix a defect, and say why in the commit message.
+- When a rule seems to block you, or the code is silent, stop and ask the owner.
 
 ## Commands
 
@@ -14,7 +28,7 @@ differs from it, and what is not obvious from the code.
 | Serve the build | `npm run preview` |
 
 Node >= 22.12. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
-`public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs` and `design/`: those ship as given.
+`public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs`: those ship as given.
 
 ## Layout
 
@@ -25,14 +39,11 @@ public/fonts/, public/icons/     self-hosted typefaces and line icons, ship as g
 src/shiki-themes.mjs             the handover's two code themes, unmodified
 src/lib/vault.mjs                slug rules, exclude globs, title derivation, vault scan, wikilink resolution
 src/lib/entries.ts               published gate, asOf, the one comparator, neighbours, tags
-src/lib/tree.ts                  folder tree for the Index (port of design/reference/tree.py)
+src/lib/tree.ts                  folder tree for the Index (port of the handover's tree.py)
 src/plugins/                     remark (wikilinks, embeds, callouts, leading H1) and rehype (tables, code figure)
 src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/
 scripts/check-privacy.mjs        post-build gate, run by `npm run build`
 ```
-
-The handover README says to put `arkive.css` and friends in `design/`. They live in `public/` and
-`src/` instead; `design/reference/*.html` link to `../../public/arkive.css` (serve the repo root).
 
 ## Publishing
 
@@ -41,7 +52,7 @@ An entry is built only when its frontmatter has `publish: true`. Nothing else li
 The old site hid notes with a `private` tag; that tag no longer gates anything, so **do not add
 `publish: true` to a note tagged `private`**. The build fails if a published note carries it.
 
-## Where this repo departs from `design/SPEC.md`
+## Where this repo departs from the handover SPEC
 
 - **`publish`** is `z.unknown()`, not `z.literal(true)`: `publish: false` means "not published",
   never a schema error that stops every page.
@@ -50,7 +61,7 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   A leading `# H1` in a vault note is dropped; one in a writing is dropped only if it repeats the title.
 - **Kind** falls back to `type:` (older writings use it), then `essay` / `doc`.
 - **Slugs** also fold `—`/`–` to `-` and drop `?`, `,` and quotes, so existing URLs keep working
-  (`design/reference/entries.sample.json` is the URL contract).
+  (the handover's `entries.sample.json` is the URL contract).
 - **Privacy gate** compares long lines from the two private vault folders only. `_archive/` is
   superseded text that legitimately lives on in newer notes.
 - **Math** (`$x$`, `$$…$$`): `remark-math` + `rehype-katex` with `output: "mathml"`, so the browser draws
@@ -68,6 +79,6 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   or `astro.config.mjs`, run `rm -rf .astro node_modules/.astro` (stop the dev server first), or
   Markdown renders from the old plugin.
 - Search, the By-folder tree filter and Copy buttons need `arkive.js`; the rest works without it.
-- No media queries for layout (see `design/AGENTS.md`); no client JS beyond `public/arkive.js`.
+- No media queries for layout (see House rules); no client JS beyond `public/arkive.js`.
 - Cloudflare: build command `npm run build`, output `dist`. There is no ingest step and nothing
   generated is committed.
