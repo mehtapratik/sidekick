@@ -1,6 +1,12 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { deriveTitle } from "./vault.mjs";
 
+/** Applies to every entry whose frontmatter has no `license:`. */
+export const DEFAULT_LICENSE = "CC BY-NC 4.0";
+
+/** Statuses that mark an entry as no longer relevant. It stays published, but says so. */
+const RETIRED_STATUSES = ["deprecated", "retired"];
+
 export interface Entry {
    collection: "writings" | "docs";
    /** Permanent URL, with leading and trailing slash. */
@@ -14,6 +20,9 @@ export interface Entry {
    created: string;
    version: string;
    status: string;
+   /** `status` is deprecated or retired: shown with a banner and a "Retired" mark. */
+   retired: boolean;
+   license: string;
    kind: string;
    audience: string;
    tags: string[];
@@ -75,8 +84,10 @@ function toEntry(
       asOf: day(d.updated ?? d.created),
       created: day(d.created),
       version: d.version ?? "",
-      status: d.status ?? "",
-      kind: d.kind ?? d.type ?? (collection === "writings" ? "essay" : "doc"),
+      status: d.status,
+      retired: RETIRED_STATUSES.includes(d.status.trim().toLowerCase()),
+      license: d.license ?? DEFAULT_LICENSE,
+      kind: d.kind ?? (collection === "writings" ? "essay" : "doc"),
       audience: d.audience ?? "",
       tags: [...new Set(d.tags.map(normaliseTag).filter(Boolean))],
       words,

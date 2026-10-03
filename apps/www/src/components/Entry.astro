@@ -8,13 +8,22 @@ interface Props {
 const { entry: e } = Astro.props;
 const { Content } = await render(e.source);
 
-const version =
-   e.version && e.status ? `${e.version} · ${e.status}` : e.version || e.status;
 const kind = e.audience ? `${e.kind}, for ${e.audience}` : e.kind;
 const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "words"}, about ${e.minutes} min`;
 ---
 
 <article>
+   {
+      e.retired && (
+         <aside class="callout" data-kind="warning">
+            <p class="callout-title">Retired</p>
+            <p>
+               This note is no longer relevant. It stays here as a record of
+               what I thought at the time, last updated {e.asOf}.
+            </p>
+         </aside>
+      )
+   }
    <h1>{e.title}</h1>
    {e.deck && <p class="deck">{e.deck}</p>}
    <table class="meta">
@@ -25,23 +34,11 @@ const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "w
             ></tr
          >
          {
-            e.created !== e.asOf && (
-               <tr>
-                  <>
-                     <th scope="row">First written</th>
-                     <td>
-                        <time datetime={e.created}>{e.created}</time>
-                     </td>
-                  </>
-               </tr>
-            )
-         }
-         {
-            version && (
+            e.version && (
                <tr>
                   <>
                      <th scope="row">Version</th>
-                     <td>{version}</td>
+                     <td>{e.version}</td>
                   </>
                </tr>
             )

@@ -10,7 +10,9 @@
 //   5. the By folder tree following the filter (hidden folders, counts, auto-open),
 //   6. remembering the chosen view (By date / By folder) for the session,
 //   7. copy buttons on code blocks,
-//   8. keyboard shortcuts: "/" opens the Index (search focused), ← / → previous / next.
+//   8. keyboard shortcuts: "/" opens the Index (search focused), ← / → previous / next,
+//   9. the header tucks away while you read down and returns as soon as you scroll up,
+//  10. double-tap = next, triple-tap = previous, in the middle of the screen (touch only).
 // Load it with <script type="module" src="/arkive.js"></script>.
 
 const KEY = "arkive:filter";
@@ -219,6 +221,50 @@ document.addEventListener("keydown", (e) => {
    const link = slot && $(`[data-slot="${slot}"] a`);
    if (link) { e.preventDefault(); link.click(); }
 });
+
+// Header: always shown at the top of the page, tucked away while you read down, back the moment you
+// scroll up. CSS keys off html[data-header], so without this script the header is simply static.
+{
+   const header = $("body > header.site");
+   if (header) {
+      const root = document.documentElement;
+      const set = (s) => { if (root.dataset.header !== s) root.dataset.header = s; };
+      let last = 0, queued = false;
+      set("shown");
+      const update = () => {
+         queued = false;
+         const y = Math.max(0, scrollY);          // iOS rubber-banding reports negative values
+         if (y <= header.offsetHeight) { set("shown"); last = y; return; }
+         if (Math.abs(y - last) < 8) return;      // ignore jitter
+         set(y < last ? "shown" : "hidden");
+         last = y;
+      };
+      addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+      header.addEventListener("focusin", () => set("shown"));   // keyboard focus never lands on a hidden header
+   }
+}
+
+// Tap navigation for phones: double-tap = next, triple-tap = previous, in the middle of the screen.
+// Touch only. Taps on links, buttons, fields, tables and code do their own thing and reset the count,
+// as do taps near the screen edges and while text is selected or the Index is open.
+{
+   const GAP = 320, SLOP = 32;   // ms between taps, px between taps
+   let taps = 0, last = null, timer = 0;
+   const go = (n) => { taps = 0; $(`[data-slot="${n >= 3 ? "prev" : "next"}"] a`)?.click(); };
+   document.addEventListener("pointerup", (e) => {
+      if (e.pointerType !== "touch" || !e.isPrimary) return;
+      const centre = e.clientX > innerWidth * 0.2 && e.clientX < innerWidth * 0.8
+         && e.clientY > innerHeight * 0.1 && e.clientY < innerHeight * 0.9;
+      const own = e.target instanceof Element && e.target.closest("a, button, input, textarea, select, summary, label, pre, .wide, [contenteditable], #index");
+      clearTimeout(timer);
+      if (!centre || own || index?.matches(":popover-open") || String(getSelection())) { taps = 0; last = null; return; }
+      const near = last && e.timeStamp - last.t < GAP && Math.hypot(e.clientX - last.x, e.clientY - last.y) < SLOP;
+      taps = near ? taps + 1 : 1;
+      last = { t: e.timeStamp, x: e.clientX, y: e.clientY };
+      if (taps >= 3) go(taps);
+      else if (taps === 2) timer = setTimeout(() => go(2), GAP);   // wait: a third tap may follow
+   }, { passive: true });
+}
 
 // View switch: CSS does the switching; the script only remembers the choice for the session.
 try {

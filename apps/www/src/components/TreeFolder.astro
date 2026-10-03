@@ -24,13 +24,17 @@ const total = countLeaves(folder);
          }
          {
             folder.entries.map(({ entry }) => (
-               <li data-url={entry.url}>
+               <li
+                  data-url={entry.url}
+                  data-status={entry.retired ? "retired" : undefined}
+               >
                   <a
                      href={entry.url}
                      aria-current={entry.url === current ? "page" : undefined}
                   >
                      {entry.title}
                   </a>
+                  {entry.retired && <span class="retired">Retired</span>}
                   {entry.url === current && (
                      <span class="reading">Reading</span>
                   )}

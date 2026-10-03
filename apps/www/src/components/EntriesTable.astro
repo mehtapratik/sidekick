@@ -7,7 +7,9 @@ interface Props {
 }
 const { entries, current } = Astro.props;
 const search = (e: Entry) =>
-   [e.title, e.deck, e.kind, e.tags.join(" ")].join(" ").toLowerCase();
+   [e.title, e.deck, e.kind, e.retired ? "retired" : "", e.tags.join(" ")]
+      .join(" ")
+      .toLowerCase();
 ---
 
 <table class="entries">
@@ -23,6 +25,7 @@ const search = (e: Entry) =>
          entries.map((e) => (
             <tr
                data-url={e.url}
+               data-status={e.retired ? "retired" : undefined}
                data-title={e.title}
                data-tags={e.tags.join(" ")}
                data-search={search(e)}
@@ -36,6 +39,7 @@ const search = (e: Entry) =>
                   >
                      {e.title}
                   </a>
+                  {e.retired && <span class="retired">Retired</span>}
                   {e.url === current && <span class="reading">Reading</span>}
                   {e.deck && <span class="deck-line">{e.deck}</span>}
                   {e.tags.length > 0 && (

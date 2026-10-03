@@ -1,5 +1,5 @@
 ---
-import { getEntries } from "../lib/entries";
+import { DEFAULT_LICENSE, getEntries } from "../lib/entries";
 import { SITE_TITLE } from "../lib/site";
 import Header from "../components/Header.astro";
 import Index from "../components/Index.astro";
@@ -13,17 +13,9 @@ interface Props {
    entry?: Entry;
    /** `/` points at the entry's permanent URL. */
    canonical?: string;
-   tagline?: boolean;
    pager?: { prev?: Entry; next?: Entry };
 }
-const {
-   title,
-   description,
-   entry,
-   canonical,
-   tagline = false,
-   pager,
-} = Astro.props;
+const { title, description, entry, canonical, pager } = Astro.props;
 const entries = await getEntries();
 ---
 
@@ -64,7 +56,7 @@ const entries = await getEntries();
       <script is:inline type="module" src="/arkive.js"></script>
    </head>
    <body data-entry={entry?.url}>
-      <Header tagline={tagline} />
+      <Header />
       <main><slot /></main>
       {
          pager && (
@@ -72,7 +64,7 @@ const entries = await getEntries();
          )
       }
       <footer>
-         <p>Pratik Mehta · CC BY-NC 4.0</p>
+         <p>Pratik Mehta · {entry?.license ?? DEFAULT_LICENSE}</p>
          <p>
             <a href="/rss.xml"
                ><span class="icon" aria-hidden="true"></span>RSS</a

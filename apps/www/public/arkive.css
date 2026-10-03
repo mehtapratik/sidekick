@@ -19,7 +19,11 @@
 @font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 
 /* --- Tokens ------------------------------------------------------------------------ */
+/* Screen width left over beside the page (text column + both gutters). Registered as a <length> so
+   its `ch` resolves once, at the root, instead of in whichever element reads it. */
+@property --room { syntax: "<length>"; inherits: true; initial-value: 0px; }
 :root {
+   --room: calc(100vw - var(--measure) - 2.5rem);
    color-scheme: light dark;
 
    --bg:      light-dark(#fdfdfc, #111213);
@@ -36,7 +40,7 @@
    --serif: "Sentient", Georgia, serif;
    --mono:  "IBM Plex Mono", ui-monospace, monospace;
    --ui: 0.9375em;   /* General Sans x-height 0.538 vs Sentient 0.504: this size makes them match */
-   --measure: 60ch;
+   --measure: 70ch;
 
    font-family: var(--sans);
    font-size: clamp(1.0625rem, 0.98rem + 0.3vw, 1.1875rem);   /* 17px on phones → 19px on desktops */
@@ -49,6 +53,8 @@
 }
 
 body {
+   container-type: inline-size;   /* lets @container rules ask how wide the text column is */
+   touch-action: manipulation;   /* no double-tap zoom (pinch still works), so a double-tap can mean "next" */
    max-width: var(--measure);
    margin: 0 auto;
    padding: 0.75rlh 1.25em 2rlh;
@@ -71,17 +77,26 @@ body {
 /* --- Links: only content links carry the accent ---------------------------------------- */
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
-:where(.prose, .tagline) a:not([data-tag]) { color: var(--accent); }
+.prose a:not([data-tag]) { color: var(--accent); }
 .prose a:not([data-tag]):visited { color: var(--visited); }
 
 /* --- Header ------------------------------------------------------------------------------ */
 .site { padding-bottom: 0.5rlh; box-shadow: inset 0 -1px 0 var(--rule); }
 .masthead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5em 1em; }
 .masthead p { margin: 0; }
+/* With arkive.js the header sticks, tucks away while you read down and returns on the way up.
+   It sits on a blurred bar so the text scrolling underneath never fights with it. */
+html[data-header] body > header.site {
+   position: sticky; top: 0; z-index: 10;
+   margin: -0.75rlh -1.25rem 0; padding: 0.75rlh 1.25rem 0.5rlh;
+   background: color-mix(in srgb, var(--bg) 82%, transparent);
+   -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+   transition: transform .22s ease, visibility 0s;
+}
+html[data-header="hidden"] body > header.site { transform: translateY(-100%); visibility: hidden; transition: transform .22s ease, visibility 0s .22s; }
 .wordmark { display: inline-flex; align-items: center; gap: 0.45em; font-weight: 600; font-size: 1.0625em; letter-spacing: 0.01em; color: var(--text); }
 .wordmark:hover { text-decoration: none; }
 .wordmark .mark { width: auto; height: 1.35em; color: var(--accent); }
-.tagline { margin: 0.5rlh 0 0; font-family: var(--serif); font-style: italic; color: var(--muted); font-size: var(--ui); line-height: 1rlh; }
 
 /* --- Buttons -------------------------------------------------------------------------------- */
 button {
@@ -105,26 +120,27 @@ button[hidden] { display: none; }
    padding: 0.45em 0.65em; border-radius: 6px; background: var(--text); color: var(--bg);
    opacity: 0; pointer-events: none; transition: opacity .15s .3s, translate .15s .3s;
 }
-/* header hints sit beside the button, so they never cover the tagline or title below */
+/* header hints sit beside the button, so they never cover the title below */
 .masthead [data-key]::after { top: 50%; left: auto; right: calc(100% + 10px); translate: 6px -50%; }
+.pager [data-key] { position: static; }
 .pager .older [data-key]::after { left: 0; translate: 0 -2px; }
 .pager .newer [data-key]::after { left: auto; right: 0; translate: 0 -2px; }
-[data-key]:is(:hover, :focus-visible, :focus-within)::after { opacity: 1; translate: -50% 0; transition-delay: 0s; }
+[data-key]:is(:hover, :focus-visible, :has(:focus-visible))::after { opacity: 1; translate: -50% 0; transition-delay: 0s; }
 .masthead [data-key]:is(:hover, :focus-visible)::after { translate: 0 -50%; }
-.pager [data-key]:is(:hover, :focus-within)::after { translate: 0 0; }
+.pager p:is(:hover, :has(:focus-visible)) [data-key]::after { opacity: 1; translate: 0 0; transition-delay: 0s; }
 @media (hover: none), (max-width: 30em) { [data-key]::after { display: none; } }
 
 /* --- Entry head ---------------------------------------------------------------------------- */
 :where(h1, h2, h3, h4, h5, h6) { font-family: var(--sans); font-weight: 600; margin-block: 1.75rlh 0.5rlh; }
-h1 { font-size: 2.25em; line-height: 1.12; letter-spacing: -0.025em; margin-top: 1rlh; text-wrap: balance; }
-h2 { font-size: 1.5em; line-height: 1.25; letter-spacing: -0.015em; text-wrap: balance; }
+h1 { font-size: 2.25em; line-height: 1.12; letter-spacing: -0.025em; margin-top: 1rlh; }
+h2 { font-size: 1.5em; line-height: 1.25; letter-spacing: -0.015em; }
 h3 { font-size: 1.1875em; line-height: 1rlh; letter-spacing: -0.008em; margin-top: 1.5rlh; }
 h4 { font-size: 1em; line-height: 1rlh; margin-top: 1.5rlh; }
-.deck { font-family: var(--serif); font-style: italic; font-size: 1.1875em; line-height: 1.45; color: var(--muted); margin: 0.5rlh 0 1rlh; text-wrap: pretty; }
+.deck { font-family: var(--serif); font-style: italic; font-size: 1.1875em; line-height: 1.45; color: var(--muted); margin: 0.5rlh 0 1rlh; }
 .muted { color: var(--muted); }
 
 /* Metadata: a quiet two-column register between hairlines */
-table.meta { font-size: 0.8125em; line-height: 1.5; margin-block: 1rlh 1.5rlh; border-collapse: collapse; border-block: 1px solid var(--rule); }
+table.meta { width: 100%; font-size: 0.8125em; line-height: 1.5; margin-block: 1rlh 1.5rlh; border-collapse: collapse; border-block: 1px solid var(--rule); }
 table.meta :where(th, td) { padding: 0.4em 1.5em 0.4em 0; text-align: left; vertical-align: baseline; }
 table.meta tr:first-child > * { padding-top: 0.8em; }
 table.meta tr:last-child > * { padding-bottom: 0.8em; }
@@ -144,18 +160,25 @@ table.meta time { font-family: var(--mono); font-size: 0.9375em; letter-spacing:
 /* --- Prose (Sentient) ------------------------------------------------------------------------ */
 .prose { font-family: var(--serif); letter-spacing: 0.002em; hanging-punctuation: first; }
 @media (prefers-color-scheme: dark) { .prose { font-weight: 370; } }   /* light-on-dark reads heavier */
-.prose :where(p, li) { text-wrap: pretty; }
 .prose :where(strong, b) { font-weight: 600; }
-.prose :where(ul, ol) { padding-inline-start: 1.4em; }
-.prose li::marker { color: var(--muted); font-family: var(--sans); font-size: 0.9em; }
+/* Text edges line up: boxes bleed into the page gutter and list markers hang in it, so
+   paragraphs, list text, callouts and quotes all start and end on the same two lines.
+   The bleed is exactly the body's 1.25rem gutter, so on a narrow screen the boxes reach the viewport edge. */
+.prose :where(ul, ol) { padding-inline-start: 0; }
+.prose li :where(ul, ol) { padding-inline-start: 1.4em; }
+.prose li::marker { color: var(--accent); font-family: var(--sans); font-size: 0.9em; }
+/* Markers hang in the gutter. Bulleted lists always use an arrow; numbered lists use numbers, except on a
+   narrow column, where "10." is too wide for the gutter, so they use the arrow too. */
+.prose ul { list-style-type: "→\00a0"; }
+@container (max-width: 28.75em) { .prose ol { list-style-type: "→\00a0"; } }
 .prose li + li { margin-top: 0.25rlh; }
 
 .prose blockquote {
-   margin-inline: 0; padding: 0 0 0 1.25em; border-inline-start: 2px solid var(--accent);
+   margin-inline: -1.25rem 0; padding: 0 0 0 calc(1.25rem - 2px); border-inline-start: 2px solid var(--accent);
    font-style: italic; font-size: 1.0625em; color: color-mix(in srgb, var(--text) 85%, var(--bg));
 }
 
-.callout { font-size: 0.9375em; padding: 0.75rlh 1.25em; background: var(--subtle); border-radius: 12px; }
+.callout { font-size: 0.9375em; padding: 0.75rlh 1.25rem; margin-inline: -1.25rem; background: var(--subtle); border-radius: clamp(0px, calc(var(--room) * 100), 12px); }   /* square once it touches the screen edge */
 .callout > :first-child { margin-top: 0; }
 .callout > :last-child { margin-bottom: 0; }
 .callout a:not([data-tag]) { color: var(--accent); }
@@ -179,8 +202,15 @@ hr {
 /* --- Code -------------------------------------------------------------------------------------- */
 :where(code, kbd, samp) { font-family: var(--mono); font-size: 0.85em; }
 :not(pre) > code { padding: 0.12em 0.38em; border-radius: 5px; background: var(--subtle); font-size: 0.82em; }
-figure.code { margin-inline: 0; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
-.code-head { display: flex; justify-content: space-between; align-items: center; gap: 1em; padding: 0.35em 0.5em 0.35em 1.1em; box-shadow: inset 0 -1px 0 var(--rule); }
+/* Like callouts: the box bleeds into the gutter, the code text lines up with the prose, and on a narrow
+   screen the side borders and corners go away where the box meets the edge. */
+figure.code {
+   --edge: clamp(0px, calc(var(--room) * 100), 1px);
+   margin-inline: -1.25rem; overflow: hidden;
+   border-style: solid; border-color: var(--rule); border-width: 1px var(--edge);
+   border-radius: clamp(0px, calc(var(--room) * 100), 12px);
+}
+.code-head { display: flex; justify-content: space-between; align-items: center; gap: 1em; padding: 0.35em 0.5em 0.35em calc(1.25rem - var(--edge)); box-shadow: inset 0 -1px 0 var(--rule); }
 .code-head .muted { font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
 .code-head button { font-size: 0.75em; padding: 0.3em 0.75em; border-color: transparent; background: transparent; color: var(--muted); }
 .code-head button:hover { color: var(--text); background: var(--subtle); }
@@ -189,7 +219,7 @@ figure.code { margin-inline: 0; border: 1px solid var(--rule); border-radius: 12
    -webkit-mask: url("/icons/copy.svg") center / contain no-repeat; mask: url("/icons/copy.svg") center / contain no-repeat;
 }
 pre {
-   overflow-x: auto; padding: 0.6rlh 1.1em; background: var(--subtle);
+   overflow-x: auto; padding: 0.6rlh calc(1.25rem - var(--edge, 0px)); background: var(--subtle);
    font-size: 0.8125em; line-height: 1.65; tab-size: 3;
 }
 figure.code pre { margin: 0; }
@@ -203,18 +233,34 @@ pre span {
 /* --- Tables in entries ----------------------------------------------------------------------------- */
 .prose table { font-family: var(--sans); font-size: 0.8125em; line-height: 1.5; border-collapse: collapse; }
 .prose :where(th, td) { padding: 0.55em 1.25em 0.55em 0; text-align: left; vertical-align: top; box-shadow: inset 0 -1px 0 var(--rule); }
-.prose :where(th, td):last-child { padding-inline-end: 0; }
+.prose :where(th, td):first-child { padding-inline-start: var(--bleed, 0px); }
+.prose :where(th, td):last-child { padding-inline-end: var(--bleed, 0px); }
 .prose thead th { font-weight: 600; font-size: 0.9em; letter-spacing: 0.04em; box-shadow: inset 0 -1px 0 var(--text); }
 .prose tbody tr:last-child > * { box-shadow: none; }
-/* A wide table (or display equation) may leave the column, up to the viewport minus gutters, then scrolls */
-.wide { width: max-content; min-width: 100%; max-width: calc(100vw - 2.5em); margin-inline-start: 50%; transform: translateX(-50%); overflow-x: auto; }
+/* Tables and display equations are exactly as wide as the text. Table cells wrap; only something that cannot
+   (a long code span) makes the table scroll sideways inside its box, with a faint shadow on the edge that hides more. */
+.wide { overflow-x: auto; }
 .wide > table { margin: 0; }
+.wide-table {
+   /* like callouts: on a phone the table reaches the screen edge, and its text keeps the gutter */
+   --bleed: clamp(0px, calc(var(--room) * -100), 1.25rem);
+   margin-inline: calc(var(--bleed) * -1);
+   --shade: color-mix(in srgb, var(--text) 16%, transparent);   /* 0.5rem: it must stay inside the solid 30% of the 2rem covers, or it leaks through */
+   background:
+      linear-gradient(to right, var(--bg) 30%, transparent) left / 2rem 100% no-repeat local,
+      linear-gradient(to left, var(--bg) 30%, transparent) right / 2rem 100% no-repeat local,
+      linear-gradient(to right, var(--shade), transparent) left / 0.5rem 100% no-repeat scroll,
+      linear-gradient(to left, var(--shade), transparent) right / 0.5rem 100% no-repeat scroll;
+}
+.wide-table > table { width: 100%; }
+/* On a phone, cells would wrap into slivers, so the table keeps its natural width and scrolls instead */
+@container (max-width: 700px) { .wide-table > table { min-width: max-content; } }
 img, video { max-width: 100%; height: auto; border-radius: 8px; }
 svg { max-width: 100%; }
 
 /* --- Previous / next ------------------------------------------------------------------------------- */
 .pager { display: grid; grid-template-columns: repeat(auto-fit, minmax(14em, 1fr)); gap: 0.75em; margin-top: 1.5rlh; }
-.pager p { margin: 0; padding: 0.8em 1em 0.9em; border: 1px solid var(--rule); border-radius: 12px; transition: border-color .15s; }
+.pager p { position: relative; margin: 0; padding: 0.8em 1em 0.9em; border: 1px solid var(--rule); border-radius: 12px; transition: border-color .15s; }
 .pager p:has(a):hover { border-color: var(--accent); }
 .pager .newer { text-align: end; }
 .pager .label { display: flex; align-items: center; gap: 0.4em; margin-bottom: 0.35em; font-size: 0.6875em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
@@ -222,8 +268,21 @@ svg { max-width: 100%; }
 .pager .older .label .icon { --i: url("/icons/arrow-left.svg"); }
 .pager .newer .label .icon { --i: url("/icons/arrow-right.svg"); }
 .pager a { display: inline-block; font-weight: 500; line-height: 1.35; }
+.pager a::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }   /* whole card is the link */
 .pager a:hover { color: var(--accent); text-decoration: none; }
 .pager .muted { font-size: 0.875em; }
+/* Narrow column: Previous and Next sit side by side as compact cards, without the article titles.
+   The link text stays for screen readers, and the whole card is still the link. */
+.pager-nav { container-type: inline-size; }
+@container (max-width: 28.75em) {
+   .pager { grid-template-columns: 1fr 1fr; }
+   .pager a { font-size: 0; }
+   .pager .slot:has(a) { position: absolute; inset: 0; }   /* out of flow: the card is just its label; the link still covers it */
+   .pager .label { margin-bottom: 0; }
+   .pager p:has(a) .label { color: var(--text); }          /* the label is all that shows, so it reads as the link */
+   .pager p:has(a:hover) .label { color: var(--accent); }
+   .pager p:has(a:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
 .scope { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-top: 1rlh; font-size: 0.8125em; color: var(--muted); }
 .scope button { font-size: 1em; }
 
@@ -305,16 +364,18 @@ table.entries :where(th, td):last-child { padding-right: 0; text-align: right; }
 table.entries td:first-child { font-family: var(--mono); font-size: 0.75em; color: var(--muted); white-space: nowrap; }
 table.entries td:last-child { font-size: 0.6875em; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 table.entries .title { font-weight: 500; }
-table.entries .title:visited { color: var(--muted); }
 table.entries .title:hover { color: var(--accent); }
 table.entries .deck-line { display: block; margin-top: 0.2em; font-family: var(--serif); font-style: italic; font-size: 0.9375em; line-height: 1.45; color: var(--muted); }
 table.entries .tag-line { display: block; margin-top: 0.3em; font-size: 0.75em; color: var(--muted); }
 table.entries .tag-line a::before { content: "#"; color: var(--faint); }
 table.entries .tag-line a:hover { color: var(--accent); }
-.reading {
+.reading, .retired {
    display: inline-block; margin-left: 0.5em; padding: 0.1em 0.55em; border-radius: 999px; vertical-align: 0.15em;
-   font-size: 0.6875em; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: var(--tint);
+   font-size: 0.6875em; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
 }
+.reading { color: var(--accent); background: var(--tint); }
+.retired { color: var(--muted); background: var(--subtle); }
+tr[data-status="retired"] .title, li[data-status="retired"] > a { color: var(--muted); }
 
 /* By folder: the tree, one guide line per level */
 .tree { list-style: none; padding: 0; margin: 0; font-size: var(--ui); }
@@ -322,7 +383,6 @@ table.entries .tag-line a:hover { color: var(--accent); }
 .tree li { margin-block: 0.4em; }
 .tree details { margin: 0; }
 .tree summary .muted { font-family: var(--mono); font-size: 0.75em; font-weight: 400; }
-.tree li[data-url] a:visited { color: var(--muted); }
 .tree li[data-url] a:hover { color: var(--accent); }
 .tree li[data-url] small.muted { display: block; margin-top: 0.1em; font-family: var(--mono); font-size: 0.7em; }
 

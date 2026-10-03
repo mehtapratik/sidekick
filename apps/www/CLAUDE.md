@@ -11,8 +11,9 @@ keeps the rules that still bind and what is not obvious from the code.
   semantics or accessibility.
 - No media queries for layout. Allowed only for `prefers-color-scheme`, `prefers-reduced-motion`,
   `hover`, and hiding shortcut hints below 30em.
-- No client JS beyond `public/arkive.js`. Everything works without it except search, the filter, copy
-  and the keyboard shortcuts.
+- No client JS beyond `public/arkive.js`. Everything works without it except search, the filter, copy,
+  the keyboard shortcuts, the scroll-aware header
+  and tap navigation.
 - Peacock (`--accent`) colours links inside `.prose` only. No hero images or illustrations in the chrome.
 - "As of" = `updated` ?? `created`, from frontmatter only. Never file or build time.
 - Ship `public/arkive.css`, `arkive.js`, `src/shiki-themes.mjs`, `public/fonts/` and `public/icons/` as
@@ -59,7 +60,10 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
 - **Titles.** 200+ vault notes have no `title:`. Their title is derived from the file name
   (`deriveTitle`, with an acronym dictionary in `vault.mjs`), per the vault's own convention.
   A leading `# H1` in a vault note is dropped; one in a writing is dropped only if it repeats the title.
-- **Kind** falls back to `type:` (older writings use it), then `essay` / `doc`.
+- **Kind** falls back to `essay` / `doc`.
+- **Frontmatter defaults.** `id` is a stable dotted identifier, unique across the vault (not shown).
+  `status` defaults to `active`, is kept in frontmatter and never shown. `license` defaults to
+  `CC BY-NC 4.0` and shows in the footer. Reading time and word count are always computed.
 - **Slugs** also fold `—`/`–` to `-` and drop `?`, `,` and quotes, so existing URLs keep working
   (the handover's `entries.sample.json` is the URL contract).
 - **Privacy gate** compares long lines from the two private vault folders only. `_archive/` is

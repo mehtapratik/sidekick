@@ -12,7 +12,7 @@ import {
 
 const text = z.union([z.string(), z.number()]).transform(String);
 
-// Unknown frontmatter keys (id, depends_on, applies_to, …) are allowed and ignored.
+// Unknown frontmatter keys (depends_on, applies_to, …) are allowed and ignored.
 const schema = z.object({
    // Only `publish: true` lists an entry. Any other value is "not published", never an error.
    publish: z.unknown().optional(),
@@ -22,11 +22,14 @@ const schema = z.object({
    description: text.optional(),
    created: z.coerce.date(),
    updated: z.coerce.date().optional(),
+   // Stable identifier, e.g. `harness.agent-guide`. Not shown; unique across the vault.
+   id: text.optional(),
    version: text.optional(),
-   status: text.optional(),
+   // Kept in frontmatter, never shown on the site.
+   status: text.default("active"),
+   // Defaults to the site licence (DEFAULT_LICENSE in lib/entries.ts).
+   license: text.optional(),
    kind: text.optional(),
-   // Older writings say `type: note` where vault notes say `kind:`.
-   type: text.optional(),
    audience: text.optional(),
    tags: z
       .array(text)

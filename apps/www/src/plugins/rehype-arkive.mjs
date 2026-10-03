@@ -73,7 +73,12 @@ export function rehypeArkive() {
             parent.children[index] = {
                type: "element",
                tagName: "div",
-               properties: { className: ["wide"] },
+               properties: {
+                  className:
+                     node.tagName === "table"
+                        ? ["wide", "wide-table"]
+                        : ["wide"],
+               },
                children: [node],
             };
             return [SKIP, index + 1];

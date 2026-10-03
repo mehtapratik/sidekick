@@ -1,13 +1,12 @@
 ---
-import { BLURB, SITE_TITLE } from "../lib/site";
+import { SITE_TITLE } from "../lib/site";
 import Mark from "./Mark.astro";
 
 interface Props {
    /** Inside the Index: a Close button instead of the Index button. */
    close?: boolean;
-   tagline?: boolean;
 }
-const { close = false, tagline = false } = Astro.props;
+const { close = false } = Astro.props;
 ---
 
 <header class="site">
@@ -43,5 +42,4 @@ const { close = false, tagline = false } = Astro.props;
          }
       </p>
    </div>
-   {tagline && <p class="tagline blurb">{BLURB}</p>}
 </header>
