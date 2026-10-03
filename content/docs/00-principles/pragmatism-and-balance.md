@@ -4,8 +4,9 @@ created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
-   - principle
-   - private
+  - principle
+  - private
+title: Pragmatism and Balance
 ---
 - Approach mundane and non-essential matters of life with practical attitude without excessive reliance on principles and idealism. 
 - Choose few (ideally one) things that matter the most to you and seek perfection and principles there. 

@@ -13,6 +13,7 @@ tags:
 aliases:
   - anti-abandonment-algorithm
   - pause-dont-restart
+title:
 ---
 Consider options carefully before deciding, then live with the decision as it evolves.
 

@@ -10,7 +10,7 @@ tags:
   - core-drive
 ---
 
-Offload all you can using [[focus-funnel]]. Protect your mind and willpower from wearing down. Ask yourself if things went wrong and mistakes were made: 
+Offload all you can using [[principle.focus-funnel]]. Protect your mind and willpower from wearing down. Ask yourself if things went wrong and mistakes were made: 
 
 1. Can you afford to live with it? Can you make your peace with it? Can you tolerate the loss? 
 2. Will you have opportunity for course-correction or reversal (undo) of the outcome? 
