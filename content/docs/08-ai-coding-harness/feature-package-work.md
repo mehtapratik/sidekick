@@ -6,7 +6,7 @@ kind: guidance
 version: 1.0.0
 tags:
    - ai-coding
-   - features
+   - feature
    - monorepo
    - agent-guidance
    - feature-system

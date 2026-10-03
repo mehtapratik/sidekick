@@ -13,7 +13,7 @@ tags:
    - api
    - mantine
    - ai
-   - embeddings
+   - embedding
 status: planned
 depends_on:
    - "[[04-plans/phase-4-taxila-v1-knowledge-management]]"

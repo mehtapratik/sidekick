@@ -1,4 +1,5 @@
 ---
+id: writings.archive.auth
 title: Authentication
 created: 2026-09-19
 ---

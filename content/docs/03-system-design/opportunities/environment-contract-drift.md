@@ -8,7 +8,7 @@ status: proposed
 tags:
    - opportunity
    - phase-2
-   - configuration
+   - config
    - security
    - developer-experience
    - severity-medium

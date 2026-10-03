@@ -12,4 +12,6 @@ applies_to:
   - "[[00-what-is-it|Core Drive]]"
 depends_on:
 ---
+prd.value-proposition
+key be-better-version-of-yourself
 A system that motivates and coaches its users to learn from the past mistakes, see patterns in their behaviors, learn from it and reach your full potential. 

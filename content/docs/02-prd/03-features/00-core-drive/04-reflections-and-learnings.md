@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - prd
-   - features
+   - feature
    - core-drive
 applies_to:
    - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"

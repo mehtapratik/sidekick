@@ -1,12 +1,12 @@
 ---
 publish: true
-id: system-design.functional-design.global-tagging-and-llinking.a-graph-pattern-not-a-graph-database
+id: system-design.functional-design.global-tagging-and-linking.a-graph-pattern-not-a-graph-database
 created: 2026-09-19
 kind: spec
 version: 1.0.0
 tags:
    - system-design
-   - global-tagging-and-llinking
+   - global-tagging-and-linking
    - postgresql
    - graph
 ---

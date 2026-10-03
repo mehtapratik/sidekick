@@ -8,7 +8,7 @@ tags:
    - system-design
    - rag
    - ai
-   - embeddings
+   - embedding
 authority: canonical
 retrieval_priority: high
 related:

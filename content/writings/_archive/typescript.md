@@ -1,4 +1,5 @@
 ---
+id: writings.archive.typescript
 title: TypeScript
 created: 2026-09-19
 ---

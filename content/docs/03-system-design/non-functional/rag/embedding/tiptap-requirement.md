@@ -8,7 +8,6 @@ tags:
    - system-design
    - rag
    - embedding
-   - embeddings
 ---
 
 Embedding generation should operate on semantic markdown output rather than raw text extraction whenever possible.

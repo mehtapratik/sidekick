@@ -1,12 +1,12 @@
 ---
 publish: true
-id: system-design.functional-design.global-tagging-and-llinking.design-constraints
+id: system-design.functional-design.global-tagging-and-linking.design-constraints
 created: 2026-09-19
 kind: spec
 version: 1.0.0
 tags:
    - system-design
-   - global-tagging-and-llinking
+   - global-tagging-and-linking
    - rls
    - offline
    - soft-delete

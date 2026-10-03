@@ -1,4 +1,5 @@
 ---
+id: writings.archive.vercel
 title: Vercel
 created: 2026-09-19
 ---

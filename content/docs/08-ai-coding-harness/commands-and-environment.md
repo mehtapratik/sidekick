@@ -6,7 +6,7 @@ kind: guidance
 version: 1.0.0
 tags:
    - ai-coding
-   - commands
+   - command
    - environment
    - agent-guidance
    - prettier

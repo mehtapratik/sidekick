@@ -1,5 +1,6 @@
 ---
 publish: false
+id: harness.standards-and-guidance.test-behavior-not-implementation
 created: 2026-09-23
 ---
 

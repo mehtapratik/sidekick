@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - prd
-   - features
+   - feature
    - zinsser
    - ai
 applies_to:

@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - prd
-   - features
+   - feature
    - parrot
 applies_to:
    - "[[04-plans/post-mvp-factory-extensions-bots-agents]]"

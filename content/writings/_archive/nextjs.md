@@ -1,4 +1,5 @@
 ---
+id: writings.archive.nextjs
 title: Next.js
 created: 2026-09-19
 ---

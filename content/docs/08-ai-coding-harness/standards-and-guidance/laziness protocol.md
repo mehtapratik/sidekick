@@ -1,5 +1,6 @@
 ---
 publish: false
+id: harness.standards-and-guidance.laziness-protocol
 created: 2026-09-23
 ---
 

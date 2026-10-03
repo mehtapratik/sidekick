@@ -8,7 +8,6 @@ tags:
    - system-design
    - rag
    - embedding
-   - embeddings
 ---
 
 1. Embedding jobs must retry twice (configurable number)

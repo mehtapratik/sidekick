@@ -1,13 +1,17 @@
 ---
-publish: true
-title: Project Sidekick - A Bird's Eye View
-version: 1.0.0
-audience: General
-status: active
-tags: [essays, sidekick]
-deck: An introduction to Project Sidekick. What is it? What problem does it solve? Why am I building it?
+id: writings.sidekick-a-birds-eye-view
+title: Project Sidekick - A Bird’s Eye View
+description: An introduction to Project Sidekick. What is it? What problem does it solve? Why am I building it?
+kind: document
 created: 2026-07-19
-updated: 2026-07-19
+version: 1.0.0
+tags:
+   - sidekick
+   - project
+   - essay
+audience: everyone
+status: active
+publish: true
 ---
 
 I am working on Project Sidekick to solve the challenges of my current digital setup and workflows. My goal is to build an ERP that runs my life. The motivation here is not the monetization or the mass appeal. Instead, the motivation is purely personal and utilitarian. I covered the journey – and my past failures – in my confessional essay: **[Building in Margins of Reality](/writings/00-margins/)**.

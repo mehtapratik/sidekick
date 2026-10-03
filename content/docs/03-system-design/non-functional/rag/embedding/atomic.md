@@ -8,7 +8,6 @@ tags:
    - system-design
    - rag
    - embedding
-   - embeddings
 ---
 
 1. Embedding must be written as single atomic transaction.

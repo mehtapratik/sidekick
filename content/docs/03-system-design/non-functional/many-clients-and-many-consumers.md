@@ -19,6 +19,6 @@ tags:
 
 Why:
 
-1. [[learn]]: To learn modern stack and remain competitive in market
-2. [[career-growth]]: prove that you can build massive scope to land more opportunities
-3. [[commercialization]] to have a real shot at commercialization, we must have API and CLI based interface at minimum.
+1. [[motivation.learn]]: To learn modern stack and remain competitive in market
+2. [[motivation.career-growth]]: prove that you can build massive scope to land more opportunities
+3. [[motivation.commercialization]] to have a real shot at commercialization, we must have API and CLI based interface at minimum.

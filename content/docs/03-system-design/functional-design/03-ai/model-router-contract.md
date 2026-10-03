@@ -11,7 +11,7 @@ tags:
   - ai
   - model-routing
   - provider-agnostic
-  - embeddings
+  - embedding
 applies_to:
   - "[[model-routing]]"
 related:

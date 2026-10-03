@@ -1,24 +1,19 @@
 ---
-publish: true
-title: Sidekick's Architectural Overview
+id: writings.architecture-overview
+title: Architectural Overview
 description: Sidekick's architectural overview — an API-first platform tuned for solo developers
-created: "2026-07-09"
-updated: "2026-08-24"
+kind: document
+created: 2026-07-09
+updated: 2026-08-24
 version: 2.1.0
 tags:
    - sidekick
    - project
    - technical
    - architecture
-section: notes
-type: note
-sourcePath: notes/architecture-overview.md
-wordCount: 4800
-readingMinutes: 23
-author: Pratik Mehta
-license: CC BY-NC 4.0
-audience: Software Engineers
+audience: software engineers
 status: active
+publish: true
 ---
 
 ## 1. Executive summary

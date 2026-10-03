@@ -1,4 +1,5 @@
 ---
+id: writings.archive.packages
 title: Packages
 created: 2026-09-19
 ---

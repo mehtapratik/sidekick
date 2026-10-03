@@ -1,16 +1,18 @@
 ---
-publish: true
-title: Building in the margins of reality
-version: 1.0.0
-audience: General
-status: active
-tags: [essays, sidekick]
+id: writings.margins
+title: Building in the Margins of Reality
 deck: Project kick-off post and a confessional essay about my past attempts and their failures. Why start now? What do I hope to achieve?
+kind: journal
 created: 2026-07-10
-updated: 2026-07-10
+version: 1.0.0
+tags:
+   - sidekick
+   - project
+   - essay
+audience: everyone
+status: active
+publish: true
 ---
-
-# The First Commit
 
 I have an itch to scratch. It's the same itch that every creator and problem solver starts scratching upon facing mundane and boring tasks for days on end. For the likes of us, the novelty and challenge of unique and creative problems feed our dopamine receptors. We live for those highs — we are the intellectual athletes. For some, just the act of problem-solving and building something is enough. For others, it is the knowledge that what they built will go on to make an impact on thousands and millions of lives. Usually, that's enough — _not for me_. You see, _my itch_ is different. I _do_ enjoy the process and love what I do at work, but that's not enough; what I'm craving is to give life to _my visions_, and solve _my problems_.
 
@@ -29,3 +31,5 @@ And to do that, I have to be ruthlessly honest with myself: Do I want to chase m
 It is with these thoughts and with these spirits I'm kicking-off "Project Sidekick" today. This site, arkive.blog, is an outlet where I will blog about Project Sidekick and how my life evolves with it. It is time to find out whether I'm an intellectual athlete that I think I am or just another Joe who buys a gym membership in January and forgets all about it by mid-March. Seeing this through will bring me immense joy. If not, at least I tried and that should be enough. I have to make my peace with it.
 
 _July 9, 2026 — West Windsor, NJ_
+
+

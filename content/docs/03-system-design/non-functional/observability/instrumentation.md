@@ -8,7 +8,7 @@ tags:
    - system-design
    - observability
    - vercel
-   - embeddings
+   - embedding
 ---
 
 ## MVP: `console.*` via Vercel dashboard

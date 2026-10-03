@@ -1,5 +1,6 @@
 ---
 publish: false
+id: harness.standards-and-guidance.never-block-on-human-for-reversible-decision
 created: 2026-09-23
 ---
 

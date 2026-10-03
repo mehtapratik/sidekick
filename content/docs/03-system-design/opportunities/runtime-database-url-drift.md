@@ -10,7 +10,7 @@ tags:
    - phase-2
    - security
    - rls
-   - configuration
+   - config
    - severity-high
 related:
    - "[[03-system-design/non-functional/database/app_runtime-for-drizzle]]"

@@ -6,7 +6,7 @@ kind: spec
 version: 1.0.0
 tags:
    - system-design
-   - native-apps
+   - native-app
    - nextjs
    - mobile
    - offline

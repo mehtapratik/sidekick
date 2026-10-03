@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - ai-coding
    - architecture
-   - invariants
+   - invariant
    - agent-guidance
    - api
    - nextjs

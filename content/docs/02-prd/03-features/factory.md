@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - prd
-   - features
+   - feature
    - factory
 applies_to:
    - "[[04-plans/phase-7-war-room-factory-v1]]"

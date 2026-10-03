@@ -1,12 +1,16 @@
 ---
 id: motivation.a-personal-discovery
-created: 2026-09-19
+title: A Personal Discovery
 kind: guidance
-version: 1.0.0
+audience: everyone
+created: 2026-09-19
+updated: 2026-10-02
+version: 1.0.1
 tags:
-   - motivations
-   - private
+  - motivation
+  - private
 ---
-- Enjoy the journey — journey itself is a reward.
-- Can I finish what I started?
-- Can I deliver such a massive undertaking singlehandedly with sheer discipline, persistence and doggedness?
+
+I enjoy the process of solving complex problems and building new things. I want to enjoy this process more than the reward of the final outcome itself. 
+
+To know myself better: Can I finish what I started? Or I am someone who thinks, talks and promises big but fails to execute and deliver? Can I (or any small team with handful of developers) deliver such massive undertaking singlehandedly without any help from venture capital or bay area influence?

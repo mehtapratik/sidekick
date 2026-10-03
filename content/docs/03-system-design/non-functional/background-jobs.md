@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - vercel
-   - background-jobs
+   - background-job
 ---
 
 1. Use lightweight async background jobs using `waitUntil()`, Vercel background execution, and retry wrappers.

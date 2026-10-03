@@ -11,7 +11,7 @@ tags:
   - ai
   - structured-streaming
   - source-attribution
-  - citations
+  - citation
 applies_to:
   - "[[source-attribution]]"
 related:

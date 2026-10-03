@@ -13,7 +13,7 @@ tags:
    - pnpm
    - css
    - offline
-   - embeddings
+   - embedding
    - soft-delete
 ---
 

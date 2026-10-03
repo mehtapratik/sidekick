@@ -1,4 +1,5 @@
 ---
+id: writings.archive.kickoff
 created: 2026-09-19
 ---
 # Building in the Margins: Why I’m Spending the Next 3 Years Creating "Sidekick"

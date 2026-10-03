@@ -1,12 +1,12 @@
 ---
 publish: true
-id: system-design.functional-design.global-tagging-and-llinking.global-tags-and-metadata
+id: system-design.functional-design.global-tagging-and-linking.global-tags-and-metadata
 created: 2026-09-19
 kind: spec
 version: 1.0.0
 tags:
    - system-design
-   - global-tagging-and-llinking
+   - global-tagging-and-linking
    - taxila
    - zinsser
    - alter-ego

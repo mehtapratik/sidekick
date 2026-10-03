@@ -8,7 +8,6 @@ tags:
    - system-design
    - rag
    - embedding
-   - embeddings
    - observability
 ---
 

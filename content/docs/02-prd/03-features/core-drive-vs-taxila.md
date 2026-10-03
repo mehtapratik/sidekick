@@ -7,7 +7,7 @@ version: 1.0.0
 tags:
    - system-design
    - prd
-   - features
+   - feature
    - taxila
    - core-drive
 applies_to:

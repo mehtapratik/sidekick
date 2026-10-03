@@ -9,7 +9,6 @@ tags:
    - rag
    - embedding
    - typescript
-   - embeddings
 ---
 
 1. All content table participating in embedding pipeline must include `embedding_status` field.

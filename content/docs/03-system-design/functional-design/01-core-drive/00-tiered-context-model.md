@@ -12,7 +12,7 @@ tags:
    - war-room
    - factory
    - ai
-   - embeddings
+   - embedding
 authority: canonical
 retrieval_priority: high
 related:

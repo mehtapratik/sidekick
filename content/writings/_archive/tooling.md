@@ -1,4 +1,5 @@
 ---
+id: writings.archive.tooling
 title: Tooling
 created: 2026-09-19
 ---

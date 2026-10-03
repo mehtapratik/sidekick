@@ -5,7 +5,7 @@ created: 2026-09-19
 kind: decision
 version: 1.0.0
 tags:
-   - decisions
+   - decision
    - technical
    - architecture-decision
    - typescript

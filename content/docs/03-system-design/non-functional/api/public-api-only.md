@@ -14,7 +14,7 @@ tags:
 
 ## Reasons
 
-1. One of the motivation is [[commercialization]] and modern services aren’t just consumed by humans via user interfaces. They are also accessed by bots, scheduled jobs, shell scripts, and third-party applications via CLI or public APIs.
+1. One of the motivation is [[motivation.commercialization]] and modern services aren’t just consumed by humans via user interfaces. They are also accessed by bots, scheduled jobs, shell scripts, and third-party applications via CLI or public APIs.
 2. We have multiple clients ([[many-clients-and-many-consumers]]) and building API layer for each will be a maintenance nightmare and may introduce drifts which are hard to fix later.
 
 ## Spec

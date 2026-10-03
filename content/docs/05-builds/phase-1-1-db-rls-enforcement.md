@@ -6,7 +6,7 @@ kind: guidance
 version: 1.0.0
 tags:
    - plan
-   - phase-1-1
+   - phase-1.1
    - rls
    - database
    - supabase

@@ -4,7 +4,7 @@ created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
-   - principles
+   - principle
    - private
    - core-drive
    - execution

@@ -6,7 +6,7 @@ kind: prd
 version: 1.0.0
 tags:
   - prd
-  - features
+  - feature
   - alter-ego
   - ai
 ---

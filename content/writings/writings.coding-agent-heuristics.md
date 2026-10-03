@@ -1,31 +1,25 @@
 ---
-publish: true
-title: Model selection strategy
-description: >-  
-    Which model to use for which kind of session based on the type of task, teaching value, and complexity
-created: '2026-08-24'
-updated: '2026-08-24'
-version: 1.0.0
+
+id: writings.coding-agent-heuristics
+title: Coding Agent Heuristics
+description: Which AI model or coding agent to use for which kind of session based on the type of task, teaching value, and complexity
+kind: note
+created: 2026-08-24
+updated: 2026-10-02
+version: 2.0.0
 tags:
   - sidekick
   - project
   - technical
   - ai
-section: notes
-type: note
-sourcePath: notes/model-heuristics.md
-readingMinutes: 5
-author: Pratik Mehta
-license: CC BY-NC 4.0
-audience: Software Engineers
-status: active
+  - heuristic
+audience: software engineers
+status: deprecated
+publish: true
 ---
+Coding agents assume the role of teacher during Sidekick’s MVP implementation phase. They are not bot writing code and delivering features based on my prompts. 
 
-# Model selection strategy
-
-## The one-line principle
-
-I'm using the agent as a **teacher**, not a bot. In teaching mode *I* write the code, so sessions are light on tokens and explanation quality matters more than cost. The moment a phase has no teaching value for me, I switch to **auto-pilot** (agent writes it) — and that's where cheap/fast models earn their place.
+Coding agents go back to their role as bot when task at hand has no learning value (either because I already know or I don’t want to spend time learning fringe skills).
 
 ## Model roster
 

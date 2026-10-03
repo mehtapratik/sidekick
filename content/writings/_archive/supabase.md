@@ -1,4 +1,5 @@
 ---
+id: writings.archive.supabase
 title: Supabase
 created: 2026-09-19
 ---
