@@ -1,11 +1,11 @@
 ---
+publish: true
 id: principle.no-do-overs
 created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
   - principle
-  - private
   - core-drive
   - anti-abandonment
   - execution
@@ -13,7 +13,7 @@ tags:
 aliases:
   - anti-abandonment-algorithm
   - pause-dont-restart
-title:
+title: No Do-overs
 ---
 Consider options carefully before deciding, then live with the decision as it evolves.
 

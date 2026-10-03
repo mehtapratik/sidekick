@@ -1,4 +1,5 @@
 ---
+publish: true
 id: motivation.a-personal-discovery
 title: A Personal Discovery
 kind: guidance
@@ -8,7 +9,6 @@ updated: 2026-10-02
 version: 1.0.1
 tags:
   - motivation
-  - private
 ---
 
 I enjoy the process of solving complex problems and building new things. I want to enjoy this process more than the reward of the final outcome itself. 

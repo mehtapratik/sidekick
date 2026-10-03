@@ -49,7 +49,8 @@ scripts/check-privacy.mjs        post-build gate, run by `npm run build`
 ## Publishing
 
 An entry is built only when its frontmatter has `publish: true`. Nothing else lists it.
-`00-principles/`, `01-motivations/`, `_assets_/`, `.obsidian/` and `writings/_archive/` are never built.
+`_assets_/`, `.obsidian/` and `writings/_archive/` are never built. (`00-principles/` and
+`01-motivations/` are published like any other folder, as the Principles and Motivations sections.)
 The old site hid notes with a `private` tag; that tag no longer gates anything, so **do not add
 `publish: true` to a note tagged `private`**. The build fails if a published note carries it.
 
@@ -66,8 +67,8 @@ The old site hid notes with a `private` tag; that tag no longer gates anything, 
   `CC BY-NC 4.0` and shows in the footer. Reading time and word count are always computed.
 - **Slugs** also fold `—`/`–` to `-` and drop `?`, `,` and quotes, so existing URLs keep working
   (the handover's `entries.sample.json` is the URL contract).
-- **Privacy gate** compares long lines from the two private vault folders only. `_archive/` is
-  superseded text that legitimately lives on in newer notes.
+- **Privacy gate** is structural: it checks the opt-in rule, the old `private` tag and links into excluded
+  paths. It no longer compares text from private folders, because there are none.
 - **Math** (`$x$`, `$$…$$`): `remark-math` + `rehype-katex` with `output: "mathml"`, so the browser draws
   it and no KaTeX stylesheet, fonts or script ship. Inline `$…$` follows Obsidian's rule (no space just
   inside either `$`, no digit right after the closing one); anything else, such as prices like

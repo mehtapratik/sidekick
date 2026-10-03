@@ -1,11 +1,11 @@
 ---
+publish: true
 id: principle.focus-funnel
 created: 2026-09-22
 kind: guidance
 version: 1.0.1
 tags:
   - principle
-  - private
   - core-drive
   - productivity
 title: Focus Funnel

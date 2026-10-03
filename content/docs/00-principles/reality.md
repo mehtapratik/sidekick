@@ -1,11 +1,11 @@
 ---
+publish: true
 id: principle.reality
 created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
    - principle
-   - private
 ---
 
 Everyone have a concept of right and wrong, good and bad, heroes and villains.

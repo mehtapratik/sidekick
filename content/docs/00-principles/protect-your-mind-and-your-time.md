@@ -1,11 +1,11 @@
 ---
+publish: true
 id: principle.protect-your-mind-and-your-time
 created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
   - principle
-  - private
   - productivity
   - core-drive
 ---

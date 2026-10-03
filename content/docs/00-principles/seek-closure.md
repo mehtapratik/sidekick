@@ -1,11 +1,11 @@
 ---
+publish: true
 id: principle.seek-closure
 created: 2026-09-19
 kind: guidance
 version: 1.0.0
 tags:
    - principle
-   - private
    - core-drive
    - execution
    - reality

@@ -14,8 +14,6 @@ export const ASSETS_DIR = path.join(DOCS_DIR, "_assets_");
 /** Never built, whatever their frontmatter says (SPEC 3.1). */
 export const WRITINGS_EXCLUDE = ["_archive/**"];
 export const DOCS_EXCLUDE = [
-   "00-principles/**",
-   "01-motivations/**",
    "_assets_/**",
    ".obsidian/**",
    "**/*.canvas",
@@ -23,6 +21,8 @@ export const DOCS_EXCLUDE = [
 
 /** Vault folder -> URL slug and Index label. Array order is the Index order. */
 export const SECTIONS = [
+   { dir: "00-principles", slug: "principles", label: "Principles" },
+   { dir: "01-motivations", slug: "motivations", label: "Motivations" },
    { dir: "02-prd", slug: "prd", label: "Product requirements" },
    { dir: "03-system-design", slug: "system-design", label: "System design" },
    { dir: "04-plans", slug: "plans", label: "Plans" },

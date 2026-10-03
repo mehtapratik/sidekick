@@ -1,4 +1,5 @@
 ---
+publish: true
 id: motivation.learn
 title: Learn as I Build This Product
 kind: guidance
@@ -8,7 +9,6 @@ version: 1.1.0
 updated: 2026-10-02
 tags:
   - motivation
-  - private
   - ai
   - rag
 ---

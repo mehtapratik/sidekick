@@ -1,4 +1,5 @@
 ---
+publish: true
 id: motivation.career-growth
 title: Fuel Career Growth
 kind: guidance
@@ -8,7 +9,6 @@ updated: 2026-10-02
 version: 1.0.1
 tags:
   - motivation
-  - private
 ---
 Hopefully, by building Sidekick in the open and by documenting my journey, I will be able to showcase my skills and craft to help me fuel my career growth and land me to different exciting opportunities.
 
