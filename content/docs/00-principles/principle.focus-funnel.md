@@ -1,15 +1,16 @@
 ---
-publish: true
 id: principle.focus-funnel
+title: Focus Funnel
 created: 2026-09-22
+updated: 2026-10-03
 kind: guidance
-version: 1.0.1
+version: 1.0.2
 tags:
   - principle
   - core-drive
   - productivity
-title: Focus Funnel
-updated: 2026-10-03
+publish: true
 ---
-To focus on important and essential task only you can do, rely on focus funnel to eliminate tasks you can escape from. Each task at hand must go through the funnel of $elimination -> automation -> delegation -> procrastination -> concentration$, where concentration being the only stage where you will work on the task yourself and focus your full energy on it.
+Focus only on important and essential task only you can do. Use *focus funnel* to filter all other tasks. Everything must go through this funnel to protect your time and energy from non-essential stuffs and matters of negligible consequences.
 
+$$eliminate -> automate -> delegate -> procrastinate -> concentrate$$

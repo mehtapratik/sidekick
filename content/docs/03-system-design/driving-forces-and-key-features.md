@@ -10,7 +10,7 @@ tags:
    - offline
 ---
 
-1. [[pragmatism-and-balance]]. As a consequence a lot of features of Sidekick’s architecture are future as future leaning as possible without over engineering or adding premature complexities: [[build-for-today-designed-for-future]], [[enforced-conventions]], [[many-clients-and-many-consumers]], [[offline-ready]], [[bundle-everything]].
+1. [[principle.pragmatism]]. As a consequence a lot of features of Sidekick’s architecture are future as future leaning as possible without over engineering or adding premature complexities: [[build-for-today-designed-for-future]], [[enforced-conventions]], [[many-clients-and-many-consumers]], [[offline-ready]], [[bundle-everything]].
 2. [[build-for-today-designed-for-future]]
 3. [[enforced-conventions]]
 4. [[many-clients-and-many-consumers]]

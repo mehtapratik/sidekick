@@ -1,25 +1,22 @@
 ---
-publish: true
 id: principle.no-do-overs
+title: No Do-overs
 created: 2026-09-19
+updated: 2026-10-08
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
   - principle
   - core-drive
-  - anti-abandonment
   - execution
   - productivity
-aliases:
-  - anti-abandonment-algorithm
-  - pause-dont-restart
-title: No Do-overs
+publish: true
 ---
-Consider options carefully before deciding, then live with the decision as it evolves.
 
-- Accept that a system becomes messier and less ideal as it grows; improve it instead of returning to a blank slate.
-- Finish, fail, or explicitly pause a current project before beginning another.
-- A pause is not abandonment. Resume from the existing state, however long the pause lasts.
-- Redirect the urge to start over into reviving an unfinished project.
+- Either finish what you start or do not start new project until previously abandoned project isn’t picked up and driven to closure.
+- Things become messier and begins to diverse from your idea under the pressure test of reality. 
+- Do not start over hoping that next version of your attempt will be better and closer to your idea of perfection.
+- Finish, fail, pass or make deliberate decision to pause work instead of abandoning or starting over. 
+- Iterate and improve instead. An imperfect working solution better than ideal theorized solution.
+- Success and failure are valid exit criteria. A project is only truly finished when it meets positive or fatal exit criteria, not when it becomes inconvenient.
 
-Success and failure are valid exit criteria. A project is only truly finished when it meets positive or fatal exit criteria, not when it becomes inconvenient.
