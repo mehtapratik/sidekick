@@ -1,17 +1,16 @@
 ---
-publish: true
 id: prd.value-proposition.be-better-version-of-yourself
+title: Be a Better Version of Yourself
 created: 2026-09-19
+updated: 2026-10-11
 kind: prd
-version: 1.0.0
+audience: general
+version: 1.0.1
 tags:
-  - prd
-  - value-proposition
-  - specification
-applies_to:
-  - "[[00-what-is-it|Core Drive]]"
-depends_on:
+   - prd
+   - value-proposition
+   - specification
+publish: true
 ---
-prd.value-proposition
-key be-better-version-of-yourself
-A system that motivates and coaches its users to learn from the past mistakes, see patterns in their behaviors, learn from it and reach your full potential. 
+
+A system that modal itself as coach and mentor to motivate its users to learn from the past mistakes, see patterns in their behaviors, learn from it and reach your full potential.

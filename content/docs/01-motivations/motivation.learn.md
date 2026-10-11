@@ -8,6 +8,7 @@ updated: 2026-10-02
 version: 1.1.0
 tags:
    - motivation
+   - learning
    - ai
    - rag
 publish: true
