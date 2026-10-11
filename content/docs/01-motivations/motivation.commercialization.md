@@ -1,13 +1,16 @@
 ---
-publish: true
-id: motivation.commercialization
+id: motivation.commercialize
 title: Commercialize Sidekick
-kind: guidance
-audience: everyone
+kind: journal
+audience: me
 created: 2026-09-19
-version: 1.0.1
-updated: 2026-10-02
+updated: 2026-10-11
+version: 1.0.2
 tags:
-  - motivation
+   - motivation
+   - finance
+   - freedom
+publish: true
 ---
-Though this isn’t an absolute must or sole motivation behind Sidekick, I hope that Sidekick becomes successful enough to frees me from 9-to-5 grind of having to work for survival.
+
+Though I am not building Sidekick with a plan to commercialize it, I really hope that people find Sidekick valuable companion in their journey of betterment and discovery. Commercialized Sidekick will free me from financial constraints and allow me to pursue second career in research, education, and entrepreneurship.

@@ -1,22 +1,23 @@
 ---
-publish: true
 id: motivation.learn
-title: Learn as I Build This Product
-kind: guidance
-audience: everyone
+title: Learn
+kind: journal
+audience: me
 created: 2026-09-19
-version: 1.1.0
 updated: 2026-10-02
+version: 1.1.0
 tags:
-  - motivation
-  - ai
-  - rag
+   - motivation
+   - ai
+   - rag
+publish: true
 ---
-Developing Sidekick’s MVP will involve multiple engineering specialities: frontend, backend, API design, database, DevOps and so on. 
 
-I can ask coding agents to build the MVP for me, but then I won’t know how it is built and what’s going on under the hood. I will be dependent on coding agents to make further changes. I will also not be able to argue design decisions rationally if I myself don’t know technology under the hood. That’s the risky proposition I am not willing to accept. I will be completely dependent on coding agents for product’s evolution.  
+Developing Sidekick’s MVP will involve multiple engineering specialities: frontend, backend, API design, database, DevOps and so on.
 
-To prevent this from happening in first place, I will build Sidekick’s MVP by hand with LLM agents by my side as teacher. 
+I can ask coding agents to build the MVP for me, but then I won’t know how it is built and what’s going on under the hood. I will be dependent on coding agents to make further changes. I will also not be able to argue design decisions rationally if I myself don’t know technology under the hood. That’s the risky proposition I am not willing to accept. I will be completely dependent on coding agents for product’s evolution.
+
+To prevent this from happening in first place, I will build Sidekick’s MVP by hand with LLM agents by my side as teacher.
 
 Some of the key concepts I must master to stay relevant in engineering industry and to have solid understanding of how Sidekick is built:
 
