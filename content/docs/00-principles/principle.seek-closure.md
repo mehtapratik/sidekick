@@ -14,6 +14,7 @@ audience: everyone
 publish: true
 ---
 
+- Find out if you’re the person you think you’re by any means available instead of living under a delusion.
 - Pressure test your plans and dreams under the stress of reality to find out if they survive out in the real world.
 - Do not wait for ideal condition or perfect opportunity.
 - Do not let fear of failure prevent you from taking an action.

@@ -2,15 +2,20 @@
 publish: true
 id: motivation.a-personal-discovery
 title: A Personal Discovery
-kind: guidance
-audience: everyone
+kind: journal
+audience: me
 created: 2026-09-19
-updated: 2026-10-02
-version: 1.0.1
+updated: 2026-10-11
+version: 1.1.0
 tags:
   - motivation
+  - discipline
+  - bucket-list
+  - ambition
+  - entrepreneurship
+  - sidekick
 ---
 
-I enjoy the process of solving complex problems and building new things. I want to enjoy this process more than the reward of the final outcome itself. 
+[[principle.seek-closure|Am I the person who I think I am]]? How much of it is grandiosity compared to humble awareness? What am I good or bad at? What are my strengths and shortcomings? Discover myself by [[principle.start-today|doing things I want to instead of waiting for right time]]. Close the gap between my self-image and real self. 
 
-To know myself better: Can I finish what I started? Or I am someone who thinks, talks and promises big but fails to execute and deliver? Can I (or any small team with handful of developers) deliver such massive undertaking singlehandedly without any help from venture capital or bay area influence?
+With Sidekick in particular, I want to find out if am hungry and desperate enough to work hard and pull my ideas and vision from head to the real world. Sidekick is not a ***side***-project. It is the project I have been waiting to build and find right time.  It’s going to require a lot of hard work, perseverance, sacrifices and willpower to make this happen. 
