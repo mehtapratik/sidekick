@@ -66,59 +66,7 @@ The MVP serves an audience of one, but Sidekick is intended to grow into a real 
 
 ## 3. System overview
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 700">
-  <style>
-    .box {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1;
-      rx: 4px;
-    }
-    .text {
-      fill: currentColor;
-      font-family: var(--ff-mono, "Space Mono", monospace);
-      font-size: var(--fs-base, 16px);
-      font-weight: var(--fw-base, 400);
-    }
-    .arrow {
-      stroke: currentColor;
-      stroke-width: 1;
-    }
-    .arrow-head {
-      fill: currentColor;
-    }
-  </style>
-
-  <!-- Box 1: Clients -->
-  <rect class="box" x="40" y="40" width="420" height="100" />
-  <text class="text" x="60" y="75">Clients</text>
-  <text class="text" x="60" y="115">Browser | PWA | CLI | Agents | iOS</text>
-
-  <!-- Arrow 1 (Clients to API Layer) -->
-  <line class="arrow" x1="250" y1="140" x2="250" y2="185" />
-  <polygon class="arrow-head" points="245,185 255,185 250,195" />
-
-  <!-- Box 2: API Layer -->
-  <rect class="box" x="40" y="200" width="420" height="245" />
-  <text class="text" x="60" y="235">API Layer (/api/*)</text>
-  <text class="text" x="60" y="275">withApiGuard()</text>
-  <text class="text" x="60" y="305">├── Auth</text>
-  <text class="text" x="60" y="335">├── Feature Entitlement</text>
-  <text class="text" x="60" y="365">├── RLS Context</text>
-  <text class="text" x="60" y="395">├── Scope Validation</text>
-  <text class="text" x="60" y="425">└── Handler Execution</text>
-
-  <!-- Arrow 2 (API Layer to PostgreSQL) -->
-  <line class="arrow" x1="250" y1="445" x2="250" y2="495" />
-  <polygon class="arrow-head" points="245,495 255,495 250,505" />
-
-  <!-- Box 3: PostgreSQL -->
-  <rect class="box" x="40" y="510" width="420" height="150" />
-  <text class="text" x="60" y="545">PostgreSQL (Supabase)</text>
-  <text class="text" x="60" y="585">RLS Policies</text>
-  <text class="text" x="60" y="615">Feature Tables</text>
-  <text class="text" x="60" y="645">Vector Search</text>
-</svg>
+![[architectural-overview.svg|900]]
 
 ---
 
