@@ -6,6 +6,42 @@ import tseslint from 'typescript-eslint';
 import js from '@eslint/js';
 import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 
+const cssInJsImports = [
+  'styled-components',
+  '@emotion/react',
+  '@emotion/styled',
+  '@emotion/css',
+  '@emotion/core',
+  '@linaria/core',
+];
+
+const cssInJsBans = cssInJsImports.map((lib) => ({
+  name: lib,
+  message: 'CSS-in-JS disallowed: use CSS modules instead',
+}));
+
+// `paths` match an import's exact text; `patterns` take globs. Both match the
+// text as written, not the resolved file — so `**/unsafe` (not `**/db/unsafe`)
+// is needed to also catch `./unsafe` and `../unsafe` from inside db/.
+const adminClientMessage =
+  'The Supabase admin client bypasses RLS. If this is truly needed, add a reviewed per-file exception in eslint.config.js.';
+
+const adminClientPathBan = {
+  name: '@sidekick/core/supabase/admin',
+  message: adminClientMessage,
+};
+
+const adminClientPatternBan = {
+  group: ['**/supabase/admin'],
+  message: adminClientMessage,
+};
+
+const unsafeDbPatternBan = {
+  group: ['**/unsafe'],
+  message:
+    'The raw database client runs queries without a user context. Use withRLS from "@sidekick/core/db" instead.',
+};
+
 export default defineConfig(
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -123,39 +159,32 @@ export default defineConfig(
     },
   },
   {
-    // Ban CSS-in-JS library imports across the whole codebase.
-    // None of these are installed today; this rule prevents them being added.
+    // Restricted imports across the whole codebase:
+    // - CSS-in-JS libraries (use CSS modules)
+    // - the raw database client (use withRLS) and the RLS-bypassing admin client
+    // Flat config replaces, not merges, a rule's options per block — any later
+    // block that sets no-restricted-imports must repeat every ban it keeps.
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          paths: [
-            {
-              name: 'styled-components',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-            {
-              name: '@emotion/react',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-            {
-              name: '@emotion/styled',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-            {
-              name: '@emotion/css',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-            {
-              name: '@emotion/core',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-            {
-              name: '@linaria/core',
-              message: 'CSS-in-JS is not allowed. Use CSS modules instead.',
-            },
-          ],
+          paths: [...cssInJsBans, adminClientPathBan],
+          patterns: [unsafeDbPatternBan, adminClientPatternBan],
+        },
+      ],
+    },
+  },
+  {
+    // The single file allowed to import the raw database client: withRLS is
+    // built on it. Every other ban still applies here.
+    files: ['packages/core/src/db/rls.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [...cssInJsBans, adminClientPathBan],
+          patterns: [adminClientPatternBan],
         },
       ],
     },

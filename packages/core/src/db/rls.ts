@@ -1,11 +1,11 @@
 import { sql } from 'drizzle-orm';
 
-import { db } from '.';
+import { unsafeDb } from './unsafe';
 
-type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+export type RlsTx = Parameters<Parameters<typeof unsafeDb.transaction>[0]>[0];
 
-export async function withRLS<T>(userId: string, fn: (tx: Tx) => Promise<T>): Promise<T> {
-  return db.transaction(async (tx) => {
+export async function withRLS<T>(userId: string, fn: (tx: RlsTx) => Promise<T>): Promise<T> {
+  return unsafeDb.transaction(async (tx) => {
     await tx.execute(sql`select set_config('app.current_user_id', ${userId}, true)`);
     return fn(tx);
   });
