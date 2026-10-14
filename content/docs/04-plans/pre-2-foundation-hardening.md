@@ -2,6 +2,7 @@
 publish: true
 id: plan.pre-2-foundation-hardening
 created: 2026-09-20
+updated: 2026-10-14
 kind: plan
 version: 1.1.0
 status: planned

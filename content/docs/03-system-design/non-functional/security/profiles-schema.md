@@ -2,6 +2,7 @@
 publish: true
 id: system-design.non-functional.security.profiles-schema
 created: 2026-09-19
+updated: 2026-10-14
 kind: spec
 version: 1.1.0
 tags:
