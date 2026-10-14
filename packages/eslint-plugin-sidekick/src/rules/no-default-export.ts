@@ -18,8 +18,7 @@ export const noDefaultExport: Rule.RuleModule = {
       description: 'Disallow default exports — use named exports instead.',
     },
     messages: {
-      noDefaultExport:
-        'Default exports are prohibited. Export this as a named export instead.',
+      noDefaultExport: 'Default exports are prohibited. Export this as a named export instead.',
     },
     schema: [],
   },

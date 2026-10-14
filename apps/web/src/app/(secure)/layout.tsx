@@ -7,7 +7,11 @@ import { AppShell } from './app-shell';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AppLayout({ children }: { children: ReactNode }): Promise<React.ReactElement> {
+export default async function AppLayout({
+  children,
+}: {
+  children: ReactNode;
+}): Promise<React.ReactElement> {
   const supabase = await createServerClient();
   const {
     data: { user },

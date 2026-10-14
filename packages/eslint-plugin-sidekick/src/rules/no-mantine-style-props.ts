@@ -1,6 +1,11 @@
 import type { Rule } from 'eslint';
 import type * as ESTree from 'estree';
-import type { JSXAttribute, JSXIdentifier, JSXMemberExpression, JSXOpeningElement } from 'estree-jsx';
+import type {
+  JSXAttribute,
+  JSXIdentifier,
+  JSXMemberExpression,
+  JSXOpeningElement,
+} from 'estree-jsx';
 
 /**
  * When `AppShell` is imported from `@mantine/core`, subcomponents are often used as

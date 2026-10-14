@@ -22,11 +22,7 @@ export default defineConfig(
         typescript: {
           alwaysTryTypes: true,
           noWarnOnMultipleProjects: true,
-          project: [
-            'tsconfig.base.json',
-            'apps/*/tsconfig.json',
-            'packages/*/tsconfig.json',
-          ],
+          project: ['tsconfig.base.json', 'apps/*/tsconfig.json', 'packages/*/tsconfig.json'],
         },
       },
     },
