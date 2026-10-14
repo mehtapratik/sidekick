@@ -29,6 +29,20 @@
       "when": 1778377618180,
       "tag": "0003_soft_delete_trigger_fns",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792004987602,
+      "tag": "0004_profiles_auth_users_fk",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792005648524,
+      "tag": "0005_profile_creation_trigger",
+      "breakpoints": true
     }
   ]
 }
