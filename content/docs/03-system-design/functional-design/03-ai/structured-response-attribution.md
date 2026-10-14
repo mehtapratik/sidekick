@@ -13,7 +13,7 @@ tags:
   - source-attribution
   - citation
 applies_to:
-  - "[[source-attribution]]"
+  - "[[prd.ai.source-attribution]]"
 related:
   - "[[03-system-design/functional-design/03-ai/context-assembler]]"
   - "[[03-system-design/non-functional/rag/00-rag]]"

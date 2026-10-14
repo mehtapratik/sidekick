@@ -1,18 +1,20 @@
 ---
-publish: true
 id: prd.features.core-drive.values-only
+title: Values Only
 created: 2026-09-19
+updated: 2026-10-13
+version: 1.0.1
 kind: prd
-version: 1.0.0
+audience: everyone
 tags:
-   - system-design
-   - prd
-   - feature
-   - core-drive
-   - war-room
-   - factory
+  - system-design
+  - prd
+  - feature
+  - core-drive
+  - war-room
+  - factory
 applies_to:
-   - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"
+  - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"
+publish: true
 ---
-
-> **Hard boundary rule:** _Core Drive never stores state; War Room and Factory never store values._ Core Drive is timeless; [[00-tiered-context-model|tier 2 is operational and current]].
+hard boundary—core drive to store values ([[00-tiered-context-model|tier 0]]) and timeless ([[00-tiered-context-model|tier 1]]) information—factory to store operational, situational and transient state ([[00-tiered-context-model|tier 2]])—Core Drive never stores tier 2 state—factory, war room or any other feature to never stores tier 0 or 1 information

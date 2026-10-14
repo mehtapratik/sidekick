@@ -17,7 +17,7 @@ related:
    - "[[03-system-design/non-functional/rag/00-rag]]"
 ---
 
-A single **Context Assembler** service in `packages/core/ai` (alongside the [[model-routing]]) is the only way features obtain AI context.
+A single **Context Assembler** service in `packages/core/ai` (alongside the [[prd.ai.model-routing]]) is the only way features obtain AI context.
 
 Input: a task descriptor `(feature, taskType, effortLevel)`.
 Output: an assembled context bundle (kernel + applicable Tier 1 entries + relevant Tier 2 state, within budget).

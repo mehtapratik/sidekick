@@ -3,7 +3,7 @@ publish: true
 id: plan.pre-2-foundation-hardening
 created: 2026-09-20
 kind: plan
-version: 1.0.0
+version: 1.1.0
 status: planned
 tags:
    - plan
@@ -33,6 +33,7 @@ depends_on:
 | Pre-2.9  | Add an ESLint rule requiring API route handlers to use `withApiGuard`.                                                          | 🟡         | [[api-route-fail-open]]                       |
 | Pre-2.10 | Choose a portable vault distribution strategy before cloud agents or CI require the external docs symlink.                      | 🟡         | [[portable-documentation-vault]]              |
 | Pre-2.11 | Handle signup without a session by displaying the pending-confirmation state.                                                   | 🟢         | [[signup-confirmation-flow]]                  |
+| Pre-2.12 | Run Prettier on staged files in a pre-commit hook (`husky` + `lint-staged`); add `prettier:check` to the Pre-2.6 CI.            | 🟢         | [[prettier-at-repo-level]]                    |
 
 **Pre-2 Exit Criteria**
 
@@ -42,3 +43,4 @@ depends_on:
 - The auth profile trigger and foreign key are versioned migrations.
 - CI protects the code and security checks on every change.
 - Package, API-route, and database access boundaries are machine-enforced.
+- Formatting is applied before every commit and verified in CI.

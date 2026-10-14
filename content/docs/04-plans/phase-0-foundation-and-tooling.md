@@ -1,26 +1,28 @@
 ---
-publish: true
 id: moc.plan.phase-0
+title: Phase 0 — Foundation and Tooling
 created: 2026-09-19
-kind: guidance
-version: 1.0.0
+updated: 2026-10-13
+version: 1.0.1
+kind: plan
+audience: everyone
 tags:
-   - plan
-   - phase-0
-   - api
-   - nextjs
-   - typescript
-   - eslint
-   - turborepo
-   - pnpm
+  - plan
+  - phase-0
+  - api
+  - nextjs
+  - typescript
+  - eslint
+  - turborepo
+  - pnpm
 status: completed
+publish: true
 ---
-
-# Phase 0 — Foundation and tooling
+## Scope
 
 Stand up Phase 0’s monorepo skeleton so that `pnpm turbo build` succeeds and `pnpm turbo dev` starts `apps/web` from the repo root, with a correct package dependency graph.
 
-## Constraints from the architecture handover (must hold from day 1)
+## Constraints
 
 - **No imports from `apps/*` inside `packages/*`** (dependency direction is `apps/*` → `packages/features/*` → `packages/core`).
 - **API-first is the long-term contract**, but Phase 0 only lays tooling/folders (no API implementation yet).

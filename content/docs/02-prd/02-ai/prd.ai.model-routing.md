@@ -1,16 +1,19 @@
 ---
-publish: true
-id: prd.features.ai.modal-router
+
+id: prd.ai.modal-routing
+title: Model Routing
 created: 2026-09-19
+updated: 2026-10-13
 kind: prd
-version: 1.0.0
+audience: everyone
+version: 1.0.1
 tags:
   - prd
-  - feature
   - vercel
   - ai
   - embedding
-  - "#model-routing"
+  - routing
+publish: true
 ---
 Do not lock-in to one or more LLM provider — allow switching model based on type of request, cost and other factors
 

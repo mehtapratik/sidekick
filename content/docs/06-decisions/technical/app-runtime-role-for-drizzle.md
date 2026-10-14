@@ -3,7 +3,7 @@ publish: true
 id: decision.technical.app-runtime-role-for-drizzle
 created: 2026-09-19
 kind: decision
-version: 1.0.0
+version: 1.1.0
 tags:
    - decision
    - technical
@@ -18,14 +18,33 @@ Using nonsuperuser role, `app_runtime` makes RLS enforced at the database level 
 
 ## Setup
 
-Role creation is a **one-time manual step** performed in the Supabase SQL Editor — it is not in any migration file. The reason: the `CREATE ROLE` statement includes a password, and the repository is public. Credentials must never enter version control.
+The role is created by migration `0001_app_runtime_grants.sql`, so every fresh database reproduces the same security boundary. The migration creates it idempotently and **without login**, because a `CREATE ROLE … PASSWORD` statement would put a credential into a public repository:
 
 ```sql
--- Run once in Supabase SQL Editor only — never commit
-CREATE ROLE app_runtime WITH LOGIN PASSWORD 'your-strong-password';
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_runtime') THEN
+    CREATE ROLE app_runtime
+      NOLOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOREPLICATION;
+  END IF;
+END
+$$;
 ```
 
-GRANT statements and default privileges are in migration (safe to commit — no secrets):
+`NOBYPASSRLS` and `NOSUPERUSER` are the load-bearing attributes; the rest are spelled out so a reviewer does not need to know PostgreSQL defaults.
+
+After `pnpm db:migrate`, enable login **once per database** — out of band, in the Supabase SQL Editor — and put the password only in `DATABASE_URL`:
+
+```sql
+-- Run once per database in Supabase SQL Editor only — never commit
+ALTER ROLE app_runtime WITH LOGIN PASSWORD 'your-strong-password';
+```
+
+Until this step runs, the role holds all its privileges but cannot connect, so a fresh environment fails closed.
+
+The block was added to `0001` after that migration had already been applied. This deliberately breaks the rule against editing applied migrations: Drizzle never re-runs an applied migration, and on any database where the role exists the block is a no-op, so no two databases can diverge. Without it, a fresh database fails at the `GRANT`s because nothing creates the role.
+
+The same migration grants privileges and default privileges (safe to commit — no secrets):
 
 ```sql
 GRANT USAGE ON SCHEMA public TO app_runtime;
@@ -46,12 +65,10 @@ ALTER DEFAULT PRIVILEGES
 `SET ROLE app_runtime` does not work in the Supabase SQL Editor — Supabase restricts role switching in the dashboard. Verify the setup using system catalog queries instead:
 
 ```sql
--- Role exists
-SELECT rolname, rolcanlogin
+-- Role exists, can log in, and cannot bypass RLS
+SELECT rolname, rolcanlogin, rolsuper, rolbypassrls
 FROM pg_roles
 WHERE rolname = 'app_runtime';
-
-
 
 -- Grants applied
 SELECT grantee, table_name, privilege_type
@@ -68,4 +85,4 @@ WHERE tablename = 'profiles';
 
 ## Tradeoff
 
-Non-superuser roles require explicit privilege grants. `ALTER DEFAULT PRIVILEGES` eliminates the per-table maintenance burden for future tables, but the initial role creation and `GRANT` on existing tables is a one-time manual step that lives outside of the automated migration flow. This is documented here as the single source of truth for that step.
+Non-superuser roles require explicit privilege grants. `ALTER DEFAULT PRIVILEGES` eliminates the per-table maintenance burden for future tables. Role creation and grants are versioned in migrations; the only manual step is enabling login with a password once per database, which is documented here as the single source of truth for that step.
