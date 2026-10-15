@@ -2,9 +2,9 @@
 publish: true
 id: plan.pre-2-foundation-hardening
 created: 2026-09-20
-updated: 2026-10-14
+updated: 2026-10-15
 kind: plan
-version: 1.1.0
+version: 1.1.1
 status: planned
 tags:
    - plan
@@ -24,7 +24,7 @@ depends_on:
 | #        | Task                                                                                                                            | Complexity | Review source                                 |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------- |
 | Pre-2.1  | Version creation of `app_runtime` as a non-superuser role; keep only its password out of Git.                                   | 🔴         | [[runtime-role-reproducibility]]              |
-| Pre-2.2  | Correct `postgres.js` configuration for Supavisor transaction pooling: `prepare: false`, `max_pipeline: 0`.                     | 🟡         | [[pooler-client-configuration]]               |
+| Pre-2.2  | Correct `postgres.js` configuration for Supavisor transaction pooling: `prepare: false` (not `max_pipeline: 0`).                | 🟡         | [[pooler-client-configuration]]               |
 | Pre-2.3  | Version the `auth.users` profile trigger and add the `profiles.id → auth.users(id)` foreign key with explicit delete semantics. | 🔴         | [[profile-trigger-and-referential-integrity]] |
 | Pre-2.4  | Make the RLS-aware access path safer than raw database access; restrict unsafe imports and exports.                             | 🔴         | [[db-access-chokepoint]]                      |
 | Pre-2.5  | Add an end-to-end RLS proof test: each user sees only their own row, and a context-free query sees zero rows.                   | 🔴         | [[security-proof-and-ci]]                     |

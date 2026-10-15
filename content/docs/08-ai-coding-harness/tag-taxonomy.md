@@ -2,8 +2,9 @@
 publish: true
 id: harness.tag-taxonomy
 created: 2026-09-19
+updated: 2026-10-14
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - ai-coding
    - agent-guidance
@@ -17,8 +18,8 @@ Use frontmatter tags to find the smallest authoritative set of notes for a task.
 
 ## Tag groups
 
-- **Domain:** `api`, `database`, `security`, `authentication`, `monorepo`, `nextjs`, `ai`, `rag`, `observability`, `cli`, `pwa`.
-- **Technology:** `supabase`, `drizzle`, `postgresql`, `typescript`, `eslint`, `prettier`, `pnpm`, `turborepo`, `vercel`, `mantine`.
+- **Domain:** `api`, `database`, `security`, `authentication`, `monorepo`, `nextjs`, `ai`, `rag`, `observability`, `cli`, `pwa`, `testing`.
+- **Technology:** `supabase`, `drizzle`, `postgresql`, `typescript`, `eslint`, `prettier`, `pnpm`, `turborepo`, `vercel`, `mantine`, `vitest`.
 - **Cross-cutting constraint:** `rls`, `api-guard`, `soft-delete`, `idempotency`, `repository-pattern`, `embeddings`, `graph`.
 - **Product module:** `taxila`, `zinsser`, `core-drive`, `alter-ego`, `war-room`, `factory`, `parrot`.
 - **Document role:** `prd`, `plan`, `architecture-decision`, `guidance`, `glossary`, `opportunity`, `moc`.
