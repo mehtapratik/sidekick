@@ -32,6 +32,10 @@
     },
     "db:generate": {
       "cache": false
+    },
+    "test": {},
+    "test:integration": {
+      "cache": false
     }
   }
 }

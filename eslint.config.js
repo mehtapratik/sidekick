@@ -212,6 +212,7 @@ export default defineConfig(
             '**/postcss.config.*',
             '**/next.config.*',
             '**/turbo.json',
+            '**/vitest.config.*',
             // The ESLint plugin itself is a dev-only package
             'packages/eslint-plugin-sidekick/**',
           ],

@@ -14,7 +14,9 @@
     "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
     "db:generate": "turbo db:generate",
-    "db:migrate": "turbo db:migrate"
+    "db:migrate": "turbo db:migrate",
+    "test": "turbo test",
+    "test:integration": "turbo test:integration"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
