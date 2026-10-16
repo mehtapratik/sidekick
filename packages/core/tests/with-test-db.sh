@@ -7,7 +7,11 @@
 # Requires initdb, pg_ctl and psql on PATH (e.g. Homebrew postgresql@15).
 set -euo pipefail
 
-export LC_ALL="${LC_ALL:-en_US.UTF-8}"   # macOS Postgres refuses to start without a locale
+# macOS Postgres refuses to start without a locale; Linux (CI) has a usable default
+if [[ "$(uname)" == "Darwin" ]]; then
+  export LC_ALL="${LC_ALL:-en_US.UTF-8}"
+fi
+
 PORT="${TEST_DB_PORT:-54329}"            # avoids a local Postgres on 5432
 HERE="$(cd "$(dirname "$0")" && pwd)"
 CORE="$(cd "$HERE/.." && pwd)"
