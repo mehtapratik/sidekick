@@ -50,32 +50,51 @@ export default defineConfig(
       boundaries,
     },
     settings: {
+      // A file belongs to the first element whose pattern matches, so specific
+      // patterns come before the catch-all `packages/*`.
       'boundaries/elements': [
-        { type: 'app-elements', pattern: 'apps/*' },
-        { type: 'package-elements', pattern: 'packages/*' },
+        { type: 'app', pattern: 'apps/*' },
+        { type: 'feature', pattern: 'packages/features/*' },
+        { type: 'registry', pattern: 'packages/features-registry' },
+        { type: 'tooling', pattern: 'packages/eslint-plugin-sidekick' },
+        // core, ui, copy
+        { type: 'foundation', pattern: 'packages/*' },
       ],
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
           noWarnOnMultipleProjects: true,
-          project: ['tsconfig.base.json', 'apps/*/tsconfig.json', 'packages/*/tsconfig.json'],
+          project: [
+            'tsconfig.base.json',
+            'apps/*/tsconfig.json',
+            'packages/*/tsconfig.json',
+            'packages/features/*/tsconfig.json',
+          ],
         },
       },
     },
     rules: {
       'boundaries/no-unknown': 'error',
-      'boundaries/element-types': [
+      // Dependency direction: apps → registry → features → foundation.
+      // Everything not allowed here is disallowed. Imports within one package
+      // are never checked. Foundation packages (core, ui, copy) and tooling
+      // import no other workspace package; loosen deliberately with a new rule.
+      'boundaries/dependencies': [
         'error',
         {
           default: 'disallow',
           rules: [
             {
-              from: 'app-elements',
-              allow: ['app-elements', 'package-elements'],
+              from: { type: 'app' },
+              allow: { to: { type: ['feature', 'registry', 'foundation'] } },
             },
             {
-              from: 'package-elements',
-              allow: ['package-elements'],
+              from: { type: 'registry' },
+              allow: { to: { type: ['feature', 'foundation'] } },
+            },
+            {
+              from: { type: 'feature' },
+              allow: { to: { type: 'foundation' } },
             },
           ],
         },
