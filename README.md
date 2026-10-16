@@ -26,14 +26,20 @@ Sidekick is designed to evolve safely: every feature is isolated into its own pa
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22 (the version CI uses)
 - Corepack enabled: `corepack enable`
+- Git
+- PostgreSQL 17 tools, for `pnpm test:integration` only: `brew install postgresql@17`
 
 ### Install
 
 ```bash
 pnpm install
 ```
+
+`pnpm install` also sets up `docs/`. Sidekick's documentation lives in the public [Arkive](https://github.com/mehtapratik/arkive) repo; `docs/` (and `AGENTS.md`, which links into it) is a symlink to `../arkive/sources/docs`. If that sibling checkout is missing, the install clones Arkive next to this repo, downloading only `sources/docs` (`scripts/setup-docs.mjs`). It is skipped in CI and on Vercel, or when `SIDEKICK_SKIP_DOCS=1`. Run it again any time with `pnpm docs:setup`.
+
+Cloud and remote agent environments must run `pnpm install` before the agent starts; otherwise `AGENTS.md` does not resolve.
 
 ### Development
 

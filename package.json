@@ -16,7 +16,9 @@
     "db:generate": "turbo db:generate",
     "db:migrate": "turbo db:migrate",
     "test": "turbo test",
-    "test:integration": "turbo test:integration"
+    "test:integration": "turbo test:integration",
+    "docs:setup": "node scripts/setup-docs.mjs",
+    "postinstall": "node scripts/setup-docs.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
