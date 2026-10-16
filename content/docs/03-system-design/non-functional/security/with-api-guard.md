@@ -2,8 +2,9 @@
 publish: true
 id: system-design.non-functional.security.with-api-guard
 created: 2026-09-19
+updated: 2026-10-16
 kind: spec
-version: 1.0.0
+version: 1.0.2
 tags:
    - system-design
    - security
@@ -55,7 +56,7 @@ export function withApiGuard(handler, opts = {}) {
 }
 ```
 
-**Public API handlers must be protected by this wrapper.** Our intention is to enforce this via linter rules and build pipeline checks.
+**Public API handlers must be protected by this wrapper.** Enforced in two layers, both in CI: the `sidekick/require-api-guard` ESLint rule on every `app/**/route.*` file in every app, and `apps/web/scripts/verify-endpoints.mjs`, which reads Next.js's build manifests and fails the build if anything is served that is not a lint-checked route handler (Server Actions, Pages Router entries, code-generated metadata routes).
 
 ```typescript
 const handler = async ({ tx }) => {
@@ -69,5 +70,5 @@ const options = {
    requireScope: "notes:read",
 };
 
-export const GET = withAPIGuard(handler, options);
+export const GET = withApiGuard(handler, options);
 ```
