@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   checks:
+    # Pinned, not ubuntu-latest: -latest moves to new images silently, and the
+    # preinstalled tools inside it (Node, PostgreSQL, …) change with it
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -31,10 +33,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      # The runner ships PostgreSQL tools (service disabled), but not on PATH.
-      # tests/with-test-db.sh needs initdb, pg_ctl and psql.
-      - name: Put PostgreSQL tools on PATH
-        run: ls -d /usr/lib/postgresql/*/bin | sort -V | tail -1 >> "$GITHUB_PATH"
+      # Production (Supabase) runs PostgreSQL 17; the runner image ships 16.
+      # Install 17's tools from the official PostgreSQL apt repository (PGDG).
+      # tests/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
+      - name: Install PostgreSQL 17 tools
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends postgresql-17
 
       - run: pnpm lint
       - run: pnpm typecheck
