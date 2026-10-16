@@ -156,6 +156,16 @@ export default defineConfig(
       'sidekick/no-barrel-exports': 'error',
     },
   },
+  {
+    // Every App Router route handler must be wrapped in withApiGuard: the proxy
+    // does not authenticate /api routes, so an unguarded handler is public.
+    // Matches Next.js route files only — not utilities such as utils/route.ts.
+    files: ['apps/web/src/app/**/route.{ts,tsx,js,jsx}'],
+    plugins: { sidekick: sidekickPlugin },
+    rules: {
+      'sidekick/require-api-guard': 'error',
+    },
+  },
   // ── TypeScript strictness ─────────────────────────────────────────────────
   {
     // Require explicit return types on all exported functions.
