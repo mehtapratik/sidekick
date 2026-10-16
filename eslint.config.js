@@ -6,6 +6,30 @@ import tseslint from 'typescript-eslint';
 import js from '@eslint/js';
 import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 
+// ── Request entry points ────────────────────────────────────────────────────
+// Every request must enter through an App Router route handler wrapped in
+// withApiGuard (sidekick/require-api-guard). These bans close the other ways
+// Next.js can serve a request. apps/web's build also verifies the built
+// endpoint list (apps/web/scripts/verify-endpoints.mjs).
+// Composed per block: flat config replaces no-restricted-syntax per block.
+const serverActionBan = {
+  selector: 'ExpressionStatement[directive="use server"]',
+  message:
+    'Server Actions are not allowed: each one is a public POST endpoint outside withApiGuard. Go through the public API instead (see the server-actions note).',
+};
+
+const pagesRouterBan = {
+  selector: 'Program',
+  message:
+    'The Pages Router is not used: any file under pages/api becomes an unguarded endpoint. Use an App Router route handler with withApiGuard.',
+};
+
+const pageExtensionsBan = {
+  selector: 'Property[key.name="pageExtensions"], Property[key.value="pageExtensions"]',
+  message:
+    'pageExtensions changes which files Next.js serves as routes, so sidekick/require-api-guard would miss them. Keep the default.',
+};
+
 const cssInJsImports = [
   'styled-components',
   '@emotion/react',
@@ -159,11 +183,30 @@ export default defineConfig(
   {
     // Every App Router route handler must be wrapped in withApiGuard: the proxy
     // does not authenticate /api routes, so an unguarded handler is public.
-    // Matches Next.js route files only — not utilities such as utils/route.ts.
-    files: ['apps/web/src/app/**/route.{ts,tsx,js,jsx}'],
+    // Matches Next.js route files in every app — not utilities such as
+    // utils/route.ts. Covers both app/ and src/app/ layouts.
+    files: ['apps/*/src/app/**/route.{ts,tsx,js,jsx}', 'apps/*/app/**/route.{ts,tsx,js,jsx}'],
     plugins: { sidekick: sidekickPlugin },
     rules: {
       'sidekick/require-api-guard': 'error',
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx,js,jsx,mjs,cjs}'],
+    rules: {
+      'no-restricted-syntax': ['error', serverActionBan],
+    },
+  },
+  {
+    files: ['apps/*/pages/**', 'apps/*/src/pages/**'],
+    rules: {
+      'no-restricted-syntax': ['error', serverActionBan, pagesRouterBan],
+    },
+  },
+  {
+    files: ['apps/*/next.config.*'],
+    rules: {
+      'no-restricted-syntax': ['error', serverActionBan, pageExtensionsBan],
     },
   },
   // ── TypeScript strictness ─────────────────────────────────────────────────
