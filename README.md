@@ -143,6 +143,17 @@ Follow the same steps above, then:
 
 ---
 
+## Dependency Updates
+
+[Renovate](https://docs.renovatebot.com/) keeps dependencies current (`renovate.json`), every Monday:
+
+- **Minor and patch** updates arrive as one grouped PR and merge automatically once CI's `checks` job passes.
+- **Majors** arrive as one PR each and are reviewed by a person.
+- Releases younger than 3 days are skipped, so a bad or compromised release has time to be pulled.
+- **Pinned on purpose:** Node and `@types/node` follow the major Vercel runs (`.nvmrc`); TypeScript stays below 6.1 until typescript-eslint supports TypeScript 7. Change these rules deliberately, with the reason in the rule's `description`.
+
+The open and blocked updates are listed in the repository's _Dependency Dashboard_ issue.
+
 ## Environment Variables
 
 Copy `.env.example` to `.env.local` and fill in values:
