@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { createServerClient } from '@sidekick/core/supabase/server';
 

@@ -1,9 +1,11 @@
 import boundaries from 'eslint-plugin-boundaries';
 import importPlugin from 'eslint-plugin-import';
+import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 import js from '@eslint/js';
+import nextPlugin from '@next/eslint-plugin-next';
 import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 
 // ── Request entry points ────────────────────────────────────────────────────
@@ -217,6 +219,76 @@ export default defineConfig(
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/explicit-module-boundary-types': 'error',
+    },
+  },
+  {
+    // Type-only imports must say so (`import type { X }`). The compiler drops
+    // them, so a module imported only for its types never reaches the bundle
+    // or runs its side effects. tsconfig's verbatimModuleSyntax enforces the
+    // same at compile time; this rule adds editor feedback and an autofix.
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+    },
+  },
+  {
+    // Type-aware rules: they read the TypeScript program, so they catch what
+    // syntax alone cannot — above all, promises nobody awaits or handles
+    // (a forgotten `await` on a database write fails silently).
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+      // React ignores an event handler's return value, so async handlers in
+      // JSX attributes are fine; every other promise misuse is reported.
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
+      ],
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/consistent-type-exports': 'error',
+    },
+  },
+  // ── Correctness ───────────────────────────────────────────────────────────
+  {
+    files: ['**/*.{ts,tsx,js,jsx,mjs,cjs}'],
+    rules: {
+      // `==` coerces types; `== null` (null or undefined) stays allowed
+      'eqeqeq': ['error', 'always', { null: 'ignore' }],
+      // Stray console.log calls; warn/error remain for real diagnostics
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx,js,jsx,mjs,cjs}'],
+    plugins: { import: importPlugin },
+    rules: {
+      'import/no-duplicates': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+      'import/no-self-import': 'error',
+      'import/no-cycle': 'error',
+    },
+  },
+  // ── React and Next.js ─────────────────────────────────────────────────────
+  {
+    // Rules of Hooks, exhaustive deps, and the React Compiler's checks
+    ...reactHooks.configs.flat.recommended,
+    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+  },
+  {
+    files: ['apps/web/**/*.{ts,tsx,js,jsx}'],
+    plugins: { '@next/next': nextPlugin },
+    settings: { next: { rootDir: 'apps/web' } },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
     },
   },
   // ── Styling ───────────────────────────────────────────────────────────────

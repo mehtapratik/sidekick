@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function isAuthRoute(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;
