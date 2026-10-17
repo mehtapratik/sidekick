@@ -26,21 +26,21 @@
   },
   "devDependencies": {
     "@eslint/js": "^9",
-    "@next/eslint-plugin-next": "16.2.5",
+    "@next/eslint-plugin-next": "16.4.2",
     "@sidekick/eslint-plugin-sidekick": "workspace:*",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",
-    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-boundaries": "^6.0.2",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.8.3",
-    "stylelint": "^17.11.1",
-    "turbo": "^2.5.6",
+    "prettier": "^3.9.10",
+    "stylelint": "^17.16.0",
+    "turbo": "^2.11.8",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.2"
+    "typescript-eslint": "^8.71.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
