@@ -5,7 +5,7 @@ title: Pre-2 walkthrough
 created: 2026-10-16
 updated: 2026-10-16
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -753,9 +753,14 @@ Next.js copies every `NEXT_PUBLIC_*` value into the browser bundle — never giv
 
 2. In `eslint.config.js`, add `'packages/features/*/tsconfig.json'` to the import resolver's `project` list. Without it, imports inside feature packages cannot be resolved, so boundaries cannot classify them.
 
-3. Replace the elements and the deprecated `boundaries/element-types` rule:
+3. Replace the elements and the deprecated `boundaries/element-types` rule, and set the root path. Element patterns match relative to `boundaries/root-path`, which defaults to the current directory — but `pnpm lint` runs ESLint from inside each package (`cwd = packages/core`), where every file would be "unknown" and **nothing would be enforced**:
 
 ```js
+      // Element patterns are matched relative to this root. `pnpm lint` runs
+      // ESLint from inside each package (cwd = packages/core, …), where the
+      // default root (cwd) makes every file "unknown" and boundaries silently
+      // enforces nothing — so the repo root is set explicitly.
+      'boundaries/root-path': import.meta.dirname,
       // A file belongs to the first element whose pattern matches, so specific
       // patterns come before the catch-all `packages/*`.
       'boundaries/elements': [
@@ -795,10 +800,10 @@ Next.js copies every `NEXT_PUBLIC_*` value into the browser bundle — never giv
       ],
 ```
 
-4. Verify — this must report `boundaries/dependencies`:
+4. Verify **from inside the package**, the way `pnpm lint` runs — a probe run from the repo root passes even when the root path is wrong. This must report `boundaries/dependencies`:
 
 ```bash
-printf "import '../../copy/src/app';\n" | pnpm exec eslint --stdin --stdin-filename packages/core/src/x.ts
+cd packages/core && printf "import '../../copy/src/app';\n" | pnpm exec eslint --stdin --stdin-filename src/x.ts; cd ../..
 ```
 
 ---
@@ -1389,6 +1394,229 @@ pnpm --filter web remove eslint-config-next
 4. Apply the autofixes in each package (`eslint --fix .`), then run Prettier on the changed files.
 
 5. Verify the rules with real temporary files inside a package — type-aware rules only run on files that belong to a `tsconfig`, so a stdin probe fails at parsing.
+
+---
+
+## Additional — Upgrade Every Dependency to the Newest Supported Version
+
+> **What and why:** Migrations are cheaper while the codebase is small. "Newest" means the newest version that is **stable, supported by production, and supported by the rest of the toolchain** — not simply `latest`. ESLint 9 reached end of life on 2026-08-06, and Node 22 reaches it on 2027-04-30.
+
+Check what is behind, and what blocks each major:
+
+```bash
+pnpm outdated -r
+```
+
+```bash
+npm view typescript-eslint peerDependencies --json
+```
+
+Peer ranges answer "is this upgrade free?": `eslint-plugin-import` supports ESLint only up to 9, and typescript-eslint supports TypeScript `<6.1.0`. Do one upgrade group per pull request, so a failure points at one change. `main` is protected, so each goes through a branch.
+
+### Minor and patch versions
+
+```bash
+git switch -c deps/minor-patch
+```
+
+```bash
+pnpm up -r --latest '!eslint' '!@eslint/js' '!typescript' '!@types/node' '!eslint-plugin-boundaries'
+```
+
+`--latest` also moves exact pins such as `next`; the excluded packages get their own PRs (or follow the Node runtime). Pre-1.0 packages (`@supabase/ssr` 0.10 → 0.12) can break in a minor, so read their release notes, and smoke-test sign-up, sign-in and sign-out — CI does not exercise Supabase Auth.
+
+### Node 22 → 24
+
+Vercel offers 24.x (its default) and 22.x; 26 is not offered yet, so 24 is the newest major that matches production.
+
+```bash
+nvm install 24 && nvm alias default 24 && corepack enable
+```
+
+Set `.nvmrc` to `24` and `engines.node` to `"24.x"` — CI reads `.nvmrc`, Vercel deploys the `engines` major, and `engineStrict` makes pnpm refuse Node 22. Then:
+
+```bash
+pnpm --filter web add -D @types/node@^24
+```
+
+```bash
+pnpm --filter @sidekick/core add -D @types/node@^24
+```
+
+### TypeScript 5.9 → 6.0
+
+TypeScript 7 (the native Go compiler, GA July 2026) ships without a programmatic API; tools such as typescript-eslint keep running on 6.0 until 7.1's new API exists and they adopt it. 6.0 is the bridge.
+
+```bash
+pnpm add -D -w typescript@^6.0.3
+```
+
+```bash
+pnpm --filter web add -D typescript@^6.0.3
+```
+
+```bash
+pnpm --filter @sidekick/eslint-plugin-sidekick add -D typescript@^6.0.3
+```
+
+TypeScript 6 no longer infers `rootDir` when emitting (error `TS5011`). Add `"rootDir": "src"` to `compilerOptions` in every emitting config — `apps/cli/tsconfig.json`, `packages/features-registry/tsconfig.json`, `packages/ui/tsconfig.json`, and `packages/core/tsconfig.build.json` — which keeps TypeScript 5's output layout.
+
+Verify with Turbo's cache bypassed — a cached build from before the upgrade hides `TS5011`:
+
+```bash
+pnpm turbo build --force
+```
+
+### ESLint 9 → 10
+
+```bash
+pnpm remove -w eslint-plugin-import
+```
+
+```bash
+pnpm add -D -w eslint@^10 @eslint/js@^10 eslint-plugin-import-x@^4 eslint-plugin-boundaries@^7
+```
+
+```bash
+pnpm --filter web add -D eslint@^10 && pnpm --filter @sidekick/eslint-plugin-sidekick add -D eslint@^10
+```
+
+In `eslint.config.js`:
+
+1. Import import-x and the TypeScript resolver factory:
+
+```js
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import importX from 'eslint-plugin-import-x';
+```
+
+2. Share the project list, keep `import/resolver` (eslint-plugin-boundaries reads it), and add import-x's settings:
+
+```js
+const tsProjects = [
+  'tsconfig.base.json',
+  'apps/*/tsconfig.json',
+  'packages/*/tsconfig.json',
+  'packages/features/*/tsconfig.json',
+];
+```
+
+```js
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
+          project: tsProjects,
+        },
+      },
+      // import-x only parses these extensions when following imports (no-cycle,
+      // no-duplicates across files); its default omits TypeScript.
+      'import-x/extensions': ['.ts', '.tsx', '.cts', '.mts', '.js', '.jsx', '.cjs', '.mjs'],
+      'import-x/resolver-next': [
+        createTypeScriptImportResolver({
+          alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
+          project: tsProjects,
+        }),
+      ],
+```
+
+3. Register the plugin as `plugins: { 'import-x': importX }` and rename every `import/…` rule to `import-x/…` (`no-duplicates`, `first`, `newline-after-import`, `no-self-import`, `no-cycle`, `no-extraneous-dependencies`).
+
+4. Boundaries 7: rename `boundaries/no-unknown` to `boundaries/no-unknown-dependencies`, rename the `rules` option to `policies`, and wrap selectors in `element`:
+
+```js
+          policies: [
+            {
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { type: ['feature', 'registry', 'foundation'] } } },
+            },
+            {
+              from: { element: { type: 'registry' } },
+              allow: { to: { element: { type: ['feature', 'foundation'] } } },
+            },
+            {
+              from: { element: { type: 'feature' } },
+              allow: { to: { element: { type: 'foundation' } } },
+            },
+          ],
+```
+
+5. Add `'**/next-env.d.ts'` to `ignores` — Next.js generates it, and it imports build output under `.next/`.
+
+6. Prove every migrated rule still fires **from inside a package** with real temporary files — a duplicate import, a `core → copy` import, an import cycle, an undeclared dependency (a real package such as `prettier`), a raw-client import, and a `'use server'` file — then delete them. A green lint run alone proves nothing: a misconfigured plugin passes silently.
+
+### Renovate
+
+After the upgrade PRs merge, `renovate.json` keeps everything current, encoding the same rules:
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "America/New_York",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "platformAutomerge": true,
+  "postUpdateOptions": ["pnpmDedupe"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Minor and patch updates: one grouped PR, merged automatically once the CI `checks` job passes",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all minor and patch",
+      "automerge": true
+    },
+    {
+      "description": "Majors: one PR each, reviewed by a person, never merged automatically",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Node follows production: the newest major Vercel offers (pin-versions). Bump .nvmrc and engines deliberately.",
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "@types/node matches the Node runtime major in .nvmrc",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "24.x"
+    },
+    {
+      "description": "Blocked: typescript-eslint supports TypeScript <6.1; TypeScript 7 waits for 7.1's API and typescript-eslint support",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<6.1.0"
+    },
+    {
+      "description": "Third-party GitHub Actions are pinned to a commit SHA; first-party actions/* keep major tags (pin-versions)",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["!actions/**"],
+      "pinDigests": true
+    }
+  ]
+}
+```
+
+Validate it:
+
+```bash
+npx --yes --package renovate -- renovate-config-validator renovate.json
+```
+
+Then, in GitHub:
+
+1. Install the **Renovate** GitHub App for the repository. Because `renovate.json` already exists on `main`, it skips the onboarding PR.
+2. In **Settings → General → Pull Requests**, turn on **Allow auto-merge** — `platformAutomerge` uses GitHub's native auto-merge, which still waits for the `main` ruleset's `checks`.
+
+Renovate's **Dependency Dashboard** issue then lists every pending and blocked update.
 
 ---
 

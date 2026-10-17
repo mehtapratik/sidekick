@@ -2,7 +2,7 @@
 publish: false
 id: harness.standards-and-guidance.pin-versions
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-16
 ---
 
 # Pin every version
@@ -15,7 +15,7 @@ How strictly to pin depends on whether something already records the exact versi
 | --- | --- | --- |
 | npm dependencies | Semver range in `package.json`; the exact version comes from the lockfile | `pnpm-lock.yaml`, installed with `--frozen-lockfile` in CI |
 | Package manager | Exact version and hash | `packageManager` in `package.json` (Corepack) |
-| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float | CI workflow, scripts (e.g. `PG_MAJOR` in `tests/with-test-db.sh`) |
+| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float | `.nvmrc` + `engines` (Node 24), CI workflow, scripts (e.g. `PG_MAJOR` in `tests/with-test-db.sh`) |
 | CI machine image | Exact image, never `-latest` | `runs-on: ubuntu-24.04` |
 | GitHub Actions | First-party `actions/*`: major tag (`@v7`). Third-party: full commit SHA | Workflow files |
 
@@ -28,3 +28,4 @@ How strictly to pin depends on whether something already records the exact versi
 1. **Match production.** Where a production platform decides the version, local and CI pin to that major. Supabase runs PostgreSQL 17, so tests use 17 — not whatever the machine happens to have.
 2. **Fail loudly on a mismatch.** Scripts check the major version and stop with an install hint instead of quietly running with another version.
 3. **Upgrade deliberately.** Changing a pinned version is its own commit, reviewed like code.
+4. **Stay current.** Upgrade to the newest version that is stable, supported by production, and supported by the rest of the toolchain (peer ranges). End-of-life dates set deadlines. Renovate (`renovate.json`) does this weekly: minor and patch updates auto-merge once CI passes; majors are reviewed; production pins and known blockers are encoded as rules stating why.

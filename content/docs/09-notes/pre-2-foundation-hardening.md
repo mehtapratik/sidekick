@@ -4,7 +4,7 @@ id: notes.pre-2-foundation-hardening
 created: 2026-10-16
 updated: 2026-10-16
 kind: notes
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - pre-2
@@ -136,6 +136,7 @@ Resetting the database would not have saved the work: the same migrations are ne
 ## Boundaries and entry points (Pre-2.8, 2.9)
 
 - **`eslint-plugin-boundaries` classifies files by path**, first matching pattern wins, and imports inside one package are never checked. An import it cannot resolve cannot be classified, so the resolver must cover `packages/features/*`.
+- **Mistake: boundaries enforced nothing for days.** Element patterns match relative to `boundaries/root-path`, which defaults to the current directory. `pnpm lint` runs ESLint from inside each package, so every file was "unknown" and no boundary was ever checked — while every probe, run from the repo root, passed. Found during the ESLint 10 upgrade; fixed with `'boundaries/root-path': import.meta.dirname`. **Lesson: probe a rule exactly where and how it really runs.**
 - **Ask "where can a request enter the server?"**, not "where is the guard used?". In the App Router only `route.*` files become endpoints — but **Server Actions** (`'use server'`) are public POST endpoints whose IDs ship in the browser bundle, the **Pages Router** serves any file under `pages/api`, and **`pageExtensions`** changes which filenames count. Server Actions are banned ([[server-actions]]).
 - **Lint checks what you wrote; the build manifests show what Next.js will serve.** `verify-endpoints.mjs` reads them and fails on anything not lint-checked.
 - **App Router folders starting with `_` are private and never routed** — a probe named `__probe` silently tested nothing.
@@ -165,3 +166,17 @@ Resetting the database would not have saved the work: the same migrations are ne
 ## ESLint best practices
 
 Type-only imports (`import type`) are enforced by `verbatimModuleSyntax` in the compiler and by `consistent-type-imports` in the editor, so type-only modules never reach the bundle. Type-aware rules (`no-floating-promises`, `no-misused-promises`) read the TypeScript program — and therefore only run on files that belong to a `tsconfig`; a stdin probe pretending to be a file fails at parsing. React Hooks and Next.js rules were installed but never loaded before ([[eslint-best-practice-rules]]).
+
+---
+
+## Upgrading dependencies
+
+- **"Latest" and "free" are different.** Upgrade to the newest version that is stable, supported by production, and supported by the rest of the toolchain. Peer-dependency ranges answer most of it: `eslint-plugin-import` stops at ESLint 9; typescript-eslint stops below TypeScript 6.1. `@types/node` must follow the Node runtime, not `latest` (26).
+- **End-of-life dates set deadlines; features only add priority.** ESLint 9 reached end of life on 2026-08-06 (no more security fixes); Node 22 does on 2027-04-30.
+- **Do it while the codebase is small.** Migration cost is config (constant) plus fixing what the new versions flag (grows with code).
+- **TypeScript 7** is a native Go rewrite (about 10× faster) shipped without a programmatic API. Tools built on the old JavaScript API — typescript-eslint included — keep using TypeScript 6.0 side by side until 7.1's new, different API exists and they adopt it. Oxlint's tsgolint runs on TypeScript 7 already because it is built on the Go compiler's internals.
+- **Node majors follow the deployment platform.** Vercel offered 24.x and 22.x; 26 was not offered yet, so 24 was the ceiling.
+- **Turbo's cache can hide a broken build.** TypeScript 6 stopped inferring `rootDir` (`TS5011`), but a cached pre-upgrade build reported success. After any toolchain upgrade, verify with `turbo … --force`; CI has no cache and would have failed.
+- **A green lint run proves nothing after a plugin migration.** Moving to `eslint-plugin-import-x`, `no-cycle` went silent until `import-x/extensions` included TypeScript. Plant one violation per rule and watch each fire.
+- **One upgrade group per PR**, stacked, so a failure points at one change.
+- **Renovate encodes the policy:** grouped minor/patch PRs auto-merge once `checks` passes; majors are reviewed; a 3-day minimum release age skips bad or compromised releases; production pins and known blockers are rules with a `description` stating why.
