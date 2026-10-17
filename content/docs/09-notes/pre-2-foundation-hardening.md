@@ -1,9 +1,9 @@
 ---
-publish: true
-id: plan.pre-2
+publish: false
+id: notes.pre-2-foundation-hardening
 created: 2026-10-16
 updated: 2026-10-16
-kind: guidance
+kind: notes
 version: 1.0.0
 tags:
    - plan
@@ -21,7 +21,7 @@ applies_to:
    - "[[04-plans/pre-2-foundation-hardening-complete]]"
 ---
 
-This walkthrough records what Pre-2 taught, task by task: the mental models, the surprises, and the mistakes worth remembering. Pre-2 turned a foundation that worked on one machine into one that is reproducible, proven by tests, and enforced by tools.
+These notes record what Pre-2 taught, task by task: the mental models, the surprises, and the mistakes worth remembering. Pre-2 turned a foundation that worked on one machine into one that is reproducible, proven by tests, and enforced by tools.
 
 The thread running through every task: **prefer a mechanism that enforces over a document that advises, and prove each mechanism by watching it fail.**
 

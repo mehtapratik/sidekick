@@ -21,7 +21,7 @@ depends_on:
 >
 > **Learning payoff:** Database roles, RLS verification, PostgreSQL pooling, migrations, automated security tests, and enforcement through linting and CI.
 >
-> **Completed:** October 2026 — walkthrough in [[05-builds/pre-2-foundation-hardening]]
+> **Completed:** October 2026 — walkthrough in [[05-builds/pre-2-walkthrough]]
 
 | #        | Task                                                                                                                            | Complexity | Review source                                 | Status |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------- | ------ |

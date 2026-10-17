@@ -30,6 +30,7 @@ export const SECTIONS = [
    { dir: "06-decisions", slug: "decisions", label: "Decisions" },
    { dir: "07-glossary", slug: "glossary", label: "Glossary" },
    { dir: "08-ai-coding-harness", slug: "harness", label: "AI coding harness" },
+   { dir: "09-notes", slug: "notes", label: "Notes" },
 ];
 
 /** Acronyms and proper nouns for titles derived from file names (whole words, any case). */
