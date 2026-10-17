@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
 
       # pnpm version and hash come from package.json "packageManager"
       - name: Enable Corepack
@@ -33,6 +33,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - run: pnpm prettier:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm test
       # Production (Supabase) runs PostgreSQL 17; the runner image ships 16.
       # Install 17's tools from the official PostgreSQL apt repository (PGDG).
       # tests/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
@@ -40,9 +46,4 @@ jobs:
         run: |
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y --no-install-recommends postgresql-17
-
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm build
-      - run: pnpm test
       - run: pnpm test:integration

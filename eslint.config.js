@@ -289,6 +289,9 @@ export default defineConfig(
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules,
+      // Checks links to Pages Router pages only; the Pages Router is banned
+      // (see pagesRouterBan), and the rule warns when pages/ does not exist.
+      '@next/next/no-html-link-for-pages': 'off',
     },
   },
   // ── Styling ───────────────────────────────────────────────────────────────
