@@ -1,5 +1,6 @@
 import boundaries from 'eslint-plugin-boundaries';
-import importPlugin from 'eslint-plugin-import';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import importX from 'eslint-plugin-import-x';
 import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
@@ -68,6 +69,13 @@ const unsafeDbPatternBan = {
     'The raw database client runs queries without a user context. Use withRLS from "@sidekick/core/db" instead.',
 };
 
+const tsProjects = [
+  'tsconfig.base.json',
+  'apps/*/tsconfig.json',
+  'packages/*/tsconfig.json',
+  'packages/features/*/tsconfig.json',
+];
+
 export default defineConfig(
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -76,6 +84,11 @@ export default defineConfig(
       boundaries,
     },
     settings: {
+      // Element patterns are matched relative to this root. `pnpm lint` runs
+      // ESLint from inside each package (cwd = packages/core, …), where the
+      // default root (cwd) makes every file "unknown" and boundaries silently
+      // enforces nothing — so the repo root is set explicitly.
+      'boundaries/root-path': import.meta.dirname,
       // A file belongs to the first element whose pattern matches, so specific
       // patterns come before the catch-all `packages/*`.
       'boundaries/elements': [
@@ -86,21 +99,29 @@ export default defineConfig(
         // core, ui, copy
         { type: 'foundation', pattern: 'packages/*' },
       ],
+      // eslint-plugin-boundaries resolves imports through the `import/resolver`
+      // setting; eslint-plugin-import-x uses `import-x/resolver-next`. Both
+      // point at the same TypeScript projects.
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
           noWarnOnMultipleProjects: true,
-          project: [
-            'tsconfig.base.json',
-            'apps/*/tsconfig.json',
-            'packages/*/tsconfig.json',
-            'packages/features/*/tsconfig.json',
-          ],
+          project: tsProjects,
         },
       },
+      // import-x only parses these extensions when following imports (no-cycle,
+      // no-duplicates across files); its default omits TypeScript.
+      'import-x/extensions': ['.ts', '.tsx', '.cts', '.mts', '.js', '.jsx', '.cjs', '.mjs'],
+      'import-x/resolver-next': [
+        createTypeScriptImportResolver({
+          alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
+          project: tsProjects,
+        }),
+      ],
     },
     rules: {
-      'boundaries/no-unknown': 'error',
+      'boundaries/no-unknown-dependencies': 'error',
       // Dependency direction: apps → registry → features → foundation.
       // Everything not allowed here is disallowed. Imports within one package
       // are never checked. Foundation packages (core, ui, copy) and tooling
@@ -109,18 +130,18 @@ export default defineConfig(
         'error',
         {
           default: 'disallow',
-          rules: [
+          policies: [
             {
-              from: { type: 'app' },
-              allow: { to: { type: ['feature', 'registry', 'foundation'] } },
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { type: ['feature', 'registry', 'foundation'] } } },
             },
             {
-              from: { type: 'registry' },
-              allow: { to: { type: ['feature', 'foundation'] } },
+              from: { element: { type: 'registry' } },
+              allow: { to: { element: { type: ['feature', 'foundation'] } } },
             },
             {
-              from: { type: 'feature' },
-              allow: { to: { type: 'foundation' } },
+              from: { element: { type: 'feature' } },
+              allow: { to: { element: { type: 'foundation' } } },
             },
           ],
         },
@@ -140,7 +161,14 @@ export default defineConfig(
     },
   },
   {
-    ignores: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/.turbo/**'],
+    // Build output, and next-env.d.ts, which Next.js generates and rewrites
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.next/**',
+      '**/.turbo/**',
+      '**/next-env.d.ts',
+    ],
   },
   // ── Sidekick plugin rules ────────────────────────────────────────────────
   {
@@ -267,13 +295,13 @@ export default defineConfig(
   },
   {
     files: ['**/*.{ts,tsx,js,jsx,mjs,cjs}'],
-    plugins: { import: importPlugin },
+    plugins: { 'import-x': importX },
     rules: {
-      'import/no-duplicates': 'error',
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-self-import': 'error',
-      'import/no-cycle': 'error',
+      'import-x/no-duplicates': 'error',
+      'import-x/first': 'error',
+      'import-x/newline-after-import': 'error',
+      'import-x/no-self-import': 'error',
+      'import-x/no-cycle': 'error',
     },
   },
   // ── React and Next.js ─────────────────────────────────────────────────────
@@ -342,9 +370,9 @@ export default defineConfig(
     // Prevents phantom dependencies — packages silently relying on a dep
     // installed by a sibling package rather than their own package.json.
     files: ['**/*.ts', '**/*.tsx'],
-    plugins: { import: importPlugin },
+    plugins: { 'import-x': importX },
     rules: {
-      'import/no-extraneous-dependencies': [
+      'import-x/no-extraneous-dependencies': [
         'error',
         {
           // These file patterns are allowed to import devDependencies

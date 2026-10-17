@@ -25,14 +25,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9",
+    "@eslint/js": "^10.0.1",
     "@next/eslint-plugin-next": "16.4.2",
     "@sidekick/eslint-plugin-sidekick": "workspace:*",
     "dotenv-cli": "^11.0.0",
-    "eslint": "^9.39.4",
+    "eslint": "^10.12.0",
     "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-boundaries": "^6.0.2",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-boundaries": "^7.2.0",
+    "eslint-plugin-import-x": "^4.17.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
