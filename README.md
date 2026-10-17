@@ -26,7 +26,7 @@ Sidekick is designed to evolve safely: every feature is isolated into its own pa
 
 ### Prerequisites
 
-- Node.js 22 (the version CI uses)
+- Node.js 24 (from `.nvmrc`; the version CI and Vercel use)
 - Corepack enabled: `corepack enable`
 - Git
 - PostgreSQL 17 tools, for `pnpm test:integration` only: `brew install postgresql@17`
