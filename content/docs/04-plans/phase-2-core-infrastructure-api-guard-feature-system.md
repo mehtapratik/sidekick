@@ -2,8 +2,9 @@
 publish: true
 id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
+updated: 2026-10-16
 kind: plan
-version: 1.1.0
+version: 1.1.1
 tags:
    - plan
    - living-plan
@@ -16,13 +17,13 @@ tags:
 status: planned
 depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
-   - "[[04-plans/pre-2-foundation-hardening]]"
+   - "[[04-plans/pre-2-foundation-hardening-complete]]"
 ---
 
 > **Milestone:** The architectural backbone is live. `withApiGuard` is implemented and tested. The feature registry exists. You could add any feature safely from here.
 > **Learning payoff:** Middleware patterns, centralized auth, feature flags, the "why" behind the architecture.
 
-> **Gate:** Complete [[pre-2-foundation-hardening]] before beginning the original Phase 2 tasks.
+> **Gate:** ✅ Met — [[pre-2-foundation-hardening-complete]] was required before beginning the original Phase 2 tasks.
 
 | #    | Task                                                                                                                | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
