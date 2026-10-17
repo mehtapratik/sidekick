@@ -3,9 +3,9 @@ publish: true
 id: build.pre-2
 title: Pre-2 walkthrough
 created: 2026-10-16
-updated: 2026-10-16
+updated: 2026-10-17
 kind: guidance
-version: 1.1.0
+version: 1.1.1
 tags:
    - build
    - walkthrough
@@ -1580,9 +1580,8 @@ After the upgrade PRs merge, `renovate.json` keeps everything current, encoding 
       "automerge": false
     },
     {
-      "description": "Node follows production: the newest major Vercel offers (pin-versions). Bump .nvmrc and engines deliberately.",
+      "description": "Node is major-only on purpose (.nvmrc `24`, engines `24.x`): minor and patch versions arrive by themselves through nvm, setup-node and Vercel, and an exact version would make pnpm's engineStrict reject every other 24.x. Majors follow production (the newest Vercel offers) and are bumped deliberately (pin-versions).",
       "matchDepNames": ["node"],
-      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
@@ -1617,6 +1616,8 @@ Then, in GitHub:
 2. In **Settings → General → Pull Requests**, turn on **Allow auto-merge** — `platformAutomerge` uses GitHub's native auto-merge, which still waits for the `main` ruleset's `checks`.
 
 Renovate's **Dependency Dashboard** issue then lists every pending and blocked update.
+
+Check the dashboard's *Detected Dependencies* after the first scan: it shows exactly what Renovate would change. Its first scan proposed rewriting `.nvmrc` and `engines.node` to an exact Node version, which is why the Node rule disables all Node updates, not just majors.
 
 ---
 

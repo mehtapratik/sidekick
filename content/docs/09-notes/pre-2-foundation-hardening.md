@@ -2,9 +2,9 @@
 publish: false
 id: notes.pre-2-foundation-hardening
 created: 2026-10-16
-updated: 2026-10-16
+updated: 2026-10-17
 kind: notes
-version: 1.1.0
+version: 1.1.1
 tags:
    - plan
    - pre-2
@@ -179,4 +179,5 @@ Type-only imports (`import type`) are enforced by `verbatimModuleSyntax` in the 
 - **Turbo's cache can hide a broken build.** TypeScript 6 stopped inferring `rootDir` (`TS5011`), but a cached pre-upgrade build reported success. After any toolchain upgrade, verify with `turbo … --force`; CI has no cache and would have failed.
 - **A green lint run proves nothing after a plugin migration.** Moving to `eslint-plugin-import-x`, `no-cycle` went silent until `import-x/extensions` included TypeScript. Plant one violation per rule and watch each fire.
 - **One upgrade group per PR**, stacked, so a failure points at one change.
+- **Read the bot's plan before trusting it.** Renovate's first Dependency Dashboard proposed `.nvmrc` 24 → 24.22.0 and `engines.node` 24.x → 24.22.0 — an exact pin that, with `engineStrict`, would reject every other Node 24. A rule disabling only Node *majors* was not enough; Node updates are now disabled entirely.
 - **Renovate encodes the policy:** grouped minor/patch PRs auto-merge once `checks` passes; majors are reviewed; a 3-day minimum release age skips bad or compromised releases; production pins and known blockers are rules with a `description` stating why.
