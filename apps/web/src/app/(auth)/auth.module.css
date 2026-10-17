@@ -1,6 +1,6 @@
 .container {
   padding: var(--mantine-spacing-xl);
-  width: 420px;
+  width: 520px;
 }
 
 .title {
@@ -15,4 +15,8 @@
   text-align: center;
   font-size: var(--mantine-font-size-sm);
   line-height: var(--mantine-line-height-sm);
+}
+
+.unverifiedEmailText {
+  margin-bottom: 0.5em;
 }
