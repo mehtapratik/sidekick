@@ -27,9 +27,8 @@
       "automerge": false
     },
     {
-      "description": "Node follows production: the newest major Vercel offers (pin-versions). Bump .nvmrc and engines deliberately.",
+      "description": "Node is major-only on purpose (.nvmrc `24`, engines `24.x`): minor and patch versions arrive by themselves through nvm, setup-node and Vercel, and an exact version would make pnpm's engineStrict reject every other 24.x. Majors follow production (the newest Vercel offers) and are bumped deliberately (pin-versions).",
       "matchDepNames": ["node"],
-      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
