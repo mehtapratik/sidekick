@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import { type SupabaseClient } from '@supabase/supabase-js';
 import type { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -6,10 +7,7 @@ import type { NextRequest, NextResponse } from 'next/server';
  * Uses request/response cookies directly — never import next/headers here.
  * For Server Components and Route Handlers, use createServerClient() instead.
  */
-export function createProxyClient(
-  request: NextRequest,
-  response: NextResponse,
-): ReturnType<typeof createServerClient> {
+export function createProxyClient(request: NextRequest, response: NextResponse): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 

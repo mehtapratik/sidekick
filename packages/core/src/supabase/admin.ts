@@ -1,8 +1,8 @@
 import 'server-only';
 
-import { createClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
-export function createAdminClient(): ReturnType<typeof createClient> {
+export function createAdminClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.SUPABASE_SECRET_KEY!;
 
