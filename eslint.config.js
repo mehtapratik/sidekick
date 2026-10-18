@@ -264,6 +264,16 @@ export default defineConfig(
     },
   },
   {
+    // Object shapes are interfaces: `extends` reports clearer errors and
+    // type-checks faster than `&` intersections. The rule flags only
+    // `type X = { … }`, so unions, tuples, function, mapped and conditional
+    // types stay `type`, which is where an interface can't express them.
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    },
+  },
+  {
     // Type-aware rules: they read the TypeScript program, so they catch what
     // syntax alone cannot — above all, promises nobody awaits or handles
     // (a forgotten `await` on a database write fails silently).
