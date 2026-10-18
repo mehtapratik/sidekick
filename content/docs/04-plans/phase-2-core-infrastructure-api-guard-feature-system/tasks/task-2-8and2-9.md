@@ -1,10 +1,11 @@
 ---
 publish: true
 id: plan.phase-2.task-2-8and2-9
-title: "Tasks 2.8 and 2.9: entitlements table and getEnabledFeatures"
+title: "Lesson 3 (tasks 2.8, 2.9): entitlements table and getEnabledFeatures"
 created: 2026-10-18
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 2.0.0
 tags:
    - plan
    - phase-2
@@ -18,37 +19,30 @@ tags:
 status: planned
 ---
 
-> **Handoff:** wave 1, runs alongside [[task-2-1]] and [[task-2-6and2-7]]. Depends on nothing. [[task-2-2and2-3]] and [[task-2-10]] wait for it.
+> **Lesson 3 of 8.** Before this: [[task-2-1|lesson 2]]. Next: [[task-2-2and2-3|lesson 4]]. The coach follows [[contracts#Coaching rules|the coaching rules]]. The answer key is [[contracts#Entitlements|Entitlements]].
 
-**Goal:** store which features each user has, readable only by that user and writable by no one at runtime. Then read it inside an RLS transaction ([[contracts#Entitlements|contract]]).
+**What Pratik builds:** the `user_feature_entitlements` table with its RLS policy and grants, `getEnabledFeatures(tx)`, and integration tests that prove a user can read only their own entitlements and can never grant one to themselves.
 
-**Read first:** [[contracts]], [[row-level-security]], [[migration]], [[05-builds/pre-2-walkthrough]] (Pre-2.1, Pre-2.5), `packages/core/src/db/migrations/0002_profiles_rls_policy.sql`, `packages/core/tests/integration/rls.test.ts`.
+**Concepts:** Drizzle schema and generated migrations, custom SQL migrations, RLS policies per command (`FOR SELECT` vs. `FOR ALL`), `FORCE ROW LEVEL SECURITY`, `GRANT`/`REVOKE` as a second wall, foreign keys with `ON DELETE CASCADE`, and integration tests on a throwaway database.
 
-## Build
+**Coach reads first:** [[contracts]], [[row-level-security]], [[migration]], [[05-builds/pre-2-walkthrough]] (Pre-2.1, Pre-2.5), `packages/core/src/db/` and `packages/core/tests/` in the Sidekick repo.
 
-1. Add `packages/core/src/db/schema/user-feature-entitlements.ts` (`userFeatureEntitlements`) and export it from `schema/index.ts`.
-2. Generate the table migration with `drizzle-kit generate` from `packages/core`. Generating doesn't connect to a database, but `drizzle.config.ts` requires `DATABASE_DIRECT_URL` to be set, so any placeholder value works. Then add a second, custom migration (`drizzle-kit generate --custom --name=user_feature_entitlements_rls`) that:
-   - enables and forces RLS,
-   - creates the `SELECT`-only own-rows policy (drop it first, the way `0002` does, so it's safe to re-run),
-   - runs `REVOKE INSERT, UPDATE, DELETE ON user_feature_entitlements FROM app_runtime;`. This is needed because `0001`'s default privileges grant `app_runtime` full DML on every new table.
+## Steps
 
-   Comment the SQL the way `0002` is commented. Never edit applied migrations or `meta/_journal.json` by hand.
+1. **Design the table.** Ask: "Which columns do we need? Can a user have the same feature twice? What happens to their rows when the user is deleted?" Pratik sketches the columns, then writes the Drizzle schema in `src/db/schema/user-feature-entitlements.ts` and exports it.
+2. **Generate the migration.** Pratik runs `drizzle-kit generate` from `packages/core` and reads the SQL it produced. Explain the journal, and why applied migrations are never edited.
+3. **Lock it down.** This is the core of the lesson. Ask: "Who should be able to insert a row here?" Pratik writes a custom migration (`drizzle-kit generate --custom`) that enables and forces RLS, adds a `SELECT`-only own-rows policy, and revokes `INSERT`/`UPDATE`/`DELETE` from `app_runtime`. Use `0001`'s default privileges to show why the `REVOKE` is needed. Pratik comments the SQL in their own words.
+4. **Read it.** Pratik writes `getEnabledFeatures(tx)` in `src/features/entitlements.ts`. Ask why it takes `tx` and not `userId`, and compare their answer with the contract.
+5. **Prove it.** Pratik installs PostgreSQL 17 tools if needed, reads `tests/with-test-db.sh` and `rls.test.ts`, then writes `tests/integration/entitlements.test.ts`. It proves that users see only their own rows, that a context-free query sees none, that `app_runtime` can't insert, and that rows cascade on delete. Pratik breaks the policy, the `REVOKE` and the FK one at a time and watches each test fail.
+6. **Apply to dev.** Pratik runs `pnpm db:migrate` against the dev Supabase project and checks the table in the Supabase dashboard.
+7. **Verify and ship.**
 
-3. Create `packages/core/src/features/entitlements.ts` with `getEnabledFeatures(tx)`, returning `feature_slug` values.
-4. Extend the integration tests with a new `tests/integration/entitlements.test.ts`. Insert rows with a privileged connection to the test cluster, because `app_runtime` can't insert. If the tests need a privileged URL, export one from `tests/with-test-db.sh`. Prove:
-   - each user sees only their own entitlements through `withRLS` and `getEnabledFeatures`,
-   - with no user context, `app_runtime` sees zero rows,
-   - `app_runtime` can't `INSERT` an entitlement even for its own user id (permission denied),
-   - deleting a profile cascades to its entitlements.
+## Check understanding
 
-## Done when
+- RLS and `REVOKE` both block the insert. Why keep both?
+- What would `FORCE` change if `app_runtime` owned the table?
+- Why does a context-free query return zero rows instead of an error?
 
-- `pnpm test:integration` passes. Each assertion fails when you remove the policy, the `REVOKE` or the FK.
-- `pnpm turbo lint typecheck build test --force` passes.
-- The PR description lists the two migration files and says the migration still has to be applied to the live Supabase project with `pnpm db:migrate`. Only Pratik can do that, because it needs `.env.local`.
+**Done when:** Pratik's PR is green, the migration is applied to dev, and they can answer the questions above.
 
-## Out of scope
-
-Seeding rows ([[task-2-10]]), the guard, and admin UI for entitlements.
-
-**Learning focus:** RLS policies per command (`FOR SELECT` vs `FOR ALL`), `GRANT`/`REVOKE` as a second, independent wall, and why the table owner needs `FORCE`.
+**Out of scope:** seeding rows (lesson 7), the guard, and admin UI.

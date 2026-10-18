@@ -1,10 +1,11 @@
 ---
 publish: true
 id: plan.phase-2.task-2-11and2-12
-title: "Tasks 2.11 and 2.12: /api/health and guard verification"
+title: "Lesson 6 (tasks 2.11, 2.12): /api/health and guard verification"
 created: 2026-10-18
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 2.0.0
 tags:
    - plan
    - phase-2
@@ -16,29 +17,34 @@ tags:
 status: planned
 ---
 
-> **Handoff:** wave 3, runs alongside [[task-2-4and2-5]]. Starts after [[task-2-2and2-3]] is merged.
+> **Lesson 6 of 8.** Before this: [[task-2-4and2-5|lesson 5]]. Next: [[task-2-10|lesson 7]]. The coach follows [[contracts#Coaching rules|the coaching rules]]. The answer key is [[contracts#Guard|Guard]].
 
-**Goal:** the first real API route. It proves the guard chain works end to end inside Next.js, and that the lint rule and endpoint check accept it.
+**What Pratik builds:** the first real API route, `GET /api/health`, wrapped in `withApiGuard`. Then Pratik proves the 401, 200 and 403 behaviour end to end.
 
-**Read first:** [[contracts]], [[with-api-guard]], `apps/web/scripts/verify-endpoints.mjs`, `apps/web/src/proxy.ts`.
+**Concepts:** App Router route handlers, why the proxy skips `/api`, the two layers that keep routes guarded (lint plus the build manifest check), and testing HTTP by hand with `curl -i`.
 
-## Build
+**Coach reads first:** [[contracts]], [[with-api-guard]], `apps/web/scripts/verify-endpoints.mjs`, `apps/web/src/proxy.ts`.
 
-1. Create `apps/web/src/app/api/health/route.ts` with `export const GET = withApiGuard(handler)`, importing `withApiGuard` from `@sidekick/core/api`. No `feature` option: health must not depend on an entitlement. Respond `{ status: 'ok' }`.
-2. Confirm the guard rule bites. Change the export to `export async function GET()`, watch `pnpm lint` (run inside `apps/web`) fail, then put it back.
-3. `pnpm --filter web build` must pass, including `verify-endpoints.mjs`, and must list `/api/health` as a route handler.
-4. Task 2.12 (401/403): the 403 `FEATURE_DISABLED` path is proven by [[task-2-2and2-3]]'s integration test, since no feature exists yet. Here, add a manual check to the PR for Pratik to run with `pnpm dev`:
-   - `curl -i localhost:3000/api/health` returns 401 with `{"error":"Unauthorized","code":"UNAUTHENTICATED"}`,
-   - with a signed-in browser session, the same URL returns 200,
+## Steps
+
+1. **Route handlers.** Explain App Router `route.ts` files. Pratik creates `apps/web/src/app/api/health/route.ts`.
+2. **Break it first.** Pratik writes an unguarded `export async function GET()`, runs `pnpm lint` inside `apps/web`, and reads the error. Then Pratik wraps it with `withApiGuard` and returns `{ status: 'ok' }`. Ask: "Should health require a feature?"
+3. **Build check.** Pratik runs `pnpm --filter web build` and finds `/api/health` in the endpoint check's output. Explain what `verify-endpoints.mjs` catches that lint can't.
+4. **Try it.** Pratik runs `pnpm dev`. Then:
+   - `curl -i localhost:3000/api/health` returns 401 with the error shape,
+   - the same URL in a signed-in browser returns 200,
    - `curl -i -H 'Authorization: Bearer x' …` returns 401.
 
-## Done when
+   Pratik reads the guard's log lines from lesson 5 in the terminal.
 
-- Lint, typecheck and build pass, with the endpoint check listing the route.
-- Pratik has run the manual check and its result is noted in the PR.
+5. **403.** With no features registered yet, Pratik shows the 403 path by re-running lesson 4's integration test. Ask why health doesn't cover it.
+6. **Verify and ship.** The PR description records the curl results.
 
-## Out of scope
+## Check understanding
 
-Unauthenticated health or liveness probes for hosting, which would need a deliberate exception to the guard rule (ask first). Also out of scope: Playwright or end-to-end tests.
+- Why would a public health check for hosting need a deliberate exception, and who should decide?
+- What does `curl -i` show that the browser hides?
 
-**Learning focus:** App Router route handlers, why the proxy skips `/api`, and the two layers that keep routes guarded (lint plus the build manifest check).
+**Done when:** Pratik's PR is green, the curl results are in the PR, and they can answer the questions above.
+
+**Out of scope:** public liveness probes and end-to-end test tooling.

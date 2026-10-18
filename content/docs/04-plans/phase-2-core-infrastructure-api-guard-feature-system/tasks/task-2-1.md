@@ -1,10 +1,11 @@
 ---
 publish: true
 id: plan.phase-2.task-2-1
-title: "Task 2.1: resolveApiCaller"
+title: "Lesson 2 (task 2.1): resolveApiCaller"
 created: 2026-10-18
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 2.0.0
 tags:
    - plan
    - phase-2
@@ -16,28 +17,30 @@ tags:
 status: planned
 ---
 
-> **Handoff:** wave 1, runs alongside [[task-2-6and2-7]] and [[task-2-8and2-9]]. Depends on nothing. [[task-2-2and2-3]] waits for it.
+> **Lesson 2 of 8.** Before this: [[task-2-6and2-7|lesson 1]]. Next: [[task-2-8and2-9|lesson 3]]. The coach follows [[contracts#Coaching rules|the coaching rules]]. The answer key is [[contracts#Caller|Caller]].
 
-**Goal:** answer "who is calling?" for any API request. Implement `resolveApiCaller(req)` exactly as [[contracts#Caller|the contract]] defines it.
+**What Pratik builds:** `resolveApiCaller(req)` in `packages/core/src/api/auth.ts`. It answers "who is calling?" for every API request.
 
-**Read first:** [[contracts]], [[authentication]], `packages/core/src/supabase/server.ts`, `apps/web/src/proxy.ts`.
+**Concepts:** cookie sessions vs. Bearer tokens, how Supabase reads a session from cookies on the server, discriminated unions, failing closed, and mocking a module in Vitest.
 
-## Build
+**Coach reads first:** [[contracts]], [[authentication]], `packages/core/src/supabase/server.ts`, `apps/web/src/proxy.ts`.
 
-1. Create `packages/core/src/api/auth.ts` with `import 'server-only'` at the top, the `ApiCaller` type and `resolveApiCaller`.
-2. If `req` has an `Authorization` header that starts with `Bearer ` (case-insensitive scheme), return `null`. Add a comment pointing at Phase 9 task 9.4.
-3. Otherwise call `createServerClient()` from `../supabase/server` and `supabase.auth.getUser()`. It validates the session with Supabase Auth, the same way the proxy does. Return `{ kind: 'session', userId: user.id }` when there is a user. Return `null` when there is no user or Auth returns an error.
-4. Don't catch errors thrown by `createServerClient()` (for example, missing env vars). They are loud failures ([[error-handling]]).
-5. Add `packages/core/src/api/auth.test.ts` (Vitest, `vi.mock('../supabase/server')`). Cover: a session user resolves; no user gives `null`; an Auth error gives `null`; a Bearer header gives `null` without calling Supabase; a Bearer header plus a valid session still gives `null`.
+## Steps
 
-## Done when
+1. **The problem.** The coach explains that the proxy deliberately skips `/api`, so API routes must authenticate themselves. Pratik reads `proxy.ts` and finds the line that skips them.
+2. **Design the return type.** Ask: "What does the guard need to know about a caller? What should it get when nobody is signed in?" Pratik writes `ApiCaller`. Then introduce discriminated unions (`kind`) if Pratik hasn't reached for them, and say why an `apiKey` variant exists before Phase 9.
+3. **Session path.** Pratik writes the function using `createServerClient()` and `supabase.auth.getUser()`. Teach why `getUser()` is used, not `getSession()`, and why a thrown env-var error should stay loud ([[error-handling]]).
+4. **Bearer path.** Ask: "Phase 9 hasn't built API keys yet. What's the safe answer for a Bearer header today?" Pratik implements "always no caller" and adds a comment pointing at task 9.4.
+5. **`server-only`.** Ask Pratik to predict what `import 'server-only'` protects against, then add it.
+6. **Test it.** Pratik writes `src/api/auth.test.ts` with `vi.mock('../supabase/server')`. The cases are: a session user, no user, an Auth error, a Bearer header, and a Bearer header plus a session. Then Pratik breaks the Bearer check on purpose and watches a test fail.
+7. **Verify and ship.** Pratik runs the CI-equivalent checks, then commits and opens the PR.
 
-- `pnpm --filter @sidekick/core test` passes, and each test fails when you break the branch it covers.
-- `pnpm turbo lint typecheck build --force` passes.
-- No `exports` entry is added. The guard imports this file relatively.
+## Check understanding
 
-## Out of scope
+- Why does a Bearer header beat a valid cookie, instead of falling back to it?
+- What would go wrong if `resolveApiCaller` returned `{ userId: undefined }` instead of `null`?
+- What does `vi.mock` replace, and when does that happen?
 
-The `api_keys` table, any Bearer key lookup, `getClaims()`, and changes to the proxy.
+**Done when:** Pratik's PR is green, and they can answer the questions above.
 
-**Learning focus:** discriminated unions (`kind`), why "unknown" must fail closed, and mocking a module in Vitest.
+**Out of scope:** the `api_keys` table, any key lookup, and proxy changes.

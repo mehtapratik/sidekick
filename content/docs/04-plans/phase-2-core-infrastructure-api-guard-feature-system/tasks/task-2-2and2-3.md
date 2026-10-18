@@ -1,10 +1,11 @@
 ---
 publish: true
 id: plan.phase-2.task-2-2and2-3
-title: "Tasks 2.2 and 2.3: withApiGuard with withRLS"
+title: "Lesson 4 (tasks 2.2, 2.3): withApiGuard with withRLS"
 created: 2026-10-18
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 2.0.0
 tags:
    - plan
    - phase-2
@@ -17,31 +18,32 @@ tags:
 status: planned
 ---
 
-> **Handoff:** wave 2. Starts after [[task-2-1]] and [[task-2-8and2-9]] are merged. [[task-2-4and2-5]] and [[task-2-11and2-12]] wait for it.
+> **Lesson 4 of 8.** Before this: [[task-2-8and2-9|lesson 3]]. Next: [[task-2-4and2-5|lesson 5]]. The coach follows [[contracts#Coaching rules|the coaching rules]]. The answer key is [[contracts#Guard|Guard]] and [[contracts#Error shape|Error shape]].
 
-**Goal:** the single wrapper every route handler goes through. It runs auth, scope, RLS context and feature entitlement, in [[contracts#Guard|the contract's order]], with the [[contracts#Error shape|error shape]].
+**What Pratik builds:** `withApiGuard(handler, opts)`, the one wrapper every API route goes through. It ties together lessons 2 and 3 and `withRLS`.
 
-**Read first:** [[contracts]], [[with-api-guard]], [[centralized-and-client-agnostic]], [[error-handling]], `packages/core/src/db/rls.ts`, `packages/eslint-plugin-sidekick/src/rules/require-api-guard.ts`.
+**Concepts:** higher-order functions, generics, centralized security ([[centralized-and-client-agnostic]]), ordering checks so the cheap ones run first, one transaction per request, commit vs. rollback, and a consistent error shape.
 
-## Build
+**Coach reads first:** [[contracts]], [[with-api-guard]], [[error-handling]], `packages/core/src/db/rls.ts`, `packages/eslint-plugin-sidekick/src/rules/require-api-guard.ts`.
 
-1. Create `packages/core/src/api/guard.ts` (`import 'server-only'`) with `GuardOptions`, `ApiHandler`, `withApiGuard` and a small private helper that builds error responses.
-2. Create `packages/core/src/api/index.ts` exporting `withApiGuard` and the types `GuardOptions`, `ApiHandler` and `ApiCaller`. Add `"./api": "./src/api/index.ts"` to `packages/core/package.json` `exports`.
-3. Unit tests in `src/api/guard.test.ts`, mocking `./auth`, `../db/rls` and `../features/entitlements`. Cover each row of the error table, the check order (no transaction opens for a 401 or a scope 403), that session callers skip the scope check, that `ctx` is passed through, and that a thrown handler error becomes a 500 with no details in the body.
-4. Integration test in `tests/integration/guard.test.ts`, with the real database and only `resolveApiCaller` mocked:
-   - an entitled user gets 200 for `feature: 'test-feature'`,
-   - a user without the entitlement gets 403 `FEATURE_DISABLED`,
-   - the handler's `tx` sees only the caller's profile,
-   - a handler that writes and then throws leaves no row behind (rollback).
+## Steps
 
-## Done when
+1. **Why a wrapper.** Pratik reads the `require-api-guard` lint rule and explains in their own words what it forces. The coach explains higher-order functions with a tiny, unrelated example, such as a `withTiming(fn)` wrapper.
+2. **Design the order.** Ask: "Auth, scope, feature, RLS. In what order, and which of these need the database?" Pratik writes the order down before coding. Compare it with the contract and discuss any difference.
+3. **Types.** Pratik writes `GuardOptions` and `ApiHandler<Ctx>`. Teach generics through `Ctx`, which is Next.js's second route-handler argument.
+4. **The guard.** Pratik writes `withApiGuard` in `src/api/guard.ts`, with a small helper for error responses that follows the error-shape table.
+5. **Errors.** Ask: "If the handler throws halfway through a write, what should happen to the write and to the response?" Pratik adds the catch: roll back, log, and send a generic 500.
+6. **Export it.** Pratik adds `src/api/index.ts` and the `./api` entry in `exports`.
+7. **Unit tests.** Pratik writes `src/api/guard.test.ts` with `./auth`, `../db/rls` and `../features/entitlements` mocked. It covers each error row, that no transaction opens for a 401, that session callers skip the scope check, that `ctx` is passed through, and that a throw becomes a 500.
+8. **Integration test.** Pratik writes `tests/integration/guard.test.ts` against the real database, mocking only `resolveApiCaller`. It covers entitled vs. not entitled, the handler seeing only its own profile, and a rollback on throw. Pratik removes the feature check once and watches the test fail.
+9. **Verify and ship.**
 
-- Unit and integration tests pass, and each one fails when the check it covers is removed.
-- `pnpm turbo lint typecheck build test --force` and `pnpm test:integration` pass.
-- A route written as in the [[with-api-guard]] example type-checks against `withApiGuard`. Try it in a scratch file and don't commit it; [[task-2-11and2-12]] adds the real route.
+## Check understanding
 
-## Out of scope
+- Why does the scope check run before the transaction opens, while the feature check runs inside it?
+- What does the client see when the handler throws, and why nothing more?
+- If a handler returns a 400 after writing a row, is the row kept? Should it be?
 
-Logging ([[task-2-4and2-5]]), Zod input validation, Bearer key lookup and `lastUsedAt` (Phase 9), and changes to the lint rule.
+**Done when:** Pratik's PR is green, and they can answer the questions above.
 
-**Learning focus:** higher-order functions (a function that returns a handler), generics (`Ctx`), why the request runs inside one transaction, and what commit and rollback mean for a handler.
+**Out of scope:** logging (lesson 5), Zod validation, and API keys (Phase 9).

@@ -1,10 +1,11 @@
 ---
 publish: true
 id: plan.phase-2.task-2-10
-title: "Task 2.10: dev entitlement seed script"
+title: "Lesson 7 (task 2.10): dev entitlement seed script"
 created: 2026-10-18
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 2.0.0
 tags:
    - plan
    - phase-2
@@ -15,27 +16,27 @@ tags:
 status: planned
 ---
 
-> **Handoff:** wave 2, runs alongside [[task-2-2and2-3]]. Starts after [[task-2-6and2-7]] and [[task-2-8and2-9]] are merged.
+> **Lesson 7 of 8.** Before this: [[task-2-11and2-12|lesson 6]]. Next: close-out in [[phase-2-core-infrastructure-api-guard-feature-system|the plan]]. The coach follows [[contracts#Coaching rules|the coaching rules]]. The answer key is [[contracts#Entitlements|Entitlements]].
 
-**Goal:** one command that enables every feature in `ALL_FEATURES` for a given account during development.
+**What Pratik builds:** a command that enables every feature in `ALL_FEATURES` for one account in the dev database.
 
-**Read first:** [[contracts#Entitlements|entitlements contract]], [[08-ai-coding-harness/commands-and-environment|commands and environment]], `.env.example`.
+**Concepts:** Node scripts in a monorepo, environment files, privileged vs. runtime database roles, idempotent inserts (`ON CONFLICT DO NOTHING`), dry runs, and clear failure messages.
 
-## Build
+**Coach reads first:** [[contracts]], [[08-ai-coding-harness/commands-and-environment|commands and environment]], `.env.example`, Pratik's lesson 1 and lesson 3 code.
 
-1. Create `packages/features-registry/scripts/seed-dev-entitlements.ts`. It lives in the registry because the registry may import foundation packages, but `packages/core` can't import the registry.
-2. Usage: `pnpm --filter @sidekick/features-registry seed:dev -- --email <address> [--dry-run]`. Load the root `.env.local` with `dotenv-cli`, as `db:migrate` does.
-3. Connect with `postgres` to `DATABASE_DIRECT_URL`, because `app_runtime` can't write entitlements. Look up the profile id by email, then for each slug run `INSERT … ON CONFLICT (user_id, feature_slug) DO NOTHING`. Print what it did. Exit non-zero with a clear message when `DATABASE_DIRECT_URL` is missing or the email has no profile. With `ALL_FEATURES` empty, it says "no features registered" and exits 0.
-4. Run it with Node 24's built-in TypeScript support if importing `../src/index.ts` works without tsconfig changes. Otherwise add `tsx` as a devDependency. Say which you chose in the PR.
+## Steps
 
-## Done when
+1. **Where does it live?** Ask: "Which package may import both the registry and the database schema?" Pratik places the script in `packages/features-registry/scripts/` and explains why.
+2. **Which connection?** Ask why `DATABASE_URL` (`app_runtime`) can't do this. Pratik connects with `DATABASE_DIRECT_URL`.
+3. **Write it.** Pratik writes the script: look up the profile by email, insert one row per slug with `ON CONFLICT DO NOTHING`, and print what happened. It fails clearly when the env var or the profile is missing, and supports `--dry-run`.
+4. **Run it.** Pratik adds a `seed:dev` script and runs it with Node 24's built-in TypeScript support, or with `tsx` if that doesn't work. With `ALL_FEATURES` empty, Pratik temporarily adds a test manifest to see a row land in the dev database, then removes the manifest and the row.
+5. **Verify and ship.**
 
-- `--dry-run` prints the plan without writing anything.
-- Pratik has run it against the dev project after [[task-2-8and2-9]]'s migration is applied. The script can't run from a cloud container, because it needs `.env.local`.
-- `pnpm turbo lint typecheck build --force` passes.
+## Check understanding
 
-## Out of scope
+- Why run it twice in a row? What should the second run print?
+- Why must this script never run against production as it stands?
 
-A disable command (disable by deleting the row, documented in the walkthrough), production use, and admin UI.
+**Done when:** Pratik's PR is green, and the script has been run against dev.
 
-**Learning focus:** why a seed script uses the privileged connection, idempotent inserts, and keeping scripts out of the app bundle.
+**Out of scope:** a disable command (delete the row; this goes in the walkthrough) and admin UI.
