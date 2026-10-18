@@ -4,7 +4,7 @@ id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
 updated: 2026-10-18
 kind: plan
-version: 2.0.0
+version: 2.1.0
 tags:
    - plan
    - living-plan
@@ -44,7 +44,7 @@ depends_on:
 
 ## Lessons
 
-Phase 2 is a course. Pratik writes every line of code and runs every command. The agent is the teacher and coach, following [[contracts#Coaching rules|the coaching rules]]. Lessons run one at a time, in this order, each in its own thread. A lesson starts only after the previous lesson's PR is merged. The order starts with the smallest, self-contained work and builds up to the guard.
+Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#How we build|how we build]]). By default the coach hands over one small, explained piece at a time, and the two discuss it before it's final. Pratik writes the steps they call core themselves, and can ask the coach to code work with no learning payoff. Lessons run one at a time, in this order, each in its own thread. A lesson starts only after the previous lesson's PR is merged. The order starts with the smallest, self-contained work and builds up to the guard.
 
 | Lesson | Brief                | Tasks      | What Pratik learns                                          |
 | ------ | -------------------- | ---------- | ----------------------------------------------------------- |
@@ -60,13 +60,13 @@ Phase 2 is a course. Pratik writes every line of code and runs every command. Th
 **To start a lesson,** open a new thread and paste this, changing the lesson number:
 
 ```
-Coach me through Phase 2 lesson 1. I write all the code myself in my sidekick
-folder; you teach, review and check my understanding. Read AGENTS.md,
+Coach me through Phase 2 lesson 1, piece by piece as contracts.md describes:
+hand me one explained piece at a time, and I'll say which ones I write myself. Read AGENTS.md,
 docs/04-plans/phase-2-core-infrastructure-api-guard-feature-system/contracts.md
 and that lesson's brief (the plan's Lessons table links each one) before we start.
 ```
 
-Every brief has the same parts: what Pratik builds, the concepts, what the coach reads first, numbered steps (explain, ask, Pratik does it, review, prove it), questions to check understanding, and when the lesson is done. The target design in [[contracts]] is the coach's answer key. It is not shown up front, and it changes when Pratik's own design wins.
+Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[contracts]], which changes when Pratik's own design wins.
 
 **Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`).
 

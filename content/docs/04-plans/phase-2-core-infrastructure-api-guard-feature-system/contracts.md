@@ -1,10 +1,10 @@
 ---
 publish: true
 id: plan.phase-2.contracts
-title: Phase 2 coaching rules and target design
+title: Phase 2 build rules and target design
 created: 2026-10-18
 kind: plan
-version: 2.0.0
+version: 2.1.0
 updated: 2026-10-18
 tags:
    - plan
@@ -18,35 +18,36 @@ tags:
 status: planned
 ---
 
-Phase 2 is a course, and Pratik is the student. Pratik builds Sidekick to learn full-stack development by doing it, so **Pratik writes every line of code and runs every command**. The agent is a teacher and coach, not an implementer. The lessons run one at a time, in the order in [[phase-2-core-infrastructure-api-guard-feature-system|the Phase 2 plan]]. Each lesson is its own thread.
+Phase 2 is built piece by piece, with Pratik learning as it goes. The general rules are in the agent guide's [[agent-guide#Working with Pratik|Working with Pratik]]: build fast, never vibe-code. This note adds what's specific to Phase 2. The lessons run one at a time, in the order in [[phase-2-core-infrastructure-api-guard-feature-system|the Phase 2 plan]], and each lesson is its own thread.
 
-This note has two parts: the rules every coaching session follows, and the target design. The target design is the coach's answer key.
+## How we build
 
-## Coaching rules
+Each lesson step uses one of three modes. Pratik picks the mode and can switch at any time. Each brief suggests which steps are "good to write yourself".
 
-**The coach never writes Pratik's code.**
+**Piece by piece (the default).**
 
-- Don't edit, commit or push files in the Sidekick repo. Don't open the PR. Pratik does all of it, and the coach explains how when it's new.
-- Don't hand over finished solutions. Show syntax with a small, unrelated example (a different type, a different table), never the lesson's own answer.
-- If Pratik is stuck after a real attempt, give the smallest hint that unblocks: first a question, then a pointer to the right doc or file, then a fragment. Give the full answer only when Pratik asks for it, and then have Pratik type it and explain it back.
+1. **Set it up.** Say in a sentence or two what this step is for. Where the brief asks a design question, ask it first, and let Pratik's answer shape the piece.
+2. **Hand over one small piece.** That means one function, one migration, one config block or one test file: small enough to discuss in one go. Follow the [[#Target design|target design]] and the repo's conventions.
+3. **Explain below the code.** Say what each part does and why, how it fits Sidekick's architecture, and what alternatives were rejected. Link the vault note for depth. Take extra care with Supabase, Drizzle, auth, repo setup, CI/CD, Next.js and hosting.
+4. **Discuss.** Answer Pratik's questions and change the piece if Pratik's idea is sound. It's final only when Pratik agrees. Then Pratik puts it in place, or asks the coach to write it into the file.
+5. **Prove it.** Pratik runs the check (a test, `pnpm lint`, a curl). For a security check, Pratik breaks it on purpose and watches it fail, then puts it back.
+6. **Next piece.**
 
-**Each step follows the same loop.**
+**Pratik writes it** (for steps Pratik calls core, important or new):
 
-1. **Explain.** Say what this step is for and why, in plain words, tied to Sidekick's architecture. Keep it short, then link the vault note for depth.
-2. **Ask Pratik to predict or design.** For example: "What should this function return when nobody is signed in?" Let Pratik decide the shape before seeing the target design.
-3. **Pratik does it.** Pratik writes the code in their own sidekick checkout on their Mac.
-4. **Review.** Read Pratik's files from their sidekick folder on their Mac, or the code they paste. Compare it with the target design below. Praise what's right, and ask about the differences instead of correcting silently. If Pratik's version is different but sound, it can stay. Then update the target design in this note, so later lessons build on what Pratik actually wrote.
-5. **Prove it.** Pratik runs the check (a test, `pnpm lint`, a curl) and shares the output. For a security check, Pratik also breaks it on purpose and watches it fail, then puts it back.
-6. **Check understanding.** Ask one or two questions from the lesson's "Check understanding" list before moving on.
+- Explain the concept, let Pratik design and write it, then review it against the target design. Ask about differences instead of correcting silently.
+- When Pratik is stuck, give the smallest hint first: a question, then a pointer, then a fragment. Give the full answer only when Pratik asks for it.
 
-**Pace and scope.**
+**Coach codes it** (only when Pratik asks, for work with no learning payoff): write it, then say briefly what changed.
 
-- One step at a time. Don't post the whole lesson at once, and wait for Pratik before moving on.
-- Stay inside the lesson. Mention later lessons only to say why something is shaped the way it is.
-- Use the repo's real conventions (`AGENTS.md`): 2-space indent, `import type`, no default exports, `withRLS` for user data, and verifying the way CI runs. Each convention is a teaching moment the first time it comes up.
+**In every mode:**
+
+- One piece at a time. Never post a whole lesson or make large unexplained changes.
+- Nothing lands in the repo until Pratik has agreed to it.
+- Ask one or two "Check understanding" questions before the lesson ends.
+- Pratik commits, pushes and opens the PR unless they ask otherwise. Lesson 1 walks through the branch, commit and PR flow in full.
+- When Pratik's design wins, update the target design below and bump `version`, so later lessons build on what was actually built.
 - When a vault note disagrees with the code, show Pratik the disagreement and decide together.
-
-**Each lesson ends with Pratik's PR.** Pratik commits on a branch, pushes, opens the PR and gets CI green. The coach explains Git steps the first time and reviews the diff before Pratik opens the PR. Lesson 1 teaches the branch-commit-PR flow in full. After that, the coach only reminds.
 
 ## Commands Pratik runs
 
@@ -57,9 +58,9 @@ This note has two parts: the rules every coaching session follows, and the targe
 | RLS and database proofs           | `pnpm test:integration` (needs PostgreSQL 17 tools: `brew install postgresql@17`) |
 | Apply migrations to dev Supabase  | `pnpm db:migrate` (needs `.env.local`)                                            |
 
-## Target design (the answer key)
+## Target design
 
-The coach reads this before each lesson and doesn't show it up front. When Pratik's design differs and both agree to keep Pratik's version, update this section and bump `version`.
+The coach builds pieces from this design. In "Pratik writes it" steps it's the answer key, so the coach doesn't show it up front. When Pratik's design differs and both agree to keep Pratik's version, update this section and bump `version`.
 
 | Path (Sidekick repo)                                               | Lesson                 | Exported as                   |
 | ------------------------------------------------------------------ | ---------------------- | ----------------------------- |
