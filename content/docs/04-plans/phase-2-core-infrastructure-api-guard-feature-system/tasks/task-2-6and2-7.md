@@ -13,7 +13,7 @@ tags:
    - feature-system
    - typescript
    - monorepo
-status: planned
+status: complete
 ---
 
 > **Lesson 1 of 8.** Before this: nothing. Next: [[task-2-1|lesson 2]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Feature manifest|Feature manifest]].
@@ -35,7 +35,7 @@ By default the coach hands over each step's code as one small piece, with an exp
 3. **Design the manifest.** Ask: "What does Sidekick need to know about a feature to switch it on for a user?" Pratik proposes fields, then build `FeatureManifest` in `src/manifest.ts`. Compare with the target design, which keeps the shape minimal for now.
 4. **The list.** Export `ALL_FEATURES` from `src/index.ts` and re-export the type. Teach `readonly FeatureManifest[]`, and why `export type` is required here.
 5. **Make it importable.** Add an `exports` map to `package.json`, pointing at source the way `@sidekick/core` does. Ask them to predict what happens without it.
-6. **Test it.** Add Vitest the way `packages/core` has it, then write `src/index.test.ts`, which checks that slugs are kebab-case and unique. Pratik then adds two manifests with the same slug, watches the test fail, and removes them.
+6. **Test it.** Add Vitest the way `packages/core` has it, then write `src/index.test.ts`, which checks that keys are lowercase, hyphenated and unique. Pratik then adds two manifests with the same slug, watches the test fail, and removes them.
 7. **Verify like CI.** Pratik runs `pnpm prettier:check` and `pnpm turbo lint typecheck build test --force`. Explain why `--force` matters, using the TypeScript 6 story from `AGENTS.md`.
 8. **Ship.** Pratik commits, pushes and opens the PR. The coach walks through each Git step and reviews the diff first.
 
@@ -46,5 +46,7 @@ By default the coach hands over each step's code as one small piece, with an exp
 - Why test an empty list?
 
 **Done when:** Pratik's PR is green, and they can answer the questions above in their own words.
+
+**Shipped:** [sidekick#9](https://github.com/mehtapratik/sidekick/pull/9). Pratik named the field `key`, switched to `interface`, and found that tsconfig `exclude` globs don't expand `{ts,tsx}` (fixed in core too). The target design in [[contracts]] records these decisions.
 
 **Out of scope:** the `packages/features/*` workspace glob (Phase 4), real feature manifests, and UI copy.

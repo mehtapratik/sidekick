@@ -2,7 +2,7 @@
 publish: false
 id: harness.standards-and-guidance.pin-versions
 created: 2026-10-15
-updated: 2026-10-16
+updated: 2026-10-18
 ---
 
 # Pin every version
@@ -11,13 +11,13 @@ Everything that builds, tests, or runs Sidekick has a pinned version. Nothing re
 
 How strictly to pin depends on whether something already records the exact version:
 
-| What | Pin | Where |
-| --- | --- | --- |
-| npm dependencies | Semver range in `package.json`; the exact version comes from the lockfile | `pnpm-lock.yaml`, installed with `--frozen-lockfile` in CI |
-| Package manager | Exact version and hash | `packageManager` in `package.json` (Corepack) |
-| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float | `.nvmrc` + `engines` (Node 24), CI workflow, scripts (e.g. `PG_MAJOR` in `tests/with-test-db.sh`) |
-| CI machine image | Exact image, never `-latest` | `runs-on: ubuntu-24.04` |
-| GitHub Actions | First-party `actions/*`: major tag (`@v7`). Third-party: full commit SHA | Workflow files |
+| What                                                            | Pin                                                                                                                                            | Where                                                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| npm dependencies                                                | Full caret range in `package.json` (`^5.0.5`, not `^5`), raised by Renovate (`rangeStrategy: bump`); the exact version comes from the lockfile | `pnpm-lock.yaml`, installed with `--frozen-lockfile` in CI                                        |
+| Package manager                                                 | Exact version and hash                                                                                                                         | `packageManager` in `package.json` (Corepack)                                                     |
+| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float                                                                                                           | `.nvmrc` + `engines` (Node 24), CI workflow, scripts (e.g. `PG_MAJOR` in `tests/with-test-db.sh`) |
+| CI machine image                                                | Exact image, never `-latest`                                                                                                                   | `runs-on: ubuntu-24.04`                                                                           |
+| GitHub Actions                                                  | First-party `actions/*`: major tag (`@v7`). Third-party: full commit SHA                                                                       | Workflow files                                                                                    |
 
 **Why runtimes pin only the major version:** minor and patch releases of Node and PostgreSQL are bug and security fixes. Production platforms apply them automatically — Supabase updates PostgreSQL 17.x without asking — so pinning an exact patch locally would make development and CI drift away from production and delay security fixes. Major versions change behavior and need a deliberate upgrade.
 

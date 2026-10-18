@@ -4,7 +4,7 @@ id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
 updated: 2026-10-18
 kind: plan
-version: 2.1.0
+version: 2.2.0
 tags:
    - plan
    - living-plan
@@ -34,7 +34,7 @@ depends_on:
 | 2.5  | Add auth failure logging inside `withApiGuard`                                                                                    | 🟡         | 🧩       |
 | 2.6  | Define `FeatureManifest` type in `packages/features-registry`                                                                     | 🟡         | 📦       |
 | 2.7  | Implement `ALL_FEATURES` array in `packages/features-registry/src/index.ts` — start with an empty array                           | 🟡         | 📦       |
-| 2.8  | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureSlug`, RLS policy                              | 🔴         | 🗄️ 🔐    |
+| 2.8  | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureKey`, RLS policy                               | 🔴         | 🗄️ 🔐    |
 | 2.9  | Implement `getEnabledFeatures(tx)` in `packages/core` — reads from entitlements table under RLS                                   | 🟡         | 🗄️       |
 | 2.10 | Write a seed script to enable all features for your own user account during development                                           | 🟢         | 🗄️       |
 | 2.11 | Create a test API route `/api/health` using `withApiGuard` to verify the full guard chain works                                   | 🟡         | 🧩 🔐    |
@@ -48,7 +48,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 
 | Lesson | Brief                | Tasks      | What Pratik learns                                          |
 | ------ | -------------------- | ---------- | ----------------------------------------------------------- |
-| 1      | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
+| 1 ✅   | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
 | 2      | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
 | 3      | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
 | 4      | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
@@ -73,9 +73,10 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 **Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
 - Bearer API keys resolve to no caller (401) until Phase 9 adds `api_keys`.
-- `getEnabledFeatures` takes the guard's RLS transaction and returns slugs, so `packages/core` stays feature-agnostic.
+- `getEnabledFeatures` takes the guard's RLS transaction and returns feature keys, so `packages/core` stays feature-agnostic.
 - Users can read their own entitlements but can't write any. Only the privileged role writes them.
 - The guard checks scope before opening the transaction and checks the feature inside it.
+- Lesson 1: features are identified by `key` (not `slug`), object shapes are `interface`s, and rollout gating stays out of the registry (post-MVP, [[backlogged-unplanned#B5 — Feature rollout gating|B5]]).
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 
 ---
