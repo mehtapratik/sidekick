@@ -4,7 +4,7 @@ id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
 updated: 2026-10-18
 kind: plan
-version: 1.2.0
+version: 2.0.0
 tags:
    - plan
    - living-plan
@@ -42,33 +42,40 @@ depends_on:
 
 **Phase 2 Exit Criteria:** `withApiGuard` is implemented and the `/api/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
 
-## Handoffs
+## Lessons
 
-Phase 2 is split into seven handoffs, each small enough for one agent with a fresh context. Each handoff is one pull request. All of them code against [[contracts]], so handoffs in the same wave can run in parallel. Start a wave only when the one before it is merged.
+Phase 2 is a course. Pratik writes every line of code and runs every command. The agent is the teacher and coach, following [[contracts#Coaching rules|the coaching rules]]. Lessons run one at a time, in this order, each in its own thread. A lesson starts only after the previous lesson's PR is merged. The order starts with the smallest, self-contained work and builds up to the guard.
 
-| Wave | Handoff              | Tasks      | Waits for             |
-| ---- | -------------------- | ---------- | --------------------- |
-| 1    | [[task-2-1]]         | 2.1        | nothing               |
-| 1    | [[task-2-6and2-7]]   | 2.6, 2.7   | nothing               |
-| 1    | [[task-2-8and2-9]]   | 2.8, 2.9   | nothing               |
-| 2    | [[task-2-2and2-3]]   | 2.2, 2.3   | 2.1, 2.8 and 2.9      |
-| 2    | [[task-2-10]]        | 2.10       | 2.6, 2.7, 2.8 and 2.9 |
-| 3    | [[task-2-4and2-5]]   | 2.4, 2.5   | 2.2 and 2.3           |
-| 3    | [[task-2-11and2-12]] | 2.11, 2.12 | 2.2 and 2.3           |
-| 4    | Close-out (below)    | none       | everything above      |
+| Lesson | Brief                | Tasks      | What Pratik learns                                          |
+| ------ | -------------------- | ---------- | ----------------------------------------------------------- |
+| 1      | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
+| 2      | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
+| 3      | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
+| 4      | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
+| 5      | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
+| 6      | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
+| 7      | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
+| 8      | Close-out (below)    | none       | writing it up                                               |
 
-To hand one off, give the agent its brief, [[contracts]] and `AGENTS.md`, and nothing else. A brief lists what to read, the files it owns, what's decided, what "done" means and what's out of scope.
+**To start a lesson,** open a new thread and paste this, changing the lesson number:
 
-**Pratik's steps:** apply the 2.8 migration to the dev Supabase project (`pnpm db:migrate`), run the 2.10 seed, and run the manual 2.12 check. Each one needs `.env.local`.
+```
+Coach me through Phase 2 lesson 1. I write all the code myself in my sidekick
+folder; you teach, review and check my understanding. Read AGENTS.md,
+docs/04-plans/phase-2-core-infrastructure-api-guard-feature-system/contracts.md
+and that lesson's brief (the plan's Lessons table links each one) before we start.
+```
 
-**Close-out:** write `05-builds/phase-2-walkthrough.md`, mark this plan complete the way Pre-2 was closed, update [[with-api-guard]] from a sketch to the shipped behaviour, update "Where things stand" in the agent guide, and record learnings in `09-notes/` (`publish: false`).
+Every brief has the same parts: what Pratik builds, the concepts, what the coach reads first, numbered steps (explain, ask, Pratik does it, review, prove it), questions to check understanding, and when the lesson is done. The target design in [[contracts]] is the coach's answer key. It is not shown up front, and it changes when Pratik's own design wins.
 
-**Decisions made while planning** (details in [[contracts]]):
+**Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`).
+
+**Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
 - Bearer API keys resolve to no caller (401) until Phase 9 adds `api_keys`.
 - `getEnabledFeatures` takes the guard's RLS transaction and returns slugs, so `packages/core` stays feature-agnostic.
 - Users can read their own entitlements but can't write any. Only the privileged role writes them.
 - The guard checks scope before opening the transaction and checks the feature inside it.
-- `/api/health` requires a session but no feature. The 403 path is proven by the guard's integration test.
+- `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 
 ---
