@@ -4,7 +4,7 @@ id: plan.phase-2.contracts
 title: Phase 2 build rules and target design
 created: 2026-10-18
 kind: plan
-version: 2.1.0
+version: 2.2.0
 updated: 2026-10-18
 tags:
    - plan
@@ -62,6 +62,8 @@ Each lesson step uses one of three modes. Pratik picks the mode and can switch a
 
 The coach builds pieces from this design. In "Pratik writes it" steps it's the answer key, so the coach doesn't show it up front. When Pratik's design differs and both agree to keep Pratik's version, update this section and bump `version`.
 
+Object shapes are `interface`s. `type` is only for what an interface can't express: unions, tuples, function, mapped and conditional types. ESLint enforces this with `@typescript-eslint/consistent-type-definitions` (decided in lesson 1).
+
 | Path (Sidekick repo)                                               | Lesson                 | Exported as                   |
 | ------------------------------------------------------------------ | ---------------------- | ----------------------------- |
 | `packages/features-registry/src/index.ts` (+ `manifest.ts`)        | 1 [[task-2-6and2-7]]   | `@sidekick/features-registry` |
@@ -102,24 +104,25 @@ export async function resolveApiCaller(req: Request): Promise<ApiCaller | null>;
 // packages/core/src/features/entitlements.ts
 import type { RlsTx } from "../db/rls";
 
-export async function getEnabledFeatures(tx: RlsTx): Promise<string[]>; // feature slugs
+export async function getEnabledFeatures(tx: RlsTx): Promise<string[]>; // feature keys
 ```
 
 - This departs from the plan's `getEnabledFeatures(userId)`. It takes the RLS transaction, because the entitlements table is RLS-protected and the guard already holds a transaction for the user. Opening a second transaction per request would cost another pooled connection.
-- It returns slugs, not manifests. `packages/core` stays feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and can't import the registry.
+- It returns keys, not manifests. `packages/core` stays feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and can't import the registry.
 
 Table `user_feature_entitlements`:
 
-| Column         | Type                      | Notes                                   |
-| -------------- | ------------------------- | --------------------------------------- |
-| `id`           | `uuid` PK                 | `defaultRandom()`                       |
-| `user_id`      | `uuid` not null           | FK → `profiles.id`, `ON DELETE CASCADE` |
-| `feature_slug` | `text` not null           | matches a `FeatureManifest.slug`; no FK |
-| `created_at`   | `timestamptz` not null    | `defaultNow()`                          |
-| unique         | `(user_id, feature_slug)` | makes enabling idempotent               |
+| Column        | Type                     | Notes                                   |
+| ------------- | ------------------------ | --------------------------------------- |
+| `id`          | `uuid` PK                | `defaultRandom()`                       |
+| `user_id`     | `uuid` not null          | FK → `profiles.id`, `ON DELETE CASCADE` |
+| `feature_key` | `text` not null          | matches a `FeatureManifest.key`; no FK  |
+| `created_at`  | `timestamptz` not null   | `defaultNow()`                          |
+| unique        | `(user_id, feature_key)` | makes enabling idempotent               |
 
 - RLS is enabled and forced. One policy allows `SELECT` of the caller's own rows (`user_id::text = current_setting('app.current_user_id', true)`).
 - `app_runtime` gets `INSERT`, `UPDATE` and `DELETE` revoked on this table. Users must never grant themselves features. Only the privileged migration/seed role (`DATABASE_DIRECT_URL`) writes rows.
+- There's no FK on `feature_key` because features live in code, not in a table. If a `features` table arrives later, it can use the same key as its primary key, and `feature_key` gains the FK without a data migration.
 - A present row means enabled. Disabling deletes the row with the privileged role. This isn't a syncable entity, so no soft delete.
 
 ### Guard
@@ -129,10 +132,10 @@ Table `user_feature_entitlements`:
 import type { RlsTx } from "../db/rls";
 import type { ApiCaller } from "./auth";
 
-export type GuardOptions = {
-   feature?: string; // slug the caller must be entitled to
+export interface GuardOptions {
+   feature?: string; // key of the feature the caller must be entitled to
    requireScope?: string; // checked for apiKey callers only
-};
+}
 
 export type ApiHandler<Ctx> = (args: {
    tx: RlsTx;
@@ -183,14 +186,19 @@ All guard errors use `{ error: string, code: string }` ([[error-handling]]):
 
 ```ts
 // packages/features-registry/src/manifest.ts
-export type FeatureManifest = {
-   slug: string; // kebab-case, unique, stored in user_feature_entitlements.feature_slug
-   name: string;
-   description: string;
-};
+export interface FeatureManifest {
+   readonly key: string; // lowercase and hyphenated, unique, never changes: stored in user_feature_entitlements.feature_key
+   readonly name: string;
+   readonly description: string;
+}
 
 // packages/features-registry/src/index.ts
 export const ALL_FEATURES: readonly FeatureManifest[] = [];
 ```
 
-The shape stays minimal until the first feature package lands. Phase 4 (Taxila) adds what it needs.
+The shape stays minimal until the first feature package lands. Phase 4 (Taxila) adds what it needs. `src/index.test.ts` checks, in one test per rule so the rules run even on an empty list, that keys are lowercase and hyphenated (`/^[a-z0-9]+(-[a-z0-9]+)*$/`) and unique, and that every manifest has a name and description.
+
+Decided in lesson 1:
+
+- The field is `key`, not `slug` (Pratik's choice). Columns and options follow it: `feature_key`, `GuardOptions.feature` takes a key.
+- The registry is only a catalog of what features exist. Whether a feature is ready to show anyone (rollout gating) is a separate system, built post-MVP ([[backlogged-unplanned#B5 — Feature rollout gating|B5]]). When it exists, the guard checks it before entitlements.

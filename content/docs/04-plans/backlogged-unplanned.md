@@ -2,13 +2,15 @@
 publish: true
 id: plan.backlogged-unplanned
 created: 2026-09-19
+updated: 2026-10-18
 kind: plan
-version: 1.0.0
+version: 1.1.0
 status: deferred
 tags:
    - plan
    - living-plan
    - backlog
+   - feature-system
    - taxila
    - zinsser
    - alter-ego
@@ -61,3 +63,11 @@ These items are known, intentional gaps — deferred, not forgotten.
 **What:** Voice dictation with gesture support for punctuation and formatting — accent-friendly, replacing $100+/yr subscription services.
 
 **Why deferred:** Explicitly out of MVP scope per the PRD. Listed in the Post-MVP phase (PM.9).
+
+### B5 — Feature rollout gating
+
+**What:** A switch that decides whether a feature is ready to be seen at all (for everyone, a beta group or a share of users) before anyone's entitlement is checked. Hand-rolled at first; commercial flag services (or the Vercel Flags SDK) are an option once incremental rollout is needed.
+
+**Why deferred:** Decided in Phase 2 lesson 1 (2026-10-18). The feature registry is only a catalog of what exists and changes with a deploy; rollout changes without one, so it doesn't belong in `FeatureManifest`. Entitlements (who is provisioned) still ship in Phase 2.
+
+**When to implement:** Post-MVP. It becomes a check in `withApiGuard` that runs before the entitlement check.

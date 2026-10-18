@@ -30,7 +30,7 @@ By default the coach hands over each step's code as one small piece, with an exp
 
 1. **Where does it live?** Ask: "Which package may import both the registry and the database schema?" Pratik explains why, then place the script in `packages/features-registry/scripts/`.
 2. **Which connection?** Ask why `DATABASE_URL` (`app_runtime`) can't do this. Connect with `DATABASE_DIRECT_URL`.
-3. **Write it.** Write the script: look up the profile by email, insert one row per slug with `ON CONFLICT DO NOTHING`, and print what happened. It fails clearly when the env var or the profile is missing, and supports `--dry-run`.
+3. **Write it.** Write the script: look up the profile by email, insert one row per feature key with `ON CONFLICT DO NOTHING`, and print what happened. It fails clearly when the env var or the profile is missing, and supports `--dry-run`.
 4. **Run it.** Add a `seed:dev` script. Pratik runs it with Node 24's built-in TypeScript support, or with `tsx` if that doesn't work. With `ALL_FEATURES` empty, Pratik temporarily adds a test manifest to see a row land in the dev database, then removes the manifest and the row.
 5. **Verify and ship.**
 

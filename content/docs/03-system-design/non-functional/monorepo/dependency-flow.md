@@ -2,23 +2,26 @@
 publish: true
 id: system-design.non-functional.monorepo.dependency-flow
 created: 2026-09-19
+updated: 2026-10-18
 kind: spec
-version: 1.0.0
+version: 1.1.0
 tags:
    - system-design
    - monorepo
    - cli
 ---
 
-- Between `apps/*` and `packages/*`, dependency always flow in one direction `packages/*` artifacts can be imported in `app/*` artifact; never the other way around.
-- Allowed dependency flow:
+Dependencies flow one way, from apps down to the foundation. A package never imports an app, and a lower layer never imports a higher one.
 
 ```markdown
-apps/* -> packages/features/* -> packages/core
+apps/* -> packages/features-registry -> packages/features/* -> foundation (packages/core, packages/ui, packages/copy)
 ```
 
-**Open questions:** Should we enforce the following dependency flows?
+- **Apps** (`apps/web`, later `apps/cli`) may import the registry, feature packages and foundation packages.
+- **`packages/features-registry`** is the catalog of every feature. It may import feature packages and foundation packages.
+- **Feature packages** (`packages/features/*`, from Phase 4) may import only foundation packages. They never import each other or the registry.
+- **Foundation packages** stay feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and never import the registry or a feature. If `core` imported the registry, it would depend on every feature, and every feature already depends on `core`: a cycle with no valid build order.
 
-1. Use folder-level depth to reflect dependency boundaries (e.g., packages `foo` and `bar` cannot depend on each other, but both can depend on `packages/globals/core`. Similarly, `apps/web` and `apps/cli` cannot reference each other).
-2. Move features into a dedicated `packages/features/` folder.
-3. House `features-registry` inside the `packages/` folder solely as a registry.
+`eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above.
+
+The questions this note used to leave open are settled: features live in `packages/features/*`, the registry lives in `packages/features-registry`, and the boundaries rule enforces the layers instead of folder depth.
