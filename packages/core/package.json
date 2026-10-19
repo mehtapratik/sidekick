@@ -31,7 +31,7 @@
     "server-only": "^0.0.1"
   },
   "peerDependencies": {
-    "next": ">=16"
+    "next": ">=16.4.2"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
