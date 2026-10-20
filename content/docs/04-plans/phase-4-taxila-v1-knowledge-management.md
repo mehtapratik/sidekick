@@ -25,15 +25,15 @@ depends_on:
 
 | #    | Task                                                                                                                                                                             | Complexity | Learning |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 4.1  | Write Taxila PRD in `docs/02-prd/` — source types, note anatomy, metadata model, MVP cut                                                                                            | 🟡         |          |
-| 4.2  | Create `packages/feature-taxila` with its own `package.json`, tsconfig, and Drizzle config                                                                                       | 🟡         | 📦 🗄️    |
-| 4.3  | Define `notes` table schema — `id` (client UUID), `userId`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`, `embeddingStatus`                                         | 🔴         | 🗄️       |
-| 4.4  | Define `knowledge_sources` table — `sourceType: 'link' \| 'captured' \| 'markdown'`, `url`, `content`, same syncable + `embeddingStatus` columns (a bookmark is a `link` source) | 🔴         | 🗄️       |
-| 4.5  | Migration: RLS combined pattern + trigger bindings on both tables (template established in Phase 3)                                                                              | 🔴         | 🔐 🗄️    |
+| 4.1  | Write Taxila PRD in `docs/02-prd/` — source types, note anatomy, metadata model, MVP cut                                                                                         | 🟡         |          |
+| 4.2  | Create `packages/feature-taxila` with its own `package.json`, tsconfig, and Drizzle config                                                                                       | 🟡         | 📦 🗄️   |
+| 4.3  | Define `notes` table schema — `id` (client UUID), `userId`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`, `embeddingStatus`                                         | 🔴         | 🗄️      |
+| 4.4  | Define `knowledge_sources` table — `sourceType: 'link' \| 'captured' \| 'markdown'`, `url`, `content`, same syncable + `embeddingStatus` columns (a bookmark is a `link` source) | 🔴         | 🗄️      |
+| 4.5  | Migration: RLS combined pattern + trigger bindings on both tables (template established in Phase 3)                                                                              | 🔴         | 🔐 🗄️   |
 | 4.6  | Register `taxila` feature + its entity types (`note`, `knowledge_source`) in `ALL_FEATURES`                                                                                      | 🟢         | 📦       |
-| 4.7  | Implement `TaxilaRepository` — `list()`, `getById()`, `create()`, `update()`, `softDelete()` for both entities                                                                   | 🔴         | 🗄️       |
+| 4.7  | Implement `TaxilaRepository` — `list()`, `getById()`, `create()`, `update()`, `softDelete()` for both entities                                                                   | 🔴         | 🗄️      |
 | 4.8  | API routes `/api/taxila/notes` and `/api/taxila/sources` (CRUD, soft-delete only) using `withApiGuard` + `taxila:read`/`taxila:write` scopes                                     | 🔴         | 🧩 🔐    |
-| 4.9  | Wire metadata enrichment: tag notes/sources and link related concepts via the Phase 3 graph service                                                                              | 🟡         | 🗄️ 🧩    |
+| 4.9  | Wire metadata enrichment: tag notes/sources and link related concepts via the Phase 3 graph service                                                                              | 🟡         | 🗄️ 🧩   |
 | 4.10 | Build the **command-palette shell** — a single centered command box (Cmd+P style) for navigation and actions; replaces the placeholder sidebar dashboard as the primary surface  | 🔴         | 🧩 🎨    |
 | 4.11 | Build Taxila list + detail/edit pages, reachable via the palette                                                                                                                 | 🟡         | 🧩 🎨    |
 | 4.12 | "New note" / "new source" flows with client-generated UUIDs; soft-delete with confirmation                                                                                       | 🟡         | 🧩 🎨    |

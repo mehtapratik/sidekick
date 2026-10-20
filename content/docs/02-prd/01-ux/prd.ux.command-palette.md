@@ -11,5 +11,4 @@ tags:
   - specification
 publish: true
 ---
-
-Since I am the developer and the only user of the Sidekick’s MVP, I won’t worry about navigation design and content discoverability. MVP will simply feature a command palette textbox where I can type the navigation/command name and hit enter to navigate/execute. 
+I am the one and only developer and end-user of the MVP—don’t waste time in designing layouts, navigation—replace it with a single command bar where user can type a command or find a menu item they’re looking for—think `Cmd+Shift+P` in VS Code or `/` command in Notion

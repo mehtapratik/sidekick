@@ -18,7 +18,6 @@ status: planned
 depends_on:
    - "[[04-plans/phase-4-taxila-v1-knowledge-management]]"
 ---
-
 > **Milestone:** A proper writing experience with Tiptap. Taxila and Zinsser share the editor component. This is where the app starts feeling real.
 > **Learning payoff:** Tiptap configuration, rich text as JSON storage, markdown export, editor extensions.
 > **Prerequisite:** Write the Zinsser PRD in `docs/02-prd/` before starting.
@@ -33,8 +32,8 @@ depends_on:
 | 5.5  | Implement markdown export — `editor.storage.markdown.getMarkdown()` for embedding pipeline  | 🔴         | ✍️       |
 | 5.6  | Make editor mobile-friendly (touch targets, mobile toolbar)                                 | 🟡         | ✍️ 📱    |
 | 5.7  | Swap plain textarea in Taxila notes editor for `<RichTextEditor>`                           | 🟢         |          |
-| 5.8  | Create `packages/feature-zinsser` with its own schema                                       | 🟡         | 📦 🗄️    |
-| 5.9  | Define `documents` table — similar shape to `notes` but with `type` (essay, journal, draft) | 🟡         | 🗄️       |
+| 5.8  | Create `packages/feature-zinsser` with its own schema                                       | 🟡         | 📦 🗄️   |
+| 5.9  | Define `documents` table — similar shape to `notes` but with `type` (essay, journal, draft) | 🟡         | 🗄️      |
 | 5.10 | Implement full API routes for Zinsser (same pattern as Taxila)                              | 🟡         | 🧩       |
 | 5.11 | Register `zinsser` feature + `document` entity type in feature registry                     | 🟢         |          |
 | 5.12 | Make Zinsser reachable via the command palette (`/writing`)                                 | 🟡         | 🧩 🎨    |

@@ -11,5 +11,4 @@ tags:
   - specification
 publish: true
 ---
-
-The intended audience of Sidekick’s MVP is just one—me. Therefore, I don’t have to sweat about common concerns such as visual polish, content discoverability, and navigation design. Just focus on essential user experience that is hard to change later such as content hierarchy, accessibility, and responsiveness. Descope everything that is purely cosmetic and visual appeal as long as such decision doesn’t involve major overhaul post-MVP to add it back retroactively.
+I am the one and only developer and end-user of the MVP—don’t waste time for design concerns meant for commercial SaSS products—such as choosing custom font, design aesthetics, etc—focus on utilitarian user experience—ease of use matters—aesthetics doesn’t—anything that doesn’t translate in ease of use should be postponed post-MVP unless doing so would mean serious rework/reengineering post-MVP.

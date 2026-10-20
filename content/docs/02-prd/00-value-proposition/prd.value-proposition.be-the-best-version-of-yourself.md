@@ -12,7 +12,6 @@ tags:
   - specification
 publish: true
 ---
-
 Building a system to support you live your best life and be the best version of yourself. 
 
 Gathers data and studies behaviors to build your personal profile. And it uses this knowledge to amplify your strengths while working around your weaknesses and sore spots. It also detects patterns and learn from past to help you do better in future.

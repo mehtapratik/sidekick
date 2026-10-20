@@ -18,7 +18,6 @@ status: planned
 depends_on:
    - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"
 ---
-
 > **Milestone:** Planning and push-button execution. Tasks exist; one click on a configured button (e.g., "School+Car") creates tomorrow's pickup task without typing a word.
 > **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through the graph service.
 > **Prerequisites:** War Room and Factory PRDs in `docs/02-prd/`.
@@ -38,8 +37,8 @@ depends_on:
 
 | #    | Task                                                                                                                           | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------- |
-| 7B.1 | Create `packages/feature-factory`; define `workflows` schema — name, icon, action definition (typed payload), enabled          | 🔴         | 📦 🗄️    |
-| 7B.2 | Migration, RLS, registry entry                                                                                                 | 🟡         | 🔐 🗄️    |
+| 7B.1 | Create `packages/feature-factory`; define `workflows` schema — name, icon, action definition (typed payload), enabled          | 🔴         | 📦 🗄️   |
+| 7B.2 | Migration, RLS, registry entry                                                                                                 | 🟡         | 🔐 🗄️   |
 | 7B.3 | Implement workflow execution through public APIs only (API-first guarantee) — e.g., "create War Room task with preset payload" | 🔴         | 🧩 🔐    |
 | 7B.4 | UI: configure a push-button workflow; surface buttons in the command palette / toolbar                                         | 🟡         | 🧩 🎨    |
 | 7B.5 | Implement configurable input defaults — forms open pre-filled with previously typed inputs                                     | 🟡         | 🧩       |
