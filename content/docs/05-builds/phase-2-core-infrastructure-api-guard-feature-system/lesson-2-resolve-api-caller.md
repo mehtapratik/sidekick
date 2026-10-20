@@ -46,7 +46,7 @@ git switch -c feature/P2L2-resolve-api-caller
 ```ts
 // Do not authenticate API routes here
 if (isApiRoute(request)) {
-   return supabaseResponse;
+  return supabaseResponse;
 }
 ```
 
@@ -73,15 +73,15 @@ A union tagged by a `kind` field (a **discriminated union**) lets the guard tell
 
 ```ts
 export interface SessionBasedApiCaller {
-   kind: "session";
-   userId: string;
+  kind: 'session';
+  userId: string;
 }
 
 export interface KeyBasedApiCaller {
-   kind: "key";
-   userId: string;
-   keyId: string;
-   scopes: readonly string[];
+  kind: 'key';
+  userId: string;
+  keyId: string;
+  scopes: readonly string[];
 }
 
 export type ApiCaller = SessionBasedApiCaller | KeyBasedApiCaller;
@@ -112,23 +112,21 @@ Missing Supabase env vars make `createServerClient()` throw. Don't catch it. "No
 1. Add the function below the types:
 
 ```ts
-import { createServerClient } from "../supabase/server";
+import { createServerClient } from '../supabase/server';
 
-export async function resolveApiCaller(
-   request: Request,
-): Promise<ApiCaller | null> {
-   const client = await createServerClient();
-   const {
-      data: { user },
-      error,
-   } = await client.auth.getUser();
+export async function resolveApiCaller(request: Request): Promise<ApiCaller | null> {
+  const client = await createServerClient();
+  const {
+    data: { user },
+    error,
+  } = await client.auth.getUser();
 
-   return user && !error
-      ? {
-           kind: "session",
-           userId: user.id,
-        }
-      : null;
+  return user && !error
+    ? {
+        kind: 'session',
+        userId: user.id,
+      }
+    : null;
 }
 ```
 
@@ -153,13 +151,13 @@ The check only tests whether the header is there, and it can only take access aw
 1. Add the check at the top of `resolveApiCaller`:
 
 ```ts
-const authHeader = request.headers.get("authorization");
+const authHeader = request.headers.get('authorization');
 
 // Resolving auth header first so a limited API key can't borrow the user's session cookie,
 // which the browser attaches automatically
 if (authHeader) {
-   // deny all api key/token based access until auth key table is built out in phase 9 / task 9.4
-   return null;
+  // deny all api key/token based access until auth key table is built out in phase 9 / task 9.4
+  return null;
 }
 ```
 
@@ -174,7 +172,7 @@ if (authHeader) {
 1. Make this the first line of `auth.ts`, as in `admin.ts` and `db/unsafe.ts`:
 
 ```ts
-import "server-only";
+import 'server-only';
 ```
 
 It doesn't stop a secret leaking today. `server.ts` reads only `NEXT_PUBLIC_` variables, which are public by design, and Next never inlines other variables into a client bundle. What it gives:
@@ -200,50 +198,47 @@ How `vi.mock` behaves here:
 1. Create `packages/core/src/api/auth.test.ts`. The fakes use the real response shapes, typed as `UserResponse`. Only the user is cast, because the code reads nothing but `id`. With no session, `getUser()` returns `AuthSessionMissingError`, not `error: null`. Requests are real `Request` objects: a fake `headers.get()` that ignores the header name couldn't catch code reading the wrong header.
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-   AuthError,
-   AuthSessionMissingError,
-   type SupabaseClient,
-   type User,
-   type UserResponse,
-} from "@supabase/supabase-js";
+  AuthError,
+  AuthSessionMissingError,
+  type SupabaseClient,
+  type User,
+  type UserResponse,
+} from '@supabase/supabase-js';
 
-import { createServerClient } from "../supabase/server";
-import { resolveApiCaller } from "./auth";
+import { createServerClient } from '../supabase/server';
+import { resolveApiCaller } from './auth';
 
-const MOCK_AUTH_TOKEN = "bearer mocked-auth-token";
-const MOCK_USER = { id: "mock-user-id" } as User;
+const MOCK_AUTH_TOKEN = 'bearer mocked-auth-token';
+const MOCK_USER = { id: 'mock-user-id' } as User;
 const MOCK_AUTH_USER_RESPONSE: {
-   validUser: UserResponse;
-   invalidUser: UserResponse;
-   error: UserResponse;
+  validUser: UserResponse;
+  invalidUser: UserResponse;
+  error: UserResponse;
 } = {
-   validUser: { data: { user: MOCK_USER }, error: null },
-   invalidUser: { data: { user: null }, error: new AuthSessionMissingError() },
-   error: { data: { user: null }, error: new AuthError("boom") },
+  validUser: { data: { user: MOCK_USER }, error: null },
+  invalidUser: { data: { user: null }, error: new AuthSessionMissingError() },
+  error: { data: { user: null }, error: new AuthError('boom') },
 };
 
-function getSupabaseServerClient(state: "validUser" | "invalidUser" | "error") {
-   return {
-      auth: {
-         getUser: async () => MOCK_AUTH_USER_RESPONSE[state],
-      },
-   } as unknown as SupabaseClient;
+function getSupabaseServerClient(state: 'validUser' | 'invalidUser' | 'error') {
+  return {
+    auth: {
+      getUser: async () => MOCK_AUTH_USER_RESPONSE[state],
+    },
+  } as unknown as SupabaseClient;
 }
 
-function getHttpRequestObject(
-   includeHeaders = false,
-   mockAuthToken = MOCK_AUTH_TOKEN,
-) {
-   return new Request("http://localhost/auth", {
-      headers: includeHeaders ? { Authorization: mockAuthToken } : undefined,
-   });
+function getHttpRequestObject(includeHeaders = false, mockAuthToken = MOCK_AUTH_TOKEN) {
+  return new Request('http://localhost/auth', {
+    headers: includeHeaders ? { Authorization: mockAuthToken } : undefined,
+  });
 }
 
-vi.mock("../supabase/server", () => ({
-   createServerClient: vi.fn(),
+vi.mock('../supabase/server', () => ({
+  createServerClient: vi.fn(),
 }));
 ```
 
@@ -261,13 +256,11 @@ vi.mock("../supabase/server", () => ({
 For example:
 
 ```ts
-it("lets a Bearer header win over a valid session", async () => {
-   vi.mocked(createServerClient).mockResolvedValue(
-      getSupabaseServerClient("validUser"),
-   );
-   const resolution = await resolveApiCaller(getHttpRequestObject(true));
-   expect(resolution).toBeNull();
-   expect(createServerClient).not.toHaveBeenCalled();
+it('lets a Bearer header win over a valid session', async () => {
+  vi.mocked(createServerClient).mockResolvedValue(getSupabaseServerClient('validUser'));
+  const resolution = await resolveApiCaller(getHttpRequestObject(true));
+  expect(resolution).toBeNull();
+  expect(createServerClient).not.toHaveBeenCalled();
 });
 ```
 
