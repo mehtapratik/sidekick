@@ -4,8 +4,8 @@ id: plan.phase-2.contracts
 title: Phase 2 build rules and target design
 created: 2026-10-18
 kind: plan
-version: 2.2.0
-updated: 2026-10-18
+version: 2.3.0
+updated: 2026-10-20
 tags:
    - plan
    - phase-2
@@ -82,21 +82,34 @@ No new user-visible UI copy is needed in Phase 2. API error strings are machine-
 
 ```ts
 // packages/core/src/api/auth.ts
-export type ApiCaller =
-   | { kind: "session"; userId: string }
-   | {
-        kind: "apiKey";
-        userId: string;
-        keyId: string;
-        scopes: readonly string[];
-     };
+export interface SessionBasedApiCaller {
+   kind: "session";
+   userId: string;
+}
+
+export interface KeyBasedApiCaller {
+   kind: "key";
+   userId: string;
+   keyId: string;
+   scopes: readonly string[];
+}
+
+export type ApiCaller = SessionBasedApiCaller | KeyBasedApiCaller;
 
 export async function resolveApiCaller(req: Request): Promise<ApiCaller | null>;
 ```
 
-- `null` means "no authenticated caller". The guard turns it into a 401.
-- A request with an `Authorization: Bearer …` header always resolves to `null` in Phase 2, even when it also carries a session cookie. There is no `api_keys` table until Phase 9 (task 9.4 wires the lookup in), so Bearer callers fail closed.
-- The `apiKey` variant exists now so the guard's scope check compiles and can be tested with a synthetic caller. Nothing in Phase 2 produces it.
+- `null` means "no authenticated caller". The guard turns it into a 401. `null` sits on the return type, not inside `ApiCaller`, so code that runs after the 401 check (the handler's `caller`) never has to check for it again.
+- Any request with a non-empty `Authorization` header resolves to `null` in Phase 2, even when it also carries a valid session cookie, and the session isn't read at all. There is no `api_keys` table until Phase 9 (task 9.4 wires the lookup in), so header callers fail closed. The header wins over the cookie so a limited key can never borrow the browser's full session. An empty header carries no credential and falls through to the session.
+- The session comes from `createServerClient()` and `supabase.auth.getUser()`, which verifies the token with Supabase Auth. `getSession()` would trust the cookie as sent. Any Auth error (including `AuthSessionMissingError` when there's no session) resolves to `null`. A missing env var still throws, so a misconfigured app fails loudly instead of looking signed out.
+- The `key` variant exists now so the guard's scope check compiles and can be tested with a synthetic caller. Nothing in Phase 2 produces it. Sessions have no scopes: scopes only narrow what a key may do for its user.
+- The file imports `server-only`.
+
+Decided in lesson 2:
+
+- The variants are named interfaces joined in a union (Pratik's choice), so a function can take `KeyBasedApiCaller` alone, for example the guard's scope check.
+- The key variant's tag is `'key'`, not `'apiKey'` (Pratik's choice).
+- Any `Authorization` header, not only `Bearer …`, skips the session. Phase 9 adds the Bearer parsing when there's a key to look up.
 
 ### Entitlements
 
@@ -134,7 +147,7 @@ import type { ApiCaller } from "./auth";
 
 export interface GuardOptions {
    feature?: string; // key of the feature the caller must be entitled to
-   requireScope?: string; // checked for apiKey callers only
+   requireScope?: string; // checked for key callers only
 }
 
 export type ApiHandler<Ctx> = (args: {
@@ -154,7 +167,7 @@ export function withApiGuard<Ctx = unknown>(
 Order of checks:
 
 1. `resolveApiCaller(req)`. If it returns `null`, respond 401 `UNAUTHENTICATED`.
-2. If `opts.requireScope` is set and the caller is `apiKey` without that scope, respond 403 `SCOPE_MISSING`. This check needs no database, so it runs before a transaction opens. Session callers skip it.
+2. If `opts.requireScope` is set and the caller is a `key` caller without that scope, respond 403 `SCOPE_MISSING`. This check needs no database, so it runs before a transaction opens. Session callers skip it.
 3. Open `withRLS(caller.userId, …)`.
 4. Inside the transaction, if `opts.feature` is set and `getEnabledFeatures(tx)` doesn't include it, respond 403 `FEATURE_DISABLED`.
 5. Call `handler({ tx, userId, caller, req, ctx })` and return its response.

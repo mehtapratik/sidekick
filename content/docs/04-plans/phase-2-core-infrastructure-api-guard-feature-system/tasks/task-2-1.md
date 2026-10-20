@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.task-2-1
 title: "Lesson 2 (task 2.1): resolveApiCaller"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-20
 kind: plan
-version: 2.1.0
+version: 2.1.1
 tags:
    - plan
    - phase-2
@@ -14,7 +14,7 @@ tags:
    - authentication
    - supabase
    - nextjs
-status: planned
+status: complete
 ---
 
 > **Lesson 2 of 8.** Before this: [[task-2-6and2-7|lesson 1]]. Next: [[task-2-8and2-9|lesson 3]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Caller|Caller]].
