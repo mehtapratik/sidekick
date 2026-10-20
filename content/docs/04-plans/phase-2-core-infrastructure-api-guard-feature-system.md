@@ -2,9 +2,9 @@
 publish: true
 id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
-updated: 2026-10-18
+updated: 2026-10-20
 kind: plan
-version: 2.2.0
+version: 2.2.1
 tags:
    - plan
    - living-plan
@@ -49,7 +49,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 | Lesson | Brief                | Tasks      | What Pratik learns                                          |
 | ------ | -------------------- | ---------- | ----------------------------------------------------------- |
 | 1 ✅   | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
-| 2      | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
+| 2 ✅   | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
 | 3      | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
 | 4      | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
 | 5      | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
@@ -77,6 +77,7 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Users can read their own entitlements but can't write any. Only the privileged role writes them.
 - The guard checks scope before opening the transaction and checks the feature inside it.
 - Lesson 1: features are identified by `key` (not `slug`), object shapes are `interface`s, and rollout gating stays out of the registry (post-MVP, [[backlogged-unplanned#B5 — Feature rollout gating|B5]]).
+- Lesson 2: the caller variants are named interfaces with `kind: 'key'`, and any `Authorization` header resolves to no caller, even alongside a valid session.
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 
 ---
