@@ -1,3 +1,16 @@
+---
+publish: false
+id: notes.coding-standards
+title: Coding standards
+created: 2026-10-20
+updated: 2026-10-23
+kind: notes
+version: 1.0.0
+tags:
+   - guidance
+   - typescript
+---
+
 1. Prefer `undefined` over `null` for typing since not assigning value in JavaScript already defaults to `undefined`, leading to a convention that aligns with JavaScript’s default behavior.
 2. Write declarative code
 3. Code for today’s needs not for tomorrow’s anticipation.
