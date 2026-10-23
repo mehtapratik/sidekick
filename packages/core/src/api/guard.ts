@@ -3,6 +3,7 @@ import 'server-only';
 import { withRLS, type RlsTx } from '../db';
 import { resolveApiCaller, type ApiCaller } from './auth';
 import { getEnabledFeatures } from '../features/entitlements';
+import { type ApiDeniedEvent, logEvent, toLoggedError } from '../observability/log';
 
 export interface GuardOptions {
   /** Key of the feature the caller must be entitled to */
@@ -42,6 +43,39 @@ function isMissingScope(caller: ApiCaller, scope?: string): boolean {
   return caller.kind === 'key' && scope !== undefined && !caller.scopes.includes(scope);
 }
 
+/** Why the checks turned a caller away: the fields api.denied adds to the request's */
+type GuardDenial = Pick<ApiDeniedEvent, 'code' | 'feature' | 'scope'>;
+
+/**
+ * The auth, scope and feature checks, then the handler. Decides and never logs:
+ * withApiGuard logs what it returns, and what it throws.
+ */
+async function authorizeAndHandle<Ctx>(
+  caller: ApiCaller | undefined,
+  handler: ApiHandler<Ctx>,
+  opts: GuardOptions,
+  req: Request,
+  ctx: Ctx,
+): Promise<Response | GuardDenial> {
+  // No caller: nobody signed in, or an API key we can't look up yet (Phase 9)
+  if (!caller) {
+    return { code: 'UNAUTHENTICATED' };
+  }
+
+  // Needs no database, so it runs before a transaction (and a pooled connection) is taken
+  if (isMissingScope(caller, opts.requireScope)) {
+    return { code: 'SCOPE_MISSING', scope: opts.requireScope };
+  }
+
+  return withRLS(caller.userId, async (tx) => {
+    if (opts.feature && !(await getEnabledFeatures(tx)).includes(opts.feature)) {
+      return { code: 'FEATURE_DISABLED', feature: opts.feature };
+    }
+
+    return handler({ tx, caller, req, ctx });
+  });
+}
+
 /**
  * Wraps a route handler with authentication, scope and feature checks, and runs it
  * inside one RLS transaction for the caller. Every App Router route handler must use it.
@@ -51,36 +85,46 @@ function isMissingScope(caller: ApiCaller, scope?: string): boolean {
  * @description
  * - It runs from cheapest to most expensive
  * - A request stops at the first failure
+ * - It is the one place that logs: api.denied, api.error, then api.request for every request
  */
 export function withApiGuard<Ctx = unknown>(
   handler: ApiHandler<Ctx>,
   opts: GuardOptions = {},
 ): (req: Request, ctx: Ctx) => Promise<Response> {
   return async function apiGuard(req, ctx) {
+    const startedAt = performance.now();
+    const request = { method: req.method, path: new URL(req.url).pathname };
+    // Known once the caller resolves, and still needed if a later step throws
+    let userId: string | null = null;
+    let response: Response;
+
     try {
       const caller = await resolveApiCaller(req);
-      if (!caller) {
-        return guardError('UNAUTHENTICATED');
+      userId = caller?.userId ?? null;
+
+      // `await`, not a bare promise: the try/catch only catches a rejection it awaits
+      const outcome = await authorizeAndHandle(caller, handler, opts, req, ctx);
+
+      if (outcome instanceof Response) {
+        response = outcome;
+      } else {
+        // Turned away: log why, then send the matching { error, code } body
+        logEvent({ event: 'api.denied', ...request, userId, ...outcome });
+        response = guardError(outcome.code);
       }
-
-      // Needs no database, so it runs before a transaction (and a pooled connection) is taken
-      if (isMissingScope(caller, opts.requireScope)) {
-        return guardError('SCOPE_MISSING');
-      }
-
-      // `return await`, not `return`: the try/catch only catches a rejection it awaits.
-      // Without it, a rejection skips our catch: no log, and no { error, code } body.
-      return await withRLS(caller.userId, async (tx) => {
-        if (opts.feature && !(await getEnabledFeatures(tx)).includes(opts.feature)) {
-          return guardError('FEATURE_DISABLED');
-        }
-
-        return handler({ tx, caller, req, ctx });
-      });
     } catch (error) {
-      // withRLS has already rolled the transaction back. Lesson 5 replaces this with api.error.
-      console.error('withApiGuard: unhandled error', error);
-      return guardError('INTERNAL');
+      // withRLS has already rolled the transaction back
+      logEvent({ event: 'api.error', ...request, userId, error: toLoggedError(error) });
+      response = guardError('INTERNAL');
     }
+
+    logEvent({
+      event: 'api.request',
+      ...request,
+      userId,
+      status: response.status,
+      latencyMs: Math.round(performance.now() - startedAt),
+    });
+    return response;
   };
 }
