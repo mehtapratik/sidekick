@@ -5,7 +5,7 @@ title: Phase 2 build rules and target design
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan
-version: 2.5.0
+version: 2.6.0
 tags:
    - plan
    - phase-2
@@ -215,12 +215,25 @@ All guard errors use `{ error: string, code: string }` ([[error-handling]]):
 
 ### Logging
 
-`packages/core/src/observability/log.ts` writes one JSON object per line ([[03-system-design/non-functional/observability/centralized|centralized observability]]):
+`packages/core/src/observability/log.ts` (internal, `server-only`) writes one JSON object per line ([[03-system-design/non-functional/observability/centralized|centralized observability]]). `logEvent(event)` picks the console method, which sets the level the host shows: `console.log` for `api.request`, `console.warn` for `api.denied`, `console.error` for `api.error`.
 
-- `api.request`, at request end: `method`, `path`, `status`, `latencyMs`, `userId` (or `null`).
-- `api.denied`, on every 401 and 403: `method`, `path`, `reason` (`unauthenticated` | `scope_missing` | `feature_disabled`), plus `userId`, `feature` or `scope` when known.
-- `api.error`, on a 500: `method`, `path`, `userId`, and the error's message and stack (server-side only).
+- Every event carries `event`, `method`, `path` and `userId` (`null` when there's no caller: `JSON.stringify` drops `undefined`).
+- `api.request`, at the end of every request: `status`, `latencyMs` (`performance.now()`, rounded).
+- `api.denied`, on every 401 and 403: `code` (`UNAUTHENTICATED` | `SCOPE_MISSING` | `FEATURE_DISABLED`, the same value as the response body), plus `feature` or `scope` when that check failed.
+- `api.error`, on every 500: `error: { name, message, stack }` from `toLoggedError`. `stack` holds only the `at …` frames. For a `DrizzleQueryError`, `name` and `message` come from its `cause`, because Drizzle's own message embeds the query's parameters.
 - `path` is the URL pathname without the query string. Never log emails, cookies, tokens, headers or bodies.
+- `withApiGuard` is the only caller. A denied or failed request logs its reason, then `api.request`; every request logs exactly one `api.request`.
+- ESLint allows `console.log` in `log.ts` only, through a per-file `no-console` override in `eslint.config.js`.
+
+Decided in lesson 5:
+
+- `api.denied` logs `code`, not a lowercase `reason`: one vocabulary for the client and the log, so a reported code greps straight to its line.
+- `userId` is on every event, `null` without a caller, rather than optional.
+- `toLoggedError` replaces "the error's message and stack". Drizzle's `DrizzleQueryError` message carries user data (`params: …`).
+- One place logs (Pratik's design). An internal `authorizeAndHandle(caller, handler, opts, req, ctx)` runs the auth, scope and feature checks and the handler, and returns the handler's `Response` or a `GuardDenial` (`Pick<ApiDeniedEvent, 'code' | 'feature' | 'scope'>`). It never logs or catches. `withApiGuard` resolves the caller, logs `api.denied`, `api.error` and `api.request`, and turns a throw into the 500. `userId` is a local in `withApiGuard`, not a mutated shared object.
+- The 401 check sits in `authorizeAndHandle` with the other refusals (Pratik's choice): `resolveApiCaller` says who the caller is, `authorizeAndHandle` says whether they may proceed.
+- Event names and codes stay literal unions, not an `enum` or constants: `LogEvent` and `GUARD_ERRORS` are the inventory, and the compiler checks both. Revisit with a shared `as const` code table when Phase 3 handlers add their own codes.
+- The `console.log` exception is a config override, not an inline `eslint-disable`: policies live in `eslint.config.js`, and `log.ts` carries a comment pointing there.
 
 ### Feature manifest
 

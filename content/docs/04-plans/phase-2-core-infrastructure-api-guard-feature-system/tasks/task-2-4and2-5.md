@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.task-2-4and2-5
 title: "Lesson 5 (tasks 2.4, 2.5): request and auth-failure logging"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-23
 kind: plan
-version: 2.1.0
+version: 2.1.1
 tags:
    - plan
    - phase-2
@@ -13,7 +13,7 @@ tags:
    - api-guard
    - observability
    - eslint
-status: planned
+status: complete
 ---
 
 > **Lesson 5 of 8.** Before this: [[task-2-2and2-3|lesson 4]]. Next: [[task-2-11and2-12|lesson 6]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Logging|Logging]].

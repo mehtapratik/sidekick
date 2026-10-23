@@ -5,7 +5,7 @@ title: "Phase 2 lesson 4 walkthrough: withApiGuard"
 created: 2026-10-23
 updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -634,3 +634,15 @@ Wait for the `checks` job, then squash-merge.
 - Nine unit tests for the guard's decisions and five integration tests on a real database, one of them proven to fail when the feature check is removed.
 
 Next: [[task-2-4and2-5|lesson 5]], structured logging inside the guard.
+
+---
+
+## Post note — Changed in Lesson 5 (added 2026-10-23)
+
+Lesson 5 reshapes `guard.ts` while adding logging. If you're following along, the `guard.ts` from step 3 is correct for this lesson. Lesson 5's [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-5-logging|walkthrough]] replaces it with the final version:
+
+- The checks move into an internal `authorizeAndHandle`, which returns the handler's `Response` or a denial instead of responding itself. `withApiGuard` resolves the caller, logs, and responds.
+- `console.error('withApiGuard: unhandled error', error)` becomes a structured `api.error` event. It logs the error's name, message and stack frames, without Drizzle's query parameters.
+- The unit test's 500 case asserts the logged `api.error` event instead of spying on `console.error`.
+
+The behaviour this lesson's tests pin (order of checks, status codes, response bodies, one transaction, rollback on throw) is unchanged, and all of lesson 4's tests still pass.
