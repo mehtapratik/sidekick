@@ -42,12 +42,6 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "unrs-resolver"
-    ]
-  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
   }
