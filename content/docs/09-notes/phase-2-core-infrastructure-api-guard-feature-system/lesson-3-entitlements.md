@@ -5,7 +5,7 @@ title: "Phase 2 lesson 3 notes: entitlements"
 created: 2026-10-23
 updated: 2026-10-23
 kind: notes
-version: 1.0.0
+version: 1.1.0
 tags:
    - phase-2
    - feature-system
@@ -140,6 +140,55 @@ After breaking the policy, Pratik broke the `REVOKE` without restoring the polic
 ## Coding standard: `undefined` over `null`
 
 At the end of the lesson, the review surfaced that Pratik's coding standard ("prefer `undefined` over `null`") contradicted the lesson 2 contract, where `resolveApiCaller` returned `null`. Pratik chose the standard, so it now returns `undefined` ([sidekick#16](https://github.com/mehtapratik/sidekick/pull/16)) and contracts, the plan and the lesson 2 notes were updated. The same note had no frontmatter, which broke every arkive build until it got `publish: false` frontmatter.
+
+## After the lesson: Supabase's Data API roles
+
+Step 6's grants query on dev showed a gap no test had covered. Pratik's instinct was right: nobody but `postgres` and maybe `service_role` should hold anything, and `anon` not even `SELECT`.
+
+| Role            | Held on both tables             | `BYPASSRLS` |
+| --------------- | ------------------------------- | ----------- |
+| `app_runtime`   | `SELECT` only                   | no          |
+| `postgres`      | everything (owner)              | yes         |
+| `service_role`  | everything                      | yes         |
+| `anon`          | everything, `TRUNCATE` included | no          |
+| `authenticated` | everything, `TRUNCATE` included | no          |
+
+### Who those roles are
+
+Supabase runs a REST API over the database, the **Data API** (PostgREST). A request without a login runs as `anon`, and one carrying a signed-in user's token runs as `authenticated`. Both are reachable with the public key that ships to the browser. `service_role` is what the secret key and the admin client use, so it stays, server-only. Supabase Auth is a separate service, so turning the Data API off doesn't affect sign-in.
+
+### Why it wasn't a live leak, and why it still mattered
+
+RLS stopped both roles: the policy compares against `app.current_user_id`, which the Data API never sets, and no policy permits writes. But that was **one wall**. `TRUNCATE` ignores RLS entirely (the REST API just can't send it), and a single loosened policy would expose every row. Sidekick never calls the Data API (no `.from(` or `.rpc(` in the code), so the grants bought nothing.
+
+### Where the grants come from: default privileges per creating role
+
+Supabase sets `ALTER DEFAULT PRIVILEGES` for `postgres` that grant `anon`, `authenticated` and `service_role` everything on each new table, sequence and function in `public`. It's the same mechanism as `0001`'s grant to `app_runtime`. Default privileges belong to the role that creates the object, so `ALTER DEFAULT PRIVILEGES FOR ROLE postgres … REVOKE` closes it for everything our migrations create. Existing objects still need their own `REVOKE`, because defaults only apply at creation. Fixed in [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17) (migration `0008`), plus turning the Data API off in the dashboard.
+
+### Sequences
+
+Pratik guessed sequences were another name for keys and indexes. They aren't. Keys and indexes belong to their table and are covered by table privileges (`REFERENCES` is the privilege to point a foreign key at a table). A **sequence** is a standalone counter object that hands out the next number, the thing behind `serial` and `GENERATED AS IDENTITY` ids. Sidekick uses UUIDs, so dev has none. The revoke covers any that appear later.
+
+### Functions, `PUBLIC` and `SECURITY DEFINER`
+
+- Postgres functions are its stored procedures. The Data API exposes every function in an exposed schema at `/rest/v1/rpc/<name>` to any role with `EXECUTE`.
+- **Every new function is executable by `PUBLIC`**, a pseudo-role every role belongs to. Revoking from `anon` and `authenticated` alone changes nothing. The first draft of `0008` revoked only future functions from those two roles, and Pratik's question ("why tables and sequences now, but functions only in the defaults?") exposed the gap. The fix revokes `EXECUTE` from `PUBLIC` too, now and by default.
+- What a callable function can do depends on how it runs. **Security invoker** (the default) runs with the caller's privileges, so grants and RLS still apply. **Security definer** runs with the owner's privileges, here `postgres` with `BYPASSRLS`, which is the dangerous kind.
+- Dev has four functions in `public`. Two are security definer: `create_profile_for_new_user`, and `rls_auto_enable`, which Supabase added, not our migrations. All four return `trigger` or `event_trigger`, which Postgres refuses to call directly, so nothing was callable. A future helper would have been.
+- **Triggers don't need `EXECUTE` to fire.** Postgres checks it only at `CREATE TRIGGER`. The entitlements tests proved it: they still pass, and they rely on `0005`'s trigger creating profiles.
+
+### Testing grants
+
+- The test stub now creates `anon` and `authenticated` with Supabase's default privileges, so the test database starts out as exposed as dev. Without that, the tests would pass with or without the fix.
+- `has_table_privilege(role, table, 'SELECT, INSERT, …')` is true if the role holds **any** of them. `has_function_privilege` checks what a role can actually do, including through `PUBLIC`, which a grant listing would miss.
+- Each test failed with its revoke removed, then passed with it back.
+
+## After the lesson: shipping surprises
+
+- **A PR merges the commits it has when you click merge.** arkive#10 merged while a follow-up commit was being pushed, so that commit went to a fresh branch from `main` as arkive#11.
+- **Prettier formats code inside Markdown.** Running it on a walkthrough rewrote the Sidekick TypeScript into the vault's style (3 spaces, double quotes). `--embedded-language-formatting=off` formats the Markdown and leaves the code alone.
+- **Cloudflare Pages builds with Node 22.12**, and `undici` wants 22.19 or later. It's only a warning for now; raise `NODE_VERSION` in the Pages settings.
+- **The docs follow the end state.** Fixes found late go into the earlier walkthroughs as dated post notes, so anyone following them ends up where Sidekick is, having done each fix in the phase it belongs to.
 
 ## How the lesson ran
 
