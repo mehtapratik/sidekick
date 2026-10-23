@@ -61,5 +61,7 @@ psql "$(url admin)" -v ON_ERROR_STOP=1 -q \
 
 export DATABASE_URL="postgresql://app_runtime:test-only@127.0.0.1:$PORT/postgres"
 export TEST_AUTH_DATABASE_URL="$(url supabase_auth_admin)"
+# postgres: the privileged migration/seed role, the only one that writes entitlements
+export TEST_ADMIN_DATABASE_URL="$(url postgres)"
 
 "$@"
