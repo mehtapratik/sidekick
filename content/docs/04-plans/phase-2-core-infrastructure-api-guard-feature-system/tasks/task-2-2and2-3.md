@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.task-2-2and2-3
 title: "Lesson 4 (tasks 2.2, 2.3): withApiGuard with withRLS"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-23
 kind: plan
-version: 2.1.0
+version: 2.1.1
 tags:
    - plan
    - phase-2
@@ -15,7 +15,7 @@ tags:
    - api
    - security
    - testing
-status: planned
+status: complete
 ---
 
 > **Lesson 4 of 8.** Before this: [[task-2-8and2-9|lesson 3]]. Next: [[task-2-4and2-5|lesson 5]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Guard|Guard]] and [[contracts#Error shape|Error shape]].

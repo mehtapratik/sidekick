@@ -2,8 +2,9 @@
 publish: true
 id: system-design.non-functional.observability.error-handling
 created: 2026-09-19
+updated: 2026-10-23
 kind: spec
-version: 1.0.0
+version: 1.1.0
 tags:
    - system-design
    - observability
@@ -33,16 +34,18 @@ Some failures should be swallowed:
 
 ## API Error Shape
 
-All API errors must use a consistent shape (to be enforced via `withApiGuard` in Phase 2):
+All API errors must use a consistent shape (enforced by `withApiGuard` since Phase 2):
 
 ```ts
-{ error: string, code?: string }
+{ error: string, code: string }
 ```
+
+`error` is a short human-readable message; `code` is the stable, machine-readable value clients branch on. `withApiGuard`'s codes are listed in [[contracts#Error shape|the Phase 2 contracts]].
 
 Examples:
 
 ```json
-{ "error": "Unauthorized" }
+{ "error": "Unauthorized", "code": "UNAUTHENTICATED" }
 { "error": "Feature disabled", "code": "FEATURE_DISABLED" }
 { "error": "Invalid input", "code": "VALIDATION_ERROR" }
 ```

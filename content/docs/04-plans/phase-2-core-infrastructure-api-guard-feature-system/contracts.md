@@ -5,7 +5,7 @@ title: Phase 2 build rules and target design
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan
-version: 2.4.0
+version: 2.5.0
 tags:
    - plan
    - phase-2
@@ -32,6 +32,8 @@ Each lesson step uses one of three modes. Pratik picks the mode and can switch a
 4. **Discuss.** Answer Pratik's questions and change the piece if Pratik's idea is sound. It's final only when Pratik agrees. Then Pratik puts it in place, or asks the coach to write it into the file.
 5. **Prove it.** Pratik runs the check (a test, `pnpm lint`, a curl). For a security check, Pratik breaks it on purpose and watches it fail, then puts it back.
 6. **Next piece.**
+
+From lesson 4, Pratik prefers speed over probing: the coach gives the exact code for each piece first, with the reasoning, concepts, consequences and trade-offs below it, and turns design questions into recommendations. Pratik types the piece in, questions it and can change it. Everything explained goes into the lesson's walkthrough and learning notes.
 
 **Pratik writes it** (for steps Pratik calls core, important or new):
 
@@ -164,13 +166,14 @@ export interface GuardOptions {
    requireScope?: string; // checked for key callers only
 }
 
-export type ApiHandler<Ctx> = (args: {
+export interface ApiHandlerArgs<Ctx> {
    tx: RlsTx;
-   userId: string;
-   caller: ApiCaller;
+   caller: ApiCaller; // handlers read caller.userId
    req: Request;
    ctx: Ctx; // Next.js's second route-handler argument, passed through
-}) => Promise<Response>;
+}
+
+export type ApiHandler<Ctx> = (args: ApiHandlerArgs<Ctx>) => Promise<Response>;
 
 export function withApiGuard<Ctx = unknown>(
    handler: ApiHandler<Ctx>,
@@ -184,10 +187,20 @@ Order of checks:
 2. If `opts.requireScope` is set and the caller is a `key` caller without that scope, respond 403 `SCOPE_MISSING`. This check needs no database, so it runs before a transaction opens. Session callers skip it.
 3. Open `withRLS(caller.userId, …)`.
 4. Inside the transaction, if `opts.feature` is set and `getEnabledFeatures(tx)` doesn't include it, respond 403 `FEATURE_DISABLED`.
-5. Call `handler({ tx, userId, caller, req, ctx })` and return its response.
+5. Call `handler({ tx, caller, req, ctx })` and return its response.
 6. If anything throws, the transaction rolls back. Log the error server-side and respond 500 `INTERNAL`. Never send error details to the client.
 
 This reorders the sketch in [[with-api-guard]]: the scope check moves before the transaction, and the feature check moves inside it.
+
+Decided in lesson 4:
+
+- Handlers get `caller`, not a separate `userId` (Pratik's choice): `caller.userId` is the one copy, and after the 401 check `caller` is already narrowed to `ApiCaller`.
+- The handler's argument is a named interface, `ApiHandlerArgs<Ctx>`, following the interface rule from lesson 1.
+- `feature` stays optional. With no `feature`, the guard skips the entitlements query (`opts.feature && …` short-circuits).
+- `getEnabledFeatures` keeps returning `string[]`. A `Set` or `Map` gains nothing for one lookup per request.
+- The client keeps distinct `SCOPE_MISSING` and `FEATURE_DISABLED` codes: the caller is signed in and asking about their own account. Detailed reasons go to the server log (lesson 5).
+- A handler that writes and then returns an error response commits. Only a throw rolls back, so handlers validate before they write. The integration test pins this.
+- Shared test helpers live in `packages/core/tests/helpers/` ([sidekick#18](https://github.com/mehtapratik/sidekick/pull/18)) until a second package needs them.
 
 ### Error shape
 
