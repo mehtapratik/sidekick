@@ -18,3 +18,16 @@ ALTER TABLE auth.users OWNER TO supabase_auth_admin;
 -- foreign key and the trigger
 GRANT USAGE ON SCHEMA auth TO postgres;
 GRANT REFERENCES, TRIGGER ON auth.users TO postgres;
+
+-- The Data API's roles, with the default privileges Supabase gives them on every
+-- table, sequence and function postgres creates in public (checked on the live
+-- project 2026-10-23). postgres is a member of both there too.
+CREATE ROLE anon NOLOGIN NOBYPASSRLS;
+CREATE ROLE authenticated NOLOGIN NOBYPASSRLS;
+GRANT anon, authenticated TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON SEQUENCES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON FUNCTIONS TO anon, authenticated;
