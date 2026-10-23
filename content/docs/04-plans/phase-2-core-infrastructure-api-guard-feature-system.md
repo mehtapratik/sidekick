@@ -4,7 +4,7 @@ id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
 updated: 2026-10-23
 kind: plan
-version: 2.2.2
+version: 2.2.3
 tags:
    - plan
    - living-plan
@@ -51,7 +51,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 | 1 ✅   | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
 | 2 ✅   | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
 | 3 ✅   | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
-| 4      | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
+| 4 ✅   | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
 | 5      | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
 | 6      | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
 | 7      | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
@@ -80,6 +80,7 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Lesson 2: the caller variants are named interfaces with `kind: 'key'`, and any `Authorization` header resolves to no caller, even alongside a valid session.
 - Lesson 3: entitlements use a composite primary key `(user_id, feature_key)` with no surrogate `id`, `user_id` references `profiles`, and `app_runtime` can only `SELECT` them.
 - After lesson 3: `resolveApiCaller` returns `undefined`, not `null`, for no caller (coding standard: prefer `undefined`).
+- Lesson 4: handlers read `caller.userId` (no separate `userId`), `feature` stays optional and skips the entitlements query when unset, and the shared test helpers live in `packages/core/tests/helpers/`.
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 
 ---
