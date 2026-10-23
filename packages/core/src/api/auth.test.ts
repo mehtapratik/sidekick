@@ -65,28 +65,28 @@ describe('resolveApiCaller', () => {
     expect(createServerClient).toHaveBeenCalledOnce();
   });
 
-  it('resolves to null when nobody is signed in', async () => {
+  it('resolves to undefined when nobody is signed in', async () => {
     vi.mocked(createServerClient).mockResolvedValue(getSupabaseServerClient('invalidUser'));
     const resolution = await resolveApiCaller(getHttpRequestObject(false));
-    expect(resolution).toBeNull();
+    expect(resolution).toBeUndefined();
   });
 
-  it('resolves to null when Supabase Auth returns an error', async () => {
+  it('resolves to undefined when Supabase Auth returns an error', async () => {
     vi.mocked(createServerClient).mockResolvedValue(getSupabaseServerClient('error'));
     const resolution = await resolveApiCaller(getHttpRequestObject(false));
-    expect(resolution).toBeNull();
+    expect(resolution).toBeUndefined();
   });
 
-  it('resolves a Bearer header to null without reading the session', async () => {
+  it('resolves a Bearer header to undefined without reading the session', async () => {
     const resolution = await resolveApiCaller(getHttpRequestObject(true));
-    expect(resolution).toBeNull();
+    expect(resolution).toBeUndefined();
     expect(createServerClient).not.toHaveBeenCalled();
   });
 
   it('lets a Bearer header win over a valid session', async () => {
     vi.mocked(createServerClient).mockResolvedValue(getSupabaseServerClient('validUser'));
     const resolution = await resolveApiCaller(getHttpRequestObject(true));
-    expect(resolution).toBeNull();
+    expect(resolution).toBeUndefined();
     expect(createServerClient).not.toHaveBeenCalled();
   });
 

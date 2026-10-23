@@ -16,14 +16,14 @@ export interface KeyBasedApiCaller {
 
 export type ApiCaller = SessionBasedApiCaller | KeyBasedApiCaller;
 
-export async function resolveApiCaller(request: Request): Promise<ApiCaller | null> {
+export async function resolveApiCaller(request: Request): Promise<ApiCaller | undefined> {
   const authHeader = request.headers.get('authorization');
 
   // Resolving auth header first so a limited API key can't borrow the user's session cookie,
   // which the browser attaches automatically
   if (authHeader) {
     // deny all api key/token based access until auth key table is built out in phase 9 / task 9.4
-    return null;
+    return undefined;
   }
 
   const client = await createServerClient();
@@ -37,5 +37,5 @@ export async function resolveApiCaller(request: Request): Promise<ApiCaller | nu
         kind: 'session',
         userId: user.id,
       }
-    : null;
+    : undefined;
 }
