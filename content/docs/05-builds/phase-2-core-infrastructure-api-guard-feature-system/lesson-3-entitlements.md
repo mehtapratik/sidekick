@@ -58,34 +58,26 @@ git switch -c feature/P2L3-entitlements
 3. Create `packages/core/src/db/schema/user-feature-entitlements.ts`:
 
 ```ts
-import {
-   pgTable,
-   primaryKey,
-   text,
-   timestamp,
-   uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import { profiles } from "./profiles";
+import { profiles } from './profiles';
 
 export const userFeatureEntitlements = pgTable(
-   "user_feature_entitlements",
-   {
-      userId: uuid("user_id")
-         .notNull()
-         .references(() => profiles.id, { onDelete: "cascade" }),
-      featureKey: text("feature_key").notNull(),
-      createdAt: timestamp("created_at", { withTimezone: true })
-         .notNull()
-         .defaultNow(),
-   },
-   (self) => {
-      return [
-         primaryKey({
-            columns: [self.userId, self.featureKey],
-         }),
-      ];
-   },
+  'user_feature_entitlements',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    featureKey: text('feature_key').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (self) => {
+    return [
+      primaryKey({
+        columns: [self.userId, self.featureKey],
+      }),
+    ];
+  },
 );
 ```
 
@@ -94,7 +86,7 @@ The string passed to `uuid()` is the SQL column name; the object key is only the
 4. Export it from `packages/core/src/db/schema/index.ts`. Drizzle Kit reads only that file, so an unexported table produces no migration:
 
 ```ts
-export * from "./user-feature-entitlements";
+export * from './user-feature-entitlements';
 ```
 
 ---
@@ -171,19 +163,16 @@ Why it takes `tx`, not `userId`:
 1. Create `packages/core/src/features/entitlements.ts`:
 
 ```ts
-import "server-only";
+import 'server-only';
 
-import type { RlsTx } from "../db";
-import { userFeatureEntitlements } from "../db/schema";
+import type { RlsTx } from '../db';
+import { userFeatureEntitlements } from '../db/schema';
 
 const selectFeatureKeys = async (tx: RlsTx) =>
-   tx
-      .select({ featureKey: userFeatureEntitlements.featureKey })
-      .from(userFeatureEntitlements);
+  tx.select({ featureKey: userFeatureEntitlements.featureKey }).from(userFeatureEntitlements);
 
-const toFeatureKeyArray = (
-   entitlements: Awaited<ReturnType<typeof selectFeatureKeys>>,
-) => entitlements.map(({ featureKey }) => featureKey);
+const toFeatureKeyArray = (entitlements: Awaited<ReturnType<typeof selectFeatureKeys>>) =>
+  entitlements.map(({ featureKey }) => featureKey);
 
 /**
  * Retrieves the enabled feature keys of the user whose id withRLS set on tx.
@@ -192,7 +181,7 @@ const toFeatureKeyArray = (
  * @returns Keys of enabled features
  */
 export async function getEnabledFeatures(tx: RlsTx): Promise<string[]> {
-   return toFeatureKeyArray(await selectFeatureKeys(tx));
+  return toFeatureKeyArray(await selectFeatureKeys(tx));
 }
 ```
 
@@ -229,9 +218,9 @@ Match the error message, not just the rejection. Both the `REVOKE` and RLS fail 
 
 ```ts
 const permissionDenied = {
-   cause: expect.objectContaining({
-      message: "permission denied for table user_feature_entitlements",
-   }),
+  cause: expect.objectContaining({
+    message: 'permission denied for table user_feature_entitlements',
+  }),
 };
 
 await expect(insert).rejects.toMatchObject(permissionDenied);

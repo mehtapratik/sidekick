@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-2
 title: "Phase 2 lesson 2 walkthrough: resolveApiCaller"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -23,7 +23,9 @@ applies_to:
 
 This guide reproduces lesson 2 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: task 2.1, which gives API routes a way to know who is calling. It assumes lesson 1 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-1-feature-registry|lesson 1 walkthrough]]) and that `packages/core/src/api/` doesn't exist yet.
 
-The result shipped as [sidekick#13](https://github.com/mehtapratik/sidekick/pull/13). The design is recorded in [[contracts#Caller|contracts]] (version 2.3.0).
+The result shipped as [sidekick#13](https://github.com/mehtapratik/sidekick/pull/13). The design is recorded in [[contracts#Caller|contracts]] (version 2.4.0).
+
+> **Updated after lesson 3:** "no caller" is now `undefined`, not `null` ([sidekick#16](https://github.com/mehtapratik/sidekick/pull/16)), following the coding standard "prefer `undefined` over `null`". The steps below show the current code.
 
 Every step explains what you are doing and why. Follow the reasoning, not just the commands.
 
@@ -89,7 +91,7 @@ export type ApiCaller = SessionBasedApiCaller | KeyBasedApiCaller;
 
 Named interfaces follow the repo's lint rule (object shapes are interfaces). They also let a function take `KeyBasedApiCaller` alone, so "session callers skip the scope check" is enforced by the compiler. `ApiCaller` is the one `type`, because it's a union.
 
-"Nobody is calling" is `null`, and it goes on the function's return type, not inside `ApiCaller`. Route handlers receive the caller after the guard has already sent the 401, so inside the type it would force a pointless `null` check everywhere. On the return type, TypeScript won't let the guard read `caller.userId` until it has checked for `null`.
+"Nobody is calling" is `undefined`, and it goes on the function's return type, not inside `ApiCaller`. Route handlers receive the caller after the guard has already sent the 401, so inside the type it would force a pointless check everywhere. On the return type, TypeScript won't let the guard read `caller.userId` until it has checked for `undefined`.
 
 2. Check it compiles:
 
@@ -105,7 +107,7 @@ pnpm --filter @sidekick/core typecheck
 
 Use `getUser()`, not `getSession()`. `getSession()` reads the session from the cookie and never contacts Supabase, and the user can edit a cookie. `getUser()` sends the token to Supabase Auth, which verifies it.
 
-Any Auth error resolves to `null`: when in doubt, there's no caller, and the guard turns that into a 401. If Supabase Auth itself is down, `getUser()` also returns an error, so callers get a 401 rather than a 500. That's acceptable, because it still fails closed.
+Any Auth error resolves to `undefined`: when in doubt, there's no caller, and the guard turns that into a 401. If Supabase Auth itself is down, `getUser()` also returns an error, so callers get a 401 rather than a 500. That's acceptable, because it still fails closed.
 
 Missing Supabase env vars make `createServerClient()` throw. Don't catch it. "Not signed in" is an answer, a misconfigured app is a bug, and only a bug should crash ([[error-handling]]).
 
@@ -114,7 +116,7 @@ Missing Supabase env vars make `createServerClient()` throw. Don't catch it. "No
 ```ts
 import { createServerClient } from '../supabase/server';
 
-export async function resolveApiCaller(request: Request): Promise<ApiCaller | null> {
+export async function resolveApiCaller(request: Request): Promise<ApiCaller | undefined> {
   const client = await createServerClient();
   const {
     data: { user },
@@ -126,7 +128,7 @@ export async function resolveApiCaller(request: Request): Promise<ApiCaller | nu
         kind: 'session',
         userId: user.id,
       }
-    : null;
+    : undefined;
 }
 ```
 
@@ -142,7 +144,7 @@ Checking `user` alone would already be enough. `getUser()`'s own return type is 
 
 Three decisions:
 
-- **Any Authorization header gets `null`.** Accepting an unchecked token would let anyone in. That's failing closed.
+- **Any Authorization header gets `undefined`.** Accepting an unchecked token would let anyone in. That's failing closed.
 - **The header beats a valid cookie.** The browser attaches the cookie to every request automatically, but code adds a Bearer header deliberately. Picture an extension holding a `notes:read` key while you're signed in. If the cookie won, the extension's delete request would run with your full session (privilege escalation), and a revoked key would keep working unnoticed.
 - **The check runs before `getUser()`.** That's the only way the header can win, because the cookie is never read, and it skips a network call for a request that will be refused anyway.
 
@@ -157,7 +159,7 @@ const authHeader = request.headers.get('authorization');
 // which the browser attaches automatically
 if (authHeader) {
   // deny all api key/token based access until auth key table is built out in phase 9 / task 9.4
-  return null;
+  return undefined;
 }
 ```
 
@@ -242,15 +244,15 @@ vi.mock('../supabase/server', () => ({
 }));
 ```
 
-2. Add six cases inside `describe('resolveApiCaller', …)`, after the `beforeEach`. Each one asserts the whole result (`toEqual`, `toBeNull`) and, where it matters, whether the session was read:
+2. Add six cases inside `describe('resolveApiCaller', …)`, after the `beforeEach`. Each one asserts the whole result (`toEqual`, `toBeUndefined`) and, where it matters, whether the session was read:
 
 | Test                                                                | Request             | Fake client   | Expect                             |
 | ------------------------------------------------------------------- | ------------------- | ------------- | ---------------------------------- |
 | resolves a signed-in user to a session caller                       | no header           | `validUser`   | session caller; client called once |
-| resolves to null when nobody is signed in                           | no header           | `invalidUser` | `null`                             |
-| resolves to null when Supabase Auth returns an error                | no header           | `error`       | `null`                             |
-| resolves a Bearer header to null without reading the session        | Bearer              | none          | `null`; client never called        |
-| lets a Bearer header win over a valid session                       | Bearer              | `validUser`   | `null`; client never called        |
+| resolves to undefined when nobody is signed in                      | no header           | `invalidUser` | `undefined`                        |
+| resolves to undefined when Supabase Auth returns an error           | no header           | `error`       | `undefined`                        |
+| resolves a Bearer header to undefined without reading the session   | Bearer              | none          | `undefined`; client never called   |
+| lets a Bearer header win over a valid session                       | Bearer              | `validUser`   | `undefined`; client never called   |
 | falls through to the session when the Authorization header is empty | `Authorization: ''` | `validUser`   | session caller; client called once |
 
 For example:
@@ -259,7 +261,7 @@ For example:
 it('lets a Bearer header win over a valid session', async () => {
   vi.mocked(createServerClient).mockResolvedValue(getSupabaseServerClient('validUser'));
   const resolution = await resolveApiCaller(getHttpRequestObject(true));
-  expect(resolution).toBeNull();
+  expect(resolution).toBeUndefined();
   expect(createServerClient).not.toHaveBeenCalled();
 });
 ```
@@ -275,12 +277,12 @@ pnpm --filter @sidekick/core typecheck
 
 The output must say `Tests  6 passed (6)`.
 
-4. **Break it on purpose.** Comment out the `return null;` in the Bearer branch and run the tests. Two fail, in two different ways:
+4. **Break it on purpose.** Comment out the `return undefined;` in the Bearer branch and run the tests. Two fail, in two different ways:
 
-- _lets a Bearer header win over a valid session_ fails its assertion, because a session caller came back instead of `null`.
-- _resolves a Bearer header to null without reading the session_ fails with a `TypeError`. That test set no client, so after `resetAllMocks` the mock returns `undefined`, and the code reads `.auth` from it.
+- _lets a Bearer header win over a valid session_ fails its assertion, because a session caller came back instead of `undefined`.
+- _resolves a Bearer header to undefined without reading the session_ fails with a `TypeError`. That test set no client, so after `resetAllMocks` the mock returns `undefined`, and the code reads `.auth` from it.
 
-An assertion failure says what's wrong, while a `TypeError` only says that something broke. That's why each Bearer test checks both the result and the call count. Put the `return null;` back.
+An assertion failure says what's wrong, while a `TypeError` only says that something broke. That's why each Bearer test checks both the result and the call count. Put the `return undefined;` back.
 
 5. Core has tests now, so drop `--passWithNoTests` from its `test` script in `packages/core/package.json`. As in lesson 1, a package with tests should fail if Vitest finds none:
 
@@ -321,7 +323,7 @@ gh pr create --fill
 ## What you have now
 
 - `resolveApiCaller(req)` in `packages/core/src/api/auth.ts`, internal to `core` until the guard (lesson 4) uses it.
-- A session caller for a signed-in browser. `null` for nobody, for any Auth error and for any Authorization header. Loud failures for a misconfigured app.
+- A session caller for a signed-in browser. `undefined` for nobody, for any Auth error and for any Authorization header. Loud failures for a misconfigured app.
 - Six unit tests, including proof that a Bearer header never reads the session.
 
 Next: [[task-2-8and2-9|lesson 3]], entitlements.

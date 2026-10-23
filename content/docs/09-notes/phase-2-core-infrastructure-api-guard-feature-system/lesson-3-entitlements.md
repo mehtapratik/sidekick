@@ -137,6 +137,10 @@ After breaking the policy, Pratik broke the `REVOKE` without restoring the polic
 - **Corepack downloads the pinned pnpm** the first time after Renovate bumps `packageManager`, and checks it against the sha512 in the field. Main moved to pnpm 12 during the lesson.
 - **Stale `node_modules`** after a dependency bump made `web#build` fail with `Cannot find module …/next/dist/bin/next`. `pnpm install` fixed it.
 
+## Coding standard: `undefined` over `null`
+
+At the end of the lesson, the review surfaced that Pratik's coding standard ("prefer `undefined` over `null`") contradicted the lesson 2 contract, where `resolveApiCaller` returned `null`. Pratik chose the standard, so it now returns `undefined` ([sidekick#16](https://github.com/mehtapratik/sidekick/pull/16)) and contracts, the plan and the lesson 2 notes were updated. The same note had no frontmatter, which broke every arkive build until it got `publish: false` frontmatter.
+
 ## How the lesson ran
 
 Pratik wrote every piece except the integration test, which they drafted and then asked the coach to complete. Design questions worked best as concrete either/or choices with a recommendation (`profiles` or `auth.users`, keep `created_at` or not). The open question "who should be able to insert?" got a correct instinct ("app_runtime only SELECT, an admin role writes") that just needed the mechanics: ownership, `BYPASSRLS`, and that nobody needs `UPDATE`. The lesson ran over three sessions.

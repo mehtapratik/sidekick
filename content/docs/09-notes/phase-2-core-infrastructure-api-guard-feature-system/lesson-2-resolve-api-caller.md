@@ -3,9 +3,9 @@ publish: false
 id: notes.phase-2.lesson-2
 title: "Phase 2 lesson 2 notes: resolveApiCaller"
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-23
 kind: notes
-version: 1.0.0
+version: 1.1.0
 tags:
    - phase-2
    - api-guard
@@ -20,7 +20,7 @@ applies_to:
 
 These notes record what lesson 2 taught: the mental models, the surprises and the mistakes worth remembering. The steps to reproduce it are in [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-2-resolve-api-caller|the walkthrough]]. The decisions are recorded in [[contracts#Caller|contracts]].
 
-The thread running through the lesson: **when in doubt, there is no caller.** Every uncertain case (no cookie, a bad token, an Auth outage, an API key we can't check yet) collapses into one `null`, and the type system makes that `null` impossible to skip.
+The thread running through the lesson: **when in doubt, there is no caller.** Every uncertain case (no cookie, a bad token, an Auth outage, an API key we can't check yet) collapses into one "no caller" value, and the type system makes it impossible to skip. That value was `null` during the lesson and became `undefined` afterwards (see the last section).
 
 ---
 
@@ -74,7 +74,7 @@ Phase 9's key table doesn't exist, so any Authorization header resolves to `null
 
 Pratik's final version used named interfaces (`SessionBasedApiCaller`, `KeyBasedApiCaller`) joined in a union, which beat the planned inline union: a function can take just the key variant. The tag became `'key'` rather than `'apiKey'`. Supabase uses the same pattern: `getUser()` returns a union keyed on `error`.
 
-### Why `null`, not `{ userId: undefined }`
+### Why a bare "no caller", not `{ userId: undefined }`
 
 This was the one check-understanding question that needed a hint. An object is always truthy, so a guard's `if (!caller)` wouldn't catch `{ userId: undefined }`. The request would carry on into `withRLS(undefined, …)`, with no 401. The likely outcome is a driver error and a 500, or, if the value ever became `''` or `'undefined'`, queries that silently match no rows. The failure is the wrong one, far from its cause. `userId: string` makes TypeScript reject it, and CI's `typecheck` stops it landing. **The type turns a runtime surprise into a compile error.**
 
@@ -122,6 +122,15 @@ With the Bearer `return null;` commented out, one test failed its assertion (a s
 - `--passWithNoTests` came off `core`'s test script as soon as `core` had tests (lesson 1's rule).
 - `gh` wasn't logged in. `gh auth login` is the user's own step.
 - PR #13 merged with a correct Conventional Commits title: `feat(core): add resolveApiCaller for session callers; bearer fails closed`.
+
+## After the lesson: `undefined`, not `null`
+
+After lesson 3, Pratik switched "no caller" from `null` to `undefined` ([sidekick#16](https://github.com/mehtapratik/sidekick/pull/16)) to follow their coding standard: prefer `undefined`, the value JavaScript already gives anything unassigned. Nothing else changed. The return type is `Promise<ApiCaller | undefined>`, the guard still sends a 401, and the tests assert `toBeUndefined()`, which fails on `null`, so a slip back is caught. Two things to keep in mind:
+
+- Libraries keep their own convention. Supabase returns `user: User | null`, and `headers.get()` returns `string | null`. Convert at our boundary instead of leaking `null` inward.
+- `undefined` disappears from JSON (`JSON.stringify({ a: undefined })` is `{}`), while `null` survives. That doesn't matter for an in-process value like the caller, but a value that crosses an API boundary needs a deliberate choice.
+
+The argument above against `{ userId: undefined }` still holds: the point was a bare "no caller" value instead of a truthy object, not which empty value it is.
 
 ## How the lesson ran
 
