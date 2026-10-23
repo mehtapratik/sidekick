@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
-import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { withRLS } from '../../src/db';
 import { userFeatureEntitlements } from '../../src/db/schema';
 import { getEnabledFeatures } from '../../src/features/entitlements';
+import { createTestAuthDb, createTestAdminDb, createTestRuntimeDb } from '../helpers/db';
 
 // Proves the entitlements lockdown on a database built from our migrations.
 // Runs inside tests/with-test-db.sh, which exports:
@@ -12,18 +12,9 @@ import { getEnabledFeatures } from '../../src/features/entitlements';
 // - TEST_AUTH_DATABASE_URL: supabase_auth_admin, which creates and deletes users
 // - TEST_ADMIN_DATABASE_URL: postgres, the privileged role that writes entitlements
 
-function requireEnv(name: string) {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`${name} is not set; run this test through tests/with-test-db.sh`);
-  }
-
-  return value;
-}
-
-const authDb = postgres(requireEnv('TEST_AUTH_DATABASE_URL'), { max: 1 });
-const adminDb = postgres(requireEnv('TEST_ADMIN_DATABASE_URL'), { max: 1 });
-const runtimeDb = postgres(requireEnv('DATABASE_URL'), { max: 1 });
+const testAuthDb = createTestAuthDb();
+const testAdminDb = createTestAdminDb();
+const testRuntimeDb = createTestRuntimeDb();
 
 const userA = randomUUID();
 const userB = randomUUID();
@@ -31,7 +22,7 @@ const userToDelete = randomUUID();
 
 beforeAll(async () => {
   // The 0005 trigger creates each user's profile, which entitlements reference
-  await authDb`INSERT INTO auth.users ${authDb(
+  await testAuthDb`INSERT INTO auth.users ${testAuthDb(
     [
       { id: userA, email: 'a@example.com' },
       { id: userB, email: 'b@example.com' },
@@ -41,7 +32,7 @@ beforeAll(async () => {
     'email',
   )}`;
 
-  await adminDb`INSERT INTO user_feature_entitlements ${adminDb(
+  await testAdminDb`INSERT INTO user_feature_entitlements ${testAdminDb(
     [
       { user_id: userA, feature_key: 'core-drive' },
       { user_id: userA, feature_key: 'taxila' },
@@ -54,9 +45,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await authDb.end();
-  await adminDb.end();
-  await runtimeDb.end();
+  await testAuthDb.end();
+  await testAdminDb.end();
+  await testRuntimeDb.end();
 });
 
 // Both the REVOKE and RLS reject with SQLSTATE 42501, so match the message:
@@ -78,7 +69,7 @@ describe('reading entitlements', () => {
   });
 
   it('returns zero rows without a user context when run as app_runtime', async () => {
-    const rows = await runtimeDb`SELECT 1 FROM user_feature_entitlements`;
+    const rows = await testRuntimeDb`SELECT 1 FROM user_feature_entitlements`;
     expect(rows).toHaveLength(0);
   });
 });
@@ -99,10 +90,10 @@ describe('writing entitlements as app_runtime', () => {
 
 describe('deleting a user', () => {
   it('cascades through profiles to their entitlements', async () => {
-    await authDb`DELETE FROM auth.users WHERE id = ${userToDelete}`;
+    await testAuthDb`DELETE FROM auth.users WHERE id = ${userToDelete}`;
 
-    // adminDb bypasses RLS, so zero rows means the rows are gone, not hidden
-    const rows = await adminDb`
+    // testAdminDb bypasses RLS, so zero rows means the rows are gone, not hidden
+    const rows = await testAdminDb`
       SELECT 1 FROM user_feature_entitlements WHERE user_id = ${userToDelete}
     `;
     expect(rows).toHaveLength(0);
