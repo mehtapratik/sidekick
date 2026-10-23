@@ -314,6 +314,14 @@ export default defineConfig(
       'import-x/no-cycle': 'error',
     },
   },
+  {
+    // The structured logger is the one file that writes logs with console.log:
+    // every other file logs through it. warn and error stay allowed everywhere.
+    files: ['packages/core/src/observability/log.ts'],
+    rules: {
+      'no-console': ['error', { allow: ['log', 'warn', 'error'] }],
+    },
+  },
   // ── React and Next.js ─────────────────────────────────────────────────────
   {
     // Rules of Hooks, exhaustive deps, and the React Compiler's checks
