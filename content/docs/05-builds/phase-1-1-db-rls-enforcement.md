@@ -2,8 +2,9 @@
 publish: true
 id: plan.phase-1-1
 created: 2026-09-19
+updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-1.1
@@ -454,3 +455,56 @@ await db.transaction(async (tx) => {
 ```
 
 `SET LOCAL` scopes the permission to the transaction. When the transaction commits, the setting clears automatically. Never use `SET` (session-scoped) for this.
+
+---
+
+## Post note — Lock Out Supabase's Data API Roles (added 2026-10-23)
+
+Sidekick found this gap at the end of Phase 2 lesson 3 and fixed it in [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17) (migration `0008`). If you're following along, do it here, at the end of Phase 1.1, as your next custom migration. Your migration number will differ; the end state is the same.
+
+> **What and why:** Supabase runs a REST API over the database (the **Data API**, PostgREST). A request with no login runs as the `anon` role, and one with a signed-in user's token runs as `authenticated`. Both are reachable with the public key the browser holds. Supabase's default privileges give both roles every privilege, `TRUNCATE` included, on each table `postgres` creates in `public`, and every function is executable by `PUBLIC` (all roles). RLS still gives them zero rows, because `app.current_user_id` is never set for them, but `TRUNCATE` ignores RLS, and one loosened policy would expose data. Sidekick never uses the Data API (all queries go through `app_runtime` and `withRLS`), so take the grants away and turn the API off.
+
+1. Check what the roles hold today, in the Supabase SQL Editor:
+
+```sql
+select grantee, table_name, privilege_type
+from information_schema.role_table_grants
+where table_schema = 'public' and grantee in ('anon', 'authenticated')
+order by 1, 2, 3;
+```
+
+2. Create the migration:
+
+```bash
+pnpm --filter @sidekick/core db:generate --custom --name revoke_data_api_roles
+```
+
+```sql
+-- Existing tables and sequences
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+
+-- Functions are executable by PUBLIC (every role) by default, so revoking from anon and
+-- authenticated alone would change nothing. Triggers don't need EXECUTE to fire, and nothing
+-- calls these functions directly, so revoke from PUBLIC too.
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC, anon, authenticated;
+
+-- Tables, sequences and functions postgres creates from now on. Default privileges are kept
+-- per creating role; migrations run as postgres, so this covers everything we create.
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON TABLES FROM anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON SEQUENCES FROM anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON FUNCTIONS FROM PUBLIC, anon, authenticated;
+```
+
+`service_role` keeps its grants: the server-only admin client uses it, and it has `BYPASSRLS` anyway.
+
+3. Apply it with `pnpm db:migrate`, then re-run the query from step 1. It returns no rows.
+
+4. In the Supabase dashboard, turn the Data API off (**Project Settings → Data API**). Supabase Auth is a separate service, so sign-in keeps working.
+
+Every later table (Phase 2's `user_feature_entitlements` included) is covered by the default privileges, so it never gets these grants. Pre-2's integration tests prove it; see the post note there.

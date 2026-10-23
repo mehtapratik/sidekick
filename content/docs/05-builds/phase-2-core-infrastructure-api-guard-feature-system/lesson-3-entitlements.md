@@ -5,7 +5,7 @@ title: "Phase 2 lesson 3 walkthrough: entitlements"
 created: 2026-10-23
 updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -58,34 +58,26 @@ git switch -c feature/P2L3-entitlements
 3. Create `packages/core/src/db/schema/user-feature-entitlements.ts`:
 
 ```ts
-import {
-   pgTable,
-   primaryKey,
-   text,
-   timestamp,
-   uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import { profiles } from "./profiles";
+import { profiles } from './profiles';
 
 export const userFeatureEntitlements = pgTable(
-   "user_feature_entitlements",
-   {
-      userId: uuid("user_id")
-         .notNull()
-         .references(() => profiles.id, { onDelete: "cascade" }),
-      featureKey: text("feature_key").notNull(),
-      createdAt: timestamp("created_at", { withTimezone: true })
-         .notNull()
-         .defaultNow(),
-   },
-   (self) => {
-      return [
-         primaryKey({
-            columns: [self.userId, self.featureKey],
-         }),
-      ];
-   },
+  'user_feature_entitlements',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    featureKey: text('feature_key').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (self) => {
+    return [
+      primaryKey({
+        columns: [self.userId, self.featureKey],
+      }),
+    ];
+  },
 );
 ```
 
@@ -94,7 +86,7 @@ The string passed to `uuid()` is the SQL column name; the object key is only the
 4. Export it from `packages/core/src/db/schema/index.ts`. Drizzle Kit reads only that file, so an unexported table produces no migration:
 
 ```ts
-export * from "./user-feature-entitlements";
+export * from './user-feature-entitlements';
 ```
 
 ---
@@ -171,19 +163,16 @@ Why it takes `tx`, not `userId`:
 1. Create `packages/core/src/features/entitlements.ts`:
 
 ```ts
-import "server-only";
+import 'server-only';
 
-import type { RlsTx } from "../db";
-import { userFeatureEntitlements } from "../db/schema";
+import type { RlsTx } from '../db';
+import { userFeatureEntitlements } from '../db/schema';
 
 const selectFeatureKeys = async (tx: RlsTx) =>
-   tx
-      .select({ featureKey: userFeatureEntitlements.featureKey })
-      .from(userFeatureEntitlements);
+  tx.select({ featureKey: userFeatureEntitlements.featureKey }).from(userFeatureEntitlements);
 
-const toFeatureKeyArray = (
-   entitlements: Awaited<ReturnType<typeof selectFeatureKeys>>,
-) => entitlements.map(({ featureKey }) => featureKey);
+const toFeatureKeyArray = (entitlements: Awaited<ReturnType<typeof selectFeatureKeys>>) =>
+  entitlements.map(({ featureKey }) => featureKey);
 
 /**
  * Retrieves the enabled feature keys of the user whose id withRLS set on tx.
@@ -192,7 +181,7 @@ const toFeatureKeyArray = (
  * @returns Keys of enabled features
  */
 export async function getEnabledFeatures(tx: RlsTx): Promise<string[]> {
-   return toFeatureKeyArray(await selectFeatureKeys(tx));
+  return toFeatureKeyArray(await selectFeatureKeys(tx));
 }
 ```
 
@@ -229,9 +218,9 @@ Match the error message, not just the rejection. Both the `REVOKE` and RLS fail 
 
 ```ts
 const permissionDenied = {
-   cause: expect.objectContaining({
-      message: "permission denied for table user_feature_entitlements",
-   }),
+  cause: expect.objectContaining({
+    message: 'permission denied for table user_feature_entitlements',
+  }),
 };
 
 await expect(insert).rejects.toMatchObject(permissionDenied);
@@ -278,7 +267,7 @@ where table_name = 'user_feature_entitlements'
 order by grantee, privilege_type;
 ```
 
-`app_runtime` should hold only `SELECT`. Expect Supabase's own `anon`, `authenticated` and `service_role` to hold full privileges too, because Supabase's default privileges grant them on every new `public` table. RLS stops `anon` and `authenticated`: the policy compares against `app.current_user_id`, which is never set for them. `service_role` has `BYPASSRLS`, which is why the admin client is server-only and lint-restricted.
+`app_runtime` holds only `SELECT`, and `postgres` and `service_role` hold everything. `anon` and `authenticated` don't appear, if you followed the post notes in [[05-builds/phase-1-1-db-rls-enforcement|Phase 1.1]] and [[05-builds/pre-2-walkthrough|Pre-2]]. Sidekick's dev project showed both with full privileges here, `TRUNCATE` included, which is how the gap was found (see the post note below).
 
 ---
 
@@ -314,3 +303,13 @@ Wait for the `checks` job (it runs `test:integration` on PostgreSQL 17), then sq
 - Six integration tests, each proven to fail when the wall it guards is removed.
 
 Next: [[task-2-2and2-3|lesson 4]], `withApiGuard`.
+
+---
+
+## Post note — Found at the End of This Lesson (added 2026-10-23)
+
+Three follow-ups came out of this lesson. If you're following along, they're already folded into earlier walkthroughs as post notes, so you do them before wrapping up those phases:
+
+- **Data API roles.** Step 6's grants query showed `anon` and `authenticated` with every privilege on `profiles` and `user_feature_entitlements`. Fixed in [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17): see the post notes in [[05-builds/phase-1-1-db-rls-enforcement|Phase 1.1]] (the migration and turning off the Data API) and [[05-builds/pre-2-walkthrough|Pre-2]] (the stub roles, `TEST_ADMIN_DATABASE_URL` and the proof test). If you did those, step 5's `with-test-db.sh` change is already in place.
+- **`undefined`, not `null`.** `resolveApiCaller` now returns `undefined` for no caller ([sidekick#16](https://github.com/mehtapratik/sidekick/pull/16)); see the [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-2-resolve-api-caller|lesson 2 walkthrough]].
+- **pnpm's dead `"pnpm"` field.** Removed in [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14); see the post note in [[05-builds/phase-0-foundation-and-tooling/02-checkpoint-b-walkthrough|Phase 0 checkpoint B]].

@@ -79,6 +79,7 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Lesson 1: features are identified by `key` (not `slug`), object shapes are `interface`s, and rollout gating stays out of the registry (post-MVP, [[backlogged-unplanned#B5 — Feature rollout gating|B5]]).
 - Lesson 2: the caller variants are named interfaces with `kind: 'key'`, and any `Authorization` header resolves to no caller, even alongside a valid session.
 - Lesson 3: entitlements use a composite primary key `(user_id, feature_key)` with no surrogate `id`, `user_id` references `profiles`, and `app_runtime` can only `SELECT` them.
+- After lesson 3: `resolveApiCaller` returns `undefined`, not `null`, for no caller (coding standard: prefer `undefined`).
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 
 ---

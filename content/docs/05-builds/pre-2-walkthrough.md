@@ -3,9 +3,9 @@ publish: true
 id: build.pre-2
 title: Pre-2 walkthrough
 created: 2026-10-16
-updated: 2026-10-17
+updated: 2026-10-23
 kind: guidance
-version: 1.1.1
+version: 1.2.0
 tags:
    - build
    - walkthrough
@@ -1293,14 +1293,14 @@ packages/core/src/db/migrations/meta/
 
 In the repository's **Settings → Rules → Rulesets**, create a ruleset targeting the default branch, enforcement **Active**:
 
-| Setting | Value |
-| --- | --- |
-| Restrict deletions | On |
-| Restrict creations, Restrict updates | Off — "Restrict updates" would block merging your own PRs |
+| Setting                               | Value                                                                                  |
+| ------------------------------------- | -------------------------------------------------------------------------------------- |
+| Restrict deletions                    | On                                                                                     |
+| Restrict creations, Restrict updates  | Off — "Restrict updates" would block merging your own PRs                              |
 | Require a pull request before merging | On; required approvals **0** (you cannot approve your own PR); merge method **Squash** |
-| Require status checks to pass | On; check **`checks`**; require branches to be up to date |
-| Block force pushes | On |
-| Bypass list | Empty, or yourself with **For pull requests only** |
+| Require status checks to pass         | On; check **`checks`**; require branches to be up to date                              |
+| Block force pushes                    | On                                                                                     |
+| Bypass list                           | Empty, or yourself with **For pull requests only**                                     |
 
 Verify with GitHub's API:
 
@@ -1617,7 +1617,7 @@ Then, in GitHub:
 
 Renovate's **Dependency Dashboard** issue then lists every pending and blocked update.
 
-Check the dashboard's *Detected Dependencies* after the first scan: it shows exactly what Renovate would change. Its first scan proposed rewriting `.nvmrc` and `engines.node` to an exact Node version, which is why the Node rule disables all Node updates, not just majors.
+Check the dashboard's _Detected Dependencies_ after the first scan: it shows exactly what Renovate would change. Its first scan proposed rewriting `.nvmrc` and `engines.node` to an exact Node version, which is why the Node rule disables all Node updates, not just majors.
 
 ---
 
@@ -1628,3 +1628,112 @@ pnpm prettier:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test &&
 ```
 
 All pass locally and in CI, and `main` accepts changes only through pull requests whose `checks` job is green.
+
+---
+
+## Post note — Prove the Data API Roles Are Locked Out (added 2026-10-23)
+
+This goes with [[05-builds/phase-1-1-db-rls-enforcement|Phase 1.1's post note]], which revokes `anon` and `authenticated`. Sidekick added it after Phase 2 lesson 3 ([sidekick#17](https://github.com/mehtapratik/sidekick/pull/17)). Do it here, after Task Pre-2.5.
+
+1. Mirror the live project's roles in `packages/core/tests/supabase-stub.sql`, so the test database starts out as exposed as Supabase does and the migration has to close the gap. Append:
+
+```sql
+-- The Data API's roles, with the default privileges Supabase gives them on every
+-- table, sequence and function postgres creates in public (checked on the live
+-- project 2026-10-23). postgres is a member of both there too.
+CREATE ROLE anon NOLOGIN NOBYPASSRLS;
+CREATE ROLE authenticated NOLOGIN NOBYPASSRLS;
+GRANT anon, authenticated TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON SEQUENCES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON FUNCTIONS TO anon, authenticated;
+```
+
+Without the roles, the revoke migration fails on the test database.
+
+2. Export a connection as `postgres` from `tests/with-test-db.sh`, next to the other URLs (Phase 2 lesson 3 relies on it too):
+
+```bash
+# postgres: the privileged migration/seed role, the only one that writes entitlements
+export TEST_ADMIN_DATABASE_URL="$(url postgres)"
+```
+
+3. Create `packages/core/tests/integration/data-api-roles.test.ts`:
+
+```ts
+import postgres from 'postgres';
+import { afterAll, describe, expect, it } from 'vitest';
+
+// Proves that Supabase's Data API roles hold no privileges on our tables, now or for
+// tables created later. Runs inside tests/with-test-db.sh, whose Supabase stand-ins give
+// anon and authenticated the same default privileges as the live project.
+// - TEST_ADMIN_DATABASE_URL: postgres, the role that runs migrations and creates tables
+
+function requireEnv(name: string) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is not set; run this test through tests/with-test-db.sh`);
+  }
+
+  return value;
+}
+
+const adminDb = postgres(requireEnv('TEST_ADMIN_DATABASE_URL'), { max: 1 });
+
+const DATA_API_ROLES = ['anon', 'authenticated'];
+const TABLE_PRIVILEGES = 'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER';
+
+// Every role/table pair in public where the role holds at least one table privilege
+async function grantsInPublic() {
+  return adminDb`
+    SELECT r.role, c.relname AS table
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    CROSS JOIN unnest(${DATA_API_ROLES}::text[]) AS r(role)
+    WHERE n.nspname = 'public'
+      AND c.relkind = 'r'
+      AND has_table_privilege(r.role, c.oid, ${TABLE_PRIVILEGES})
+  `;
+}
+
+afterAll(async () => {
+  await adminDb.end();
+});
+
+describe('Data API roles', () => {
+  it('hold no privileges on existing tables', async () => {
+    expect(await grantsInPublic()).toEqual([]);
+  });
+
+  it('cannot execute any function in public', async () => {
+    const executable = await adminDb`
+      SELECT r.role, p.proname AS function
+      FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      CROSS JOIN unnest(${DATA_API_ROLES}::text[]) AS r(role)
+      WHERE n.nspname = 'public' AND has_function_privilege(r.role, p.oid, 'EXECUTE')
+    `;
+    expect(executable).toEqual([]);
+  });
+
+  it('get no privileges on a table postgres creates later', async () => {
+    await adminDb`CREATE TABLE public.default_privileges_probe (id int)`;
+    try {
+      const rows = await adminDb`
+        SELECT has_table_privilege(r.role, 'public.default_privileges_probe', ${TABLE_PRIVILEGES}) AS granted
+        FROM unnest(${DATA_API_ROLES}::text[]) AS r(role)
+      `;
+      expect(rows.map(({ granted }) => granted)).toEqual([false, false]);
+    } finally {
+      await adminDb`DROP TABLE public.default_privileges_probe`;
+    }
+  });
+});
+```
+
+`has_table_privilege` with several privileges is true if the role holds any one of them. `has_function_privilege` checks what a role can actually do, including through `PUBLIC`, so it catches what the grant list alone would miss.
+
+4. Run `pnpm --filter @sidekick/core test:integration`. Then empty the revoke migration and run it again: all three tests fail. Put it back.

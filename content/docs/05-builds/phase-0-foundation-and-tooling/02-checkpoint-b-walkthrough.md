@@ -3,8 +3,9 @@ publish: true
 id: build.phase-0.checkpoint-b
 title: Checkpoint B walkthrough
 created: 2026-05-29
+updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -227,6 +228,7 @@ Update root `package.json`:
 ```
 
 Key additions:
+
 - `"type": "module"` — required so Node.js treats `eslint.config.js` as an ES module
 - `format` and `format:check` scripts — Prettier runs at root level across the whole repo, not per package
 - `typescript` in root `devDependencies` — hoisted to all packages so `tsc` is consistently TypeScript 5+
@@ -281,3 +283,18 @@ Approve `sharp` and `unrs-resolver`. If `apps/web` lint fails with the same erro
 ## What's Next
 
 Checkpoint C confirms `pnpm turbo build` and `pnpm turbo dev` work end-to-end, then adds the root `README.md`.
+
+---
+
+## Post note — pnpm build approvals (added 2026-10-23)
+
+pnpm 11 and later no longer read the `"pnpm"` field in `package.json`, and warn on every command while it's there. Leave `pnpm.onlyBuiltDependencies` out of step 8's `package.json`, and approve dependency build scripts in `pnpm-workspace.yaml` instead:
+
+```yaml
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+```
+
+Sidekick removed the dead field in [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14), after Phase 2 lesson 3.
