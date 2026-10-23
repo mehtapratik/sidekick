@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.task-2-8and2-9
 title: "Lesson 3 (tasks 2.8, 2.9): entitlements table and getEnabledFeatures"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-23
 kind: plan
-version: 2.1.0
+version: 2.1.1
 tags:
    - plan
    - phase-2
@@ -16,7 +16,7 @@ tags:
    - rls
    - postgresql
    - testing
-status: planned
+status: complete
 ---
 
 > **Lesson 3 of 8.** Before this: [[task-2-1|lesson 2]]. Next: [[task-2-2and2-3|lesson 4]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Entitlements|Entitlements]].

@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.contracts
 title: Phase 2 build rules and target design
 created: 2026-10-18
+updated: 2026-10-23
 kind: plan
-version: 2.3.0
-updated: 2026-10-20
+version: 2.4.0
 tags:
    - plan
    - phase-2
@@ -125,18 +125,26 @@ export async function getEnabledFeatures(tx: RlsTx): Promise<string[]>; // featu
 
 Table `user_feature_entitlements`:
 
-| Column        | Type                     | Notes                                   |
-| ------------- | ------------------------ | --------------------------------------- |
-| `id`          | `uuid` PK                | `defaultRandom()`                       |
-| `user_id`     | `uuid` not null          | FK → `profiles.id`, `ON DELETE CASCADE` |
-| `feature_key` | `text` not null          | matches a `FeatureManifest.key`; no FK  |
-| `created_at`  | `timestamptz` not null   | `defaultNow()`                          |
-| unique        | `(user_id, feature_key)` | makes enabling idempotent               |
+| Column        | Type                     | Notes                                                   |
+| ------------- | ------------------------ | ------------------------------------------------------- |
+| `user_id`     | `uuid` not null          | FK → `profiles.id`, `ON DELETE CASCADE`                 |
+| `feature_key` | `text` not null          | matches a `FeatureManifest.key`; no FK                  |
+| `created_at`  | `timestamptz` not null   | `defaultNow()`                                          |
+| primary key   | `(user_id, feature_key)` | one row per feature per user; makes enabling idempotent |
 
 - RLS is enabled and forced. One policy allows `SELECT` of the caller's own rows (`user_id::text = current_setting('app.current_user_id', true)`).
 - `app_runtime` gets `INSERT`, `UPDATE` and `DELETE` revoked on this table. Users must never grant themselves features. Only the privileged migration/seed role (`DATABASE_DIRECT_URL`) writes rows.
 - There's no FK on `feature_key` because features live in code, not in a table. If a `features` table arrives later, it can use the same key as its primary key, and `feature_key` gains the FK without a data migration.
 - A present row means enabled. Disabling deletes the row with the privileged role. This isn't a syncable entity, so no soft delete.
+
+Decided in lesson 3:
+
+- The table has a composite primary key on `(user_id, feature_key)` and no surrogate `id` (Pratik's choice). Nothing references a single entitlement row, and the key's leading `user_id` column is the index `getEnabledFeatures` needs.
+- The column is `user_id`, not `profile_id`. `profiles.id` is the auth user's id, and the same value is `userId` everywhere else (`ApiCaller.userId`, `withRLS(userId)`, `app.current_user_id`). User-owned tables follow this.
+- The foreign key points at `profiles`, not `auth.users`, so our tables reference our tables. Deleting from `auth.users` still cascades through `profiles`. An entitlement is account state, not a transaction record, so nothing here needs to outlive the account.
+- No `deleted_at`: the table isn't syncable. `0003`'s soft-delete triggers also assume an `id` column.
+- `app_runtime` holds only `SELECT`. The `REVOKE` stays even though RLS already blocks writes: without it, a forbidden `DELETE` matches zero rows and succeeds silently, and the `REVOKE` makes it fail with "permission denied".
+- The integration test seeds rows through `TEST_ADMIN_DATABASE_URL` (the `postgres` role), which `tests/with-test-db.sh` exports.
 
 ### Guard
 
