@@ -1,5 +1,5 @@
-import boundaries from 'eslint-plugin-boundaries';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import boundaries from 'eslint-plugin-boundaries';
 import importX from 'eslint-plugin-import-x';
 import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig } from 'eslint/config';
@@ -96,6 +96,8 @@ export default defineConfig(
         { type: 'feature', pattern: 'packages/features/*' },
         { type: 'registry', pattern: 'packages/features-registry' },
         { type: 'tooling', pattern: 'packages/eslint-plugin-sidekick' },
+        // Privileged scripts (dev seeds, provisioning, break-glass); nothing imports them
+        { type: 'ops', pattern: 'packages/ops' },
         // core, ui, copy
         { type: 'foundation', pattern: 'packages/*' },
       ],
@@ -142,6 +144,10 @@ export default defineConfig(
             {
               from: { element: { type: 'feature' } },
               allow: { to: { element: { type: 'foundation' } } },
+            },
+            {
+              from: { element: { type: 'ops' } },
+              allow: { to: { element: { type: ['foundation', 'registry'] } } },
             },
           ],
         },
@@ -318,6 +324,13 @@ export default defineConfig(
     // The structured logger is the one file that writes logs with console.log:
     // every other file logs through it. warn and error stay allowed everywhere.
     files: ['packages/core/src/observability/log.ts'],
+    rules: {
+      'no-console': ['error', { allow: ['log', 'warn', 'error'] }],
+    },
+  },
+  // ops scripts are command-line tools: their results are their stdout.
+  {
+    files: ['packages/ops/**/*.ts', 'packages/ops/**/*.tsx'],
     rules: {
       'no-console': ['error', { allow: ['log', 'warn', 'error'] }],
     },

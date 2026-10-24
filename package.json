@@ -18,6 +18,7 @@
     "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
     "db:generate": "turbo db:generate",
     "db:migrate": "turbo db:migrate",
+    "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
     "test": "turbo test",
     "test:integration": "turbo test:integration",
     "docs:setup": "node scripts/setup-docs.mjs",
