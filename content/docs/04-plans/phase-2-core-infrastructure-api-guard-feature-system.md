@@ -2,9 +2,9 @@
 publish: true
 id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
-updated: 2026-10-23
+updated: 2026-10-24
 kind: plan
-version: 2.2.5
+version: 2.2.6
 tags:
    - plan
    - living-plan
@@ -54,7 +54,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 | 4 ✅   | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
 | 5 ✅   | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
 | 6 ✅   | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
-| 7      | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
+| 7 ✅   | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
 | 8      | Close-out (below)    | none       | writing it up                                               |
 
 **To start a lesson,** open a new thread and paste this, changing the lesson number:
@@ -70,6 +70,13 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 
 **Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`).
 
+**Handover from lesson 7** ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-7-ops|walkthrough]]) for the close-out:
+
+- **Task 2.10 shipped as an `ops` package, not a registry script** ([sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)). The phase walkthrough should describe `packages/ops`, `withPrivilegedDb` and `pnpm ops:entitlements:grant`, and the agent guide's dependency direction now has a side branch: `ops → registry, foundation`, imported by nothing ([[contracts#Ops|contracts]]).
+- **The exit criteria hold:** `/api/health` returns 401 and 200 (lesson 6), the 403 is proven by lesson 4's integration test, and the feature system can now enable a feature per user from the command line. Disabling is a `DELETE` with the privileged role; there's no `revoke` command yet.
+- **`ALL_FEATURES` is still empty.** Nothing is granted until Phase 4 registers Taxila; the walkthrough should say so rather than imply a working grant.
+- **Open items to carry, not fix:** a `--target` check for `ops` scripts once a second environment exists, a `pnpm ops <noun> <verb>` dispatcher with the second command, and Phase 9's CLI owning CLI design.
+
 **Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
 - Bearer API keys resolve to no caller (401) until Phase 9 adds `api_keys`.
@@ -84,5 +91,6 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Lesson 5: one place logs (`withApiGuard`); the checks live in `authorizeAndHandle`, which returns a response or a denial. `api.denied` logs the client's `code`, every event carries `userId` (`null` without a caller), and error logs drop Drizzle's query parameters.
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
 - Lesson 6: `/api/health` returns `{ status: 'ok' }`, and the database client is created on first use (`getUnsafeDb()`), because `next build` imports every route module and CI's build has no `DATABASE_URL`.
+- Lesson 7: the seed is `entitlements grant` in a dedicated `packages/ops` package for privileged scripts, which nothing may import. It runs under `tsx` with `dotenv-cli`, writes only with `--apply`, and `--apply` is one `INSERT … ON CONFLICT DO NOTHING RETURNING`.
 
 ---
