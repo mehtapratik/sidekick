@@ -3,17 +3,19 @@ import 'server-only';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 export function createAdminClient(): SupabaseClient {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SECRET_KEY!;
+   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+   const supabaseKey = process.env.SUPABASE_SECRET_KEY!;
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables for admin client');
-  }
+   if (!supabaseUrl || !supabaseKey) {
+      throw new Error(
+         'Missing Supabase environment variables for admin client',
+      );
+   }
 
-  return createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+   return createClient(supabaseUrl, supabaseKey, {
+      auth: {
+         autoRefreshToken: false,
+         persistSession: false,
+      },
+   });
 }

@@ -18,32 +18,32 @@ import type * as ESTree from 'estree';
  * for apps/web/.
  */
 export const noBarrelExports: Rule.RuleModule = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description:
-        'Disallow barrel re-exports (export * from / export { X } from). Import from the source file directly.',
-    },
-    messages: {
-      noBarrelExport:
-        'Barrel re-exports are prohibited. Import directly from the source file instead of re-exporting here.',
-    },
-    schema: [],
-  },
-  create(context): Rule.RuleListener {
-    return {
-      // export * from './foo'
-      ExportAllDeclaration(node: ESTree.ExportAllDeclaration) {
-        if (node.source) {
-          context.report({ node, messageId: 'noBarrelExport' });
-        }
+   meta: {
+      type: 'problem',
+      docs: {
+         description:
+            'Disallow barrel re-exports (export * from / export { X } from). Import from the source file directly.',
       },
-      // export { Foo, Bar } from './foo'
-      ExportNamedDeclaration(node: ESTree.ExportNamedDeclaration) {
-        if (node.source) {
-          context.report({ node, messageId: 'noBarrelExport' });
-        }
+      messages: {
+         noBarrelExport:
+            'Barrel re-exports are prohibited. Import directly from the source file instead of re-exporting here.',
       },
-    };
-  },
+      schema: [],
+   },
+   create(context): Rule.RuleListener {
+      return {
+         // export * from './foo'
+         ExportAllDeclaration(node: ESTree.ExportAllDeclaration) {
+            if (node.source) {
+               context.report({ node, messageId: 'noBarrelExport' });
+            }
+         },
+         // export { Foo, Bar } from './foo'
+         ExportNamedDeclaration(node: ESTree.ExportNamedDeclaration) {
+            if (node.source) {
+               context.report({ node, messageId: 'noBarrelExport' });
+            }
+         },
+      };
+   },
 };

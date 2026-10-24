@@ -1,22 +1,22 @@
 {
-  "name": "@sidekick/ops",
-  "private": true,
-  "license": "MIT",
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "entitlements:grant": "dotenv -e ../../.env.local -- tsx src/scripts/entitlements-grant.ts"
-  },
-  "dependencies": {
-    "@sidekick/core": "workspace:*",
-    "@sidekick/features-registry": "workspace:*",
-    "drizzle-orm": "^0.45.4",
-    "postgres": "^3.4.9"
-  },
-  "devDependencies": {
-    "@types/node": "^24.19.2",
-    "tsx": "^4.23.15"
-  }
+   "name": "@sidekick/ops",
+   "private": true,
+   "license": "MIT",
+   "version": "0.0.0",
+   "type": "module",
+   "scripts": {
+      "lint": "eslint .",
+      "typecheck": "tsc -p tsconfig.json --noEmit",
+      "entitlements:grant": "dotenv -e ../../.env.local -- tsx src/scripts/entitlements-grant.ts"
+   },
+   "dependencies": {
+      "@sidekick/core": "workspace:*",
+      "@sidekick/features-registry": "workspace:*",
+      "drizzle-orm": "^0.45.4",
+      "postgres": "^3.4.9"
+   },
+   "devDependencies": {
+      "@types/node": "^24.19.2",
+      "tsx": "^4.23.15"
+   }
 }

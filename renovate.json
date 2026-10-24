@@ -1,51 +1,51 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "timezone": "America/New_York",
-  "schedule": ["before 6am on monday"],
-  "labels": ["dependencies"],
-  "rangeStrategy": "bump",
-  "minimumReleaseAge": "3 days",
-  "internalChecksFilter": "strict",
-  "platformAutomerge": true,
-  "postUpdateOptions": ["pnpmDedupe"],
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true,
-    "schedule": ["before 6am on monday"]
-  },
-  "packageRules": [
-    {
-      "description": "Minor and patch updates: one grouped PR, merged automatically once the CI `checks` job passes",
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all minor and patch",
-      "automerge": true
-    },
-    {
-      "description": "Majors: one PR each, reviewed by a person, never merged automatically",
-      "matchUpdateTypes": ["major"],
-      "automerge": false
-    },
-    {
-      "description": "Node is major-only on purpose (.nvmrc `24`, engines `24.x`): minor and patch versions arrive by themselves through nvm, setup-node and Vercel, and an exact version would make pnpm's engineStrict reject every other 24.x. Majors follow production (the newest Vercel offers) and are bumped deliberately (pin-versions).",
-      "matchDepNames": ["node"],
-      "enabled": false
-    },
-    {
-      "description": "@types/node matches the Node runtime major in .nvmrc",
-      "matchPackageNames": ["@types/node"],
-      "allowedVersions": "24.x"
-    },
-    {
-      "description": "Blocked: typescript-eslint supports TypeScript <6.1; TypeScript 7 waits for 7.1's API and typescript-eslint support",
-      "matchPackageNames": ["typescript"],
-      "allowedVersions": "<6.1.0"
-    },
-    {
-      "description": "Third-party GitHub Actions are pinned to a commit SHA; first-party actions/* keep major tags (pin-versions)",
-      "matchManagers": ["github-actions"],
-      "matchPackageNames": ["!actions/**"],
-      "pinDigests": true
-    }
-  ]
+   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+   "extends": ["config:recommended"],
+   "timezone": "America/New_York",
+   "schedule": ["before 6am on monday"],
+   "labels": ["dependencies"],
+   "rangeStrategy": "bump",
+   "minimumReleaseAge": "3 days",
+   "internalChecksFilter": "strict",
+   "platformAutomerge": true,
+   "postUpdateOptions": ["pnpmDedupe"],
+   "lockFileMaintenance": {
+      "enabled": true,
+      "automerge": true,
+      "schedule": ["before 6am on monday"]
+   },
+   "packageRules": [
+      {
+         "description": "Minor and patch updates: one grouped PR, merged automatically once the CI `checks` job passes",
+         "matchUpdateTypes": ["minor", "patch"],
+         "groupName": "all minor and patch",
+         "automerge": true
+      },
+      {
+         "description": "Majors: one PR each, reviewed by a person, never merged automatically",
+         "matchUpdateTypes": ["major"],
+         "automerge": false
+      },
+      {
+         "description": "Node is major-only on purpose (.nvmrc `24`, engines `24.x`): minor and patch versions arrive by themselves through nvm, setup-node and Vercel, and an exact version would make pnpm's engineStrict reject every other 24.x. Majors follow production (the newest Vercel offers) and are bumped deliberately (pin-versions).",
+         "matchDepNames": ["node"],
+         "enabled": false
+      },
+      {
+         "description": "@types/node matches the Node runtime major in .nvmrc",
+         "matchPackageNames": ["@types/node"],
+         "allowedVersions": "24.x"
+      },
+      {
+         "description": "Blocked: typescript-eslint supports TypeScript <6.1; TypeScript 7 waits for 7.1's API and typescript-eslint support",
+         "matchPackageNames": ["typescript"],
+         "allowedVersions": "<6.1.0"
+      },
+      {
+         "description": "Third-party GitHub Actions are pinned to a commit SHA; first-party actions/* keep major tags (pin-versions)",
+         "matchManagers": ["github-actions"],
+         "matchPackageNames": ["!actions/**"],
+         "pinDigests": true
+      }
+   ]
 }

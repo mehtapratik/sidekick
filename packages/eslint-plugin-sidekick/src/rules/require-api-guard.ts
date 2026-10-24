@@ -23,80 +23,105 @@ import type * as ESTree from 'estree';
  * Non-method exports (e.g. `export const dynamic = 'force-dynamic'`) are ignored.
  * Wired up only for app/**\/route.* files via eslint.config.js.
  */
-const HTTP_METHODS = new Set(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+const HTTP_METHODS = new Set([
+   'GET',
+   'HEAD',
+   'POST',
+   'PUT',
+   'PATCH',
+   'DELETE',
+   'OPTIONS',
+]);
 const GUARD_NAME = 'withApiGuard';
 
 function isImportedGuardCall(
-  init: ESTree.Expression | null | undefined,
-  scope: Scope.Scope,
+   init: ESTree.Expression | null | undefined,
+   scope: Scope.Scope,
 ): boolean {
-  if (init?.type !== 'CallExpression') return false;
-  if (init.callee.type !== 'Identifier' || init.callee.name !== GUARD_NAME) return false;
+   if (init?.type !== 'CallExpression') return false;
+   if (init.callee.type !== 'Identifier' || init.callee.name !== GUARD_NAME)
+      return false;
 
-  let current: Scope.Scope | null = scope;
-  while (current) {
-    const variable = current.set.get(GUARD_NAME);
-    if (variable) return variable.defs.some((def) => def.type === 'ImportBinding');
-    current = current.upper;
-  }
-  return false;
+   let current: Scope.Scope | null = scope;
+   while (current) {
+      const variable = current.set.get(GUARD_NAME);
+      if (variable)
+         return variable.defs.some((def) => def.type === 'ImportBinding');
+      current = current.upper;
+   }
+   return false;
 }
 
 export const requireApiGuard: Rule.RuleModule = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description: `Require route handlers to be exported as \`export const METHOD = ${GUARD_NAME}(...)\`.`,
-    },
-    messages: {
-      notGuarded: `Route handler {{method}} must be exported as \`export const {{method}} = ${GUARD_NAME}(handler, options)\`, with ${GUARD_NAME} imported. Unguarded API routes are publicly reachable.`,
-      unverifiable:
-        'Route files may only export handlers as `export const METHOD = withApiGuard(...)`. This export form cannot be verified as guarded.',
-    },
-    schema: [],
-  },
-  create(context): Rule.RuleListener {
-    return {
-      ExportAllDeclaration(node: ESTree.ExportAllDeclaration) {
-        context.report({ node, messageId: 'unverifiable' });
+   meta: {
+      type: 'problem',
+      docs: {
+         description: `Require route handlers to be exported as \`export const METHOD = ${GUARD_NAME}(...)\`.`,
       },
-      ExportNamedDeclaration(node: ESTree.ExportNamedDeclaration) {
-        for (const specifier of node.specifiers) {
-          const exported =
-            specifier.exported.type === 'Identifier'
-              ? specifier.exported.name
-              : String(specifier.exported.value);
-          if (HTTP_METHODS.has(exported)) {
-            context.report({ node: specifier, messageId: 'unverifiable' });
-          }
-        }
-
-        const declaration = node.declaration;
-        if (!declaration) return;
-
-        if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration') {
-          const method = declaration.id?.name;
-          if (method && HTTP_METHODS.has(method)) {
-            context.report({ node: declaration, messageId: 'notGuarded', data: { method } });
-          }
-          return;
-        }
-
-        if (declaration.type !== 'VariableDeclaration') return;
-
-        const scope = context.sourceCode.getScope(node);
-        for (const declarator of declaration.declarations) {
-          if (declarator.id.type !== 'Identifier') continue;
-          const method = declarator.id.name;
-          if (!HTTP_METHODS.has(method)) continue;
-
-          const guarded =
-            declaration.kind === 'const' && isImportedGuardCall(declarator.init, scope);
-          if (!guarded) {
-            context.report({ node: declarator, messageId: 'notGuarded', data: { method } });
-          }
-        }
+      messages: {
+         notGuarded: `Route handler {{method}} must be exported as \`export const {{method}} = ${GUARD_NAME}(handler, options)\`, with ${GUARD_NAME} imported. Unguarded API routes are publicly reachable.`,
+         unverifiable:
+            'Route files may only export handlers as `export const METHOD = withApiGuard(...)`. This export form cannot be verified as guarded.',
       },
-    };
-  },
+      schema: [],
+   },
+   create(context): Rule.RuleListener {
+      return {
+         ExportAllDeclaration(node: ESTree.ExportAllDeclaration) {
+            context.report({ node, messageId: 'unverifiable' });
+         },
+         ExportNamedDeclaration(node: ESTree.ExportNamedDeclaration) {
+            for (const specifier of node.specifiers) {
+               const exported =
+                  specifier.exported.type === 'Identifier'
+                     ? specifier.exported.name
+                     : String(specifier.exported.value);
+               if (HTTP_METHODS.has(exported)) {
+                  context.report({
+                     node: specifier,
+                     messageId: 'unverifiable',
+                  });
+               }
+            }
+
+            const declaration = node.declaration;
+            if (!declaration) return;
+
+            if (
+               declaration.type === 'FunctionDeclaration' ||
+               declaration.type === 'ClassDeclaration'
+            ) {
+               const method = declaration.id?.name;
+               if (method && HTTP_METHODS.has(method)) {
+                  context.report({
+                     node: declaration,
+                     messageId: 'notGuarded',
+                     data: { method },
+                  });
+               }
+               return;
+            }
+
+            if (declaration.type !== 'VariableDeclaration') return;
+
+            const scope = context.sourceCode.getScope(node);
+            for (const declarator of declaration.declarations) {
+               if (declarator.id.type !== 'Identifier') continue;
+               const method = declarator.id.name;
+               if (!HTTP_METHODS.has(method)) continue;
+
+               const guarded =
+                  declaration.kind === 'const' &&
+                  isImportedGuardCall(declarator.init, scope);
+               if (!guarded) {
+                  context.report({
+                     node: declarator,
+                     messageId: 'notGuarded',
+                     data: { method },
+                  });
+               }
+            }
+         },
+      };
+   },
 };

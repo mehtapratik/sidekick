@@ -12,21 +12,22 @@ import type { Rule } from 'eslint';
  * overrides in the root eslint.config.js — not here.
  */
 export const noDefaultExport: Rule.RuleModule = {
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Disallow default exports — use named exports instead.',
-    },
-    messages: {
-      noDefaultExport: 'Default exports are prohibited. Export this as a named export instead.',
-    },
-    schema: [],
-  },
-  create(context): Rule.RuleListener {
-    return {
-      ExportDefaultDeclaration(node) {
-        context.report({ node, messageId: 'noDefaultExport' });
+   meta: {
+      type: 'suggestion',
+      docs: {
+         description: 'Disallow default exports — use named exports instead.',
       },
-    };
-  },
+      messages: {
+         noDefaultExport:
+            'Default exports are prohibited. Export this as a named export instead.',
+      },
+      schema: [],
+   },
+   create(context): Rule.RuleListener {
+      return {
+         ExportDefaultDeclaration(node) {
+            context.report({ node, messageId: 'noDefaultExport' });
+         },
+      };
+   },
 };

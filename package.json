@@ -1,49 +1,49 @@
 {
-  "name": "sidekick",
-  "private": true,
-  "license": "MIT",
-  "version": "0.0.0",
-  "type": "module",
-  "packageManager": "pnpm@12.14.0+sha512.c18ba6d87993d3d164cb5e8948f32b2c06ee854487e06cd8d86781342fb3e5bb4634367034711e86802baa9c37bea906ce1929ad08d70884c97d801df13389a6",
-  "engines": {
-    "node": "24.x"
-  },
-  "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
-    "db:generate": "turbo db:generate",
-    "db:migrate": "turbo db:migrate",
-    "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
-    "test": "turbo test",
-    "test:integration": "turbo test:integration",
-    "docs:setup": "node scripts/setup-docs.mjs",
-    "postinstall": "node scripts/setup-docs.mjs",
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@next/eslint-plugin-next": "16.4.2",
-    "@sidekick/eslint-plugin-sidekick": "workspace:*",
-    "dotenv-cli": "^11.0.0",
-    "eslint": "^10.12.0",
-    "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-boundaries": "^7.2.0",
-    "eslint-plugin-import-x": "^4.17.1",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "prettier": "^3.9.10",
-    "stylelint": "^17.16.0",
-    "turbo": "^2.11.8",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.2"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
-  }
+   "name": "sidekick",
+   "private": true,
+   "license": "MIT",
+   "version": "0.0.0",
+   "type": "module",
+   "packageManager": "pnpm@12.14.0+sha512.c18ba6d87993d3d164cb5e8948f32b2c06ee854487e06cd8d86781342fb3e5bb4634367034711e86802baa9c37bea906ce1929ad08d70884c97d801df13389a6",
+   "engines": {
+      "node": "24.x"
+   },
+   "scripts": {
+      "build": "turbo build",
+      "dev": "turbo dev",
+      "lint": "turbo lint",
+      "typecheck": "turbo typecheck",
+      "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+      "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+      "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
+      "db:generate": "turbo db:generate",
+      "db:migrate": "turbo db:migrate",
+      "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
+      "test": "turbo test",
+      "test:integration": "turbo test:integration",
+      "docs:setup": "node scripts/setup-docs.mjs",
+      "postinstall": "node scripts/setup-docs.mjs",
+      "prepare": "husky"
+   },
+   "devDependencies": {
+      "@eslint/js": "^10.0.1",
+      "@next/eslint-plugin-next": "16.4.2",
+      "@sidekick/eslint-plugin-sidekick": "workspace:*",
+      "dotenv-cli": "^11.0.0",
+      "eslint": "^10.12.0",
+      "eslint-import-resolver-typescript": "^4.4.5",
+      "eslint-plugin-boundaries": "^7.2.0",
+      "eslint-plugin-import-x": "^4.17.1",
+      "eslint-plugin-react-hooks": "^7.1.1",
+      "husky": "^9.1.7",
+      "lint-staged": "^17.6.0",
+      "prettier": "^3.9.10",
+      "stylelint": "^17.16.0",
+      "turbo": "^2.11.8",
+      "typescript": "^6.0.3",
+      "typescript-eslint": "^8.71.2"
+   },
+   "lint-staged": {
+      "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
+   }
 }

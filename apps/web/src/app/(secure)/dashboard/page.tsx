@@ -4,15 +4,17 @@ import { createServerClient } from '@sidekick/core/supabase/server';
 import styles from './page.module.css';
 
 export default async function DashboardPage(): Promise<React.ReactElement> {
-  const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+   const supabase = await createServerClient();
+   const {
+      data: { user },
+   } = await supabase.auth.getUser();
 
-  return (
-    <>
-      <Title order={2}>Dashboard</Title>
-      {user?.email && <Text className={styles.welcomeText}>Welcome, {user.email}</Text>}
-    </>
-  );
+   return (
+      <>
+         <Title order={2}>Dashboard</Title>
+         {user?.email && (
+            <Text className={styles.welcomeText}>Welcome, {user.email}</Text>
+         )}
+      </>
+   );
 }
