@@ -1,17 +1,17 @@
 {
-  "name": "@sidekick/copy",
-  "private": true,
-  "license": "MIT",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    "./auth": "./src/auth.ts",
-    "./app": "./src/app.ts",
-    "./errors": "./src/errors.ts",
-    "./form": "./src/form.ts"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
-  }
+   "name": "@sidekick/copy",
+   "private": true,
+   "license": "MIT",
+   "version": "0.0.0",
+   "type": "module",
+   "exports": {
+      "./auth": "./src/auth.ts",
+      "./app": "./src/app.ts",
+      "./errors": "./src/errors.ts",
+      "./form": "./src/form.ts"
+   },
+   "scripts": {
+      "lint": "eslint .",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
+   }
 }

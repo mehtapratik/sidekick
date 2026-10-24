@@ -14,25 +14,29 @@ import type { JSXAttribute } from 'estree-jsx';
  * explanation so the exception is visible in code review.
  */
 export const noInlineStyles: Rule.RuleModule = {
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Disallow the style prop on JSX elements — use CSS modules instead.',
-    },
-    messages: {
-      noInlineStyles:
-        'Inline styles are not allowed. Use a CSS module class instead. ' +
-        'If you need a dynamic CSS custom property, add an eslint-disable comment with a reason.',
-    },
-    schema: [],
-  },
-  create(context): Rule.RuleListener {
-    return {
-      JSXAttribute(node: JSXAttribute) {
-        if (node.name.type === 'JSXIdentifier' && node.name.name === 'style') {
-          context.report({ node, messageId: 'noInlineStyles' });
-        }
+   meta: {
+      type: 'suggestion',
+      docs: {
+         description:
+            'Disallow the style prop on JSX elements — use CSS modules instead.',
       },
-    };
-  },
+      messages: {
+         noInlineStyles:
+            'Inline styles are not allowed. Use a CSS module class instead. ' +
+            'If you need a dynamic CSS custom property, add an eslint-disable comment with a reason.',
+      },
+      schema: [],
+   },
+   create(context): Rule.RuleListener {
+      return {
+         JSXAttribute(node: JSXAttribute) {
+            if (
+               node.name.type === 'JSXIdentifier' &&
+               node.name.name === 'style'
+            ) {
+               context.report({ node, messageId: 'noInlineStyles' });
+            }
+         },
+      };
+   },
 };

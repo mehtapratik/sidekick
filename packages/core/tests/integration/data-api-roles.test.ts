@@ -10,11 +10,12 @@ import { createTestAdminDb } from '../helpers/db';
 const testAdminDb = createTestAdminDb();
 
 const DATA_API_ROLES = ['anon', 'authenticated'];
-const TABLE_PRIVILEGES = 'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER';
+const TABLE_PRIVILEGES =
+   'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER';
 
 // Every role/table pair in public where the role holds at least one table privilege
 async function grantsInPublic() {
-  return testAdminDb`
+   return testAdminDb`
     SELECT r.role, c.relname AS table
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
@@ -26,35 +27,35 @@ async function grantsInPublic() {
 }
 
 afterAll(async () => {
-  await testAdminDb.end();
+   await testAdminDb.end();
 });
 
 describe('Data API roles', () => {
-  it('hold no privileges on existing tables', async () => {
-    expect(await grantsInPublic()).toEqual([]);
-  });
+   it('hold no privileges on existing tables', async () => {
+      expect(await grantsInPublic()).toEqual([]);
+   });
 
-  it('cannot execute any function in public', async () => {
-    const executable = await testAdminDb`
+   it('cannot execute any function in public', async () => {
+      const executable = await testAdminDb`
       SELECT r.role, p.proname AS function
       FROM pg_proc p
       JOIN pg_namespace n ON n.oid = p.pronamespace
       CROSS JOIN unnest(${DATA_API_ROLES}::text[]) AS r(role)
       WHERE n.nspname = 'public' AND has_function_privilege(r.role, p.oid, 'EXECUTE')
     `;
-    expect(executable).toEqual([]);
-  });
+      expect(executable).toEqual([]);
+   });
 
-  it('get no privileges on a table postgres creates later', async () => {
-    await testAdminDb`CREATE TABLE public.default_privileges_probe (id int)`;
-    try {
-      const rows = await testAdminDb`
+   it('get no privileges on a table postgres creates later', async () => {
+      await testAdminDb`CREATE TABLE public.default_privileges_probe (id int)`;
+      try {
+         const rows = await testAdminDb`
         SELECT has_table_privilege(r.role, 'public.default_privileges_probe', ${TABLE_PRIVILEGES}) AS granted
         FROM unnest(${DATA_API_ROLES}::text[]) AS r(role)
       `;
-      expect(rows.map(({ granted }) => granted)).toEqual([false, false]);
-    } finally {
-      await testAdminDb`DROP TABLE public.default_privileges_probe`;
-    }
-  });
+         expect(rows.map(({ granted }) => granted)).toEqual([false, false]);
+      } finally {
+         await testAdminDb`DROP TABLE public.default_privileges_probe`;
+      }
+   });
 });

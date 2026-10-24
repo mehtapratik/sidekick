@@ -19,7 +19,7 @@ const userA = randomUUID();
 const userB = randomUUID();
 
 beforeAll(async () => {
-  await testAuthDb`INSERT INTO auth.users
+   await testAuthDb`INSERT INTO auth.users
       (id, email)
    VALUES
       (${userA}, 'a@example.com'),
@@ -28,25 +28,27 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await testAuthDb.end();
-  await testRuntimeDb.end();
+   await testAuthDb.end();
+   await testRuntimeDb.end();
 });
 
 describe('RLS on profiles', () => {
-  it.each([
-    ['userA', userA],
-    ['userB', userB],
-  ])('shows %s only their own profile', async (userKey, userId) => {
-    const rows = await withRLS(userId, (tx) => tx.select().from(profiles));
-    expect(rows).toHaveLength(1);
-    expect(rows[0].id).toBe(userId);
-  });
+   it.each([
+      ['userA', userA],
+      ['userB', userB],
+   ])('shows %s only their own profile', async (userKey, userId) => {
+      const rows = await withRLS(userId, (tx) => tx.select().from(profiles));
+      expect(rows).toHaveLength(1);
+      expect(rows[0].id).toBe(userId);
+   });
 
-  it('returns zero rows without a user context when run as app_runtime', async () => {
-    const userProfilesVisibleToUserA = await withRLS(userA, (tx) => tx.select().from(profiles));
-    expect(userProfilesVisibleToUserA).toHaveLength(1);
+   it('returns zero rows without a user context when run as app_runtime', async () => {
+      const userProfilesVisibleToUserA = await withRLS(userA, (tx) =>
+         tx.select().from(profiles),
+      );
+      expect(userProfilesVisibleToUserA).toHaveLength(1);
 
-    const rows = await testRuntimeDb`SELECT 1 FROM profiles`;
-    expect(rows).toHaveLength(0);
-  });
+      const rows = await testRuntimeDb`SELECT 1 FROM profiles`;
+      expect(rows).toHaveLength(0);
+   });
 });

@@ -5,11 +5,11 @@ import { noMantineStyleProps } from './rules/no-mantine-style-props';
 import { requireApiGuard } from './rules/require-api-guard';
 
 export default {
-  rules: {
-    'no-barrel-exports': noBarrelExports,
-    'no-default-export': noDefaultExport,
-    'no-inline-styles': noInlineStyles,
-    'no-mantine-style-props': noMantineStyleProps,
-    'require-api-guard': requireApiGuard,
-  },
+   rules: {
+      'no-barrel-exports': noBarrelExports,
+      'no-default-export': noDefaultExport,
+      'no-inline-styles': noInlineStyles,
+      'no-mantine-style-props': noMantineStyleProps,
+      'require-api-guard': requireApiGuard,
+   },
 };
