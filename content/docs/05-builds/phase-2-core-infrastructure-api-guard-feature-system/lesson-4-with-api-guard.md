@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-4
 title: "Phase 2 lesson 4 walkthrough: withApiGuard"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 kind: guidance
-version: 1.1.0
+version: 1.1.1
 tags:
    - build
    - walkthrough
@@ -22,7 +22,7 @@ applies_to:
 
 # Phase 2 Lesson 4 Walkthrough — `withApiGuard`
 
-This guide reproduces lesson 4 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: tasks 2.2 and 2.3, the wrapper every API route goes through. It ties together lesson 2's `resolveApiCaller`, lesson 3's `getEnabledFeatures` and `withRLS`. It assumes lesson 3 and its follow-ups are merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-3-entitlements|lesson 3 walkthrough]], including its post note).
+This guide reproduces lesson 4 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: tasks 2.2 and 2.3, the wrapper every API route goes through. It ties together lesson 2's `resolveApiCaller`, lesson 3's `getEnabledFeatures` and `withRLS`. It assumes lesson 3 and its follow-ups are merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-3-entitlements|lesson 3 walkthrough]], including its post note).
 
 The result shipped as two PRs: the shared test helpers in [sidekick#18](https://github.com/mehtapratik/sidekick/pull/18), then the guard in [sidekick#19](https://github.com/mehtapratik/sidekick/pull/19). The design is recorded in [[contracts#Guard|contracts]] (version 2.5.0).
 

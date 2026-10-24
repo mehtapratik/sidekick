@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-3
 title: "Phase 2 lesson 3 walkthrough: entitlements"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 kind: guidance
-version: 1.1.0
+version: 1.1.1
 tags:
    - build
    - walkthrough
@@ -23,7 +23,7 @@ applies_to:
 
 # Phase 2 Lesson 3 Walkthrough — Entitlements
 
-This guide reproduces lesson 3 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: tasks 2.8 and 2.9, which record which features each user has and let the guard read them. It assumes lesson 2 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-2-resolve-api-caller|lesson 2 walkthrough]]) and that the latest migration is `0005`.
+This guide reproduces lesson 3 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: tasks 2.8 and 2.9, which record which features each user has and let the guard read them. It assumes lesson 2 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-2-resolve-api-caller|lesson 2 walkthrough]]) and that the latest migration is `0005`.
 
 The result shipped as [sidekick#15](https://github.com/mehtapratik/sidekick/pull/15). The design is recorded in [[contracts#Entitlements|contracts]] (version 2.4.0).
 

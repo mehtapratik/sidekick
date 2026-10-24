@@ -5,13 +5,13 @@ title: "Lesson 8: Phase 2 close-out"
 created: 2026-10-24
 updated: 2026-10-24
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - phase-2
    - task
    - guidance
-status: planned
+status: completed
 ---
 
 > **Lesson 8 of 8.** Before this: [[task-2-10|lesson 7]]. After this: [[04-plans/phase-3-graph-store-metadata-service|Phase 3]]. The coach follows [[contracts#How we build|how we build]].
@@ -20,7 +20,7 @@ status: planned
 
 **Concepts:** reading seven lessons as one system (the request path from route to row), what "complete" means for a plan, keeping a vault's links and versions true after a rename, and choosing what to carry forward versus fix now.
 
-**Coach reads first:** [[phase-2-core-infrastructure-api-guard-feature-system|the plan]] (exit criteria and decisions), [[contracts]] (2.8.0), the seven lesson walkthroughs in `05-builds/phase-2-core-infrastructure-api-guard-feature-system/`, [[04-plans/pre-2-foundation-hardening-complete|Pre-2]] (how a completed plan looks), [[with-api-guard]], and [[05-builds/pre-2-walkthrough]] (the post-note pattern).
+**Coach reads first:** [[phase-2-core-infrastructure-api-guard-feature-system-complete|the plan]] (exit criteria and decisions), [[contracts]] (2.8.0), the seven lesson walkthroughs in `05-builds/phase-2-core-infrastructure-api-guard-feature-system/`, [[04-plans/pre-2-foundation-hardening-complete|Pre-2]] (how a completed plan looks), [[with-api-guard]], and [[05-builds/pre-2-walkthrough]] (the post-note pattern).
 
 ## Handover from lesson 7
 

@@ -5,7 +5,7 @@ title: "Phase 2 lesson 7 walkthrough: the ops package and entitlements grant"
 created: 2026-10-24
 updated: 2026-10-24
 kind: guidance
-version: 1.0.0
+version: 1.0.1
 tags:
    - build
    - walkthrough
@@ -21,7 +21,7 @@ applies_to:
 
 # Phase 2 Lesson 7 Walkthrough — The `ops` Package and `entitlements grant`
 
-This guide reproduces lesson 7 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: task 2.10, "a seed script to enable all features for your own account". It builds that seed as the first command of a new `packages/ops` package for privileged scripts. It assumes lesson 6 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-6-health|lesson 6 walkthrough]]).
+This guide reproduces lesson 7 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: task 2.10, "a seed script to enable all features for your own account". It builds that seed as the first command of a new `packages/ops` package for privileged scripts. It assumes lesson 6 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-6-health|lesson 6 walkthrough]]).
 
 The result shipped as [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23). The design is recorded in [[contracts#Ops|contracts]] (version 2.8.0).
 
@@ -593,4 +593,4 @@ Commit title: `feat(ops): add the ops package with entitlements grant`. Put the 
 - `pnpm ops:entitlements:grant --email <email> (--all | --feature <key>…) [--apply]`: a dry run by default, one idempotent insert with `--apply`, typos rejected before the database, exit codes 0, 1 and 2.
 - Proof against dev that a second `--apply` grants nothing and that `app_runtime` can do none of it.
 
-Next: lesson 8, the Phase 2 close-out ([[04-plans/phase-2-core-infrastructure-api-guard-feature-system#Lessons|plan]]).
+Next: lesson 8, the Phase 2 close-out ([[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete#Lessons|plan]]).

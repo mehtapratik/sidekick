@@ -2,8 +2,9 @@
 publish: true
 id: plan.phase-9-api-keys-cli
 created: 2026-09-19
+updated: 2026-10-24
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - living-plan
@@ -16,7 +17,7 @@ tags:
    - cli
 status: planned
 depends_on:
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
 > **Milestone:** You can use your own app from the terminal. API keys are manageable from the UI. The CLI is a real working tool.
@@ -40,5 +41,8 @@ depends_on:
 | 9.14 | Document CLI usage in README                                                                     | 🟢         |          |
 
 **Phase 9 Exit Criteria:** You can generate an API key in the UI, set it as an env var, and run `cli taxila list` and `cli chat` from your terminal.
+
+> [!note]
+> **`packages/ops` is not the CLI.** Phase 2 lesson 7 added `packages/ops` for privileged scripts (`pnpm ops:entitlements:grant`), which run as the `postgres` role and bypass RLS. The CLI is an API client: an API key, `withApiGuard`, RLS. So `ops` code doesn't move into `apps/cli`. When an `ops` command is retired, its logic moves into an admin endpoint and the CLI calls that. What carries over is the interface (names, flags, output, exit codes), and this phase owns CLI design. See [[contracts#Ops|contracts]].
 
 ---

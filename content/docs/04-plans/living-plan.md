@@ -3,9 +3,9 @@ publish: true
 title: "Living implementation plan"
 id: plan.living
 created: 2026-09-19
-updated: 2026-10-16
+updated: 2026-10-24
 kind: plan
-version: 1.0.1
+version: 1.0.2
 tags:
    - plan
    - living-plan
@@ -77,7 +77,7 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 - [[phase-1-supabase-auth-shell-complete|Phase 1 — Supabase & Auth Shell ✅ COMPLETE]]
 - [[phase-1-1-db-level-rls-soft-delete-enforcement-complete|Phase 1.1 — DB-Level RLS & Soft-Delete Enforcement ✅ COMPLETE]]
 - [[pre-2-foundation-hardening-complete|Pre-2 — Foundation Hardening ✅ COMPLETE]]
-- [[phase-2-core-infrastructure-api-guard-feature-system|Phase 2 — Core Infrastructure (API Guard, Feature System)]]
+- [[phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2 — Core Infrastructure (API Guard, Feature System) ✅ COMPLETE]]
 - [[phase-3-graph-store-metadata-service|Phase 3 — Graph Store & Metadata Service]]
 - [[phase-4-taxila-v1-knowledge-management|Phase 4 — Taxila v1 (Knowledge Management)]]
 - [[phase-5-zinsser-v1-writing-editor-first|Phase 5 — Zinsser v1 (Writing — Editor First)]]
