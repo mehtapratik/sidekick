@@ -5,7 +5,7 @@ title: Phase 2 build rules and target design
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan
-version: 2.6.0
+version: 2.7.0
 tags:
    - plan
    - phase-2
@@ -234,6 +234,30 @@ Decided in lesson 5:
 - The 401 check sits in `authorizeAndHandle` with the other refusals (Pratik's choice): `resolveApiCaller` says who the caller is, `authorizeAndHandle` says whether they may proceed.
 - Event names and codes stay literal unions, not an `enum` or constants: `LogEvent` and `GUARD_ERRORS` are the inventory, and the compiler checks both. Revisit with a shared `as const` code table when Phase 3 handlers add their own codes.
 - The `console.log` exception is a config override, not an inline `eslint-disable`: policies live in `eslint.config.js`, and `log.ts` carries a comment pointing there.
+
+### Health route
+
+```ts
+// apps/web/src/app/api/health/route.ts
+import { withApiGuard } from '@sidekick/core/api';
+
+export const GET = withApiGuard(async function GET() {
+  return Response.json({ status: 'ok' });
+});
+```
+
+- `200 { status: 'ok' }` for a signed-in caller; `401 { error: 'Unauthorized', code: 'UNAUTHENTICATED' }` otherwise, including any `Authorization` header.
+- No `feature`: health belongs to no feature, and a fake one would put a false entry in the registry. The guard skips the entitlements query. It can't return `403`; `FEATURE_DISABLED` is proven by `packages/core/tests/integration/guard.test.ts`.
+- No public mode. A public liveness probe for hosting would be a deliberate, recorded exception to `require-api-guard`, decided by Pratik. Out of scope for Phase 2.
+- No `export const dynamic`: route handlers are dynamic by default in Next.js 16, and the guard's cookie read keeps them dynamic under Cache Components too.
+
+Decided in lesson 6:
+
+- The body is `{ status: 'ok' }`, the health-check convention, rather than `{ message: 'OK' }`.
+- The handler is a named function expression (`async function GET()`, Pratik's choice), so `api.error` stacks show `at GET`.
+- The database client is created on first use: `packages/core/src/db/unsafe.ts` exports `getUnsafeDb()` instead of an `unsafeDb` constant ([sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)). `next build` imports every route module, and CI's build has no `DATABASE_URL`. A missing `DATABASE_URL` now fails the first signed-in request (logged `api.error`, 500) instead of the import.
+- `apps/web/src/instrumentation.ts` checks `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `DATABASE_URL` once when a server starts, and never during `next build` ([sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)). A variable the server can't run without goes on its list.
+- The guard's layers: lint checks every `route.*` file uses `withApiGuard`, `verify-endpoints.mjs` checks every served endpoint comes from a `route.*` file, and `next build` (which no longer runs ESLint in Next.js 16) checks neither. CI's `lint` step is the gate.
 
 ### Feature manifest
 

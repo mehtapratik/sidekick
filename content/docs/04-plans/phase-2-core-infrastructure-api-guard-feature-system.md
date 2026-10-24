@@ -4,7 +4,7 @@ id: plan.phase-2-core-infrastructure-api-guard-feature-system
 created: 2026-09-19
 updated: 2026-10-23
 kind: plan
-version: 2.2.4
+version: 2.2.5
 tags:
    - plan
    - living-plan
@@ -53,7 +53,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 | 3 ✅   | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
 | 4 ✅   | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
 | 5 ✅   | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
-| 6      | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
+| 6 ✅   | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
 | 7      | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
 | 8      | Close-out (below)    | none       | writing it up                                               |
 
@@ -83,5 +83,6 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Lesson 4: handlers read `caller.userId` (no separate `userId`), `feature` stays optional and skips the entitlements query when unset, and the shared test helpers live in `packages/core/tests/helpers/`.
 - Lesson 5: one place logs (`withApiGuard`); the checks live in `authorizeAndHandle`, which returns a response or a denial. `api.denied` logs the client's `code`, every event carries `userId` (`null` without a caller), and error logs drop Drizzle's query parameters.
 - `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
+- Lesson 6: `/api/health` returns `{ status: 'ok' }`, and the database client is created on first use (`getUnsafeDb()`), because `next build` imports every route module and CI's build has no `DATABASE_URL`.
 
 ---
