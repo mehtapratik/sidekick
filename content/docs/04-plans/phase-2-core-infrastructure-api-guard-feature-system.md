@@ -55,7 +55,7 @@ Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#Ho
 | 5 ✅   | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
 | 6 ✅   | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
 | 7 ✅   | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
-| 8      | Close-out (below)    | none       | writing it up                                               |
+| 8      | [[lesson-8-close-out]] | none     | writing it up                                               |
 
 **To start a lesson,** open a new thread and paste this, changing the lesson number:
 
@@ -68,14 +68,7 @@ and that lesson's brief (the plan's Lessons table links each one) before we star
 
 Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[contracts]], which changes when Pratik's own design wins.
 
-**Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`).
-
-**Handover from lesson 7** ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-7-ops|walkthrough]]) for the close-out:
-
-- **Task 2.10 shipped as an `ops` package, not a registry script** ([sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)). The phase walkthrough should describe `packages/ops`, `withPrivilegedDb` and `pnpm ops:entitlements:grant`, and the agent guide's dependency direction now has a side branch: `ops → registry, foundation`, imported by nothing ([[contracts#Ops|contracts]]).
-- **The exit criteria hold:** `/api/health` returns 401 and 200 (lesson 6), the 403 is proven by lesson 4's integration test, and the feature system can now enable a feature per user from the command line. Disabling is a `DELETE` with the privileged role; there's no `revoke` command yet.
-- **`ALL_FEATURES` is still empty.** Nothing is granted until Phase 4 registers Taxila; the walkthrough should say so rather than imply a working grant.
-- **Open items to carry, not fix:** a `--target` check for `ops` scripts once a second environment exists, a `pnpm ops <noun> <verb>` dispatcher with the second command, and Phase 9's CLI owning CLI design.
+**Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`). The brief is [[lesson-8-close-out]], with the handover from lesson 7.
 
 **Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
