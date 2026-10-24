@@ -1,10 +1,10 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+   - 'apps/*'
+   - 'packages/*'
 allowBuilds:
-  esbuild: true
-  sharp: true
-  unrs-resolver: true
+   esbuild: true
+   sharp: true
+   unrs-resolver: true
 # With `engineStrict: true`, pnpm refuses to install when the running Node doesn’t
 # satisfy an engines field, ours or a dependency’s.
 engineStrict: true
