@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.task-2-11and2-12
 title: "Lesson 6 (tasks 2.11, 2.12): /api/health and guard verification"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-23
 kind: plan
-version: 2.1.0
+version: 2.1.1
 tags:
    - plan
    - phase-2
@@ -14,7 +14,7 @@ tags:
    - api
    - nextjs
    - testing
-status: planned
+status: complete
 ---
 
 > **Lesson 6 of 8.** Before this: [[task-2-4and2-5|lesson 5]]. Next: [[task-2-10|lesson 7]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Guard|Guard]].

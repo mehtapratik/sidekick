@@ -5,7 +5,7 @@ title: Pre-2 walkthrough
 created: 2026-10-16
 updated: 2026-10-23
 kind: guidance
-version: 1.2.0
+version: 1.3.0
 tags:
    - build
    - walkthrough
@@ -1737,3 +1737,77 @@ describe('Data API roles', () => {
 `has_table_privilege` with several privileges is true if the role holds any one of them. `has_function_privilege` checks what a role can actually do, including through `PUBLIC`, so it catches what the grant list alone would miss.
 
 4. Run `pnpm --filter @sidekick/core test:integration`. Then empty the revoke migration and run it again: all three tests fail. Put it back.
+
+---
+
+## Post note — Create the Database Client on First Use (added 2026-10-23)
+
+Sidekick changed this in Phase 2 lesson 6 ([sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)), when `/api/health` became the first route to import the database. Do it here, in place of Task Pre-2.4's steps 2 and 3, so you end up with the same code.
+
+**Why:** `next build` imports every route module to read its config (`dynamic`, `revalidate`…), and importing runs the module's top-level code. The version above checks `DATABASE_URL` when `unsafe.ts` loads, so CI's build, which has no `.env.local`, failed with `Failed to collect configuration for /api/health` and `Missing DATABASE_URL environment variable`. Creating the client on first use moves the check from import time to the first query.
+
+1. `packages/core/src/db/unsafe.ts`:
+
+```ts
+import 'server-only';
+
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+
+import * as schema from './schema';
+
+function createUnsafeDb() {
+  const url = process.env.DATABASE_URL;
+
+  if (!url) {
+    throw new Error('Missing DATABASE_URL environment variable');
+  }
+
+  // DATABASE_URL points at Supavisor in transaction mode (port 6543), which does
+  // not keep you on one Postgres connection between transactions, so named
+  // prepared statements must be off (Supabase requirement).
+  // Do NOT set max_pipeline: 0 — postgres.js then never reserves a connection
+  // for a transaction, and every transaction (including withRLS) fails with
+  // UNSAFE_TRANSACTION. Caught by tests/integration/rls.test.ts.
+  const client = postgres(url, { prepare: false });
+
+  return drizzle(client, { schema });
+}
+
+type UnsafeDb = ReturnType<typeof createUnsafeDb>;
+
+// Created on first use, not when the module loads: `next build` imports every
+// route module to read its config, and the build has no DATABASE_URL.
+let unsafeDb: UnsafeDb | undefined;
+
+// UNSAFE: queries on this client run without a user context. As app_runtime
+// they fail closed (RLS returns zero rows), but nothing ties them to a caller.
+// Only for building safe wrappers such as withRLS — ESLint enforces this, and
+// the package `exports` map deliberately does not expose this file.
+export function getUnsafeDb(): UnsafeDb {
+  unsafeDb ??= createUnsafeDb();
+
+  return unsafeDb;
+}
+```
+
+2. `packages/core/src/db/rls.ts`:
+
+```ts
+import { sql } from 'drizzle-orm';
+
+import { getUnsafeDb } from './unsafe';
+
+export type RlsTx = Parameters<Parameters<ReturnType<typeof getUnsafeDb>['transaction']>[0]>[0];
+
+export type RlsTxHandler<T> = (tx: RlsTx) => Promise<T>;
+
+export async function withRLS<T>(userId: string, fn: RlsTxHandler<T>): Promise<T> {
+  return getUnsafeDb().transaction(async (tx) => {
+    await tx.execute(sql`select set_config('app.current_user_id', ${userId}, true)`);
+    return fn(tx);
+  });
+}
+```
+
+`unsafeDb ??= createUnsafeDb()` creates the client once per server process and reuses it, so there's still one connection pool. `postgres()` doesn't connect until the first query either way; only the env check moved. A missing `DATABASE_URL` now fails the first signed-in request (the guard logs `api.error` and answers 500) instead of failing at import.
