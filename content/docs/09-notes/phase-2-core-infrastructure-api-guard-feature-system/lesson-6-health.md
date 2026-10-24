@@ -84,6 +84,8 @@ The PR's first CI run failed in `pnpm build`: `Failed to collect configuration f
 
 **General rule:** module top level should declare, not act. Reading env, connecting, or throwing at import couples "this file was imported" to "this environment is complete", and build tools import files in environments that aren't.
 
+**The follow-up: a startup check ([sidekick#22](https://github.com/mehtapratik/sidekick/pull/22), Pratik's request).** `apps/web/src/instrumentation.ts` exports `register()`, which Next.js calls once per server instance before the first request, and never during `next build`. It names every missing required variable at once. `next dev` exits; `next start` and Vercel keep running but answer every request with 500 and log the error. That restores "fail at startup" deliberately, for every variable, instead of by accident for the ones some module happens to import.
+
 ## Testing HTTP by hand
 
 - **`curl -i` prints the status line and headers.** A browser shows only the body or its own error page, so a `200` carrying an error message and a real `401` look the same in a tab. Seeing the status is the point of the test.

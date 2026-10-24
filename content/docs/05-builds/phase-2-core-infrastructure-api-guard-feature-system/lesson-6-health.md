@@ -5,7 +5,7 @@ title: "Phase 2 lesson 6 walkthrough: /api/health and guard verification"
 created: 2026-10-23
 updated: 2026-10-23
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -384,3 +384,58 @@ Two commits: `feat(web): add GET /api/health behind withApiGuard`, then `fix(cor
 - A database client created on first use, so `next build` works without `DATABASE_URL`.
 
 Next: [[task-2-10|lesson 7]], a seed script that enables features for your own account.
+
+---
+
+## Post note — Check Required Variables When the Server Starts (added 2026-10-23)
+
+Sidekick added this right after the lesson ([sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)), as the follow-up to Step 7. Do it after Step 7.
+
+> **What and why:** Step 7 moved the `DATABASE_URL` check from import time to the first query, so a server started without it looks healthy until someone signs in. Next.js has a startup hook for exactly this: check every required variable once, in one place, before the first request.
+
+1. Create `apps/web/src/instrumentation.ts`:
+
+```ts
+// Variables the web server cannot serve a request without. Server-only ones
+// (DATABASE_URL) are read lazily where they are used, so a missing one would
+// otherwise surface only on the first request that needs it.
+const REQUIRED_ENV = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+  'DATABASE_URL',
+] as const;
+
+/**
+ * Runs once when a Next.js server instance starts (`next dev`, `next start`, each
+ * Vercel function instance), before it handles a request. It does not run during
+ * `next build`, which has no secrets in CI.
+ * @description Every request fails with this error until the variables are set
+ */
+export function register(): void {
+  const missing = REQUIRED_ENV.filter((name) => !process.env[name]);
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing environment variables: ${missing.join(', ')}. Set them in .env.local (see .env.example) or in the host's settings.`,
+    );
+  }
+}
+```
+
+- **`register()` runs once per server instance,** before it handles a request: `next dev`, `next start`, and every new Vercel function instance. It's Next's official startup hook (`node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/instrumentation.md`); observability tools such as OpenTelemetry install themselves there.
+- **It doesn't run during `next build`.** Proven with a build that had no variables at all. So CI's build still needs no secrets, which was the point of Step 7.
+- **It reports every missing name at once,** so a misconfigured deploy is fixed in one round, not one variable at a time.
+- **The list belongs to the app.** Which variables a deployment needs is a fact about `apps/web`, so the list lives there, not in `packages/core`. `SUPABASE_SECRET_KEY` isn't on it because the web app never creates the admin client. A phase that adds a variable the server can't run without (Anthropic in Phase 6, Stripe in Phase 12) adds it here.
+- **The per-module checks stay.** `unsafe.ts` and the Supabase clients still check their own variables, because tests and scripts never run `register()`.
+
+2. Prove it. Each run below was checked for sidekick#22:
+
+| Run                            | Result                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| `next build` with no variables | passes, `ƒ /api/health`                                                       |
+| `pnpm dev` with `.env.local`   | `/api/health` → 401                                                           |
+| `next dev` with no variables   | prints `Missing environment variables: …` and exits                           |
+| `next start` with `.env.local` | `/api/health` → 401                                                           |
+| `next start` with no variables | stays up, answers every request (including `/login`) with 500, logs the error |
+
+`next start` keeps running because Next prepares the server lazily: the hook's error is raised, and logged, on each request instead of stopping the process. On Vercel that's every request on the misconfigured instance.

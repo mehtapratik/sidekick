@@ -256,6 +256,7 @@ Decided in lesson 6:
 - The body is `{ status: 'ok' }`, the health-check convention, rather than `{ message: 'OK' }`.
 - The handler is a named function expression (`async function GET()`, Pratik's choice), so `api.error` stacks show `at GET`.
 - The database client is created on first use: `packages/core/src/db/unsafe.ts` exports `getUnsafeDb()` instead of an `unsafeDb` constant ([sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)). `next build` imports every route module, and CI's build has no `DATABASE_URL`. A missing `DATABASE_URL` now fails the first signed-in request (logged `api.error`, 500) instead of the import.
+- `apps/web/src/instrumentation.ts` checks `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `DATABASE_URL` once when a server starts, and never during `next build` ([sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)). A variable the server can't run without goes on its list.
 - The guard's layers: lint checks every `route.*` file uses `withApiGuard`, `verify-endpoints.mjs` checks every served endpoint comes from a `route.*` file, and `next build` (which no longer runs ESLint in Next.js 16) checks neither. CI's `lint` step is the gate.
 
 ### Feature manifest
