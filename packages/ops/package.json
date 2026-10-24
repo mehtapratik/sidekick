@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "entitlements:grant": "tsx --env-file-if-exists=../../.env.local src/scripts/entitlements-grant.ts"
+    "entitlements:grant": "dotenv -e ../../.env.local -- tsx src/scripts/entitlements-grant.ts"
   },
   "dependencies": {
     "@sidekick/core": "workspace:*",
