@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-1
 title: "Phase 2 lesson 1 walkthrough: feature registry"
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-24
 kind: guidance
-version: 1.0.0
+version: 1.0.1
 tags:
    - build
    - walkthrough
@@ -21,7 +21,7 @@ applies_to:
 
 # Phase 2 Lesson 1 Walkthrough — Feature Registry
 
-This guide reproduces lesson 1 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: tasks 2.6 and 2.7, which give `packages/features-registry` its public surface. It assumes Pre-2 is complete ([[pre-2-walkthrough]]) and that `packages/features-registry` still holds only the Phase 0 placeholder (`export const placeholder = true;`).
+This guide reproduces lesson 1 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: tasks 2.6 and 2.7, which give `packages/features-registry` its public surface. It assumes Pre-2 is complete ([[pre-2-walkthrough]]) and that `packages/features-registry` still holds only the Phase 0 placeholder (`export const placeholder = true;`).
 
 The result shipped as [sidekick#9](https://github.com/mehtapratik/sidekick/pull/9), with a lint rule added afterwards in [sidekick#10](https://github.com/mehtapratik/sidekick/pull/10). The decisions behind it are recorded in [[contracts]].
 

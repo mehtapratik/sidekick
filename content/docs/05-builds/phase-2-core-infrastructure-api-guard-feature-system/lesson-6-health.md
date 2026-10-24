@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-6
 title: "Phase 2 lesson 6 walkthrough: /api/health and guard verification"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 kind: guidance
-version: 1.1.0
+version: 1.1.1
 tags:
    - build
    - walkthrough
@@ -21,7 +21,7 @@ applies_to:
 
 # Phase 2 Lesson 6 Walkthrough — `/api/health` and Guard Verification
 
-This guide reproduces lesson 6 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: tasks 2.11 and 2.12. It adds Sidekick's first real API route, `GET /api/health`, wrapped in `withApiGuard`, and proves the 401, 200 and 403 behaviour end to end. It assumes lesson 5 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-5-logging|lesson 5 walkthrough]]).
+This guide reproduces lesson 6 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: tasks 2.11 and 2.12. It adds Sidekick's first real API route, `GET /api/health`, wrapped in `withApiGuard`, and proves the 401, 200 and 403 behaviour end to end. It assumes lesson 5 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-5-logging|lesson 5 walkthrough]]).
 
 The result shipped as [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21). The design is recorded in [[contracts#Health route|contracts]] (version 2.7.0).
 

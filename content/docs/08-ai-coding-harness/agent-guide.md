@@ -4,7 +4,7 @@ id: harness.agent-guide
 created: 2026-09-19
 updated: 2026-10-24
 kind: guidance
-version: 1.2.6
+version: 1.3.0
 tags:
    - ai-coding
    - agent
@@ -40,9 +40,9 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
 
 ## Where things stand
 
-- **Complete:** Phases 0, 1 and 1.1, and [[04-plans/pre-2-foundation-hardening-complete|Pre-2 — Foundation Hardening]] (all 13 tasks, walkthrough in [[05-builds/pre-2-walkthrough]]).
-- **Next:** [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]], as eight lessons taken one at a time (feature registry, `resolveApiCaller`, entitlements, `withApiGuard`, logging, `/api/health`, seed, write-up). Its gate is met. Lessons 1 (feature registry, [sidekick#9](https://github.com/mehtapratik/sidekick/pull/9)), 2 (`resolveApiCaller`, [sidekick#13](https://github.com/mehtapratik/sidekick/pull/13)), 3 (entitlements, [sidekick#15](https://github.com/mehtapratik/sidekick/pull/15)), 4 (`withApiGuard`, [sidekick#19](https://github.com/mehtapratik/sidekick/pull/19)), 5 (logging, [sidekick#20](https://github.com/mehtapratik/sidekick/pull/20)), 6 (`/api/health`, [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)) and 7 (the seed, shipped as the `ops` package, [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)) are done; lesson 8 (write-up) is next.
-- **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 11 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI.
+- **Complete:** Phases 0, 1 and 1.1, [[04-plans/pre-2-foundation-hardening-complete|Pre-2 — Foundation Hardening]] (walkthrough in [[05-builds/pre-2-walkthrough]]) and [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2 — API Guard and Feature System]] (walkthrough in [[05-builds/phase-2-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
+- **Next:** [[04-plans/phase-3-graph-store-metadata-service|Phase 3 — Graph Store & Metadata Service]], once its gate is checked: it depends on Phase 1.1 and Phase 2, both complete. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
+- **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI.
 - **Feature packages:** none exist yet. They go in `packages/features/*`; add that glob to `pnpm-workspace.yaml` with the first one.
 
 ## Commands

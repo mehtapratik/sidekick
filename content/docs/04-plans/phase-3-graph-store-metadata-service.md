@@ -2,8 +2,9 @@
 publish: true
 id: plan.phase-3-graph-store-metadata-service
 created: 2026-09-19
+updated: 2026-10-24
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -17,7 +18,7 @@ tags:
 status: planned
 depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
 > **Milestone:** The cross-feature relationship and metadata layer is live (architecture §5.3). Any entity can be linked to any other entity and tagged — the "power of synergies" substrate every module builds on. This is also the proof-of-architecture vertical: schema → migration → RLS → repository → guarded API.

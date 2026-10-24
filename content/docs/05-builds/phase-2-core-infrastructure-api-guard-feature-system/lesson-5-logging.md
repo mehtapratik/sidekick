@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2.lesson-5
 title: "Phase 2 lesson 5 walkthrough: request and auth-failure logging"
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 kind: guidance
-version: 1.0.0
+version: 1.0.1
 tags:
    - build
    - walkthrough
@@ -21,7 +21,7 @@ applies_to:
 
 # Phase 2 Lesson 5 Walkthrough — Request and Auth-Failure Logging
 
-This guide reproduces lesson 5 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system|Phase 2]] step by step: tasks 2.4 and 2.5. It covers a small structured logger, and log lines from `withApiGuard` for every request, every 401 and 403, and every 500. It assumes lesson 4 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-4-with-api-guard|lesson 4 walkthrough]]).
+This guide reproduces lesson 5 of [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2]] step by step: tasks 2.4 and 2.5. It covers a small structured logger, and log lines from `withApiGuard` for every request, every 401 and 403, and every 500. It assumes lesson 4 is merged ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-4-with-api-guard|lesson 4 walkthrough]]).
 
 The result shipped as [sidekick#20](https://github.com/mehtapratik/sidekick/pull/20). The design is recorded in [[contracts#Logging|contracts]] (version 2.6.0).
 

@@ -1,10 +1,10 @@
 ---
 publish: true
-id: plan.phase-2-core-infrastructure-api-guard-feature-system
+id: plan.phase-2-core-infrastructure-api-guard-feature-system-complete
 created: 2026-09-19
 updated: 2026-10-24
 kind: plan
-version: 2.2.6
+version: 3.0.0
 tags:
    - plan
    - living-plan
@@ -14,48 +14,56 @@ tags:
    - api
    - authentication
    - feature-system
-status: planned
+status: completed
 depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
    - "[[04-plans/pre-2-foundation-hardening-complete]]"
 ---
 
 > **Milestone:** The architectural backbone is live. `withApiGuard` is implemented and tested. The feature registry exists. You could add any feature safely from here.
+>
 > **Learning payoff:** Middleware patterns, centralized auth, feature flags, the "why" behind the architecture.
+>
+> **Completed:** October 2026 — walkthrough in [[05-builds/phase-2-walkthrough]]
 
 > **Gate:** ✅ Met — [[pre-2-foundation-hardening-complete]] was required before beginning the original Phase 2 tasks.
 
-| #    | Task                                                                                                                              | Complexity | Learning |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 2.1  | Implement `resolveApiCaller(req)` in `packages/core/src/api/auth.ts` — cookie sessions; Bearer API keys fail closed until Phase 9 | 🔴         | 🔐 🧩    |
-| 2.2  | Implement `withApiGuard(handler, opts)` in `packages/core/src/api/guard.ts` (see [[with-api-guard]] and [[contracts]])            | 🔴         | 🔐 🧩    |
-| 2.3  | Wire `withRLS` inside `withApiGuard`                                                                                              | 🔴         | 🔐 🗄️    |
-| 2.4  | Add basic request logging inside `withApiGuard` (method, path, userId, latency)                                                   | 🟡         | 🧩       |
-| 2.5  | Add auth failure logging inside `withApiGuard`                                                                                    | 🟡         | 🧩       |
-| 2.6  | Define `FeatureManifest` type in `packages/features-registry`                                                                     | 🟡         | 📦       |
-| 2.7  | Implement `ALL_FEATURES` array in `packages/features-registry/src/index.ts` — start with an empty array                           | 🟡         | 📦       |
-| 2.8  | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureKey`, RLS policy                               | 🔴         | 🗄️ 🔐    |
-| 2.9  | Implement `getEnabledFeatures(tx)` in `packages/core` — reads from entitlements table under RLS                                   | 🟡         | 🗄️       |
-| 2.10 | Write a seed script to enable all features for your own user account during development                                           | 🟢         | 🗄️       |
-| 2.11 | Create a test API route `/api/health` using `withApiGuard` to verify the full guard chain works                                   | 🟡         | 🧩 🔐    |
-| 2.12 | Verify 401 is returned when unauthenticated; 403 when a feature is disabled                                                       | 🟢         |          |
+| #    | Task                                                                                                                              | Complexity | Learning | Status |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- | ------ |
+| 2.1  | Implement `resolveApiCaller(req)` in `packages/core/src/api/auth.ts` — cookie sessions; Bearer API keys fail closed until Phase 9 | 🔴         | 🔐 🧩    | ✅     |
+| 2.2  | Implement `withApiGuard(handler, opts)` in `packages/core/src/api/guard.ts` (see [[with-api-guard]] and [[contracts]])            | 🔴         | 🔐 🧩    | ✅     |
+| 2.3  | Wire `withRLS` inside `withApiGuard`                                                                                              | 🔴         | 🔐 🗄️    | ✅     |
+| 2.4  | Add basic request logging inside `withApiGuard` (method, path, userId, latency)                                                   | 🟡         | 🧩       | ✅     |
+| 2.5  | Add auth failure logging inside `withApiGuard`                                                                                    | 🟡         | 🧩       | ✅     |
+| 2.6  | Define `FeatureManifest` type in `packages/features-registry`                                                                     | 🟡         | 📦       | ✅     |
+| 2.7  | Implement `ALL_FEATURES` array in `packages/features-registry/src/index.ts` — start with an empty array                           | 🟡         | 📦       | ✅     |
+| 2.8  | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureKey`, RLS policy                               | 🔴         | 🗄️ 🔐    | ✅     |
+| 2.9  | Implement `getEnabledFeatures(tx)` in `packages/core` — reads from entitlements table under RLS                                   | 🟡         | 🗄️       | ✅     |
+| 2.10 | Write a seed script to enable all features for your own user account during development (shipped as `packages/ops`, below)        | 🟢         | 🗄️       | ✅     |
+| 2.11 | Create a test API route `/api/health` using `withApiGuard` to verify the full guard chain works                                   | 🟡         | 🧩 🔐    | ✅     |
+| 2.12 | Verify 401 is returned when unauthenticated; 403 when a feature is disabled                                                       | 🟢         |          | ✅     |
 
-**Phase 2 Exit Criteria:** `withApiGuard` is implemented and the `/api/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
+**Phase 2 Exit Criteria:** ✅ All met, re-proven on `main` in lesson 8. `withApiGuard` is implemented and the `/api/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
+
+- `withApiGuard` is implemented and tested: 14 unit tests and 5 integration tests in `packages/core`.
+- `/api/health` returns 401 without a session and 200 with one, checked with `curl -i` and a signed-in browser.
+- The 403 for a disabled feature is pinned by `packages/core/tests/integration/guard.test.ts` (`responds 403 to a user who is not entitled to the feature`). `/api/health` belongs to no feature, so it can't return 403 by design.
+- `pnpm ops:entitlements:grant --email <you> --all` enables features per user. Disabling is a `DELETE` with the privileged role. `ALL_FEATURES` is still empty, so nothing is granted until Phase 4 registers Taxila.
 
 ## Lessons
 
 Phase 2 is built piece by piece, with Pratik learning as it goes ([[contracts#How we build|how we build]]). By default the coach hands over one small, explained piece at a time, and the two discuss it before it's final. Pratik writes the steps they call core themselves, and can ask the coach to code work with no learning payoff. Lessons run one at a time, in this order, each in its own thread. A lesson starts only after the previous lesson's PR is merged. The order starts with the smallest, self-contained work and builds up to the guard.
 
-| Lesson | Brief                | Tasks      | What Pratik learns                                          |
-| ------ | -------------------- | ---------- | ----------------------------------------------------------- |
-| 1 ✅   | [[task-2-6and2-7]]   | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
-| 2 ✅   | [[task-2-1]]         | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
-| 3 ✅   | [[task-2-8and2-9]]   | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
-| 4 ✅   | [[task-2-2and2-3]]   | 2.2, 2.3   | higher-order functions, generics, transactions              |
-| 5 ✅   | [[task-2-4and2-5]]   | 2.4, 2.5   | structured logging, ESLint overrides                        |
-| 6 ✅   | [[task-2-11and2-12]] | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
-| 7 ✅   | [[task-2-10]]        | 2.10       | scripts, database roles, idempotent writes                  |
-| 8      | [[lesson-8-close-out]] | none     | writing it up                                               |
+| Lesson | Brief                  | Tasks      | What Pratik learns                                          |
+| ------ | ---------------------- | ---------- | ----------------------------------------------------------- |
+| 1 ✅   | [[task-2-6and2-7]]     | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
+| 2 ✅   | [[task-2-1]]           | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
+| 3 ✅   | [[task-2-8and2-9]]     | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
+| 4 ✅   | [[task-2-2and2-3]]     | 2.2, 2.3   | higher-order functions, generics, transactions              |
+| 5 ✅   | [[task-2-4and2-5]]     | 2.4, 2.5   | structured logging, ESLint overrides                        |
+| 6 ✅   | [[task-2-11and2-12]]   | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
+| 7 ✅   | [[task-2-10]]          | 2.10       | scripts, database roles, idempotent writes                  |
+| 8 ✅   | [[lesson-8-close-out]] | none       | writing it up                                               |
 
 **To start a lesson,** open a new thread and paste this, changing the lesson number:
 
@@ -68,7 +76,7 @@ and that lesson's brief (the plan's Lessons table links each one) before we star
 
 Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[contracts]], which changes when Pratik's own design wins.
 
-**Close-out (lesson 8):** Pratik writes `05-builds/phase-2-walkthrough.md` with the coach's help, marks this plan complete the way Pre-2 was closed, updates [[with-api-guard]] from a sketch to the shipped behaviour, updates "Where things stand" in the agent guide, and records learnings in `09-notes/` (`publish: false`). The brief is [[lesson-8-close-out]], with the handover from lesson 7.
+**Close-out (lesson 8):** the coach wrote [[05-builds/phase-2-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `09-notes/` (`publish: false`). The brief is [[lesson-8-close-out]].
 
 **Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
@@ -86,4 +94,17 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - Lesson 6: `/api/health` returns `{ status: 'ok' }`, and the database client is created on first use (`getUnsafeDb()`), because `next build` imports every route module and CI's build has no `DATABASE_URL`.
 - Lesson 7: the seed is `entitlements grant` in a dedicated `packages/ops` package for privileged scripts, which nothing may import. It runs under `tsx` with `dotenv-cli`, writes only with `--apply`, and `--apply` is one `INSERT … ON CONFLICT DO NOTHING RETURNING`.
 
----
+**Implementation notes:**
+
+- **Task 2.10 shipped as a package, not a registry script.** `packages/ops` holds privileged scripts (dev seeds, provisioning, break-glass), runs them as the `postgres` role through `withPrivilegedDb`, and nothing may import it. The dependency direction gained a side branch, `ops → registry, foundation` ([[contracts#Ops|contracts]]).
+- **The guard's order changed from the planning sketch.** The scope check runs before the transaction and the feature check inside it, so a rejected key never takes a pooled connection and entitlements are read under RLS. [[with-api-guard]] now describes the shipped order.
+- **Tasks 2.4 and 2.5 already cover Phase 10's 10.1 and 10.2** (request and auth-failure logging inside `withApiGuard`), and the guard's errors already use 10.5's `{ error, code }` shape. Phase 10 still owns the shape for handler errors.
+- **Late fixes landed as post notes in earlier walkthroughs:** the Data API roles (Phase 1.1 and Pre-2, [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17)), the lazy database client (Pre-2, [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)), the `ops` boundaries element (Pre-2, [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)) and pnpm build approvals (Phase 0, [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14)). [[05-builds/phase-2-walkthrough#Post notes in earlier walkthroughs|The walkthrough]] lists them.
+- **Added beyond the original list:** a startup check for required variables (`apps/web/src/instrumentation.ts`, [sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)), shared test helpers in `packages/core/tests/helpers/` ([sidekick#18](https://github.com/mehtapratik/sidekick/pull/18)), and the `interface` lint rule ([sidekick#10](https://github.com/mehtapratik/sidekick/pull/10)).
+
+**Carried forward, not built in Phase 2:**
+
+- `ops` follow-ups: a `revoke` command, a `pnpm ops <noun> <verb>` dispatcher with the second command, and a `--target` check once a second environment exists ([[backlogged-unplanned#B6 — Ops command follow-ups|B6]]).
+- CLI design belongs to Phase 9's `apps/cli`, which calls the API with a key. `ops` logic moves into admin endpoints when a command is retired; only its interface carries over ([[phase-9-api-keys-cli]]).
+- A public liveness probe would be a recorded exception to `require-api-guard`, decided by Pratik ([[backlogged-unplanned#B7 — Public liveness probe|B7]]).
+- `getClaims()` instead of `getUser()` is the known latency lever, at the cost of revoked sessions working until their token expires ([[backlogged-unplanned#B8 — Faster session checks|B8]]).

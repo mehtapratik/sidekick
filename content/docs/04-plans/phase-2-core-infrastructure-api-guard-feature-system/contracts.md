@@ -5,7 +5,7 @@ title: Phase 2 build rules and target design
 created: 2026-10-18
 updated: 2026-10-24
 kind: plan
-version: 2.8.0
+version: 2.8.1
 tags:
    - plan
    - phase-2
@@ -15,10 +15,10 @@ tags:
    - authentication
    - typescript
    - guidance
-status: planned
+status: completed
 ---
 
-Phase 2 is built piece by piece, with Pratik learning as it goes. The general rules are in the agent guide's [[agent-guide#Working with Pratik|Working with Pratik]]: build fast, never vibe-code. This note adds what's specific to Phase 2. The lessons run one at a time, in the order in [[phase-2-core-infrastructure-api-guard-feature-system|the Phase 2 plan]], and each lesson is its own thread.
+Phase 2 is built piece by piece, with Pratik learning as it goes. The general rules are in the agent guide's [[agent-guide#Working with Pratik|Working with Pratik]]: build fast, never vibe-code. This note adds what's specific to Phase 2. The lessons run one at a time, in the order in [[phase-2-core-infrastructure-api-guard-feature-system-complete|the Phase 2 plan]], and each lesson is its own thread.
 
 ## How we build
 
@@ -190,7 +190,7 @@ Order of checks:
 5. Call `handler({ tx, caller, req, ctx })` and return its response.
 6. If anything throws, the transaction rolls back. Log the error server-side and respond 500 `INTERNAL`. Never send error details to the client.
 
-This reorders the sketch in [[with-api-guard]]: the scope check moves before the transaction, and the feature check moves inside it.
+This reorders the planning sketch that [[with-api-guard]] held until lesson 8: the scope check moves before the transaction, and the feature check moves inside it. The note now summarizes this section.
 
 Decided in lesson 4:
 
