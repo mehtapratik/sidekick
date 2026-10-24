@@ -335,6 +335,28 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5(@types/node@24.19.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(sugarss@5.0.2(postcss@8.5.30))(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/ops:
+    dependencies:
+      '@sidekick/core':
+        specifier: workspace:*
+        version: link:../core
+      '@sidekick/features-registry':
+        specifier: workspace:*
+        version: link:../features-registry
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(postgres@3.4.9)
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
+    devDependencies:
+      '@types/node':
+        specifier: ^24.19.2
+        version: 24.19.2
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+
   packages/ui: {}
 
 packages:
