@@ -16,7 +16,7 @@ tags:
 status: complete
 ---
 
-> **Lesson 7 of 8.** Before this: [[task-2-11and2-12|lesson 6]]. Next: close-out in [[phase-2-core-infrastructure-api-guard-feature-system|the plan]]. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Entitlements|Entitlements]].
+> **Lesson 7 of 8.** Before this: [[task-2-11and2-12|lesson 6]]. Next: [[lesson-8-close-out|lesson 8]], the close-out. The coach follows [[contracts#How we build|how we build]]. The target design is [[contracts#Entitlements|Entitlements]].
 
 **What gets built:** a command that enables every feature in `ALL_FEATURES` for one account in the dev database.
 
