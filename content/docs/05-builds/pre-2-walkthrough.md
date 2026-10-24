@@ -3,9 +3,9 @@ publish: true
 id: build.pre-2
 title: Pre-2 walkthrough
 created: 2026-10-16
-updated: 2026-10-23
+updated: 2026-10-24
 kind: guidance
-version: 1.3.0
+version: 1.4.0
 tags:
    - build
    - walkthrough
@@ -1811,3 +1811,32 @@ export async function withRLS<T>(userId: string, fn: RlsTxHandler<T>): Promise<T
 ```
 
 `unsafeDb ??= createUnsafeDb()` creates the client once per server process and reuses it, so there's still one connection pool. `postgres()` doesn't connect until the first query either way; only the env check moved. A missing `DATABASE_URL` now fails the first signed-in request (the guard logs `api.error` and answers 500) instead of failing at import.
+
+---
+
+## Post note — A Fifth Element Type for `ops`, and a Second User of `DATABASE_DIRECT_URL` (added 2026-10-24)
+
+Phase 2 lesson 7 ([sidekick#23](https://github.com/mehtapratik/sidekick/pull/23), [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/lesson-7-ops|walkthrough]]) changed two things this walkthrough set up. Following this guide alone still ends at a working repo; these are the additions.
+
+- **Task Pre-2.8's boundaries elements gain `ops`,** above the `foundation` catch-all, with a policy that lets `ops` import `registry` and `foundation` and lets nothing import `ops`:
+
+```js
+        // Privileged scripts (dev seeds, provisioning, break-glass); nothing imports them
+        { type: 'ops', pattern: 'packages/ops' },
+```
+
+```js
+            {
+              from: { element: { type: 'ops' } },
+              allow: { to: { element: { type: ['foundation', 'registry'] } } },
+            },
+```
+
+Without the element, `packages/ops` would match `packages/*` as `foundation`, which may import nothing.
+
+- **Task Pre-2.7's `DATABASE_DIRECT_URL` comment** now names both users of the privileged role:
+
+```bash
+# Privileged connection — used only by drizzle-kit (pnpm db:generate / db:migrate)
+# and the ops scripts (packages/ops, pnpm ops:…).
+```

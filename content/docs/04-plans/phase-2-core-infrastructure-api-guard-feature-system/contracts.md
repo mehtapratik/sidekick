@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.contracts
 title: Phase 2 build rules and target design
 created: 2026-10-18
-updated: 2026-10-23
+updated: 2026-10-24
 kind: plan
-version: 2.7.0
+version: 2.8.0
 tags:
    - plan
    - phase-2
@@ -76,7 +76,7 @@ Object shapes are `interface`s. `type` is only for what an interface can't expre
 | `packages/core/src/api/guard.ts`, `packages/core/src/api/index.ts` | 4 [[task-2-2and2-3]]   | `@sidekick/core/api`          |
 | `packages/core/src/observability/log.ts`                           | 5 [[task-2-4and2-5]]   | internal (used by the guard)  |
 | `apps/web/src/app/api/health/route.ts`                             | 6 [[task-2-11and2-12]] | `GET /api/health`             |
-| `packages/features-registry/scripts/seed-dev-entitlements.ts`      | 7 [[task-2-10]]        | `pnpm` script                 |
+| `packages/ops/src/lib/db.ts`, `src/scripts/entitlements-grant.ts`  | 7 [[task-2-10]]        | `pnpm ops:entitlements:grant` |
 
 No new user-visible UI copy is needed in Phase 2. API error strings are machine-facing and stay in `packages/core`, because foundation packages can't import `@sidekick/copy`.
 
@@ -258,6 +258,49 @@ Decided in lesson 6:
 - The database client is created on first use: `packages/core/src/db/unsafe.ts` exports `getUnsafeDb()` instead of an `unsafeDb` constant ([sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)). `next build` imports every route module, and CI's build has no `DATABASE_URL`. A missing `DATABASE_URL` now fails the first signed-in request (logged `api.error`, 500) instead of the import.
 - `apps/web/src/instrumentation.ts` checks `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `DATABASE_URL` once when a server starts, and never during `next build` ([sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)). A variable the server can't run without goes on its list.
 - The guard's layers: lint checks every `route.*` file uses `withApiGuard`, `verify-endpoints.mjs` checks every served endpoint comes from a `route.*` file, and `next build` (which no longer runs ESLint in Next.js 16) checks neither. CI's `lint` step is the gate.
+
+### Ops
+
+`packages/ops` (`@sidekick/ops`) holds privileged scripts: dev seeds, provisioning backdoors and break-glass fixes. Each one is retired when an admin UI, the public API or the CLI covers it, and its header comment says which.
+
+```ts
+// packages/ops/src/lib/db.ts
+export type PrivilegedDb = PostgresJsDatabase<typeof schema>; // core's schema
+export type PrivilegedDbHandler<T> = (db: PrivilegedDb) => Promise<T>;
+
+export async function withPrivilegedDb<T>(
+   fn: PrivilegedDbHandler<T>,
+): Promise<T>;
+```
+
+- `withPrivilegedDb` reads `DATABASE_DIRECT_URL` when called (the `postgres` role, which bypasses RLS), opens one connection (`max: 1`; session mode, so prepared statements are fine), runs `fn` and always closes it.
+- A boundaries element `ops` may import `registry` and `foundation`. No policy targets it, so nothing may import `ops`. Core exports no privileged client.
+- Scripts run under `tsx`, because Node's type stripping can't resolve core's extensionless schema imports. Env comes from `dotenv -e ../../.env.local --` ([[06-decisions/technical/dotenv-cli|dotenv-cli]]).
+- `ops` has no `exports`, `build` or `test`; nothing CI builds or tests needs `DATABASE_DIRECT_URL`.
+
+Every script follows these conventions:
+
+1. Top level declares: `main()` runs only `if (import.meta.main)`, and env reads and connections happen inside it.
+2. Flags come from `node:util`'s `parseArgs` with `strict: true`. A repeatable flag is repeated (`--feature a --feature b`), not a list.
+3. Dry run by default; writes need `--apply`.
+4. Results on stdout, errors on stderr. Exit 0 ok, 1 failed, 2 usage error, set through `process.exitCode`.
+5. The header comment names what replaces the script.
+
+Each script has a package script in `packages/ops` and a root shortcut, `ops:<noun>:<verb>`, that calls it with `pnpm -C packages/ops` (not `--filter`, which reports every failure as 1).
+
+`entitlements grant`: `pnpm ops:entitlements:grant --email <email> (--all | --feature <key>…) [--apply]`.
+
+- The email must match exactly one profile (exit 1 otherwise). Keys are checked against `ALL_FEATURES` before any connection (exit 2 on an unknown key), because `feature_key` has no foreign key.
+- The dry run reads the account's existing rows and prints what would change. `--apply` is one `INSERT … ON CONFLICT DO NOTHING RETURNING`, and prints only the rows it inserted, so a second run prints "Granted: (none)".
+- `--all` with an empty registry still looks up the profile, then grants nothing.
+
+Decided in lesson 7:
+
+- A dedicated package instead of the registry's `scripts/` (Pratik's choice): the registry stays free of database drivers, and privileged scripts get one home.
+- One command now; a dispatcher (`pnpm ops <noun> <verb>`, `--help`) when a second command lands. `ops` code doesn't move into the Phase 9 CLI, which is an API client; its logic moves into admin endpoints and the interface carries over.
+- `--apply` instead of the brief's `--dry-run` flag, so the writing path is the one you have to type.
+- `--apply` doesn't pre-read existing rows (Pratik's simplification): the insert's `RETURNING` is the record of what changed.
+- Out of scope: a `revoke` command (disabling is a `DELETE` with the privileged role) and a `--target` check, which needs a second environment.
 
 ### Feature manifest
 
