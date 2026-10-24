@@ -13,8 +13,8 @@
       "dev": "turbo dev",
       "lint": "turbo lint",
       "typecheck": "turbo typecheck",
-      "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-      "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+      "format": "prettier --write .",
+      "prettier:check": "prettier --check .",
       "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
       "db:generate": "turbo db:generate",
       "db:migrate": "turbo db:migrate",
@@ -44,6 +44,6 @@
       "typescript-eslint": "^8.71.2"
    },
    "lint-staged": {
-      "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
+      "*": "prettier --write --ignore-unknown"
    }
 }

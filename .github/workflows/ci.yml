@@ -1,49 +1,49 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+   push:
+      branches: [main]
+   pull_request:
 
 # A newer push to the same branch cancels the older, still-running check
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+   group: ci-${{ github.ref }}
+   cancel-in-progress: true
 
 # Read-only token: CI only needs to check out code
 permissions:
-  contents: read
+   contents: read
 
 jobs:
-  checks:
-    # Pinned, not ubuntu-latest: -latest moves to new images silently, and the
-    # preinstalled tools inside it (Node, PostgreSQL, …) change with it
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
+   checks:
+      # Pinned, not ubuntu-latest: -latest moves to new images silently, and the
+      # preinstalled tools inside it (Node, PostgreSQL, …) change with it
+      runs-on: ubuntu-24.04
+      timeout-minutes: 15
+      steps:
+         - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
+         - uses: actions/setup-node@v7
+           with:
+              node-version-file: .nvmrc
 
-      # pnpm version and hash come from package.json "packageManager"
-      - name: Enable Corepack
-        run: corepack enable
+         # pnpm version and hash come from package.json "packageManager"
+         - name: Enable Corepack
+           run: corepack enable
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+         - name: Install dependencies
+           run: pnpm install --frozen-lockfile
 
-      - run: pnpm prettier:check
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm build
-      - run: pnpm test
-      # Production (Supabase) runs PostgreSQL 17; the runner image ships 16.
-      # Install 17's tools from the official PostgreSQL apt repository (PGDG).
-      # tests/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
-      - name: Install PostgreSQL 17 tools
-        run: |
-          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-          sudo apt-get install -y --no-install-recommends postgresql-17
-      - run: pnpm test:integration
+         - run: pnpm prettier:check
+         - run: pnpm lint
+         - run: pnpm typecheck
+         - run: pnpm build
+         - run: pnpm test
+         # Production (Supabase) runs PostgreSQL 17; the runner image ships 16.
+         # Install 17's tools from the official PostgreSQL apt repository (PGDG).
+         # tests/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
+         - name: Install PostgreSQL 17 tools
+           run: |
+              sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+              sudo apt-get install -y --no-install-recommends postgresql-17
+         - run: pnpm test:integration
