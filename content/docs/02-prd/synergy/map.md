@@ -65,6 +65,7 @@ Settled while charting, before any ticket existed:
 - [Rich Live Link draft](tickets/08-rich-live-link-draft.md): a labeled link is always inline (`{type} - {label} [{status}]`); an unlabeled one is inline, card or live preview. One status, plus a `*` (edited) or `#` (changed) mark. Inline reads only the index; card and preview call the resolver.
 - [Links anchored to part of an entity](tickets/11-anchored-links.md): selected text becomes a minimal link (label plus a dot). Deleting a target block deletes the links into it. Word and sentence target anchors are MVP; how they survive edits is for system design.
 - [What Phase 3 can prove](tickets/09-what-phase-3-can-prove.md): mock note and task modules in `packages/ops`. The only UI is the Rich Live Link component, on a provider model (each package renders its own content inside the component's frame). Exit is integration tests through the public API. Search covers title and metadata only.
+- [Scope and phases](tickets/10-scoping-and-phases.md): judge by cost to add later. Phase 3 is 3a (store and rules) and 3b (render and find) with the backend and frontend foundations; the rest of the MVP lands with Taxila, Zinsser, the AI layer and War Room. All user metadata is optional.
 - **Tags:** flat (`finance`) and `key:value` (`domain:spending`) both work. People, AI and jobs can all apply them, and each tag records who applied it.
 
 ## Not yet specified
@@ -77,7 +78,9 @@ Settled while charting, before any ticket existed:
 - **Drift between near-duplicates.** Detecting two entries that tell the same truth differently, beyond the no-copies rule.
 - **Publishing.** What a Rich Live Link becomes on a public Taxila post, where readers can't follow private links.
 
-- **References between users.** Designed for, built later (decided 2026-10-25). Phase 3 stays single-user but keeps the door open: an owner on every row and a per-entity "allow references" setting. Open: blocking delete once another user references an entity (the npm unpublish rule), and redacting links a viewer isn't allowed to see.
+## Post-MVP
+
+- **References between users.** Four or more years out under Individual First. `owner` on every row and the redacted state keep the door open. The "allow references" setting and the npm-unpublish delete rule wait until then.
 
 ## Out of scope
 

@@ -29,3 +29,5 @@ Two counters on every entity. The **version** goes up only when the author flags
 - A referencer can accept a change, which moves the stored version to the current one and clears the flag.
 - Versions are plain integers, shown as "v3 · rev 12".
 - Diffs are non-MVP. Keeping full content snapshots per version, which diffs need, is each module's job in its own PRD.
+
+**Amended by ticket 10 (2026-10-27):** the change note is optional, like all user metadata. A version bump still shows `#`.
