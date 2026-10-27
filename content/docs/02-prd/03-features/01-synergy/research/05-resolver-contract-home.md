@@ -10,7 +10,7 @@ tags:
    - wayfinder
 ---
 
-Research for ticket 05 ([[02-prd/synergy/tickets/05-resolver-contract-home|Where the resolver contract lives]]). It lists facts and trade-offs only. The decision belongs to Pratik.
+Research for ticket 05 ([[02-prd/03-features/01-synergy/tickets/05-resolver-contract-home|Where the resolver contract lives]]). It lists facts and trade-offs only. The decision belongs to Pratik.
 
 Sources: the Sidekick repo at commit `80b61cc` (`eslint.config.js`, `pnpm-workspace.yaml`, each `package.json`, `packages/core`, `packages/features-registry`), the Arkive vault notes it points to, and the first-party docs linked below.
 

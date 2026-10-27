@@ -10,9 +10,9 @@ tags:
    - wayfinder
 ---
 
-Research for ticket 07 ([[02-prd/synergy/tickets/07-search-across-modules|Search across modules]]). It lists facts and trade-offs only. The decision belongs to Pratik.
+Research for ticket 07 ([[02-prd/03-features/01-synergy/tickets/07-search-across-modules|Search across modules]]). It lists facts and trade-offs only. The decision belongs to Pratik.
 
-Sources: the Sidekick repo at commit `80b61cc` (`packages/core/src/db/rls.ts`, `packages/core/src/db/migrations/`), the [[02-prd/synergy/map|wayfinder map]], and the first-party docs linked below. Facts marked **(tested)** come from `EXPLAIN ANALYZE` runs on a local PostgreSQL 16.15 with a 300,000-row synthetic `entity_index` (50 owners, 6,000 rows each), a non-superuser role and a policy shaped like Sidekick's. PostgreSQL 17 docs describe the same behaviour for every feature used. The synthetic titles share most words, so the timings show plan shape, not production speed.
+Sources: the Sidekick repo at commit `80b61cc` (`packages/core/src/db/rls.ts`, `packages/core/src/db/migrations/`), the [[02-prd/03-features/01-synergy/map|wayfinder map]], and the first-party docs linked below. Facts marked **(tested)** come from `EXPLAIN ANALYZE` runs on a local PostgreSQL 16.15 with a 300,000-row synthetic `entity_index` (50 owners, 6,000 rows each), a non-superuser role and a policy shaped like Sidekick's. PostgreSQL 17 docs describe the same behaviour for every feature used. The synthetic titles share most words, so the timings show plan shape, not production speed.
 
 ## What is being searched
 

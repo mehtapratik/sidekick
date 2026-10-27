@@ -20,4 +20,4 @@ Each module registers a resolver that supplies render data for its entity types.
 
 ## Resolution
 
-Facts gathered in [[02-prd/synergy/research/05-resolver-contract-home|research 05]]. The decision it feeds stays open for the grilling tickets that depend on it.
+Facts gathered in [[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]]. The decision it feeds stays open for the grilling tickets that depend on it.
