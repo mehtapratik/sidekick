@@ -1,0 +1,41 @@
+---
+publish: true
+id: prd.synergy.ticket-11
+title: "Links anchored to part of an entity"
+created: 2026-10-25
+kind: plan
+type: grilling
+blocked_by: []
+status: closed
+assignee: mehtapratik
+tags:
+   - prd
+   - synergy
+   - wayfinder
+---
+
+## Question
+
+A user can select part of an entity (a word, a sentence, a paragraph) and make it the source of a link, and a link may also point at part of its target. Where does each anchor live, and what happens to the relationship when the anchored text is edited or deleted?
+
+## Round 1 answers (2026-10-27)
+
+- Selecting text and linking it is the same thing as a labeled link. Both render as a fourth Rich Live Link display type, **minimal**: only the label, with a superscript dot for a critical state. No type, status, `*` or `#`. Hover or click details are post-MVP.
+- Removing a link is never special. Whoever can edit the source can delete the anchored text or the link, and the relationship goes with it. (Only deleting a referenced _target_ is ever blocked; see ticket 02.)
+- Target anchors: block level to start, but word and sentence anchors are in MVP scope.
+- Staleness stays per entity, not per block.
+- One mark, one link. Anchors can't overlap.
+- Target block deleted: see Resolution.
+
+## Resolution (2026-10-27)
+
+- A source anchor lives in the source's content as a mark carrying one relationship id. Text-anchored and labeled links render as **minimal** (label only, plus a dot).
+- The dot shows for changed, deprecated, superseded and deleted. Edited gets none. Deleted, locked and redacted labels render as plain, unclickable text. One dot, one colour, for the MVP.
+- Deleting a link or its anchored text removes the relationship, whoever does it.
+- **Target block deleted:** the relationship is deleted with the block. No fallback to the whole entity, because re-anchoring later is debt nobody pays. So "part gone" is never a lasting state.
+   - Agreed: a source mark whose relationship no longer exists renders as plain text. The source module drops the mark the next time it saves, so core never edits anyone's content.
+   - Agreed (Pratik): removing a link changes the source, so it counts as an update. When core deletes the relationship, it bumps the source's revision and `updated` in the index right away (actor: system, with the reason), never its version. Stripping the leftover mark on the next save is housekeeping and doesn't bump again.
+   - Agreed: the target's editor warns before deleting a block that has incoming links ("2 links point here and will be removed"). It warns but doesn't block.
+- Target anchors: block level first; word and sentence anchors are MVP scope.
+- Staleness stays per entity. One mark, one link, no overlaps.
+- **System design:** how a word or sentence anchor survives edits (text-quote selectors, position plus context, CRDT-relative positions, fuzzy re-matching). Pratik wants a survey of the common algorithms and how other tools handle it.

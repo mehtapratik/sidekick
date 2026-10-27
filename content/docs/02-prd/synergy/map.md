@@ -32,7 +32,7 @@ Pratik shares the whole vision first and scopes it afterwards. Phase 3 builds on
 
 Workflow: `wayfinder`, then `grill-with-docs`, then `to-specs`. Every artifact lives in `02-prd/synergy/`. Grilling tickets consult the `grilling` and `domain-modeling` skills. The PRD's narrative "why" sections use the full `earned-conviction` voice. Maps, tickets and specs use only its sentence-level rules (no hedging, active voice, its banned words, naming a claim's limits) and stay terse. Settled terms go to `07-glossary/`. Tickets live in `tickets/`, one file each, with `type`, `blocked_by`, `status` and `assignee` in frontmatter until an issue tracker is chosen. A session claims a ticket by setting `assignee` before any work.
 
-Reference material: the Margins essay (`writings.margins`) split into about twenty datums, an Obsidian folder Pratik shared on 2026-10-25. It shows datums, labelled links, list links and cycles in practice.
+Reference material: the Margins essay (`writings.margins`) split into about twenty datums, an Obsidian folder Pratik shared on 2026-10-25. It shows datums, labelled links and list links in practice. It has no cycles.
 
 ## Decisions so far
 
@@ -51,20 +51,34 @@ Settled while charting, before any ticket existed:
 - **Entity:** anything linkable in any module (a datum, a War Room plan, a scheduled job, an Alter Ego conversation). "Datum" stays the name of Taxila's compact entry.
 - **Datum:** Taxila's smallest meaningful piece of knowledge, one fact per entry. The user picks a compact entry (datum) or a narrative entry. A narrative can be generated from datums, or datums split from a narrative, and either way the result links to its sources with `derived-from`.
 - **Relationship:** the stored link, a first-class row with its own id, tags and metadata. Its free-text label says what the target answers from this source, so the same pair can be linked more than once ("Am I lying to myself?" and "Why?" both lead to the same datum). Linking to a relationship waits until it's needed.
-- **Relation types:** Sidekick ships a starter vocabulary. Each user can add their own, which become presets for that user only.
+- **Relation types:** Sidekick ships a starter vocabulary. User-defined types are out of the MVP (narrowed by ticket 04).
 - **List relationships:** one table. A single link is one row. A list link is a header row (label, type, tags, no target) plus one member row per target with its own position and version snapshot. Revisit if it grows clumsy.
 - **Entity index:** core keeps one thin row per linkable entity, created with the entity: id, type, owner, title, version, status and updated time. Tags live in core beside it. Its job is cross-module questions (staleness, backlinks, everything deprecated, search) and real foreign keys for relationships. Richer render data comes from a resolver each module registers, called when a Rich Live Link renders.
+- [What counts as a change](tickets/01-what-counts-as-a-change.md): two counters. The author flags a version for changes that might invalidate references, with a required change note; every other save bumps the revision. Only title, body and blurb count.
+- [Where the resolver contract lives](tickets/05-resolver-contract-home.md) (research): facts in `research/05`. Three options fit today's boundaries; the contract in core with the app wiring resolvers in matches the `withApiGuard` precedent.
+- [Search across modules](tickets/07-search-across-modules.md) (research): facts in `research/07`. Full text plus `pg_trgm` covers the MVP; new RLS policies compare `uuid` to `uuid` so indexes stay usable.
+- [What happens when a target is deleted](tickets/02-deleted-targets.md) (tentative): an entity with any incoming reference can't be deleted; deprecate or supersede instead. Erasure overrides and leaves a contentless placeholder.
+- [What makes two tags the same](tickets/03-tag-identity.md): lowercase letters, digits and dashes with one optional `key:value` colon; tags are per-user records, renamed and merged by id; AI tags wait for approval unless the user opts in.
+- [The starter relation vocabulary](tickets/04-starter-relation-vocabulary.md): references (derive meaning from the target; stale warnings; block delete) and associations (only connect). Untyped links are references. Eight starter types plus `supersedes`, each with an inverse. User-defined types are out of the MVP; types and tags can be deprecated.
+- [Links into a module you can't use](tickets/06-links-into-disabled-modules.md): locked links show title, type and status with a lock and no content; redacted links (other users, later) show nothing. One server-side entitlement check where a link resolves.
+- [Cycles between links](tickets/12-cycles.md): references can't form a cycle, associations can. The picker greys out entities that would close a loop, and the server checks again on create. Scaling the lookup is for system design.
+- [Rich Live Link draft](tickets/08-rich-live-link-draft.md): a labeled link is always inline (`{type} - {label} [{status}]`); an unlabeled one is inline, card or live preview. One status, plus a `*` (edited) or `#` (changed) mark. Inline reads only the index; card and preview call the resolver.
+- [Links anchored to part of an entity](tickets/11-anchored-links.md): selected text becomes a minimal link (label plus a dot). Deleting a target block deletes the links into it. Word and sentence target anchors are MVP; how they survive edits is for system design.
+- [What Phase 3 can prove](tickets/09-what-phase-3-can-prove.md): mock note and task modules in `packages/ops`. The only UI is the Rich Live Link component, on a provider model (each package renders its own content inside the component's frame). Exit is integration tests through the public API. Search covers title and metadata only.
 - **Tags:** flat (`finance`) and `key:value` (`domain:spending`) both work. People, AI and jobs can all apply them, and each tag records who applied it.
 
 ## Not yet specified
 
 - **Events between modules.** A real event bus for notifications and Factory automations. The version bump on every write is the seed; the shape waits until notifications are designed.
-- **Block-level links.** Linking to a paragraph or a claim inside a document, once the editor exists (Phase 5).
+- **Anchors that survive edits.** How a word or sentence target anchor keeps pointing at the right text as the target changes. System design surveys the common algorithms and how other tools do it.
+- **Search providers.** Whether core passes a query to each module and merges the matches, like Rich Live Link renderers.
+- **Testing modules in isolation.** Storybook or something better for mocks and component tests.
 - **Judging intent.** Whether AI or something more deterministic decides that a changed target no longer supports a reference.
 - **Drift between near-duplicates.** Detecting two entries that tell the same truth differently, beyond the no-copies rule.
 - **Publishing.** What a Rich Live Link becomes on a public Taxila post, where readers can't follow private links.
 
+- **References between users.** Designed for, built later (decided 2026-10-25). Phase 3 stays single-user but keeps the door open: an owner on every row and a per-entity "allow references" setting. Open: blocking delete once another user references an entity (the npm unpublish rule), and redacting links a viewer isn't allowed to see.
+
 ## Out of scope
 
-- **Sharing between users.** Synergy is single-user. Multi-user references would be a fresh effort with a redrawn destination.
 - **Tracking external readers.** No one can know who cites a published post from outside Sidekick.
