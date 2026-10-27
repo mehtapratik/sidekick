@@ -20,4 +20,4 @@ What search Synergy offers in the MVP: Postgres full text over index titles and 
 
 ## Resolution
 
-Facts gathered in [[02-prd/synergy/research/07-search-across-modules|research 07]]. The decision it feeds stays open for the grilling tickets that depend on it.
+Facts gathered in [[02-prd/03-features/01-synergy/research/07-search-across-modules|research 07]]. The decision it feeds stays open for the grilling tickets that depend on it.

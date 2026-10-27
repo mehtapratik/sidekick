@@ -15,7 +15,7 @@ tags:
 
 ## Destination
 
-A PRD in `02-prd/synergy/` for global linking and tagging, the substrate every Sidekick module builds on. It states what to build and why across four goals (connect, keep true, render, find), and breaks the work into phases with an MVP cut. Rewriting the Phase 3 implementation plan from it is a separate effort that starts once this map is clear.
+A PRD in `02-prd/03-features/01-synergy/` for global linking and tagging, the substrate every Sidekick module builds on. It states what to build and why across four goals (connect, keep true, render, find), and breaks the work into phases with an MVP cut. Rewriting the Phase 3 implementation plan from it is a separate effort that starts once this map is clear.
 
 ## Notes
 
@@ -30,7 +30,7 @@ The nine motivations behind this effort, grouped:
 
 Pratik shares the whole vision first and scopes it afterwards. Phase 3 builds only part of this map, but its design has to stay open to all of it. Taxila's datums and knowledge graph are the main future tenant, and Phase 3 does not link documents or parts of documents itself.
 
-Workflow: `wayfinder`, then `grill-with-docs`, then `to-specs`. Every artifact lives in `02-prd/synergy/`. Grilling tickets consult the `grilling` and `domain-modeling` skills. The PRD's narrative "why" sections use the full `earned-conviction` voice. Maps, tickets and specs use only its sentence-level rules (no hedging, active voice, its banned words, naming a claim's limits) and stay terse. Settled terms go to `07-glossary/`. Tickets live in `tickets/`, one file each, with `type`, `blocked_by`, `status` and `assignee` in frontmatter until an issue tracker is chosen. A session claims a ticket by setting `assignee` before any work.
+Workflow: `wayfinder`, then `grill-with-docs`, then `to-specs`. Every artifact lives in `02-prd/03-features/01-synergy/`. Grilling tickets consult the `grilling` and `domain-modeling` skills. The PRD's narrative "why" sections use the full `earned-conviction` voice. Maps, tickets and specs use only its sentence-level rules (no hedging, active voice, its banned words, naming a claim's limits) and stay terse. Settled terms go to `07-glossary/`. Tickets live in `tickets/`, one file each, with `type`, `blocked_by`, `status` and `assignee` in frontmatter until an issue tracker is chosen. A session claims a ticket by setting `assignee` before any work.
 
 Reference material: the Margins essay (`writings.margins`) split into about twenty datums, an Obsidian folder Pratik shared on 2026-10-25. It shows datums, labelled links and list links in practice. It has no cycles.
 
