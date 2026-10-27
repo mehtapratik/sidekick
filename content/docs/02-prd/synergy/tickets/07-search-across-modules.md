@@ -6,8 +6,8 @@ created: 2026-10-25
 kind: plan
 type: research
 blocked_by: []
-status: open
-assignee:
+status: closed
+assignee: claude
 tags:
    - prd
    - synergy
@@ -17,3 +17,7 @@ tags:
 ## Question
 
 What search Synergy offers in the MVP: Postgres full text over index titles and tags, trigram matching, or both, and how it hands over to embeddings when Phase 6 adds them. Gather the facts on Postgres full-text and `pg_trgm` on Supabase that the decision needs.
+
+## Resolution
+
+Facts gathered in [[02-prd/synergy/research/07-search-across-modules|research 07]]. The decision it feeds stays open for the grilling tickets that depend on it.

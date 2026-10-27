@@ -9,4 +9,4 @@ tags:
    - synergy
 ---
 
-How a relationship appears inside a document: more than a hyperlink. It shows the target's title, status and relationship, and renders inline, as a card, or as a live preview of the whole target. The display type is chosen where it renders, so one document can show several in different types.
+How a relationship appears inside a document: more than a hyperlink. It comes in four display types: inline (`{type} - {title} [{status}]`), card, live preview of the whole target, and minimal (only the author's label, with a dot when the target needs attention). The author picks the type where the link is placed, so one document can show several. The component owns the frame and the states; the package that owns the target supplies the content through a registered renderer, so targets outside Sidekick can render too.
