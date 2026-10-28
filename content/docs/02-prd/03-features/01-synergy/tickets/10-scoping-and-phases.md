@@ -30,7 +30,7 @@ Each of these is cheap to build now and expensive to retrofit.
 
 **Data model**
 
-1. **Every field the vision needs, from day one.** This covers the entity index (owner, module, type, title, status, version, revision, timestamps, tombstone), the version log (change notes), relationships (single and list, label, type, version snapshot, `from_anchor`, `to_anchor`), tags (with key, aliases and deprecation), and the relation-type vocabulary (with its inverse name and reference/association kind). Columns for later features, like anchors and the "allow references" setting, exist now even while unused. Adding a nullable column later is easy. Backfilling meaning into rows that were written without it is not.
+1. **Every field the vision needs, from day one.** This covers the entity index (owner, module, type, title, status, version, revision, timestamps, tombstone), the version log (change notes), relationships (single and list, label, type, version snapshot, `from_anchor`, `to_anchor`), tags (with key, aliases and deprecation), and the relation-type vocabulary (with its inverse name and reference/association kind). Columns a near-term phase needs, like the anchors Taxila uses in Phase 4, exist now. Adding a nullable column later is easy. Backfilling meaning into rows that were written without it is not.
 2. **Provenance on every write.** Each write records who made it: a person, the system, an agent or an API key, and why. AI tag approval, "removed by system" revisions and any future audit all depend on it.
 3. **Client-generated UUIDs, `updated_at` and soft delete on every table.** This is what lets the PWA in Phase 8 sync offline without redesigning the tables.
 
@@ -77,7 +77,7 @@ Styling can wait. These can't, because every module will build on the component'
 - Entity index, version log, relationships (single and list), relation vocabulary, tags with key:value, aliases and deprecation.
 - Every backend foundation: RLS, constraints, provenance, outbox, indexes, concurrency.
 - Rules: staleness snapshot, `*`/`#` derivation, delete blocked while referenced (references only), erasure override, no reference cycles, supersede marks the target, deleting a target block deletes the links into it (`to_anchor` stored, editor use comes later), revision bump on link removal.
-- Repository as the only access path. Guarded API with the error codes and bulk endpoints.
+- Repository as the only access path. Guarded API with the stable error codes and idempotency keys.
 
 **3b. Render and find**
 
