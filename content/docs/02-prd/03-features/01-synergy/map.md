@@ -5,13 +5,15 @@ title: "Synergy: wayfinder map"
 created: 2026-10-25
 kind: plan
 version: 0.1.0
-status: draft
+status: deprecated
 tags:
    - prd
    - synergy
    - global-tagging-and-linking
    - wayfinder
 ---
+
+> **Retired 2026-10-29.** The outcome lives in the [[02-prd/03-features/01-synergy/00.prd.features.synergy.overview|Synergy PRD]] and [[02-prd/03-features/01-synergy/spec|spec]]. This page stays as the record of how it was decided.
 
 ## Destination
 

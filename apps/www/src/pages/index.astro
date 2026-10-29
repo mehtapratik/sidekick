@@ -1,9 +1,9 @@
 ---
-import { getEntries } from "../lib/entries";
+import { getListedEntries } from "../lib/entries";
 import EntryPage from "../components/EntryPage.astro";
 import Layout from "../layouts/Layout.astro";
 
-const [newest] = await getEntries();
+const [newest] = await getListedEntries();
 ---
 
 {

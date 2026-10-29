@@ -4,8 +4,8 @@ title: "Synergy - Feature Specifications"
 created: 2026-10-28
 kind: prd
 audience: everyone
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: accepted
 tags:
    - prd
    - spec
@@ -63,84 +63,86 @@ A prefix in brackets names the only actors a story applies to. A story without o
 25. (target's author) Mentions of a link its source removed show "No longer linked" until dismissed or relinked.
 26. Undoing an unlink restores the same link. Linking the pair again later creates a new one, and old mentions can be relinked to it.
 27. Linking into a module the account doesn't have is refused.
+28. Define a term in the Lexicon (Taxila): an entity of type `term` with a short definition or acronym expansion, aliases and abbreviations.
+29. Link any word to a term with a `defined-by` association. It renders as a minimal link: hovering shows the definition in the browser's native tooltip (an abbreviation element for acronyms), and clicking opens the term in Taxila.
 
 **Tags**
 
-28. Tag any entity with flat or `key:value` tags.
-29. Tags are lowercased automatically. Anything else is rejected with a hint.
-30. Autocomplete suggests the keys already in use and the keys Sidekick ships.
-31. Rename a tag once; it changes everywhere.
-32. Merge one tag into another. The old name then suggests and applies the merged tag.
-33. Deprecate a tag or a relation type. Existing uses stay; new ones are refused.
-34. (agent) Suggest tags. They wait for approval unless the user turns on auto-accept.
+30. Tag any entity with flat or `key:value` tags.
+31. Tags are lowercased automatically. Anything else is rejected with a hint.
+32. Autocomplete suggests the keys already in use and the keys Sidekick ships.
+33. Rename a tag once; it changes everywhere.
+34. Merge one tag into another. The old name then suggests and applies the merged tag.
+35. Deprecate a tag or a relation type. Existing uses stay; new ones are refused.
+36. (agent) Suggest tags. They wait for approval unless the user turns on auto-accept.
 
 **Keeping links true**
 
-35. A link whose target was edited since it was made shows a standard-colour dot.
-36. A link whose target has a new version shows a red dot, and the change note where there's room.
-37. A link shows its target's single status: active, deprecated, superseded or deleted.
-38. A deleted target keeps its name as plain, unclickable text.
-39. A link into a module the account no longer has shows name, type and status, and no content.
-40. (source's author) Mark a changed link "still holds" to clear its dot.
-41. (source's author) Point a link at the entry that superseded its target.
-42. (source's author) Unlink a stale link.
-43. Deleting an entity that others reference is refused with the referencer count. Deprecate or supersede it instead.
-44. Deleting a source removes its outgoing links, which can free its targets.
-45. Restore brings back exactly what a delete removed and never touches the version.
-46. Permanent erasure overrides the delete block and leaves referencers a "permanently removed" placeholder.
-47. Links into a disabled module stay as they are until it is re-enabled or the link is removed.
+37. A link whose target was edited since it was made shows a standard-colour dot.
+38. A link whose target has a new version shows a red dot, and the change note where there's room.
+39. A link shows its target's single status: active, deprecated, superseded or deleted.
+40. A deleted target keeps its name as plain, unclickable text.
+41. A link into a module the account no longer has shows name, type and status, and no content.
+42. (source's author) Mark a changed link "still holds" to clear its dot.
+43. (source's author) Point a link at the entry that superseded its target.
+44. (source's author) Unlink a stale link.
+45. Deleting an entity that others reference is refused with the referencer count. Deprecate or supersede it instead.
+46. Deleting a source removes its outgoing links, which can free its targets.
+47. Restore brings back exactly what a delete removed and never touches the version.
+48. Permanent erasure overrides the delete block and leaves referencers a "permanently removed" placeholder.
+49. Links into a disabled module stay as they are until it is re-enabled or the link is removed.
 
 **Anchored links**
 
-48. Select a word, sentence or paragraph and link it.
-49. Point a link at a passage of its target: a paragraph, sentence or word.
-50. The editor marks passages that others reference.
-51. Deleting a referenced passage offers keep, save as a new version, or supersede.
-52. Editing a referenced passage asks whether it is a new version.
-53. A link whose passage was removed in a new version shows the red dot and "passage removed" until its author re-anchors it, widens it to the whole entity, or unlinks.
-54. Removing a link from an entry counts as a revision of that entry.
+50. Select a word, sentence or paragraph and link it.
+51. Point a link at a passage of its target: a paragraph, sentence or word.
+52. The editor marks passages that others reference.
+53. Deleting a referenced passage offers keep, save as a new version, or supersede.
+54. Editing a referenced passage asks whether it is a new version.
+55. A link whose passage was removed in a new version shows the red dot and "passage removed" until its author re-anchors it, widens it to the whole entity, or unlinks.
+56. Removing a link from an entry counts as a revision of that entry.
 
 **Rich Live Link**
 
-55. Choose per link: inline, card or live preview.
-56. Inline reads `{title} ({type}) - [{status}]`, followed by any dot.
-57. A labeled or text-anchored link shows only its label, with a red dot when the target needs attention.
-58. A card shows the title, an excerpt and module fields.
-59. A live preview shows the whole current target in place.
-60. Links inside a live preview render inline. Previews never nest.
-61. (developer) Register a renderer for an entity type. The component calls it wherever that type is linked.
-62. Renderers are async and batched: one call per module per page.
-63. Loading, error and empty states look the same for every module.
-64. Links are real links in focus order. The dots have text equivalents and differ in shape as well as colour.
-65. Long lists of links or backlinks load more as the reader scrolls.
-66. (third-party app) Show a Sidekick link as a card or live preview through the public API.
-67. (developer) Add a new linkable type (a Twitter thread, a news article) by registering its resolver and renderer, without changing core.
+57. Choose per link: inline, card or live preview.
+58. Inline reads `{title} ({type}) - [{status}]`, followed by any dot.
+59. A labeled or text-anchored link shows only its label, with a red dot when the target needs attention, and a browser-default tooltip reading `{type} - {status}`.
+60. A card shows the title, an excerpt and module fields.
+61. A live preview shows the whole current target in place.
+62. Links inside a live preview render inline. Previews never nest.
+63. (developer) Register a renderer for an entity type. The component calls it wherever that type is linked.
+64. Renderers are async and batched: one call per module per page.
+65. Loading, error and empty states look the same for every module.
+66. Links are real links in focus order. The dots have text equivalents and differ in shape as well as colour.
+67. Long lists of links or backlinks load more as the reader scrolls.
+68. (third-party app) Show a Sidekick link as a card or live preview through the public API.
+69. (developer) Add a new linkable type (a Twitter thread, a news article) by registering its resolver and renderer, without changing core.
 
 **Search and backlinks**
 
-68. Search every module by title, type, module, status and tag.
-69. Search tolerates typos and partial words: "dep wor" finds "deep work".
-70. See everything that references an entry, with labels and types.
-71. Backlinks and search results page.
+70. Search every module by title, type, module, status and tag.
+71. Search tolerates typos and partial words: "dep wor" finds "deep work".
+72. See everything that references an entry, with labels and types.
+73. Backlinks and search results page.
 
 **Machines**
 
-72. (bot, job, agent) Use the same guarded API that Sidekick's own screens use.
-73. (bot, agent) Get each resolved link as structured data: relationship, target fields, state and marks.
-74. (bot, agent) Retry a create safely with an idempotency key.
-75. (bot, agent) Get stable error codes: `delete_blocked` with the referencer count, `passage_referenced`, `cycle`, `locked`, and stale-revision conflicts.
-76. Every write records who made it (a person, the system, an agent or an API key) and why.
-77. A save from a stale copy is refused, whether it comes from a second tab or, later, a second person.
+74. (bot, job, agent) Use the same guarded API that Sidekick's own screens use.
+75. (bot, agent) Get each resolved link as structured data: relationship, target fields, state and marks.
+76. (bot, agent) Retry a create safely with an idempotency key.
+77. (bot, agent) Get stable error codes: `delete_blocked` with the referencer count, `passage_referenced`, `cycle`, `locked`, and stale-revision conflicts.
+78. Every write records who made it (a person, the system, an agent or an API key) and why.
+79. A save from a stale copy is refused, whether it comes from a second tab or, later, a second person.
 
 **Playground (Phase 3 only)**
 
-78. A playground page lists mock notes and tasks.
-79. Create, edit, version, deprecate, supersede and delete mock entities.
-80. Add relationships of every type, with labels, list links and tags.
-81. Each mock entity shows its fields, tags, outgoing links and backlinks.
-82. The same link shows in all four display types side by side.
-83. Switch the mock modules' entitlement off and on to watch links lock and come back.
-84. The playground and mock modules sit behind a `sandbox` entitlement that real users never hold.
+80. A playground page lists mock notes and tasks.
+81. Create, edit, version, deprecate, supersede and delete mock entities.
+82. Add relationships of every type, with labels, list links and tags.
+83. Each mock entity shows its fields, tags, outgoing links and backlinks.
+84. The same link shows in all four display types side by side.
+85. Switch the mock modules' entitlement off and on to watch links lock and come back.
+86. The playground and mock modules sit behind a `sandbox` entitlement that real users never hold.
 
 ## Implementation Decisions
 
@@ -154,10 +156,10 @@ A prefix in brackets names the only actors a story applies to. A story without o
 
 **Schema**
 
-- Entity index: id (client UUID), owner, module (feature key), type, display name, optional title, status (`active`, `deprecated`, `superseded`, `deleted`), version, revision, created, updated, deleted.
+- Entity index: id (client UUID), owner, module (feature key), type, display name, optional title, status (`active`, `deprecated`, `superseded`, `deleted`), version, revision, `created_at`, `updated_at` (any write), `edited_at` (author content only, moves with the counters), `deleted_at`.
 - Version log: entity, version, optional change note, actor, time.
-- Relationships: id, owner, from, to (empty on a list header), parent (list members), position, optional label, optional type, version and revision snapshot, `from_anchor`, `to_anchor`, actor, timestamps, soft delete with actor and reason (a tombstone, so mentions can explain why a link is gone and undo can restore it).
-- Relation types: name, inverse name, kind (reference or association), status (active or deprecated), system flag. Seeded with the starter vocabulary: `derived-from`/`source-of`, `cites`/`cited-by`, `supported-by`/`evidence-for`, `explained-by`/`explains`, `inspired-by`/`inspiration-for`, `next`/`previous`, `related-to`, `contradicts`, `supersedes`/`superseded-by`.
+- Relationships: id, owner, from, to (empty on a list header), parent (list members), position, optional label, optional type, version and revision snapshot, `from_anchor`, `to_anchor`, actor, timestamps, soft delete with actor and reason (a tombstone, so mentions can explain why a link is gone and undo can restore it). Every row with a `to` is a complete `from → to` edge: list members repeat their header's `from`, and a composite foreign key, `(parent_id, from_id)` referencing `(id, from_id)`, makes a mismatch impossible. `from` never changes after creation.
+- Relation types: name, inverse name, kind (reference or association), status (active or deprecated), system flag. Seeded with the starter vocabulary: `derived-from`/`source-of`, `cites`/`cited-by`, `supported-by`/`evidence-for`, `explained-by`/`explains`, `inspired-by`/`inspiration-for`, `next`/`previous`, `related-to`, `contradicts`, `defined-by`/`defines`, `supersedes`/`superseded-by`.
 - Tags: id, owner, name (one optional `key:` prefix), description, status, alias-of. A check constraint enforces lowercase ASCII letters, digits, dashes and at most one colon. Tag applications link a tag to an entity or a relationship.
 - Outbox: event type (entity changed, version bumped, status changed, relationship created or deleted), subject, actor, time, payload. Written in the same transaction as the change. Nothing consumes it in Phase 3.
 - Every table: client-generated UUIDs, `updated_at`, soft delete, actor on writes, and RLS comparing the uuid column directly to `nullif(current_setting('app.current_user_id', true), '')::uuid`. Phase 3 also rewrites the existing policies in migrations 0002 and 0007, which cast the column to text.

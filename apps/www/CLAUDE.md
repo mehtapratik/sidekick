@@ -22,11 +22,11 @@ keeps the rules that still bind and what is not obvious from the code.
 
 ## Commands
 
-| Task | Command |
-| --- | --- |
-| Dev server | `npm run dev` |
-| Build + privacy gate | `npm run build` |
-| Serve the build | `npm run preview` |
+| Task                 | Command           |
+| -------------------- | ----------------- |
+| Dev server           | `npm run dev`     |
+| Build + privacy gate | `npm run build`   |
+| Serve the build      | `npm run preview` |
 
 Node >= 22.12. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
 `public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs`: those ship as given.
@@ -49,7 +49,7 @@ scripts/check-privacy.mjs        post-build gate, run by `npm run build`
 ## Publishing
 
 An entry is built only when its frontmatter has `publish: true`. Nothing else lists it.
-`_assets_/`, `.obsidian/` and `writings/_archive/` are never built. (`00-principles/` and
+`_assets_/`, `.obsidian/` and `writings/_archive/` are never built. A retired entry (`status: deprecated` or `retired`) is built and keeps its URL, but is left out of the Index, search, tag pages, pager, home, RSS and sitemap (`getListedEntries`); links and bookmarks still open it. (`00-principles/` and
 `01-motivations/` are published like any other folder, as the Principles and Motivations sections.)
 The old site hid notes with a `private` tag; that tag no longer gates anything, so **do not add
 `publish: true` to a note tagged `private`**. The build fails if a published note carries it.

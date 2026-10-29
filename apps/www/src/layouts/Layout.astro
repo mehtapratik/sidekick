@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_LICENSE, getEntries } from "../lib/entries";
+import { DEFAULT_LICENSE, getListedEntries } from "../lib/entries";
 import { SITE_TITLE } from "../lib/site";
 import Header from "../components/Header.astro";
 import Index from "../components/Index.astro";
@@ -16,7 +16,7 @@ interface Props {
    pager?: { prev?: Entry; next?: Entry };
 }
 const { title, description, entry, canonical, pager } = Astro.props;
-const entries = await getEntries();
+const entries = await getListedEntries();
 ---
 
 <!doctype html>

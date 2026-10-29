@@ -117,6 +117,14 @@ export function getEntries(): Promise<Entry[]> {
    return cache;
 }
 
+/**
+ * Published entries that aren't retired: what the Index, tag pages, pager, home page, RSS and
+ * sitemap list. Retired entries still get their page, so bookmarks and links keep working.
+ */
+export async function getListedEntries(): Promise<Entry[]> {
+   return (await getEntries()).filter((e) => !e.retired);
+}
+
 /** Previous = the next-older entry, next = the next-newer one. */
 export function neighbours(entries: Entry[], entry: Entry) {
    const i = entries.indexOf(entry);

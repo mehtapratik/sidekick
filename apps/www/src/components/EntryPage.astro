@@ -1,5 +1,5 @@
 ---
-import { getEntries, neighbours, type Entry } from "../lib/entries";
+import { getListedEntries, neighbours, type Entry } from "../lib/entries";
 import Layout from "../layouts/Layout.astro";
 import EntryView from "./Entry.astro";
 
@@ -9,7 +9,7 @@ interface Props {
    home?: boolean;
 }
 const { entry, home = false } = Astro.props;
-const entries = await getEntries();
+const entries = await getListedEntries();
 ---
 
 <Layout
@@ -17,7 +17,7 @@ const entries = await getEntries();
    description={entry.deck || undefined}
    entry={entry}
    canonical={home ? entry.url : undefined}
-   pager={neighbours(entries, entry)}
+   pager={entry.retired ? undefined : neighbours(entries, entry)}
 >
    <EntryView entry={entry} />
 </Layout>

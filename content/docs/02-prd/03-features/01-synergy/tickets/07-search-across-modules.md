@@ -6,13 +6,15 @@ created: 2026-10-25
 kind: plan
 type: research
 blocked_by: []
-status: closed
+status: deprecated
 assignee: claude
 tags:
    - prd
    - synergy
    - wayfinder
 ---
+
+> **Retired 2026-10-29.** The outcome lives in the [[02-prd/03-features/01-synergy/00.prd.features.synergy.overview|Synergy PRD]] and [[02-prd/03-features/01-synergy/spec|spec]]. This page stays as the record of how it was decided.
 
 ## Question
 

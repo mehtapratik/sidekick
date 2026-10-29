@@ -1,10 +1,10 @@
 ---
-import { getEntries, plural, tagCounts } from "../../lib/entries";
+import { getListedEntries, plural, tagCounts } from "../../lib/entries";
 import EntriesTable from "../../components/EntriesTable.astro";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
-   const entries = await getEntries();
+   const entries = await getListedEntries();
    return tagCounts(entries).map(([tag]) => ({
       params: { tag },
       props: { tag, entries: entries.filter((e) => e.tags.includes(tag)) },
