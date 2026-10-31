@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1128" width="1280" height="1128">
+  <style>
+    /* Follows the reader's light or dark setting, like the rest of arkive. */
+    [fill="#ffffff"] { fill: none; }
+    text[fill] { fill: #1b1b1b; font-size: 18px; font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    @media (prefers-color-scheme: dark) {
+      [fill="#a5d8ff"] { fill: #173452; }
+      [stroke="#a5d8ff"] { stroke: #173452; }
+      [fill="#b2f2bb"] { fill: #173a22; }
+      [stroke="#b2f2bb"] { stroke: #173a22; }
+      [fill="#d0bfff"] { fill: #2b2350; }
+      [stroke="#d0bfff"] { stroke: #2b2350; }
+      [fill="#dee2e6"] { fill: #2a2d31; }
+      [stroke="#dee2e6"] { stroke: #2a2d31; }
+      [fill="#ffc9c9"] { fill: #47201f; }
+      [stroke="#ffc9c9"] { stroke: #47201f; }
+      [fill="#ffd8a8"] { fill: #45290f; }
+      [stroke="#ffd8a8"] { stroke: #45290f; }
+      [fill="#ffec99"] { fill: #3f3610; }
+      [stroke="#ffec99"] { stroke: #3f3610; }
+      [fill="#f8f9fa"] { fill: #1a1b1d; }
+      [stroke="#f8f9fa"] { stroke: #1a1b1d; }
+      [fill="#1971c2"] { fill: #4dabf7; }
+      [stroke="#1971c2"] { stroke: #4dabf7; }
+      [fill="#2f9e44"] { fill: #51cf66; }
+      [stroke="#2f9e44"] { stroke: #51cf66; }
+      [fill="#7048e8"] { fill: #9775fa; }
+      [stroke="#7048e8"] { stroke: #9775fa; }
+      [fill="#495057"] { fill: #adb5bd; }
+      [stroke="#495057"] { stroke: #adb5bd; }
+      [fill="#e03131"] { fill: #ff8787; }
+      [stroke="#e03131"] { stroke: #ff8787; }
+      [fill="#e8590c"] { fill: #ff922b; }
+      [stroke="#e8590c"] { stroke: #ff922b; }
+      [fill="#f08c00"] { fill: #fcc419; }
+      [stroke="#f08c00"] { stroke: #fcc419; }
+      [fill="#1e1e1e"] { fill: #e9e9e7; }
+      [stroke="#1e1e1e"] { stroke: #e9e9e7; }
+      text[fill] { fill: #e9e9e7; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1e1e1e" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1280" height="1128" fill="#ffffff" />
+  <rect x="405" y="40" width="280" height="108" rx="8" ry="8" fill="#a5d8ff" stroke="#1971c2" stroke-width="2" opacity="1" />
+  <rect x="227.5" y="228" width="300" height="108" rx="8" ry="8" fill="#d0bfff" stroke="#7048e8" stroke-width="2" opacity="1" />
+  <rect x="90" y="416" width="260" height="108" rx="8" ry="8" fill="#dee2e6" stroke="#495057" stroke-width="2" opacity="1" />
+  <rect x="442.5" y="416" width="250" height="108" rx="8" ry="8" fill="#dee2e6" stroke="#495057" stroke-width="2" opacity="1" />
+  <rect x="237.5" y="604" width="280" height="108" rx="8" ry="8" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1" />
+  <rect x="755" y="604" width="270" height="108" rx="8" ry="8" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1" />
+  <rect x="40" y="792" width="320" height="108" rx="8" ry="8" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1" />
+  <rect x="420" y="792" width="320" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
+  <rect x="800" y="792" width="180" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
+  <rect x="1040" y="792" width="200" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
+  <rect x="420" y="980" width="320" height="108" rx="8" ry="8" fill="#ffd8a8" stroke="#e8590c" stroke-width="2" opacity="1" />
+  <polyline points="545,148 377.5,228" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="545,148 890,604" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="377.5,336 220,416" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="377.5,336 567.5,416" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="220,524 377.5,604" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="567.5,524 377.5,604" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="377.5,712 200,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="890,712 200,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="377.5,712 580,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="890,712 890,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="890,712 1140,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="580,900 580,980" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="545" y="90" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1971c2" text-anchor="middle">
+    <tspan x="545" dy="0">Apps: apps/web</tspan>
+    <tspan x="545" dy="20">(API routes, playground)</tspan>
+  </text>
+  <text x="377.5" y="278" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#7048e8" text-anchor="middle">
+    <tspan x="377.5" dy="0">packages/features-registry</tspan>
+    <tspan x="377.5" dy="20">(assembles registrations)</tspan>
+  </text>
+  <text x="220" y="466" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle">
+    <tspan x="220" dy="0">packages/ops</tspan>
+    <tspan x="220" dy="20">(mock notes and tasks)</tspan>
+  </text>
+  <text x="567.5" y="466" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle">
+    <tspan x="567.5" dy="0">packages/features/...</tspan>
+    <tspan x="567.5" dy="20">(Taxila and later)</tspan>
+  </text>
+  <text x="377.5" y="654" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#2f9e44" text-anchor="middle">
+    <tspan x="377.5" dy="0">Platform: synergy/server</tspan>
+    <tspan x="377.5" dy="20">(repository, save call)</tspan>
+  </text>
+  <text x="890" y="654" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#2f9e44" text-anchor="middle">
+    <tspan x="890" dy="0">Platform: synergy/react</tspan>
+    <tspan x="890" dy="20">(Rich Live Link)</tspan>
+  </text>
+  <text x="200" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#2f9e44" text-anchor="middle">
+    <tspan x="200" dy="0">Platform: synergy/contracts</tspan>
+    <tspan x="200" dy="20">(zod, error codes, extractRefs)</tspan>
+  </text>
+  <text x="580" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
+    <tspan x="580" dy="0">Foundation: core</tspan>
+    <tspan x="580" dy="20">(withRLS, guard, entitlements)</tspan>
+  </text>
+  <text x="890" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
+    <tspan x="890" dy="0">Foundation: ui</tspan>
+    <tspan x="890" dy="20">(primitives)</tspan>
+  </text>
+  <text x="1140" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
+    <tspan x="1140" dy="0">Foundation: copy</tspan>
+    <tspan x="1140" dy="20">(every label)</tspan>
+  </text>
+  <text x="580" y="1030" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e8590c" text-anchor="middle">
+    <tspan x="580" dy="0">Postgres</tspan>
+    <tspan x="580" dy="20">(RLS, per-package migrations)</tspan>
+  </text>
+  <text x="298.75" y="569.25" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="298.75" dy="0">registers types</tspan>
+  </text>
+  <text x="472.5" y="569.25" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="472.5" dy="0">registers types</tspan>
+  </text>
+  <text x="580" y="945.25" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="580" dy="0">SQL</tspan>
+  </text>
+</svg>
