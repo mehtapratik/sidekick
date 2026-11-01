@@ -2,20 +2,20 @@
 publish: true
 id: system-design.non-functional.monorepo.dependency-flow
 created: 2026-09-19
-updated: 2026-10-31
+updated: 2026-11-01
 kind: spec
-version: 1.3.0
+version: 1.4.0
 tags:
    - system-design
    - monorepo
    - cli
 ---
 
-Dependencies flow one way, from apps down to the foundation. A package never imports an app, and a lower layer never imports a higher one.
+Dependencies flow one way, from apps down to the foundation. A package never imports an app, and a lower layer never imports a higher one. A layer may skip the layers between: an app may import a feature, a platform or a foundation package directly, and a feature may import a foundation package directly.
 
-```markdown
-apps/* -> packages/features-registry -> packages/features/* -> packages/platform/* -> packages/foundation/*
-```
+![[dependency-flow.svg|700]]
+
+An arrow means "may import". Packages in the same layer never import each other.
 
 ## Which layer a package belongs to
 

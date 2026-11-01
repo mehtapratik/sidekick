@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: system design"
 created: 2026-10-30
-updated: 2026-10-31
+updated: 2026-11-01
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - synergy
@@ -22,14 +22,14 @@ How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] sa
 
 An arrow means "imports". The features registry and the type packages register their linkable types with `synergy/server`; `apps/web` renders links with `synergy/react`. Only `foundation/core` talks to Postgres.
 
-| Package                                        | Holds                                                                                                                                                                    |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `packages/core` (foundation)                   | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                   |
-| `packages/platform/synergy` (platform)         | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Rich Live Link component. |
-| `packages/ui` (foundation)                     | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                              |
-| Providers (`packages/ops` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                        |
-| `packages/features-registry` or the app        | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                         |
-| `apps/web`                                     | Guarded API routes and the playground.                                                                                                                                   |
+| Package                                    | Holds                                                                                                                                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `packages/core` (foundation)               | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                   |
+| `packages/platform/synergy` (platform)     | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Rich Live Link component. |
+| `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                              |
+| Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                        |
+| `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                         |
+| `apps/web`                                 | Guarded API routes and the playground.                                                                                                                                   |
 
 Synergy ships three entry points, so a browser bundle can never pull in database code:
 
@@ -46,9 +46,9 @@ Each linkable type is registered by the package that provides it, never listed i
 ```ts
 // server half, imported from '@sidekick/synergy/server'
 interface LinkableTypeServer {
-   provider: string; // the registering package, e.g. 'ops', 'taxila'
+   provider: string; // the registering package, e.g. 'sandbox-notes', 'taxila'
    type: string; // e.g. 'note', 'datum', 'tweet'
-   entitlement: string; // feature key whose entitlement gates it, e.g. 'sandbox'
+   entitlement: string; // feature key whose entitlement gates it, e.g. 'sandbox-notes'
    // batched: one call per provider per page; returns JSON only, so it can be cached and sent to any consumer
    resolve(
       tx: Tx,
@@ -71,7 +71,7 @@ interface LinkableTypeReact {
 
 Synergy holds no user-visible text ([[03-system-design/non-functional/content/centralized-copy|Centralized copy]]; Pratik, 2026-10-31). Everything it stores or returns is a stable key, and every label comes from `packages/copy`, so a term can be renamed or translated without a migration or an API change:
 
-- `provider` and `type` on registrations and index rows (`ops`, `note`): the type's label ("Note") is a copy key such as `synergy.type.ops.note`.
+- `provider` and `type` on registrations and index rows (`sandbox-notes`, `note`): the type's label ("Note") is a copy key such as `synergy.type.sandbox-notes.note`.
 - Relation types store a `source_key` and a `target_key`, named by the end that reads them (`explained-by` at the source, `explains` at the target); "explained by" on screen comes from copy. User-defined types (post-MVP) are the exception, because their names are the user's own content.
 - Statuses, states, marks and display types are enums (`deprecated`, `no_longer_linked`, `passage_removed`), and error codes carry no message; the client looks up the message by code.
 - The resolved link and every API response carry keys only. Sidekick's UI and the Rich Live Link map them through copy; a third party maps them its own way.

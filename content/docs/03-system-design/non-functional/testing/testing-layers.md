@@ -2,8 +2,9 @@
 publish: true
 id: system-design.non-functional.testing.testing-layers
 created: 2026-10-30
+updated: 2026-11-01
 kind: spec
-version: 1.0.0
+version: 1.0.1
 tags:
    - system-design
    - testing
@@ -51,4 +52,4 @@ A screenshot per component state, compared with a committed baseline, so upgrade
 
 ## Previewing by eye
 
-A playground page (such as Synergy's, behind the `sandbox` entitlement) is for looking, not asserting. It is the natural target for end-to-end and visual tests later. A component catalogue (Storybook or Ladle) is added only if one is wanted.
+A playground page (such as Synergy's, behind the sandbox entitlements) is for looking, not asserting. It is the natural target for end-to-end and visual tests later. A component catalogue (Storybook or Ladle) is added only if one is wanted.

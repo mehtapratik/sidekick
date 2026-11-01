@@ -2,16 +2,16 @@
 publish: true
 id: system-design.non-functional.code-quality-checks.eslint.eslint-plugin-boundaries
 created: 2026-09-19
-updated: 2026-10-31
+updated: 2026-11-01
 kind: spec
-version: 2.2.0
+version: 2.2.1
 tags:
    - system-design
    - code-quality-check
    - eslint
 ---
 
-To enforce [[dependency-flow]], `eslint-plugin-boundaries` (v7, `boundaries/dependencies` rule) makes sure dependencies flow only in one direction: apps → registry → features → platform → foundation.
+To enforce [[dependency-flow]], `eslint-plugin-boundaries` (v7, `boundaries/dependencies` rule) makes sure dependencies flow only in one direction, from apps down to the foundation: a layer may import any layer below it, never one above it or a sibling in its own layer (diagram in [[dependency-flow]]).
 
 Element types from Phase 3a, when the foundation packages move into `packages/foundation/` and the first platform package lands (until then the config has a `packages/*` catch-all for foundation). Every layer and singleton has an explicit pattern, and there is no catch-all:
 

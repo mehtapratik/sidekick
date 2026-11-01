@@ -28,7 +28,7 @@ keeps the rules that still bind and what is not obvious from the code.
 | Build + privacy gate | `npm run build`   |
 | Serve the build      | `npm run preview` |
 
-Node >= 22.12. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
+Node >= 22.19. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
 `public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs`: those ship as given.
 
 ## Layout

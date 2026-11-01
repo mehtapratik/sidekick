@@ -4,8 +4,8 @@ title: "Synergy - Feature Specifications"
 created: 2026-10-28
 kind: prd
 audience: everyone
-updated: 2026-10-31
-version: 1.2.0
+updated: 2026-11-01
+version: 1.2.1
 status: accepted
 tags:
    - prd
@@ -143,7 +143,7 @@ A prefix in brackets names the only actors a story applies to. A story without o
 83. Each mock entity shows its fields, tags, outgoing links and backlinks.
 84. The same link shows in all four display types side by side.
 85. Switch the mock modules' entitlement off and on to watch links lock and come back.
-86. The playground and mock modules sit behind a `sandbox` entitlement that real users never hold.
+86. The playground and mock modules sit behind the `sandbox-notes` and `sandbox-tasks` entitlements, which real users never hold.
 
 **Added in system design (2026-10-30)**
 
@@ -157,8 +157,8 @@ A prefix in brackets names the only actors a story applies to. A story without o
 - A new platform package, `packages/platform/synergy`, holds the Synergy store: entity index, version log, relationships (single and list in one table), relation-type vocabulary, tags and tag applications, an outbox, and a repository that is the only access path. It also holds the resolver and renderer contracts, the render cache interface and the Rich Live Link component. It takes feature keys as data and never imports the feature registry (see [[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]]).
 - The Rich Live Link component lives in Synergy and builds on `packages/ui` primitives, owning the frame and the states. Renderers supply content. It is host-agnostic: it takes the mentions to show and a transport (`resolveLinks(requests) => Promise<ResolvedLink[]>`) that each host supplies, with no app-wide context, so third parties can use it later. It renders on the server (a page's first paint) and in the browser (the editor inserting or changing a link). The package ships `/server`, `/react` and `/contracts` entry points so database code never reaches a browser bundle.
 - Guarded API routes in the web app for entities' Synergy fields, relationships, tags, search, backlinks and link resolution, all through `withApiGuard`.
-- Mock note and task modules in `packages/ops`, behind a `sandbox` entitlement granted with the existing ops script. Each registers an entity type (provider `ops`, entitlement `sandbox`), a resolver and a renderer. They retire with ops; their renderers stay as test fixtures.
-- A playground page in the web app, behind the same `sandbox` entitlement, built only on the public API and the Rich Live Link component. Plain, unstyled HTML: forms, textareas, lists, buttons and the raw API response beside each result. No rich-text editor, modals, hovers or styling; just enough to test the responses and check readiness against the PRD.
+- Mock note and task modules in `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`, behind the `sandbox-notes` and `sandbox-tasks` entitlements granted with the existing ops script. Each registers an entity type (provider and entitlement `sandbox-notes` or `sandbox-tasks`), a resolver and a renderer. Checkpoint 3a names the lessons that retire them; their renderers stay as test fixtures.
+- A playground page in the web app, behind the same entitlements, built only on the public API and the Rich Live Link component. Plain, unstyled HTML: forms, textareas, lists, buttons and the raw API response beside each result. No rich-text editor, modals, hovers or styling; just enough to test the responses and check readiness against the PRD.
 
 **Schema**
 

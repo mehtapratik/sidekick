@@ -3,8 +3,8 @@ publish: true
 id: decision.technical.platform-layer
 created: 2026-10-30
 kind: decision
-updated: 2026-10-31
-version: 1.2.0
+updated: 2026-11-01
+version: 1.3.0
 tags:
    - decision
    - technical
@@ -47,5 +47,6 @@ Foundation says _how_, platform says _what_, features say _which_. **Each layer 
 - `pnpm-workspace.yaml` globs `packages/foundation/*`, `packages/platform/*` and `packages/features/*`.
 - `pnpm db:migrate` runs each package's migrations in dependency order: `core`, then platform, then features and ops.
 - **Overrides the PRD and spec:** the Rich Live Link component lives in `@sidekick/synergy`, not in `packages/ui`. It knows resolved links, states and dots, and `ui` (foundation) can't import Synergy's types. It builds on `ui` primitives.
-- **Overrides the PRD and spec:** "module" is renamed **provider**: the package that registered an entity type. Resolver and renderer calls are batched per provider. Each type registration names the feature whose entitlement gates it (the mock notes and tasks: provider `ops`, entitlement `sandbox`); the mapping lives in code, not in rows. Feature flags (rollout gating) are a separate foundation package, built when something first needs one.
+- **Overrides the PRD and spec:** "module" is renamed **provider**: the package that registered an entity type. Resolver and renderer calls are batched per provider. Each type registration names the feature whose entitlement gates it (the mock notes and tasks: providers `sandbox-notes` and `sandbox-tasks`, each gated by the feature of the same key); the mapping lives in code, not in rows. Feature flags (rollout gating) are a separate foundation package, built when something first needs one.
+- **The mock providers are feature packages** (Phase 3 planning, 2026-11-01): `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`, not `packages/ops`, because nothing may import `ops`, so neither the app nor the registry could use them there. Two packages, so revoking one feature locks links into it while the other stays readable. The underscore marks them dev-only. See the [[04-plans/phase-3-graph-store-metadata-service#Decisions made while planning|Phase 3 plan]].
 - **Supersedes** points 1 and 2 of [[03-system-design/functional-design/02-global-tagging-and-linking/02-design-constraints|Design constraints]] (entity types in the registry, edges in `core`).
