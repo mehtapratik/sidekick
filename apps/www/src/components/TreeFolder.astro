@@ -1,5 +1,5 @@
 ---
-import { countLeaves, containsUrl, type Folder } from "../lib/tree";
+import { countLeaves, containsUrl, folderRows, type Folder } from "../lib/tree";
 
 interface Props {
    folder: Folder;
@@ -18,31 +18,38 @@ const total = countLeaves(folder);
       >
       <ul>
          {
-            folder.children.map((child) => (
-               <Astro.self folder={child} current={current} />
-            ))
-         }
-         {
-            folder.entries.map(({ entry }) => (
-               <li
-                  data-url={entry.url}
-                  data-status={entry.retired ? "retired" : undefined}
-               >
-                  <a
-                     href={entry.url}
-                     aria-current={entry.url === current ? "page" : undefined}
+            folderRows(folder).map((row) =>
+               "folder" in row ? (
+                  <Astro.self folder={row.folder} current={current} />
+               ) : (
+                  <li
+                     data-url={row.leaf.entry.url}
+                     data-status={
+                        row.leaf.entry.retired ? "retired" : undefined
+                     }
                   >
-                     {entry.title}
-                  </a>
-                  {entry.retired && <span class="retired">Retired</span>}
-                  {entry.url === current && (
-                     <span class="reading">Reading</span>
-                  )}
-                  <small class="muted">
-                     <time datetime={entry.asOf}>{entry.asOf}</time>
-                  </small>
-               </li>
-            ))
+                     <a
+                        href={row.leaf.entry.url}
+                        aria-current={
+                           row.leaf.entry.url === current ? "page" : undefined
+                        }
+                     >
+                        {row.leaf.entry.title}
+                     </a>
+                     {row.leaf.entry.retired && (
+                        <span class="retired">Retired</span>
+                     )}
+                     {row.leaf.entry.url === current && (
+                        <span class="reading">Reading</span>
+                     )}
+                     <small class="muted">
+                        <time datetime={row.leaf.entry.asOf}>
+                           {row.leaf.entry.asOf}
+                        </time>
+                     </small>
+                  </li>
+               ),
+            )
          }
       </ul>
    </details>

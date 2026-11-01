@@ -41,8 +41,8 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
 
 ## Where things stand
 
-- **Complete:** Phases 0, 1 and 1.1, [[04-plans/phase-1-supabase-and-auth-shell/pre-2-foundation-hardening-complete|Front Door: Hardening (Pre-2)]] (walkthrough in [[05-builds/pre-2-walkthrough]]) and [[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2 — Gatekeeper]] (walkthrough in [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
-- **Next:** [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), starting with [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-1-layer-folders|lesson 1]]. Part 3b is planned at Checkpoint 3a. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
+- **Complete:** Phases 0, 1 and 1.1, [[04-phases/01-front-door/02-hardening/00-plan|Front Door: Hardening (Pre-2)]] (walkthrough in [[04-phases/01-front-door/02-hardening/01-walkthrough]]) and [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper]] (walkthrough in [[04-phases/02-gatekeeper/02-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
+- **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), starting with [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. Part 3b is planned at Checkpoint 3a. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
 - **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI.
 - **Feature packages:** none exist yet. They go in `packages/features/*`; add that glob to `pnpm-workspace.yaml` with the first one.
 
@@ -88,13 +88,13 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 
 ## At the end of a phase
 
-Write a step-by-step walkthrough in `05-builds/`, mark the plan note complete, and record learnings in `09-notes/` (private, `publish: false`).
+Everything about a phase lives in its folder under `04-phases/`, named by number and nickname (`03-synergy/`): `00-plan.md`, `02-walkthrough.md`, `03-notes.md`, and one `lessons/lesson-N-slug/` folder per lesson holding `00-brief.md`, `01-walkthrough.md` and `02-notes.md`. The number prefixes set the order in the site's folder view and don't appear in URLs. Write the step-by-step walkthrough, mark the plan note complete, and record learnings in `notes.md` (private, `publish: false`).
 
 ## Read the smallest relevant guidance
 
 | Task                         | Read first                                                                                                                                                                                                                             |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Product scope / feature work | [[04-plans/living-plan\|docs/04-plans/living-plan.md]]                                                                                                                                                                                 |
+| Product scope / feature work | [[04-phases/living-plan\|docs/04-phases/living-plan.md]]                                                                                                                                                                                 |
 | API, database, or security   | [[08-ai-coding-harness/database-and-security\|docs/08-ai-coding-harness/database-and-security.md]]                                                                                                                                     |
 | Tooling or package layout    | [[08-ai-coding-harness/architecture-invariants\|docs/08-ai-coding-harness/architecture-invariants.md]]                                                                                                                                 |
 | Environment or commands      | [[08-ai-coding-harness/commands-and-environment\|docs/08-ai-coding-harness/commands-and-environment.md]]                                                                                                                               |

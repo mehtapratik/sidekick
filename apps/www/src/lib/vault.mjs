@@ -25,12 +25,10 @@ export const SECTIONS = [
    { dir: "01-motivations", slug: "motivations", label: "Motivations" },
    { dir: "02-prd", slug: "prd", label: "Product requirements" },
    { dir: "03-system-design", slug: "system-design", label: "System design" },
-   { dir: "04-plans", slug: "plans", label: "Plans" },
-   { dir: "05-builds", slug: "builds", label: "Builds" },
+   { dir: "04-phases", slug: "phases", label: "Phases" },
    { dir: "06-decisions", slug: "decisions", label: "Decisions" },
    { dir: "07-glossary", slug: "glossary", label: "Glossary" },
    { dir: "08-ai-coding-harness", slug: "harness", label: "AI coding harness" },
-   { dir: "09-notes", slug: "notes", label: "Notes" },
 ];
 
 /** Acronyms and proper nouns for titles derived from file names (whole words, any case). */

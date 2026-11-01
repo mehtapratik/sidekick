@@ -12,7 +12,7 @@ tags:
 ---
 
 1. Write or revise the feature PRD before implementation begins.
-2. Record its implementation phase in [[04-plans/living-plan|the living plan]].
+2. Record its implementation phase in [[04-phases/living-plan|the living plan]].
 3. When scope changes, update the PRD and the affected plan phase together.
 4. Keep completed foundation phases historically accurate; record later corrections in the living plan changelog.
 

@@ -15,6 +15,6 @@ tags:
 
 New product work begins with its PRD and plan phase. Create an isolated feature package only after confirming its module contract in the feature-system specifications.
 
-- [[04-plans/living-plan|Living plan]]
+- [[04-phases/living-plan|Living plan]]
 - [[03-system-design/functional-design/00-feature-system/registry|Feature registry]]
 - [[03-system-design/functional-design/00-feature-system/isolation|Feature isolation]]

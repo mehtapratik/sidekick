@@ -19,4 +19,4 @@ The primary logging surface is inside [[with-api-guard]], which logs one JSON li
 - Every 401 and 403: `api.denied` with the error code, and the missing feature or scope
 - Every 500: `api.error` with the error's name, message and stack frames, which the client never sees
 
-This centralizes visibility without requiring each route handler to implement its own logging. The exact fields, and what is never logged (query strings, headers, cookies, tokens, bodies, emails), are in [[contracts#Logging|the Phase 2 contracts]].
+This centralizes visibility without requiring each route handler to implement its own logging. The exact fields, and what is never logged (query strings, headers, cookies, tokens, bodies, emails), are in [[04-phases/02-gatekeeper/01-contracts#Logging|the Phase 2 contracts]].

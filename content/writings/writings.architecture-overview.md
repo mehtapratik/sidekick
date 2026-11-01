@@ -529,7 +529,7 @@ The MVP native strategy remains **Capacitor + hosted Next.js application**. The 
 11.   Observability & hardening
 12.   Dogfooding, then billing (optional — not a product goal per PRD)
 
-See the [living plan](/docs/plans/living-plan/) for the authoritative task breakdown.
+See the [living plan](/docs/phases/living-plan/) for the authoritative task breakdown.
 
 ### 19.15 Remaining constraints from original handover
 

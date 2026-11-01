@@ -12,7 +12,7 @@ tags:
    - spec
    - synergy
 applies_to:
-   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
+   - "[[04-phases/03-synergy/00-plan]]"
 publish: true
 ---
 

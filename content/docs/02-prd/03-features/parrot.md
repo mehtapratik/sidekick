@@ -11,7 +11,7 @@ tags:
    - feature
    - parrot
 applies_to:
-   - "[[04-plans/backlogged-unplanned]]"
+   - "[[04-phases/backlogged-unplanned]]"
 ---
 
 1. Voice dictation with gesture support

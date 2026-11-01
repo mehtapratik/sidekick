@@ -11,10 +11,10 @@ tags:
    - planning
    - private
 related:
-   - "[[04-plans/living-plan]]"
+   - "[[04-phases/living-plan]]"
 ---
 
-Use the [[04-plans/living-plan|living plan]] to identify the current phase, then select a session mode according to its learning value.
+Use the [[04-phases/living-plan|living plan]] to identify the current phase, then select a session mode according to its learning value.
 
 - **Phases 2–3:** teach mode; prioritize security and backend reasoning.
 - **Phase 4:** teach the schema, migration, API, and repository loop; auto-pilot only routine command-palette UI.

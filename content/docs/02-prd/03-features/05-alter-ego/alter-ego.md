@@ -14,7 +14,7 @@ tags:
    - factory
    - ai
 applies_to:
-   - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"
+   - "[[04-phases/06-alter-ego/00-plan]]"
 ---
 
 1. AI agent grounded on user’s content, including [[00.prd.features.core-drive.overview]], [[00.prd.features.taxila.overview|taxila]]. [[00.prd.features.war-room.overview]], and [[factory]].

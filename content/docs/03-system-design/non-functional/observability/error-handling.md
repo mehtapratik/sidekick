@@ -41,7 +41,7 @@ All API errors must use a consistent shape (enforced by `withApiGuard` since Pha
 { error: string, code: string }
 ```
 
-`error` is a short human-readable message; `code` is the stable, machine-readable value clients branch on. `withApiGuard`'s codes are listed in [[contracts#Error shape|the Phase 2 contracts]].
+`error` is a short human-readable message; `code` is the stable, machine-readable value clients branch on. `withApiGuard`'s codes are listed in [[04-phases/02-gatekeeper/01-contracts#Error shape|the Phase 2 contracts]].
 
 Examples:
 

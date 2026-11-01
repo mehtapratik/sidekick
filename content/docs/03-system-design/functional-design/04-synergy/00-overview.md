@@ -11,7 +11,7 @@ tags:
    - synergy
 applies_to:
    - "[[02-prd/03-features/01-synergy/spec]]"
-   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
+   - "[[04-phases/03-synergy/00-plan]]"
 ---
 
 How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] say what it does; this page and the decisions it links say where each piece lives and how the pieces meet. Terms follow [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]].

@@ -6,10 +6,14 @@ export interface Leaf {
    entry: Entry;
    /** The entry's own path is also a folder (`x.md` beside `x/`): it is listed first inside it. */
    own: boolean;
+   /** Set when the entry came up out of a one-page sub-folder: it takes that folder's place in the order. */
+   key?: string;
 }
 export interface Folder {
    path: string;
    label: string;
+   /** The folder's real name on disk (`03-synergy`), which sets its order among siblings. */
+   key?: string;
    children: Folder[];
    entries: Leaf[];
 }
@@ -46,17 +50,27 @@ const TOP: [string, string][] = [
    ...SECTIONS.map((s): [string, string] => [`docs/${s.slug}`, s.label]),
 ];
 
-/** `entries` must already be in the global order (newest first). */
+const byName = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+
+/** Path segments under the section folder, as named on disk (`04-phases/03-synergy/00-plan.md` -> `03-synergy/00-plan`). */
+function diskSegments(e: Entry): string[] | undefined {
+   if (e.collection !== "docs") return undefined;
+   const rel = e.source.filePath?.replace(/^sources\/docs\/[^/]+\//, "");
+   return rel?.replace(/\.md$/, "").split("/");
+}
+
+/** `entries` must already be in the global order (newest first). Within a folder, pages and sub-folders follow their file names, so a numeric prefix (`00-plan`) sets the order; writings stay newest first. */
 export function buildTree(entries: Entry[]): Folder[] {
    const order = new Map(entries.map((e, i) => [e, i]));
    const pathOf = (e: Entry) => e.url.slice(1, -1);
    const ids = entries.map(pathOf);
    const folders = new Map<string, Folder>();
-   const folder = (path: string, label?: string) => {
+   const folder = (path: string, label?: string, key?: string) => {
       if (!folders.has(path)) {
          folders.set(path, {
             path,
             label: label ?? human(path.split("/").pop()!),
+            key,
             children: [],
             entries: [],
          });
@@ -74,30 +88,35 @@ export function buildTree(entries: Entry[]): Folder[] {
       const parts = own ? rest : rest.slice(0, -1);
       let cur = folders.get(top)!;
       let path = top;
-      for (const seg of parts.filter(Boolean)) {
+      const disk = diskSegments(entry);
+      for (const [i, seg] of parts.filter(Boolean).entries()) {
          path += "/" + seg;
-         const f = folder(path);
+         const f = folder(path, undefined, disk?.[i]);
          if (!cur.children.includes(f)) cur.children.push(f);
          cur = f;
       }
       cur.entries.push({ entry, own });
    }
 
+   const nameOf = (l: Leaf) => l.key ?? diskSegments(l.entry)?.at(-1);
    const byOrder = (a: Leaf, b: Leaf) =>
       Number(!a.own) - Number(!b.own) ||
+      (nameOf(a) && nameOf(b) ? byName.compare(nameOf(a)!, nameOf(b)!) : 0) ||
       order.get(a.entry)! - order.get(b.entry)!;
 
    function finish(f: Folder) {
       f.children.forEach(finish);
       f.children.sort((a, b) =>
-         a.label.toLowerCase().localeCompare(b.label.toLowerCase()),
+         a.key && b.key
+            ? byName.compare(a.key, b.key)
+            : a.label.toLowerCase().localeCompare(b.label.toLowerCase()),
       );
       f.entries.sort(byOrder);
       // A sub-folder holding exactly one entry and nothing else is removed; its entry moves up.
       const keep: Folder[] = [];
       for (const c of f.children) {
          if (!c.children.length && c.entries.length === 1)
-            f.entries.push(c.entries[0]);
+            f.entries.push({ ...c.entries[0], key: c.key });
          else keep.push(c);
       }
       f.children = keep;
@@ -125,4 +144,22 @@ export function containsUrl(f: Folder, url: string | undefined): boolean {
       f.entries.some((l) => l.entry.url === url) ||
       f.children.some((c) => containsUrl(c, url))
    );
+}
+
+export type Row = { folder: Folder } | { leaf: Leaf };
+
+/** What a folder lists, in order: its own pages first, then sub-folders and one-page sub-folders by file name. */
+export function folderRows(f: Folder): Row[] {
+   const pages = f.entries.filter((l) => !l.key);
+   const rest: [string | undefined, Row][] = [
+      ...f.children.map((c): [string | undefined, Row] => [
+         c.key,
+         { folder: c },
+      ]),
+      ...f.entries
+         .filter((l) => l.key)
+         .map((l): [string | undefined, Row] => [l.key, { leaf: l }]),
+   ];
+   rest.sort(([a], [b]) => (a && b ? byName.compare(a, b) : 0));
+   return [...pages.map((leaf): Row => ({ leaf })), ...rest.map(([, r]) => r)];
 }
