@@ -1,6 +1,7 @@
 ---
 publish: true
 id: prd.features.factory
+title: Factory
 created: 2026-09-19
 kind: prd
 version: 1.0.0

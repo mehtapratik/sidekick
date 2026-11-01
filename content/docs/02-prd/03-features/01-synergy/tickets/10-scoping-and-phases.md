@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-10
-title: "Scope and phases"
+title: Scope and Phases
 created: 2026-10-25
 kind: plan
 type: grilling

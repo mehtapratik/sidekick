@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-01
-title: "What counts as a change"
+title: What Counts as a Change
 created: 2026-10-25
 kind: plan
 type: grilling

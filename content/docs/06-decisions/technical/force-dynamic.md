@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.force-dynamic
+title: Force Dynamic
 created: 2026-09-19
 kind: decision
 version: 1.0.0

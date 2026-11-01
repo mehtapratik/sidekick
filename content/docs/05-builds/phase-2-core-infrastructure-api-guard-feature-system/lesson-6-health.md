@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-6
-title: "Phase 2 lesson 6 walkthrough: /api/health and guard verification"
+title: "Phase 2 Lesson 6 Walkthrough: /api/health and Guard Verification"
 created: 2026-10-23
 updated: 2026-10-24
 kind: guidance

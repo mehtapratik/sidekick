@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.coding-standards
-title: Coding standards
+title: Coding Standards
 created: 2026-10-20
 updated: 2026-10-23
 kind: notes

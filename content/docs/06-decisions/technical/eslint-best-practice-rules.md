@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.eslint-best-practice-rules
+title: ESLint Best Practice Rules
 created: 2026-10-16
 updated: 2026-10-16
 kind: decision

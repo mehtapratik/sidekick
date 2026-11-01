@@ -1,5 +1,6 @@
 ---
 id: harness.model-selection.learning-mode
+title: Learning Mode
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

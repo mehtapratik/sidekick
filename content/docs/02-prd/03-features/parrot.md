@@ -1,6 +1,7 @@
 ---
 publish: true
 id: prd.features.parrot
+title: Parrot
 created: 2026-09-19
 kind: prd
 version: 1.0.0
@@ -10,7 +11,7 @@ tags:
    - feature
    - parrot
 applies_to:
-   - "[[04-plans/post-mvp-factory-extensions-bots-agents]]"
+   - "[[04-plans/backlogged-unplanned]]"
 ---
 
 1. Voice dictation with gesture support

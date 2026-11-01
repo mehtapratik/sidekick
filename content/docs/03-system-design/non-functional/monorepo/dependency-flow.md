@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.monorepo.dependency-flow
+title: Dependency Flow
 created: 2026-09-19
 updated: 2026-11-01
 kind: spec

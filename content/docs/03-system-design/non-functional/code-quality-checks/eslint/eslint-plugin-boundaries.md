@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.code-quality-checks.eslint.eslint-plugin-boundaries
+title: ESLint Plugin Boundaries
 created: 2026-09-19
 updated: 2026-11-01
 kind: spec

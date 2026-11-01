@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.anchors-in-content
+title: Anchors in Content
 created: 2026-10-30
 kind: decision
 updated: 2026-10-31

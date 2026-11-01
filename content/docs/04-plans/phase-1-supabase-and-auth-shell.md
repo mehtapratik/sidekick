@@ -1,6 +1,7 @@
 ---
 publish: true
 id: moc.plan.phase-1
+title: "Front Door: Original Plan"
 created: 2026-09-19
 kind: guidance
 version: 1.0.0
@@ -16,7 +17,7 @@ tags:
 status: completed
 ---
 
-# Phase 1 — Supabase and auth shell
+**Front Door: Original Plan** is the plan Phase 1 was written from, kept as it was before the work began. The finished record is [[phase-1-supabase-auth-shell-complete|Front Door]].
 
 > **Context:** Phase 0 delivered a working monorepo skeleton (pnpm, Turborepo, TypeScript strict mode, ESLint with boundary enforcement). All packages contain placeholder exports only. Phase 1 wires in real authentication, a database schema, and a minimal UI shell — the security and data foundation that every subsequent phase builds on top of.
 >

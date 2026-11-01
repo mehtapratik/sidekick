@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-10-observability-hardening
+title: Watchtower
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -18,6 +19,8 @@ status: planned
 depends_on:
    - "[[04-plans/phase-9-api-keys-cli]]"
 ---
+
+**Watchtower** is Phase 10: knowing what is failing. Scope: structured request and auth-failure logging, error boundaries, consistent API errors, and an audit of routes and queries.
 
 > **Milestone:** The app is reliable enough for friends and family. You have visibility into what's failing. Error handling is consistent.
 > **Learning payoff:** Structured logging, error boundaries, rate limiting, the operational side of running a web service.

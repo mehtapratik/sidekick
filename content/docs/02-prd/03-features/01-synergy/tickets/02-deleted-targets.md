@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-02
-title: "What happens when a target is deleted"
+title: What Happens When a Target Is Deleted
 created: 2026-10-25
 kind: plan
 type: grilling

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-0.checkpoint-a
+title: Checkpoint A
 created: 2026-09-19
 kind: plan
 version: 1.0.0

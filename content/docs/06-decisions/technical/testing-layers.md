@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.testing-layers
+title: Testing Layers
 created: 2026-10-30
 kind: decision
 version: 1.0.0

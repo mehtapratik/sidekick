@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.security.profiles-schema
+title: Profiles Schema
 created: 2026-09-19
 updated: 2026-10-14
 kind: spec

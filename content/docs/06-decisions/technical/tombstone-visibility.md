@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.tombstone-visibility
+title: Tombstone Visibility
 created: 2026-10-31
 kind: decision
 version: 1.0.0

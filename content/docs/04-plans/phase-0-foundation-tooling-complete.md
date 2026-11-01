@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-0-foundation-tooling-complete
+title: Groundwork
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -16,6 +17,8 @@ tags:
    - pnpm
 status: completed
 ---
+
+**Groundwork** is Phase 0: the monorepo skeleton every later phase lives inside. Scope: pnpm workspaces, Turborepo, strict TypeScript, ESLint boundaries and the empty packages. No product code, no database.
 
 > **Milestone:** A working monorepo that builds, lints, and runs locally. The skeleton that every future phase lives inside.
 > **Learning payoff:** Turborepo, pnpm workspaces, TypeScript strict mode, project conventions.

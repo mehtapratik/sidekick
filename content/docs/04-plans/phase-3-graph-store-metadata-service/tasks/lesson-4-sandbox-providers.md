@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-4-sandbox-providers
-title: "Phase 3 lesson 4: sandbox providers and the first routes"
+title: "Phase 3 Lesson 4: Sandbox Providers and the First Routes"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

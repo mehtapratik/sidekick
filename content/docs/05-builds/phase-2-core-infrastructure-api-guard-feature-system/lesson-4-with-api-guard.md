@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-4
-title: "Phase 2 lesson 4 walkthrough: withApiGuard"
+title: "Phase 2 Lesson 4 Walkthrough: withApiGuard"
 created: 2026-10-23
 updated: 2026-10-24
 kind: guidance

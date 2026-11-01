@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.global-tagging-and-linking.design-constraints
+title: Design Constraints
 created: 2026-09-19
 kind: spec
 updated: 2026-10-30

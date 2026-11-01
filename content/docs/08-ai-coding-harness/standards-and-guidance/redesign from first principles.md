@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.redesign-from-first-principles
+title: Redesign From First Principles
 created: 2026-09-23
 ---
 

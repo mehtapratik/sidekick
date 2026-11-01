@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-1-1-db-level-rls-soft-delete-enforcement-complete
+title: "Front Door: Row-Level Security"
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -16,6 +17,8 @@ tags:
    - soft-delete
 status: completed
 ---
+
+**Front Door: Row-Level Security** (Phase 1.1) makes the database enforce who sees what. Scope: the non-superuser `app_runtime` role, RLS policies, and soft-delete and hard-delete triggers, so isolation holds whatever the application code does. It finishes [[phase-1-supabase-auth-shell-complete|Front Door]].
 
 > **Milestone:** Drizzle connects as a non-superuser role (`app_runtime`). RLS is enforced at the database level — not by convention. Soft-delete filtering, user-data isolation, and hard-delete prevention are guaranteed by the database regardless of what application code does.
 > **Learning payoff:** PostgreSQL roles, RLS enforcement vs. convention, trigger functions, migration journal mechanics, connection pooling and session variable scoping.

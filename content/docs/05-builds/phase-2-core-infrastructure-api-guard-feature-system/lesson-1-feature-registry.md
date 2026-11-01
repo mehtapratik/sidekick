@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-1
-title: "Phase 2 lesson 1 walkthrough: feature registry"
+title: "Phase 2 Lesson 1 Walkthrough: Feature Registry"
 created: 2026-10-18
 updated: 2026-10-24
 kind: guidance

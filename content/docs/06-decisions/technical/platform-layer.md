@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.platform-layer
+title: Platform Layer
 created: 2026-10-30
 kind: decision
 updated: 2026-11-01

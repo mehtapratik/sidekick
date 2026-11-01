@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-9-api-keys-cli
+title: Terminal
 created: 2026-09-19
 updated: 2026-10-24
 kind: plan
@@ -19,6 +20,8 @@ status: planned
 depends_on:
    - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
+
+**Terminal** is Phase 9: using Sidekick from the command line. Scope: API keys managed from the UI, Bearer authentication in `resolveApiCaller`, and a working CLI.
 
 > **Milestone:** You can use your own app from the terminal. API keys are manageable from the UI. The CLI is a real working tool.
 > **Learning payoff:** CLI tooling (commander.js or similar), API key security patterns, Bearer auth flows, streaming in a terminal context.

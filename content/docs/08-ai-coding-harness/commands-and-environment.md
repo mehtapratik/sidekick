@@ -1,6 +1,7 @@
 ---
 publish: true
 id: harness.commands-and-environment
+title: Commands and Environment
 created: 2026-09-19
 updated: 2026-10-24
 kind: guidance

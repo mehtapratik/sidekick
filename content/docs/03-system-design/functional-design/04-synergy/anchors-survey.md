@@ -1,7 +1,7 @@
 ---
 publish: false
 id: system-design.functional-design.synergy.anchors-survey
-title: "Survey: anchors that survive edits"
+title: "Survey: Anchors That Survive Edits"
 created: 2026-10-30
 updated: 2026-10-31
 kind: research

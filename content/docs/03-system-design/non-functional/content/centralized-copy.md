@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.content.centralized-copy
+title: Centralized Copy
 created: 2026-09-19
 kind: spec
 version: 1.0.0

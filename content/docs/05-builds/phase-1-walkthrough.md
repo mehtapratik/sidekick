@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-1
-title: Phase 1 walkthrough
+title: Phase 1 Walkthrough
 created: 2026-05-29
 kind: guidance
 version: 1.0.0

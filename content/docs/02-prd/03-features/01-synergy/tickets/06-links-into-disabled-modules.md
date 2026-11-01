@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-06
-title: "Links into a module you can't use"
+title: "Links Into a Module You Can't Use"
 created: 2026-10-25
 kind: plan
 type: grilling

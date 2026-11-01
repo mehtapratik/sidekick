@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-4-taxila-v1-knowledge-management
+title: Taxila
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -18,6 +19,8 @@ status: planned
 depends_on:
    - "[[04-plans/phase-3-graph-store-metadata-service]]"
 ---
+
+**Taxila** is Phase 4: the first product module, a knowledge base of atomic notes and sources. Scope: notes and knowledge sources you can create, enrich with metadata, link and browse through the command palette. Every later module follows its pattern.
 
 > **Milestone:** The first product module, end-to-end: atomic notes and knowledge sources you can create, enrich with metadata, link, and browse — reached through the command-palette shell. Every future module follows this pattern.
 > **Learning payoff:** The complete feature loop: PRD → schema → migration → API → repository → UI. Polymorphic content design. Command-palette UX.

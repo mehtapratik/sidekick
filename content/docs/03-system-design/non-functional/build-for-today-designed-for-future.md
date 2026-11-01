@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.build-for-today-designed-for-future
+title: Build for Today, Designed for Future
 created: 2026-09-19
 kind: spec
 version: 1.0.0

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.code-quality-checks.prettier-at-repo-level
+title: Prettier at Repo Level
 created: 2026-09-19
 updated: 2026-10-16
 kind: spec

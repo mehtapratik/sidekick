@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-05
-title: "Where the resolver contract lives"
+title: Where the Resolver Contract Lives
 created: 2026-10-25
 kind: plan
 type: research

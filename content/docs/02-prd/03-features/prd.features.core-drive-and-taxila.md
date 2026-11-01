@@ -1,6 +1,7 @@
 ---
 publish: true
 id: prd.features.core-drive-and-taxila
+title: Core Drive and Taxila
 created: 2026-09-19
 kind: prd
 version: 1.0.0

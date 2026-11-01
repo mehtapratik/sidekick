@@ -1,6 +1,7 @@
 ---
 publish: false
 id: glossary.mention
+title: Mention
 created: 2026-10-30
 updated: 2026-10-30
 kind: glossary

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.monorepo.env-vars-in-turbo-json
+title: Env Vars in Turbo JSON
 created: 2026-09-19
 kind: spec
 version: 1.0.0

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-12
-title: "Cycles between links"
+title: Cycles Between Links
 created: 2026-10-27
 kind: plan
 type: grilling

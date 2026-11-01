@@ -1,6 +1,7 @@
 ---
 publish: true
 id: harness.notes
+title: Notes
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

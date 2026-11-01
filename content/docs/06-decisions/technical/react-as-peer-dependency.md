@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.react-as-peer-dependency
+title: React as Peer Dependency
 created: 2026-10-31
 kind: decision
 version: 1.0.0

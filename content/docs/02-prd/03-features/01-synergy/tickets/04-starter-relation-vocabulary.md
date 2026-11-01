@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-04
-title: "The starter relation vocabulary"
+title: The Starter Relation Vocabulary
 created: 2026-10-25
 kind: plan
 type: grilling

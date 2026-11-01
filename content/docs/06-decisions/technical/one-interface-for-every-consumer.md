@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.one-interface-for-every-consumer
+title: One Interface for Every Consumer
 created: 2026-10-27
 kind: decision
 version: 1.0.0

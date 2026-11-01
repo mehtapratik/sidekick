@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-07
-title: "Search across modules"
+title: Search Across Modules
 created: 2026-10-25
 kind: plan
 type: research

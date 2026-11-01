@@ -1,6 +1,6 @@
 ---
 publish: true
-title: Why Prettier at repo level?
+title: Why Prettier at Repo Level?
 id: decision.technical.why-prettier-at-repo-level
 created: 2026-09-19
 kind: decision

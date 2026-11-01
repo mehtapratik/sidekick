@@ -1,7 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.synergy.overview
-title: "Synergy: system design"
+title: "Synergy: System Design"
 created: 2026-10-30
 updated: 2026-11-01
 kind: spec

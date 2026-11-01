@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.global-tagging-and-linking.a-graph-pattern-not-a-graph-database
+title: A Graph Pattern, Not a Graph Database
 created: 2026-09-19
 kind: spec
 version: 1.0.0

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-9-save-mentions
-title: "Phase 3 lesson 9: save call, mentions"
+title: "Phase 3 Lesson 9: Save Call, Mentions"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

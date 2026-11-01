@@ -1,6 +1,7 @@
 ---
 publish: true
 id: prd.features.alter-ego
+title: Alter Ego
 created: 2026-09-19
 kind: prd
 version: 1.0.0

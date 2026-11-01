@@ -1,6 +1,7 @@
 ---
 publish: true
 id: glossary.algorithm-of-life
+title: Algorithm of Life
 created: 2026-09-19
 kind: glossary
 version: 1.0.0

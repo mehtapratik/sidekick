@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.ai.model-router-contract
+title: Model Router Contract
 created: 2026-09-19
 kind: spec
 version: 1.0.0

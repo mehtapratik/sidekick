@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.database.non-syncable-tables
+title: Non-Syncable Tables
 created: 2026-09-19
 kind: spec
 version: 1.0.0

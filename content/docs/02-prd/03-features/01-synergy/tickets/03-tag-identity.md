@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-03
-title: "What makes two tags the same"
+title: What Makes Two Tags the Same
 created: 2026-10-25
 kind: plan
 type: grilling

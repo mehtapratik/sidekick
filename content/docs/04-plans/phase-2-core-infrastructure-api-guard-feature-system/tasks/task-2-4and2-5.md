@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-4and2-5
-title: "Lesson 5 (tasks 2.4, 2.5): request and auth-failure logging"
+title: "Lesson 5 (tasks 2.4, 2.5): Request and Auth-Failure Logging"
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan

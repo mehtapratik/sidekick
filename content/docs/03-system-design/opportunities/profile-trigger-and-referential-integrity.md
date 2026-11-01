@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.profile-trigger-and-referential-integrity
+title: Profile Trigger and Referential Integrity
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

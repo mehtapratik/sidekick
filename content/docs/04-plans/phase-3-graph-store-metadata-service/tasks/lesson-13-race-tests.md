@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-13-race-tests
-title: "Phase 3 lesson 13: race tests"
+title: "Phase 3 Lesson 13: Race Tests"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

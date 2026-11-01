@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-12-billing-saas-readiness-optional-path
+title: Storefront
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -12,6 +13,8 @@ tags:
    - api
    - offline
 ---
+
+**Storefront** is Phase 12 (optional): charging for access. Scope: Stripe checkout and webhooks, subscriptions, and entitlements tied to a subscription tier.
 
 > [!note]
 > Per the PRD, Sidekick's motivation is "purely personal and utilitarian" — monetization is not a product goal. This phase exists because of the "built for one, designed for many" principle (architecture §2.4): the entitlement plumbing stays product-ready, but this phase runs only if Sidekick pursues the product path.

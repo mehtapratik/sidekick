@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.package-boundary-enforcement
+title: Package Boundary Enforcement
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

@@ -1,6 +1,7 @@
 ---
 publish: false
 id: notes.pre-2-foundation-hardening
+title: "Front Door: Hardening Notes"
 created: 2026-10-16
 updated: 2026-10-17
 kind: notes

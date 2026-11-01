@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.vitest
+title: Vitest
 created: 2026-10-14
 updated: 2026-10-14
 kind: decision

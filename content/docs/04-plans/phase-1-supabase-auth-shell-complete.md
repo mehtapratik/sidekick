@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-1-supabase-auth-shell-complete
+title: Front Door
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -16,6 +17,8 @@ tags:
    - api
 status: completed
 ---
+
+**Front Door** is Phase 1: the way into Sidekick. Scope: Supabase email/password sign-in, cookie sessions, protected routes, a `profiles` row per user, and the first Drizzle schema. Its two follow-ups, [[phase-1-1-db-level-rls-soft-delete-enforcement-complete|Row-Level Security]] (Phase 1.1) and [[pre-2-foundation-hardening-complete|Hardening]] (Pre-2), belong to it too.
 
 > **Milestone:** A real login screen that works. Protected routes. A profile in the database. The security skeleton everything else hangs on.
 > **Learning payoff:** Supabase auth, cookie sessions, Next.js middleware, server vs browser client separation.

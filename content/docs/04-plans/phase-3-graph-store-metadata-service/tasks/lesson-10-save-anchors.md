@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-10-save-anchors
-title: "Phase 3 lesson 10: save call, anchors"
+title: "Phase 3 Lesson 10: Save Call, Anchors"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

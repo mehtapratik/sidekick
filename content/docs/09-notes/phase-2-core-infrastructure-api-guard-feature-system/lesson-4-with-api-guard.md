@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-4
-title: "Phase 2 lesson 4 notes: withApiGuard"
+title: "Phase 2 Lesson 4 Notes: withApiGuard"
 created: 2026-10-23
 updated: 2026-10-23
 kind: notes

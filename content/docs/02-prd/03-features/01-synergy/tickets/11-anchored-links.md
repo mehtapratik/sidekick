@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-11
-title: "Links anchored to part of an entity"
+title: Links Anchored to Part of an Entity
 created: 2026-10-25
 kind: plan
 type: grilling

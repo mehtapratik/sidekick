@@ -1,6 +1,7 @@
 ---
 publish: false
 id: glossary.datum
+title: Datum
 created: 2026-10-25
 kind: glossary
 version: 0.1.0

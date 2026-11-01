@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.api-route-fail-open
+title: API Route Fail Open
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

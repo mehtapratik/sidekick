@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-7
-title: "Phase 2 lesson 7 walkthrough: the ops package and entitlements grant"
+title: "Phase 2 Lesson 7 Walkthrough: The Ops Package and Entitlements Grant"
 created: 2026-10-24
 updated: 2026-10-24
 kind: guidance

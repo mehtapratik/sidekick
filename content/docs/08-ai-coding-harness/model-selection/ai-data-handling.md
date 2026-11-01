@@ -1,5 +1,6 @@
 ---
 id: harness.model-selection.ai-data-handling
+title: AI Data Handling
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

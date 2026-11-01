@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-2-per-package-migrations
-title: "Phase 3 lesson 2: per-package migrations"
+title: "Phase 3 Lesson 2: Per-Package Migrations"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

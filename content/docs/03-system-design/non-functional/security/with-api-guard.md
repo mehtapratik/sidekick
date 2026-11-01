@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.security.with-api-guard
+title: With API Guard
 created: 2026-09-19
 updated: 2026-10-24
 kind: spec

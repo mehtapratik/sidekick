@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.enforce-not-advise
+title: Enforce, Not Advise
 created: 2026-09-23
 ---
 

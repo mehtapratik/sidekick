@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.observability.error-handling
+title: Error Handling
 created: 2026-09-19
 updated: 2026-10-23
 kind: spec

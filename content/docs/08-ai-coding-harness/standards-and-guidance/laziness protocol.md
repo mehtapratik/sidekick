@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.laziness-protocol
+title: Laziness Protocol
 created: 2026-09-23
 ---
 

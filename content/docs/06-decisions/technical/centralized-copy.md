@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.centralized-copy
+title: Centralized Copy
 created: 2026-09-19
 kind: decision
 version: 1.0.0

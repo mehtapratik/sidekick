@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-6-links
-title: "Phase 3 lesson 6: links, relation types and cycles"
+title: "Phase 3 Lesson 6: Links, Relation Types and Cycles"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

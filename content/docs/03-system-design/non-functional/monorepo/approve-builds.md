@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.monorepo.approve-builds
+title: Approve Builds
 created: 2026-09-19
 kind: spec
 version: 1.0.0

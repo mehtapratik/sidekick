@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-08
-title: "Rich Live Link draft"
+title: Rich Live Link Draft
 created: 2026-10-25
 kind: plan
 type: prototype

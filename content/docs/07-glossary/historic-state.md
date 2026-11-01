@@ -1,6 +1,7 @@
 ---
 publish: true
 id: glossary.historic-state
+title: Historic State
 created: 2026-09-19
 kind: glossary
 version: 1.0.0

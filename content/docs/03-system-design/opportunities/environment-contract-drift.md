@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.environment-contract-drift
+title: Environment Contract Drift
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

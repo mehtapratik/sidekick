@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.feature-system.registry
+title: Registry
 created: 2026-09-19
 updated: 2026-10-18
 kind: spec

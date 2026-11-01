@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.db-access-chokepoint
+title: DB Access Chokepoint
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

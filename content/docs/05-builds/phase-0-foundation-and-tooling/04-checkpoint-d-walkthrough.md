@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-0.checkpoint-d
-title: Checkpoint D walkthrough
+title: Checkpoint D Walkthrough
 created: 2026-05-29
 kind: guidance
 version: 1.0.0

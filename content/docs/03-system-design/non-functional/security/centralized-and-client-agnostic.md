@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.security.centralized-and-client-agnostic
+title: Centralized and Client-Agnostic
 created: 2026-09-19
 kind: spec
 version: 1.0.0

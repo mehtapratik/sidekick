@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.driving-forces-and-key-features
+title: Driving Forces and Key Features
 created: 2026-09-19
 kind: spec
 version: 1.0.0

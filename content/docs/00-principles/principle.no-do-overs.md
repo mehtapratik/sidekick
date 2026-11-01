@@ -1,6 +1,6 @@
 ---
 id: principle.no-do-overs
-title: No Do-overs
+title: No Do-Overs
 created: 2026-09-19
 updated: 2026-10-08
 kind: guidance

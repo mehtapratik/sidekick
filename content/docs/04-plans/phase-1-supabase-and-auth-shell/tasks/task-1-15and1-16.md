@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-1.task-1-15and1-16
+title: Task 1.15 and 1.16
 created: 2026-09-19
 kind: plan
 version: 1.0.0

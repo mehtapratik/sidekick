@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.stay-on-eslint-revisit-oxlint
+title: Stay on ESLint, Revisit Oxlint
 created: 2026-10-16
 updated: 2026-10-16
 kind: decision

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: harness.best-practices
+title: Best Practices
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

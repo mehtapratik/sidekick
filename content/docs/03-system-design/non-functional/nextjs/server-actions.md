@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.nextjs.server-actions
+title: Server Actions
 created: 2026-09-19
 updated: 2026-10-16
 kind: spec

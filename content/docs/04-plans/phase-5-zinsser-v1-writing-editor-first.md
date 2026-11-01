@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-5-zinsser-v1-writing-editor-first
+title: Zinsser
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -18,6 +19,9 @@ status: planned
 depends_on:
    - "[[04-plans/phase-4-taxila-v1-knowledge-management]]"
 ---
+
+**Zinsser** is Phase 5: the writing module. Scope: the Tiptap editor shared with Taxila, JSON storage and Markdown export. The AI writing coach waits for the AI layer in [[phase-6-core-drive-ai-layer-alter-ego|Alter Ego]].
+
 > **Milestone:** A proper writing experience with Tiptap. Taxila and Zinsser share the editor component. This is where the app starts feeling real.
 > **Learning payoff:** Tiptap configuration, rich text as JSON storage, markdown export, editor extensions.
 > **Prerequisite:** Write the Zinsser PRD in `docs/02-prd/` before starting.

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.monorepo.bundle-everything
+title: Bundle Everything
 created: 2026-09-19
 kind: spec
 aliases:

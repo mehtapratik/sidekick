@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.map
-title: "Synergy: wayfinder map"
+title: "Synergy: Wayfinder Map"
 created: 2026-10-25
 kind: plan
 version: 0.1.0

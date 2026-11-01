@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-1-layer-folders
-title: "Phase 3 lesson 1: layer folders and lint"
+title: "Phase 3 Lesson 1: Layer Folders and Lint"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

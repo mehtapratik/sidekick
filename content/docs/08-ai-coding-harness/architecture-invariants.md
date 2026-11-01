@@ -1,6 +1,7 @@
 ---
 publish: true
 id: harness.architecture-invariants
+title: Architecture Invariants
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

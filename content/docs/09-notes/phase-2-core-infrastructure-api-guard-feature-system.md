@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2
-title: "Phase 2 notes: what the phase taught"
+title: "Phase 2 Notes: What the Phase Taught"
 created: 2026-10-24
 updated: 2026-10-24
 kind: notes

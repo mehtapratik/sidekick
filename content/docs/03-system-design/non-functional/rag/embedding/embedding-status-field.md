@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.rag.embedding.embedding-status-field
+title: Embedding Status Field
 created: 2026-09-19
 kind: spec
 version: 1.0.0

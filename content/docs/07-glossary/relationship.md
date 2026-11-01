@@ -1,6 +1,7 @@
 ---
 publish: false
 id: glossary.relationship
+title: Relationship
 created: 2026-10-25
 updated: 2026-10-30
 kind: glossary

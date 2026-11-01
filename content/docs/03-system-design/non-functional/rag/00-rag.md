@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.rag.rag
+title: RAG
 created: 2026-09-19
 kind: spec
 version: 1.0.0

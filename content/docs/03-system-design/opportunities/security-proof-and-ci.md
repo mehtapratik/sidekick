@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.security-proof-and-ci
+title: Security Proof and CI
 created: 2026-09-19
 kind: opportunity
 version: 1.0.0

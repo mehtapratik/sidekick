@@ -1,7 +1,7 @@
 ---
 publish: false
 id: prd.synergy.research-07
-title: "Research: search across modules"
+title: "Research: Search Across Modules"
 created: 2026-10-25
 kind: research
 tags:

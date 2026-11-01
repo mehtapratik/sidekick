@@ -1,7 +1,7 @@
 ---
 publish: false
 id: prd.synergy.research-05
-title: "Research: where the resolver contract lives"
+title: "Research: Where the Resolver Contract Lives"
 created: 2026-10-25
 kind: research
 tags:

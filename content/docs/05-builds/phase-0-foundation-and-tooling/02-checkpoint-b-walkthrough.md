@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-0.checkpoint-b
-title: Checkpoint B walkthrough
+title: Checkpoint B Walkthrough
 created: 2026-05-29
 updated: 2026-10-23
 kind: guidance

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.backlogged-unplanned
+title: Backlogged / Unplanned
 created: 2026-09-19
 updated: 2026-10-24
 kind: plan
@@ -62,7 +63,7 @@ These items are known, intentional gaps — deferred, not forgotten.
 
 **What:** Voice dictation with gesture support for punctuation and formatting — accent-friendly, replacing $100+/yr subscription services.
 
-**Why deferred:** Explicitly out of MVP scope per the PRD. Listed in the Post-MVP phase (PM.9).
+**Why deferred:** Explicitly out of MVP scope per the PRD. Tracked as PM.9 in [[#B9 — Post-MVP]].
 
 ### B5 — Feature rollout gating
 
@@ -99,3 +100,23 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Found in Phase 2 lesson 6 (2026-10-23). It's the known latency lever for signed-in requests, but a revoked session would keep working until its access token expires. Latency measured from a laptop isn't a reason to take that trade; the proxy's own `getUser()` call on `/api` is part of the same question.
 
 **When to implement:** When production latency, measured next to the database, shows the Auth round trip matters.
+
+### B9 — Post-MVP: Factory extensions, bots and agents
+
+**What:** Factory grows beyond push-button workflows: triggered and recurring automations, inbox management and IoT integrations. External agents interact with your data through the public API. Parrot (B4) is the last item.
+
+**Why deferred:** Exploratory and open-ended; it follows the MVP ([[phase-7-war-room-factory-v1|War Room]] ships only push-button Factory workflows).
+
+**When to implement:** When you are ready; no phase depends on it. Learning payoff: agent interoperability, webhook-driven automation, workflow design patterns.
+
+| #    | Task                                                                                             | Complexity | Learning |
+| ---- | ------------------------------------------------------------------------------------------------ | ---------- | -------- |
+| PM.1 | Extend the Factory `workflows` schema with trigger types (schedule, event) beyond manual buttons | 🔴         | 🗄️       |
+| PM.2 | Implement a simple recurring workflow — e.g., weekly digest of knowledge sources emailed to self | 🟡         | 🧩       |
+| PM.3 | Add webhook ingest endpoint — external services can push events to the app                       | 🔴         | 🔐 🧩    |
+| PM.4 | Document the public API surface for agents — OpenAPI spec or equivalent                          | 🟡         | 🖥️       |
+| PM.5 | Evaluate Inngest for durable workflows if complexity warrants it                                 | 🟡         |          |
+| PM.6 | Add agent-friendly scoped API keys for automation use cases                                      | 🟡         | 🔐       |
+| PM.7 | Inbox management automations (email/message triage) per the Factory PRD                          | 🔴         | 🧩       |
+| PM.8 | IoT integrations (blinds, garage door) per the Factory PRD                                       | 🔴         | 🧩       |
+| PM.9 | **Parrot** — voice dictation with gesture support for punctuation/formatting (own PRD first)     | 🔴         | 📱       |

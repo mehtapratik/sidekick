@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-2-core-infrastructure-api-guard-feature-system-complete
+title: Gatekeeper
 created: 2026-09-19
 updated: 2026-10-24
 kind: plan
@@ -19,6 +20,8 @@ depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
    - "[[04-plans/pre-2-foundation-hardening-complete]]"
 ---
+
+**Gatekeeper** is Phase 2: the single checkpoint every request passes. Scope: `resolveApiCaller` (who is asking), `withApiGuard` (scope, feature and RLS transaction), the feature registry, per-user entitlements, structured logging, `/api/health` and the `ops` scripts.
 
 > **Milestone:** The architectural backbone is live. `withApiGuard` is implemented and tested. The feature registry exists. You could add any feature safely from here.
 >

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.pre-2
-title: Pre-2 walkthrough
+title: "Front Door: Hardening Walkthrough"
 created: 2026-10-16
 updated: 2026-10-24
 kind: guidance

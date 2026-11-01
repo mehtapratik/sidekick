@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.mentions-and-link-lifetime
+title: Mentions and Link Lifetime
 created: 2026-10-30
 kind: decision
 updated: 2026-10-31

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-10
-title: "Lesson 7 (task 2.10): dev entitlement seed script"
+title: "Lesson 7 (task 2.10): Dev Entitlement Seed Script"
 created: 2026-10-18
 updated: 2026-10-24
 kind: plan

@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.context-protection-economy-principles
+title: Context Protection Economy Principles
 created: 2026-09-23
 ---
 

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-8-lists-and-supersede
-title: "Phase 3 lesson 8: lists and supersede"
+title: "Phase 3 Lesson 8: Lists and Supersede"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.database.app-runtime-for-drizzle
+title: App Runtime for Drizzle
 created: 2026-09-19
 kind: spec
 version: 1.1.0

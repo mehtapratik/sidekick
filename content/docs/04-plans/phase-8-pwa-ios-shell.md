@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-8-pwa-ios-shell
+title: Pocket
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -18,6 +19,8 @@ status: planned
 depends_on:
    - "[[04-plans/phase-7-war-room-factory-v1]]"
 ---
+
+**Pocket** is Phase 8: Sidekick on your phone. Scope: an installable PWA with offline caching and a side-loaded Capacitor app for iPhone.
 
 > **Milestone:** The app is installable on your iPhone. It works as a PWA in the browser and as a side-loaded Capacitor app.
 > **Learning payoff:** Service workers, PWA manifest, Capacitor, mobile UX constraints.

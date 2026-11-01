@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.why-turborepo
+title: Why Turborepo
 created: 2026-09-19
 kind: decision
 version: 1.0.0

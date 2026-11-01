@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.user-profile-creation-by-db-trigger
+title: User Profile Creation by DB Trigger
 created: 2026-09-19
 kind: decision
 version: 1.0.0

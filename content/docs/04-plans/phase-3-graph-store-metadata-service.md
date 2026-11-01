@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-3-graph-store-metadata-service
+title: Synergy
 created: 2026-09-19
 updated: 2026-11-01
 kind: plan
@@ -19,6 +20,8 @@ depends_on:
    - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
    - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
+
+**Synergy** is Phase 3: how any entity in any module links to any other. Scope: the entity index and version log, links and relation types, staleness, lists, mentions and anchors, delete and restore, and tags, built in two parts (3a the store and its API, 3b resolving and rendering links).
 
 > **Milestone:** Synergy is live in `packages/platform/synergy`. Any entity can be linked to any other entity and tagged, links stay true when their targets change, and every module renders a link the same way. It is proven across a module boundary by two mock providers, before Taxila becomes the first real tenant.
 >

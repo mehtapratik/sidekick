@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.code-quality-checks.eslint.tsup
+title: tsup
 created: 2026-09-19
 kind: spec
 version: 1.0.0

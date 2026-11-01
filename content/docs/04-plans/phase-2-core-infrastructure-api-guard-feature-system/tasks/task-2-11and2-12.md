@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-11and2-12
-title: "Lesson 6 (tasks 2.11, 2.12): /api/health and guard verification"
+title: "Lesson 6 (tasks 2.11, 2.12): /api/health and Guard Verification"
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan

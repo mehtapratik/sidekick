@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.feature-system.independent-deployments
+title: Independent Deployments
 created: 2026-09-19
 kind: spec
 version: 1.0.0

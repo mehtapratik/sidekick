@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-7-war-room-factory-v1
+title: War Room
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -18,6 +19,9 @@ status: planned
 depends_on:
    - "[[04-plans/phase-6-core-drive-ai-layer-alter-ego]]"
 ---
+
+**War Room** is Phase 7: planning and push-button execution. Scope: War Room's tasks and plans, and the first version of Factory, where one configured button creates a task without typing. The rest of Factory comes after the MVP.
+
 > **Milestone:** Planning and push-button execution. Tasks exist; one click on a configured button (e.g., "School+Car") creates tomorrow's pickup task without typing a word.
 > **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through the graph service.
 > **Prerequisites:** War Room and Factory PRDs in `docs/02-prd/`.

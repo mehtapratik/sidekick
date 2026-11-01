@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.readability
+title: Readability
 created: 2026-09-23
 ---
 

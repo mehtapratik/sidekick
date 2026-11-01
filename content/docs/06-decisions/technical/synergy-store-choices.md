@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.synergy-store-choices
+title: Synergy Store Choices
 created: 2026-10-30
 kind: decision
 updated: 2026-10-31

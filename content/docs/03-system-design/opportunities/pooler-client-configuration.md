@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.pooler-client-configuration
+title: Pooler Client Configuration
 created: 2026-09-19
 updated: 2026-10-15
 kind: opportunity

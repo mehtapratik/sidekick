@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-3
-title: "Phase 2 lesson 3 walkthrough: entitlements"
+title: "Phase 2 Lesson 3 Walkthrough: Entitlements"
 created: 2026-10-23
 updated: 2026-10-24
 kind: guidance

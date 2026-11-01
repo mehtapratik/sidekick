@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.core-drive.may-become-part-of-taxila
+title: May Become Part of Taxila
 created: 2026-09-19
 kind: spec
 version: 1.0.0

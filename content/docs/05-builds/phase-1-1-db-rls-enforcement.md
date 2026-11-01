@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-1-1
+title: "Front Door: Row-Level Security Walkthrough"
 created: 2026-09-19
 updated: 2026-10-23
 kind: guidance

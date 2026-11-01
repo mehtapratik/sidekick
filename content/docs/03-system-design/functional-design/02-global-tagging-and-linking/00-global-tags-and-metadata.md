@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.global-tagging-and-linking.global-tags-and-metadata
+title: Global Tags and Metadata
 created: 2026-09-19
 kind: spec
 version: 1.0.0

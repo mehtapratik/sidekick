@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2
-title: Phase 2 walkthrough
+title: Phase 2 Walkthrough
 created: 2026-10-24
 updated: 2026-10-24
 kind: guidance
@@ -110,4 +110,4 @@ Fixes found during Phase 2 that belong to an earlier phase went into that phase'
 
 Within Phase 2, three lesson walkthroughs carry post notes of their own: lesson 3 (the follow-ups above), lesson 4 (changed in lesson 5) and lesson 6 (the startup check). Lesson 2 was edited in place for `undefined`, with a note at the top.
 
-Next: [[04-plans/phase-3-graph-store-metadata-service|Phase 3]], the graph store and metadata service. What Phase 2 left for later is listed in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed plan]].
+Next: [[04-plans/phase-3-graph-store-metadata-service|Phase 3, Synergy]], the graph store and metadata service. What Phase 2 left for later is listed in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed plan]].

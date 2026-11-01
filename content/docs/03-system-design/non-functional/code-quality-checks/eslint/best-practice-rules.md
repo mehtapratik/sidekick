@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.code-quality-checks.eslint.best-practice-rules
+title: Best Practice Rules
 created: 2026-10-16
 updated: 2026-10-16
 kind: spec

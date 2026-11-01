@@ -1,6 +1,7 @@
 ---
 publish: true
 id: opportunity.portable-documentation-vault
+title: Portable Documentation Vault
 created: 2026-09-19
 updated: 2026-10-16
 kind: opportunity

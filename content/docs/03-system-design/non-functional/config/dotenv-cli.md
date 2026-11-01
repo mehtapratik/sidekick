@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.config.dotenv-cli
+title: dotenv CLI
 created: 2026-09-19
 kind: spec
 version: 1.0.0

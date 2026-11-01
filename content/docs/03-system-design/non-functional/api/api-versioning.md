@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.api.api-versioning
+title: API Versioning
 created: 2026-09-19
 kind: spec
 version: 1.0.0

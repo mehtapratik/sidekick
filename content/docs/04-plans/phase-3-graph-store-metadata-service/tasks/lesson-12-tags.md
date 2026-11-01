@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-12-tags
-title: "Phase 3 lesson 12: tags"
+title: "Phase 3 Lesson 12: Tags"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

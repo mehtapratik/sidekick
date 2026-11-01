@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-11-delete-and-restore
-title: "Phase 3 lesson 11: delete and restore"
+title: "Phase 3 Lesson 11: Delete and Restore"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

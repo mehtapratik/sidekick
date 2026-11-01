@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-3
-title: "Phase 2 lesson 3 notes: entitlements"
+title: "Phase 2 Lesson 3 Notes: Entitlements"
 created: 2026-10-23
 updated: 2026-10-23
 kind: notes

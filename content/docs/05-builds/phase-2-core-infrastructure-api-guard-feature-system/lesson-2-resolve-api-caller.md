@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2.lesson-2
-title: "Phase 2 lesson 2 walkthrough: resolveApiCaller"
+title: "Phase 2 Lesson 2 Walkthrough: resolveApiCaller"
 created: 2026-10-20
 updated: 2026-10-24
 kind: guidance

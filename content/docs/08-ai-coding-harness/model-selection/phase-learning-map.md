@@ -1,5 +1,6 @@
 ---
 id: harness.model-selection.phase-learning-map
+title: Phase Learning Map
 created: 2026-09-19
 kind: guidance
 version: 1.0.0

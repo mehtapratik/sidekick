@@ -1,6 +1,6 @@
 ---
 publish: true
-title: "Living implementation plan"
+title: Living Implementation Plan
 id: plan.living
 created: 2026-09-19
 updated: 2026-10-24
@@ -32,7 +32,7 @@ Product truth lives in `02-prd/` (the high-level PRD plus per-feature PRDs writt
 
 | PRD Module         | Phase(s)                                   | Notes                                                                        |
 | ------------------ | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| _(infrastructure)_ | 0, 1, 1.1, 2, 3                            | Product-agnostic: monorepo, auth, RLS, API guard, graph/metadata service     |
+| _(infrastructure)_ | 0, 1, 1.1, 2, 3                            | Product-agnostic: monorepo, auth, RLS, API guard, Synergy                    |
 | Taxila             | 4                                          | Absorbs "Notes" and "Bookmarks" (bookmark = knowledge source of type `link`) |
 | Zinsser            | 5 (editor), post-6 (AI coach)              | Editor first; coach depends on AI layer                                      |
 | Core Drive         | 6                                          | Separate feature for now; may fold into Taxila later (see architecture §5.2) |
@@ -43,8 +43,9 @@ Product truth lives in `02-prd/` (the high-level PRD plus per-feature PRDs writt
 
 **Changelog**
 
+- **2026-11-01** — Phases renamed by brand, shown as the doc title: 0 Groundwork, 1 Front Door (with 1.1 Row-Level Security and Pre-2 Hardening), 2 Gatekeeper, 3 Synergy, 4 Taxila, 5 Zinsser, 6 Alter Ego, 7 War Room, 8 Pocket, 9 Terminal, 10 Watchtower, 11 Open House, 12 Storefront. File names and phase numbers are unchanged.
 - **2026-08-24** — Core Drive redesigned as a system-wide **tiered context model** (kernel / applicability-loaded / situational state) with a centralized **Context Assembler** and first-class **Effort Level** in the AI request contract (architecture §5.2). Domain knowledge assigned to Taxila; state/values boundary between Core Drive and War Room/Factory made explicit. Phase 6A/6B/7A tasks updated.
-- **2026-07-27** — Realigned the entire plan to the bird's-eye-view essay (high-level PRD). Adopted module names; rejected Bookmarks/Recipes/Budget as standalone features; added graph store & metadata service, Core Drive, command-palette shell, and provider-agnostic AI router; moved dogfooding/billing to optional tail. Phases 0–2 unchanged.
+- **2026-07-27** — Realigned the entire plan to the bird's-eye-view essay (high-level PRD). Adopted module names; rejected Bookmarks/Recipes/Budget as standalone features; added the graph store and metadata service (now Synergy), Core Drive, command-palette shell, and provider-agnostic AI router; moved dogfooding/billing to optional tail. Phases 0–2 unchanged.
 
 ---
 
@@ -73,20 +74,79 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 
 ## Phase notes
 
-- [[phase-0-foundation-tooling-complete|Phase 0 — Foundation & Tooling ✅ COMPLETE]]
-- [[phase-1-supabase-auth-shell-complete|Phase 1 — Supabase & Auth Shell ✅ COMPLETE]]
-- [[phase-1-1-db-level-rls-soft-delete-enforcement-complete|Phase 1.1 — DB-Level RLS & Soft-Delete Enforcement ✅ COMPLETE]]
-- [[pre-2-foundation-hardening-complete|Pre-2 — Foundation Hardening ✅ COMPLETE]]
-- [[phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2 — Core Infrastructure (API Guard, Feature System) ✅ COMPLETE]]
-- [[phase-3-graph-store-metadata-service|Phase 3 — Graph Store & Metadata Service]]
-- [[phase-4-taxila-v1-knowledge-management|Phase 4 — Taxila v1 (Knowledge Management)]]
-- [[phase-5-zinsser-v1-writing-editor-first|Phase 5 — Zinsser v1 (Writing — Editor First)]]
-- [[phase-6-core-drive-ai-layer-alter-ego|Phase 6 — Core Drive + AI Layer + Alter Ego]]
-- [[phase-7-war-room-factory-v1|Phase 7 — War Room & Factory v1]]
-- [[phase-8-pwa-ios-shell|Phase 8 — PWA & iOS Shell]]
-- [[phase-9-api-keys-cli|Phase 9 — API Keys & CLI]]
-- [[phase-10-observability-hardening|Phase 10 — Observability & Hardening]]
-- [[phase-11-dogfooding-friends-family-access-optional|Phase 11 — Dogfooding (Friends & Family Access) — Optional]]
-- [[phase-12-billing-saas-readiness-optional-path|Phase 12 — Billing & SaaS Readiness (Optional Path)]]
-- [[post-mvp-factory-extensions-bots-agents|Post-MVP — Factory Extensions, Bots & Agents]]
+- [[phase-0-foundation-tooling-complete|Phase 0 — Groundwork ✅ COMPLETE]]
+- [[phase-1-supabase-auth-shell-complete|Phase 1 — Front Door ✅ COMPLETE]]
+- [[phase-1-1-db-level-rls-soft-delete-enforcement-complete|Phase 1.1 — Front Door]]
+- [[pre-2-foundation-hardening-complete|Pre-2 — Front Door]]
+- [[phase-2-core-infrastructure-api-guard-feature-system-complete|Phase 2 — Gatekeeper ✅ COMPLETE]]
+- [[phase-3-graph-store-metadata-service|Phase 3 — Synergy]]
+- [[phase-4-taxila-v1-knowledge-management|Phase 4 — Taxila]]
+- [[phase-5-zinsser-v1-writing-editor-first|Phase 5 — Zinsser]]
+- [[phase-6-core-drive-ai-layer-alter-ego|Phase 6 — Alter Ego]]
+- [[phase-7-war-room-factory-v1|Phase 7 — War Room]]
+- [[phase-8-pwa-ios-shell|Phase 8 — Pocket]]
+- [[phase-9-api-keys-cli|Phase 9 — Terminal]]
+- [[phase-10-observability-hardening|Phase 10 — Watchtower]]
+- [[phase-11-dogfooding-friends-family-access-optional|Phase 11 — Open House (optional)]]
+- [[phase-12-billing-saas-readiness-optional-path|Phase 12 — Storefront (optional)]]
 - [[backlogged-unplanned|Backlogged / Unplanned]]
+
+---
+
+## Recommended Learning Order
+
+If you're new to some of the tech in this stack, here's the minimum viable reading before each phase:
+
+| Before Phase | Read / Watch                                                                         |
+| ------------ | ------------------------------------------------------------------------------------ |
+| Phase 0      | Turborepo docs getting started; pnpm workspaces                                      |
+| Phase 1      | Supabase Auth docs; Next.js App Router docs (routing, middleware, server components) |
+| Phase 2      | Next.js Route Handlers; how middleware chains work                                   |
+| Phase 3      | Recursive CTEs in PostgreSQL; modeling graphs in relational databases                |
+| Phase 4      | Drizzle ORM quickstart; PostgreSQL RLS basics; command-palette UX patterns (cmdk)    |
+| Phase 5      | Tiptap getting started; `@mantine/tiptap` docs                                       |
+| Phase 6      | pgvector README; Vercel AI SDK docs (incl. provider registry); Anthropic API docs    |
+| Phase 8      | Serwist docs; Capacitor iOS quickstart                                               |
+| Phase 9      | Node.js CLI patterns (commander.js); API key security best practices                 |
+| Phase 12     | Stripe docs: Checkout, webhooks, customer portal                                     |
+
+---
+
+## Architectural Invariants to Review After Every Phase
+
+Before moving to the next phase, verify:
+
+- [ ] Every new API route uses `withApiGuard()`
+- [ ] No `packages/*` imports from `apps/*`
+- [ ] Every new user-owned table has RLS enabled with the canonical combined policy (user isolation + soft-delete in one USING clause)
+- [ ] Every new syncable table has `no_hard_delete_[table]` and `no_update_deleted_[table]` triggers applied
+- [ ] Every new table with user content uses `withRLS()` via the guard, not inline
+- [ ] All mutations go through the repository layer
+- [ ] Syncable tables include `createdAt`, `updatedAt`, `deletedAt`
+- [ ] Soft deletes only — no hard deletes on user data
+- [ ] All queries on syncable tables filter `where(isNull(table.deletedAt))`
+- [ ] Content tables in the embedding pipeline have `embeddingStatus`
+- [ ] `DATABASE_URL` connects as `app_runtime` (not superuser) — verify if changing connection config
+
+---
+
+## Rough Effort Estimates (Solo, AI-assisted, Learning pace)
+
+| Phase    | Estimated Sessions | Notes                                          |
+| -------- | ------------------ | ---------------------------------------------- |
+| Phase 0  | 2–3 sessions       | Mostly config, fast with AI help ✅            |
+| Phase 1  | 3–5 sessions       | Auth has depth; worth going slow ✅            |
+| Phase 2  | 2–4 sessions       | Conceptually dense; revisit often              |
+| Phase 3  | 3–5 sessions       | Graph modeling + first full vertical           |
+| Phase 4  | 5–7 sessions       | Highest learning payoff; includes the palette  |
+| Phase 5  | 2–4 sessions       | Tiptap is well-documented                      |
+| Phase 6  | 8–12 sessions      | Most technically complex; three sub-phases     |
+| Phase 7  | 3–5 sessions       | Two smaller features on established patterns   |
+| Phase 8  | 2–4 sessions       | Mostly config and testing                      |
+| Phase 9  | 3–5 sessions       | CLI is fun; API key crypto needs care          |
+| Phase 10 | 2–3 sessions       | Audit work; methodical                         |
+| Phase 11 | 2–3 sessions       | Optional; satisfying milestone                 |
+| Phase 12 | 4–6 sessions       | Optional; Stripe webhooks need careful testing |
+| Post-MVP | Open-ended         | Exploratory; do when ready                     |
+
+> Sessions are loosely defined as focused 2–3 hour working blocks. Estimates assume you're reviewing every line and asking questions — that's the point.

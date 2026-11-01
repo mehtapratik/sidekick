@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.non-functional.database.repository-client
+title: Repository Client
 created: 2026-09-19
 kind: spec
 version: 1.0.0

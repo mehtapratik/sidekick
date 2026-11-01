@@ -1,6 +1,7 @@
 ---
 publish: false
 id: harness.standards-and-guidance.pin-versions
+title: Pin Versions
 created: 2026-10-15
 updated: 2026-10-18
 ---

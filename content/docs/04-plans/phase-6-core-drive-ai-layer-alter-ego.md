@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-6-core-drive-ai-layer-alter-ego
+title: Alter Ego
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -20,6 +21,8 @@ depends_on:
    - "[[04-plans/phase-4-taxila-v1-knowledge-management]]"
    - "[[04-plans/phase-5-zinsser-v1-writing-editor-first]]"
 ---
+
+**Alter Ego** is Phase 6: Sidekick gets its mind. Scope: Core Drive (your principles, values and mental models), semantic search over your content, the provider-agnostic AI layer, and Alter Ego itself, which answers as the version of you those principles describe.
 
 > **Milestone:** Sidekick gets its mind. Core Drive holds your principles, values, and mental models; your content is semantically searchable; and Alter Ego — grounded in Core Drive + Taxila — answers as the version of you who sees clearly.
 > **Learning payoff:** pgvector, HNSW indexes, semantic chunking, provider-agnostic AI routing, streaming structured responses, RAG pipeline design.

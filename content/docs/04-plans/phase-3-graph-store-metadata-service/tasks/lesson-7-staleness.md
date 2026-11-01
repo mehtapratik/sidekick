@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-7-staleness
-title: "Phase 3 lesson 7: staleness dots and the roll-up"
+title: "Phase 3 Lesson 7: Staleness Dots and the Roll-Up"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

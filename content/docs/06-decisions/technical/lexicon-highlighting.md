@@ -1,6 +1,7 @@
 ---
 publish: true
 id: decision.technical.lexicon-highlighting
+title: Lexicon Highlighting
 created: 2026-10-30
 kind: decision
 version: 1.0.0

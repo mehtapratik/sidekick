@@ -1,6 +1,7 @@
 ---
 publish: true
 id: system-design.functional-design.core-drive.tiered-context-model
+title: Tiered Context Model
 created: 2026-09-19
 kind: spec
 version: 1.0.0

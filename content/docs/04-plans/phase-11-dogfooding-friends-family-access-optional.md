@@ -1,6 +1,7 @@
 ---
 publish: true
 id: plan.phase-11-dogfooding-friends-family-access-optional
+title: Open House
 created: 2026-09-19
 kind: plan
 version: 1.0.0
@@ -10,6 +11,8 @@ tags:
    - living-plan
    - phase-11
 ---
+
+**Open House** is Phase 11 (optional): letting friends and family in. Scope: an invite flow, a small admin page, per-user feature access with isolated data, and a feedback loop.
 
 > **Milestone:** You can invite others to use the app. They have their own isolated data. You have a basic way to manage who has access.
 > **Learning payoff:** Multi-user ops, invite flows, feature management for different users.

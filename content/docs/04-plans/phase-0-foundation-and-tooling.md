@@ -1,6 +1,6 @@
 ---
 id: moc.plan.phase-0
-title: Phase 0 — Foundation and Tooling
+title: "Groundwork: Checkpoints"
 created: 2026-09-19
 updated: 2026-10-13
 version: 1.0.1
@@ -18,6 +18,9 @@ tags:
 status: completed
 publish: true
 ---
+
+**Groundwork: Checkpoints** is the working record of Phase 0 ([[phase-0-foundation-tooling-complete|Groundwork]]): its scope, constraints and the four checkpoints (A to D) it was built in.
+
 ## Scope
 
 Stand up Phase 0’s monorepo skeleton so that `pnpm turbo build` succeeds and `pnpm turbo dev` starts `apps/web` from the repo root, with a correct package dependency graph.

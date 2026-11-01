@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-09
-title: "What Phase 3 can prove on its own"
+title: What Phase 3 Can Prove on Its Own
 created: 2026-10-25
 kind: plan
 type: grilling

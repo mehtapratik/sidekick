@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-5-outbox
-title: "Phase 3 lesson 5: outbox, status and versions"
+title: "Phase 3 Lesson 5: Outbox, Status and Versions"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan

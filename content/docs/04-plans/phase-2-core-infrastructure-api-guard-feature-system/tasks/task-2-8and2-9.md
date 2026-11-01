@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-8and2-9
-title: "Lesson 3 (tasks 2.8, 2.9): entitlements table and getEnabledFeatures"
+title: "Lesson 3 (tasks 2.8, 2.9): Entitlements Table and getEnabledFeatures"
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan
