@@ -20,7 +20,7 @@ status: planned
 
 **What gets built:** tests that prove the lock-first rule and the stale-write check under real concurrency, with two database connections interleaved on purpose, and a measurement of the cycle check on a large synthetic graph.
 
-**Implements:** the overview's Testing section ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[06-decisions/technical/synergy-store-choices|Synergy store choices]] (measure the cycle check before choosing a closure table).
+**Implements:** the overview's Testing section ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]] (measure the cycle check before choosing a closure table).
 
 **Learning payoff:** why sequential tests can't catch a race; forcing an interleaving with two connections and an explicit wait (one transaction holds the lock while the other starts); what `pg_advisory_xact_lock` serialises and what the `content_seq` check catches without it; measuring a query (`EXPLAIN ANALYZE`, timing at realistic and extreme sizes) before optimising it.
 

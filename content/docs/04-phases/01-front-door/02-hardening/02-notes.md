@@ -32,11 +32,11 @@ The thread running through every task: **prefer a mechanism that enforces over a
 
 Supabase offers three ways to reach the same database:
 
-| Mode | Address | Behavior |
-| --- | --- | --- |
-| Direct | `db.<ref>.supabase.co:5432` | Straight to Postgres. IPv6-only unless the IPv4 add-on is enabled. |
-| Session pooler | `<region>.pooler.supabase.com:5432` | Supavisor keeps one Postgres connection for the whole client session. |
-| Transaction pooler | `<region>.pooler.supabase.com:6543` | Supavisor hands out a Postgres connection per transaction. |
+| Mode               | Address                             | Behavior                                                              |
+| ------------------ | ----------------------------------- | --------------------------------------------------------------------- |
+| Direct             | `db.<ref>.supabase.co:5432`         | Straight to Postgres. IPv6-only unless the IPv4 add-on is enabled.    |
+| Session pooler     | `<region>.pooler.supabase.com:5432` | Supavisor keeps one Postgres connection for the whole client session. |
+| Transaction pooler | `<region>.pooler.supabase.com:6543` | Supavisor hands out a Postgres connection per transaction.            |
 
 `DATABASE_URL` (the app, as `app_runtime`) uses the transaction pooler so many serverless instances can share few Postgres connections. `DATABASE_DIRECT_URL` (migrations, as `postgres`) uses the session pooler — despite its name, not the direct connection, because most networks are IPv4-only.
 
@@ -44,7 +44,7 @@ Supabase offers three ways to reach the same database:
 
 ### Prepared statements
 
-Postgres compiles every query. `prepare: true` only *saves* the compiled statement under a name **on one Postgres connection**. `postgres.js` remembers "connection A has statement s1" — but behind Supavisor, connection A's next transaction may run on a different Postgres connection that has never seen `s1`. Hence `prepare: false`. The cost is re-parsing a simple query: a fraction of a millisecond against a network round trip of many.
+Postgres compiles every query. `prepare: true` only _saves_ the compiled statement under a name **on one Postgres connection**. `postgres.js` remembers "connection A has statement s1" — but behind Supavisor, connection A's next transaction may run on a different Postgres connection that has never seen `s1`. Hence `prepare: false`. The cost is re-parsing a simple query: a fraction of a millisecond against a network round trip of many.
 
 ### Pipelining — and a mistake
 
@@ -116,7 +116,7 @@ Resetting the database would not have saved the work: the same migrations are ne
 
 ## Proving RLS (Pre-2.5)
 
-- **Vitest** is the monorepo's test framework. It uses Vite's module loader only while tests run; it does not tie the build to Vite ([[vitest]]).
+- **Vitest** is the monorepo's test framework. It uses Vite's module loader only while tests run; it does not tie the build to Vite ([[03-system-design/non-functional/testing/testing-layers]]).
 - `server-only` throws in a test runner; an alias to an empty stub fixes exactly that one import. `resolve.conditions` alone does not reach externalized packages.
 - **`tests/with-test-db.sh`** builds a throwaway PostgreSQL 17 with Supabase stand-ins, runs every migration, then deletes it — the "rebuild from scratch" idea, automated. It is a wrapper: `export`s must come before `"$@"`, because an export only affects commands that run after it.
 - **A security test must fail when the protection is removed.** Exact-ID assertions catch "saw the wrong user's row"; a guard that rows exist prevents a vacuous "zero rows" pass; deliberately breaking `withRLS` proved the test detects it.
@@ -166,7 +166,7 @@ Resetting the database would not have saved the work: the same migrations are ne
 
 ## ESLint best practices
 
-Type-only imports (`import type`) are enforced by `verbatimModuleSyntax` in the compiler and by `consistent-type-imports` in the editor, so type-only modules never reach the bundle. Type-aware rules (`no-floating-promises`, `no-misused-promises`) read the TypeScript program — and therefore only run on files that belong to a `tsconfig`; a stdin probe pretending to be a file fails at parsing. React Hooks and Next.js rules were installed but never loaded before ([[eslint-best-practice-rules]]).
+Type-only imports (`import type`) are enforced by `verbatimModuleSyntax` in the compiler and by `consistent-type-imports` in the editor, so type-only modules never reach the bundle. Type-aware rules (`no-floating-promises`, `no-misused-promises`) read the TypeScript program — and therefore only run on files that belong to a `tsconfig`; a stdin probe pretending to be a file fails at parsing. React Hooks and Next.js rules were installed but never loaded before ([[03-system-design/non-functional/code-quality-checks/eslint/best-practice-rules]]).
 
 ---
 
@@ -180,5 +180,5 @@ Type-only imports (`import type`) are enforced by `verbatimModuleSyntax` in the 
 - **Turbo's cache can hide a broken build.** TypeScript 6 stopped inferring `rootDir` (`TS5011`), but a cached pre-upgrade build reported success. After any toolchain upgrade, verify with `turbo … --force`; CI has no cache and would have failed.
 - **A green lint run proves nothing after a plugin migration.** Moving to `eslint-plugin-import-x`, `no-cycle` went silent until `import-x/extensions` included TypeScript. Plant one violation per rule and watch each fire.
 - **One upgrade group per PR**, stacked, so a failure points at one change.
-- **Read the bot's plan before trusting it.** Renovate's first Dependency Dashboard proposed `.nvmrc` 24 → 24.22.0 and `engines.node` 24.x → 24.22.0 — an exact pin that, with `engineStrict`, would reject every other Node 24. A rule disabling only Node *majors* was not enough; Node updates are now disabled entirely.
+- **Read the bot's plan before trusting it.** Renovate's first Dependency Dashboard proposed `.nvmrc` 24 → 24.22.0 and `engines.node` 24.x → 24.22.0 — an exact pin that, with `engineStrict`, would reject every other Node 24. A rule disabling only Node _majors_ was not enough; Node updates are now disabled entirely.
 - **Renovate encodes the policy:** grouped minor/patch PRs auto-merge once `checks` passes; majors are reviewed; a 3-day minimum release age skips bad or compromised releases; production pins and known blockers are rules with a `description` stating why.

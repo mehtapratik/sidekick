@@ -52,3 +52,6 @@ CREATE TRIGGER no_update_deleted_[table]
   BEFORE UPDATE ON [table]
   FOR EACH ROW EXECUTE FUNCTION block_update_on_deleted();
 ```
+
+> [!note] Synergy exception
+> Synergy's own tables keep soft-deleted rows visible and allow restoring them. See [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]. The full variant guide is written in Phase 3 lesson 3.

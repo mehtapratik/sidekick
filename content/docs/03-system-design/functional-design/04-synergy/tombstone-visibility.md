@@ -1,21 +1,16 @@
 ---
 publish: true
-id: decision.technical.tombstone-visibility
+id: system-design.functional-design.04-synergy.tombstone-visibility
 title: Tombstone Visibility
 created: 2026-10-31
-kind: decision
+updated: 2026-11-01
+kind: spec
 version: 1.0.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
    - rls
 status: accepted
-applies_to:
-   - "[[03-system-design/functional-design/04-synergy/00-overview]]"
-   - "[[03-system-design/non-functional/security/row-level-security]]"
-   - "[[03-system-design/non-functional/database/soft-delete-support]]"
 ---
 
 ## What
@@ -37,3 +32,7 @@ Synergy's soft-deleted rows (tombstones) stay visible to Synergy's own queries, 
 
 - Every repository query states whether it wants live rows; integration tests cover a deleted target, a "No longer linked" mention and undo.
 - **Follow-up:** `row-level-security.md` and `soft-delete-support.md` still describe the old templates. They need their own revision (a variant for tables whose tombstones must stay readable), outside this decision.
+
+## Decision History
+
+- 2026-10-31 · accepted · Tombstone Visibility

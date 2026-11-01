@@ -1,15 +1,13 @@
 ---
 publish: true
-id: decision.technical.stay-on-eslint-revisit-oxlint
+id: system-design.non-functional.code-quality-checks.eslint.stay-on-eslint-revisit-oxlint
 title: Stay on ESLint, Revisit Oxlint
 created: 2026-10-16
-updated: 2026-10-16
-kind: decision
+updated: 2026-11-01
+kind: spec
 version: 1.0.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - eslint
    - typescript
 status: accepted
@@ -32,3 +30,7 @@ status: accepted
 3. ESLint becomes a real bottleneck: more than about 30 s locally on changed packages, or lint visibly slowing CI.
 
 **Sources:** [Oxc: type-aware linting stable](https://oxc.rs/blog/2026-07-22-type-aware-linting-stable), [Oxc: JS plugins](https://oxc.rs/docs/guide/usage/linter/js-plugins), [Oxc: built-in plugins](https://oxc.rs/docs/guide/usage/linter/plugins).
+
+## Decision History
+
+- 2026-10-16 · accepted · Stay on ESLint, Revisit Oxlint

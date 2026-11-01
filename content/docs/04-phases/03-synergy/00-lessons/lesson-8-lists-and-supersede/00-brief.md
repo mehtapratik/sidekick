@@ -20,7 +20,7 @@ status: planned
 
 **What gets built:** list links (one source, an ordered list of targets, each member a complete edge with its own type) and supersede (an old entity points to each replacement, and the first replacement marks it superseded after the user confirms).
 
-**Implements:** the overview's Tables (`relationships`: role, composite FK, positions) and Write path ("Supersede") ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]); [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]] (supersede).
+**Implements:** the overview's Tables (`relationships`: role, composite FK, positions) and Write path ("Supersede") ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]); [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]] (supersede).
 
 **Learning payoff:** a composite foreign key that makes a bad row impossible instead of checking for it in code (and why Postgres skips a composite FK when any column is null, which is why `type` is NOT NULL); CHECK constraints across columns; fractional positions (lexorank) so a move writes one row; a request that answers `confirmation_required` until it is confirmed.
 

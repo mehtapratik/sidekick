@@ -21,7 +21,7 @@ status: planned
 
 **What gets built:** Synergy's first tables, `entity_index` and `version_log`, with RLS on `user_id` only, the restore-aware trigger bound, partial unique indexes and provenance columns. Also the lock-first helper and the first repository functions: register an entity, save content with the `content_seq` stale check, and read one. And a written rule for choosing a table's delete model.
 
-**Implements:** the [[03-system-design/functional-design/04-synergy/00-overview|Synergy overview]] (Tables, Tombstones, the lock-first rule in Write path), [[06-decisions/technical/content-sequence|Content sequence]], [[06-decisions/technical/tombstone-visibility|Tombstone visibility]].
+**Implements:** the [[03-system-design/functional-design/04-synergy/00-overview|Synergy overview]] (Tables, Tombstones, the lock-first rule in Write path), [[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]], [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]].
 
 **Learning payoff:** why Synergy's RLS leaves `deleted_at` to the repository; a trigger that tells a restore from any other update; advisory locks and why one fixed lock order prevents deadlocks; optimistic concurrency with a counter (`UPDATE … WHERE content_seq = $base`); partial unique indexes; why an integer beats a timestamp as a concurrency token.
 

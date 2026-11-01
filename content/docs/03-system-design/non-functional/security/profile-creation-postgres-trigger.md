@@ -3,11 +3,11 @@ publish: true
 id: system-design.non-functional.security.profile-creation-postgress-trigger
 title: Profile Creation Postgres Trigger
 created: 2026-09-19
-updated: 2026-10-14
+updated: 2026-11-01
 kind: spec
 aliases:
    - profile-creation-postgress-trigger-syml
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - security
@@ -15,8 +15,6 @@ tags:
    - api
    - authentication
 ---
-
-[[user-profile-creation-by-db-trigger|Why?]]
 
 \> User profiles are created via a Postgres trigger on `auth.users`, not via an API route. This ensures reliability across auth providers and prevents race conditions, as profile creation becomes part of the same database transaction.
 
@@ -29,3 +27,38 @@ tags:
 \> Every `SECURITY DEFINER` function must pin `SET search_path = ''` and schema-qualify every object, so a caller-controlled search path cannot redirect a privileged function to a lookalike object.
 
 \> The trigger runs in the same transaction as the `auth.users` insert. If it fails, signup fails and the user row is rolled back. Known limit: `auth.users.email` is nullable but `profiles.email` is `NOT NULL`, so phone or anonymous sign-ins would fail until that is addressed.
+
+Supabase auth API inserts a row into `auth.users` when user signs up. We will have a trigger setup on `auth.users` table that automatically calls `public.create_profile_for_new_user()` function to insert a corresponding row into `public.profiles` table.
+
+```sql
+CREATE FUNCTION public.create_profile_for_new_user()
+  RETURNS trigger AS $$
+  BEGIN
+    INSERT INTO public.profiles (id, email, created_at)
+    VALUES (NEW.id, NEW.email, NOW());
+
+    RETURN NEW;
+  END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.create_profile_for_new_user();
+```
+
+The original plan included a `POST /api/auth/profile` route for this purpose. That route was dropped.
+
+## Why?
+
+\> **Works for all auth providers automatically.** An API route would need to be called explicitly after every sign-up — and separately wired up for every auth provider (email/password, OAuth, magic link, SSO). Forgetting to handle a new provider means users can authenticate but have no profile. The trigger fires unconditionally on every `auth.users` insert, regardless of provider.
+
+\> **Cannot fail silently after auth succeeds.** With an API route, auth could succeed but the profile creation API call could fail (network error, bug, deployment issue), leaving the user in a broken state. The trigger executes in the same database transaction as the `auth.users` insert — if profile creation fails, the whole operation fails cleanly before the user is considered signed up.
+
+\> **No app-level orchestration.** No route handler, no `useEffect`, no post-sign-up redirect-then-create flow. The database handles it.
+
+\> **Simpler codebase.** One less API route. One less thing that can drift or be forgotten when adding a new auth provider.
+
+## Decision History
+
+- 2026-09-19 · accepted · User Profile Creation by DB Trigger

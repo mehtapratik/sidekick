@@ -20,7 +20,7 @@ status: planned
 
 **What gets built:** each package that owns tables gets its own Drizzle config, its own migrations folder and its own migrations table. `pnpm db:migrate` runs them in dependency order (foundation, then platform, then features), and the throwaway test database is built the same way, so Synergy's integration tests in lesson 3 run against every migration.
 
-**Implements:** [[03-system-design/non-functional/database/migration|Migration]] (each package owns its Drizzle config and migrations), [[06-decisions/technical/platform-layer|Platform layer]] (consequences).
+**Implements:** [[03-system-design/non-functional/database/migration|Migration]] (each package owns its Drizzle config and migrations), [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] (consequences).
 
 **Learning payoff:** what drizzle-kit records in its migrations table and journal, and why two packages must not share one; Turbo's `dependsOn: ["^task"]`, which runs a task in a package's dependencies first, so the package graph sets the migration order; why applied migrations never move between packages; building a test database from scratch.
 

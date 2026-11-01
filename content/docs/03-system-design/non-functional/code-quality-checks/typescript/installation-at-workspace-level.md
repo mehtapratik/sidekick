@@ -3,8 +3,9 @@ publish: true
 id: system-design.non-functional.code-quality-checks.typescript.installation-at-workspace-level
 title: Installation at Workspace Level
 created: 2026-09-19
+updated: 2026-11-01
 kind: spec
-version: 1.0.0
+version: 1.1.0
 tags:
    - system-design
    - code-quality-check
@@ -12,6 +13,14 @@ tags:
    - pnpm
 ---
 
-To ensure every package in monorepo use same Typescript version, install typescript as a `devDependency` at workspace root (`pnpm add -D -w typescript`).
+**What we chose:** TypeScript in root `devDependencies` (`pnpm add -D -w typescript`), hoisted to all packages.
 
-[[typescript-hoisting]]
+**Why:** The Next.js scaffolder installs TypeScript as a local dependency of `apps/web`. Without TypeScript at the root, all other packages (`packages/core`, `packages/ui`, etc.) fall back to whatever `tsc` binary is on the system PATH — which could be an old version that doesn't support `ES2022` target or `moduleResolution: "bundler"` (both require TypeScript 5+).
+
+Installing TypeScript at the root ensures every package in the monorepo uses the same TypeScript version, hoisted from root `node_modules`.
+
+**What "hoisting" means:** pnpm makes root-level packages available to all workspace packages by placing them in the root `node_modules`. Individual packages don't need their own copy.
+
+## Decision History
+
+- 2026-09-19 · accepted · TypeScript Hoisting

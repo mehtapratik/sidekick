@@ -19,7 +19,7 @@ status: planned
 
 **What gets built:** links that live in content. A note's body can mention a link (a mark carrying the relationship id), and the note's save tells Synergy every relationship id its content now mentions. Synergy compares that set with what it stored, keeps `mentioned` true or false on each link, creates the links the save declares, and tombstones a link once its source neither cites nor mentions it.
 
-**Implements:** [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]], [[06-decisions/technical/anchors-in-content|Anchors in content]] ("one save call, reporting the current set"), the overview's Write path ("Save content" steps 5 and 6, "Link from content") and Content helpers ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]).
+**Implements:** [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]], [[03-system-design/functional-design/04-synergy/anchors-in-content|Anchors in content]] ("one save call, reporting the current set"), the overview's Write path ("Save content" steps 5 and 6, "Link from content") and Content helpers ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]).
 
 **Learning payoff:** sending the current set instead of the changes, and why that makes a write self-healing and safe to retry; computing a set difference in SQL; Tiptap's JSON document shape (nodes, marks, attributes) without an editor; one helper (`extractRefs`) shared by every provider; a rule enforced on the server that the client can't skip ("a save may only mention links with one end at this entity").
 

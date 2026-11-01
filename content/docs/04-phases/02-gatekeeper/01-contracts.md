@@ -66,17 +66,17 @@ The coach builds pieces from this design. In "Pratik writes it" steps it's the a
 
 Object shapes are `interface`s. `type` is only for what an interface can't express: unions, tuples, function, mapped and conditional types. ESLint enforces this with `@typescript-eslint/consistent-type-definitions` (decided in lesson 1).
 
-| Path (Sidekick repo)                                               | Lesson                 | Exported as                   |
-| ------------------------------------------------------------------ | ---------------------- | ----------------------------- |
+| Path (Sidekick repo)                                               | Lesson                                                                     | Exported as                   |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------- | ----------------------------- |
 | `packages/features-registry/src/index.ts` (+ `manifest.ts`)        | 1 [[04-phases/02-gatekeeper/lessons/lesson-1-feature-registry/00-brief]]   | `@sidekick/features-registry` |
-| `packages/core/src/api/auth.ts`                                    | 2 [[04-phases/02-gatekeeper/lessons/lesson-2-resolve-api-caller/00-brief]]         | internal (used by the guard)  |
-| `packages/core/src/db/schema/user-feature-entitlements.ts`         | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]   | `@sidekick/core/db/schema`    |
-| `packages/core/src/db/migrations/0006_*`, `0007_*`                 | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]   | n/a                           |
-| `packages/core/src/features/entitlements.ts`                       | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]   | internal (used by the guard)  |
-| `packages/core/src/api/guard.ts`, `packages/core/src/api/index.ts` | 4 [[04-phases/02-gatekeeper/lessons/lesson-4-with-api-guard/00-brief]]   | `@sidekick/core/api`          |
-| `packages/core/src/observability/log.ts`                           | 5 [[04-phases/02-gatekeeper/lessons/lesson-5-logging/00-brief]]   | internal (used by the guard)  |
-| `apps/web/src/app/api/health/route.ts`                             | 6 [[04-phases/02-gatekeeper/lessons/lesson-6-health/00-brief]] | `GET /api/health`             |
-| `packages/ops/src/lib/db.ts`, `src/scripts/entitlements-grant.ts`  | 7 [[04-phases/02-gatekeeper/lessons/lesson-7-ops/00-brief]]        | `pnpm ops:entitlements:grant` |
+| `packages/core/src/api/auth.ts`                                    | 2 [[04-phases/02-gatekeeper/lessons/lesson-2-resolve-api-caller/00-brief]] | internal (used by the guard)  |
+| `packages/core/src/db/schema/user-feature-entitlements.ts`         | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]       | `@sidekick/core/db/schema`    |
+| `packages/core/src/db/migrations/0006_*`, `0007_*`                 | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]       | n/a                           |
+| `packages/core/src/features/entitlements.ts`                       | 3 [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]       | internal (used by the guard)  |
+| `packages/core/src/api/guard.ts`, `packages/core/src/api/index.ts` | 4 [[04-phases/02-gatekeeper/lessons/lesson-4-with-api-guard/00-brief]]     | `@sidekick/core/api`          |
+| `packages/core/src/observability/log.ts`                           | 5 [[04-phases/02-gatekeeper/lessons/lesson-5-logging/00-brief]]            | internal (used by the guard)  |
+| `apps/web/src/app/api/health/route.ts`                             | 6 [[04-phases/02-gatekeeper/lessons/lesson-6-health/00-brief]]             | `GET /api/health`             |
+| `packages/ops/src/lib/db.ts`, `src/scripts/entitlements-grant.ts`  | 7 [[04-phases/02-gatekeeper/lessons/lesson-7-ops/00-brief]]                | `pnpm ops:entitlements:grant` |
 
 No new user-visible UI copy is needed in Phase 2. API error strings are machine-facing and stay in `packages/core`, because foundation packages can't import `@sidekick/copy`.
 
@@ -239,10 +239,10 @@ Decided in lesson 5:
 
 ```ts
 // apps/web/src/app/api/health/route.ts
-import { withApiGuard } from '@sidekick/core/api';
+import { withApiGuard } from "@sidekick/core/api";
 
 export const GET = withApiGuard(async function GET() {
-  return Response.json({ status: 'ok' });
+   return Response.json({ status: "ok" });
 });
 ```
 
@@ -275,7 +275,7 @@ export async function withPrivilegedDb<T>(
 
 - `withPrivilegedDb` reads `DATABASE_DIRECT_URL` when called (the `postgres` role, which bypasses RLS), opens one connection (`max: 1`; session mode, so prepared statements are fine), runs `fn` and always closes it.
 - A boundaries element `ops` may import `registry` and `foundation`. No policy targets it, so nothing may import `ops`. Core exports no privileged client.
-- Scripts run under `tsx`, because Node's type stripping can't resolve core's extensionless schema imports. Env comes from `dotenv -e ../../.env.local --` ([[06-decisions/technical/dotenv-cli|dotenv-cli]]).
+- Scripts run under `tsx`, because Node's type stripping can't resolve core's extensionless schema imports. Env comes from `dotenv -e ../../.env.local --` ([[03-system-design/non-functional/config/dotenv-cli|dotenv-cli]]).
 - `ops` has no `exports`, `build` or `test`; nothing CI builds or tests needs `DATABASE_DIRECT_URL`.
 
 Every script follows these conventions:

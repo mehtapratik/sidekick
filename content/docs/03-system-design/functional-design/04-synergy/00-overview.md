@@ -14,7 +14,7 @@ applies_to:
    - "[[04-phases/03-synergy/00-plan]]"
 ---
 
-How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] say what it does; this page and the decisions it links say where each piece lives and how the pieces meet. Terms follow [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]].
+How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] say what it does; this page and the decisions it links say where each piece lives and how the pieces meet. Terms follow [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]].
 
 Synergy is a graph _pattern_, not a graph _database_. At this scale, plain PostgreSQL tables with recursive queries are enough, and everything goes through Synergy's own repository, which is the one place to change if scale ever calls for a dedicated graph engine.
 
@@ -24,14 +24,14 @@ Synergy is a graph _pattern_, not a graph _database_. At this scale, plain Postg
 
 An arrow means "imports". The features registry and the type packages register their linkable types with `synergy/server`; `apps/web` renders links with `synergy/react`. Only `foundation/core` talks to Postgres.
 
-| Package                                    | Holds                                                                                                                                                                    |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `packages/core` (foundation)               | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                   |
+| Package                                    | Holds                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/core` (foundation)               | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                    |
 | `packages/platform/synergy` (platform)     | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Sneak Peek Link component. |
-| `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                              |
-| Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                        |
-| `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                         |
-| `apps/web`                                 | Guarded API routes and the playground.                                                                                                                                   |
+| `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                               |
+| Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                         |
+| `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                          |
+| `apps/web`                                 | Guarded API routes and the playground.                                                                                                                                    |
 
 Synergy ships three entry points, so a browser bundle can never pull in database code:
 
@@ -39,7 +39,7 @@ Synergy ships three entry points, so a browser bundle can never pull in database
 - `@sidekick/synergy/react`: the Sneak Peek Link component and the renderers' contract. No database code, so it runs on the server and in the browser.
 - `@sidekick/synergy/contracts`: zod schemas and types shared by both, the content helpers (`extractRefs`, the quote re-matcher) and the error codes.
 
-See [[06-decisions/technical/platform-layer|Platform layer]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
+See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
 
 ## Type registration
 
@@ -88,8 +88,8 @@ An arrow points from a table to the tables that hang off it. `relationships.from
 
 **Every table:** client-generated UUIDs, `user_id`, `created_at`, `updated_at`, provenance (actor kind: person, system, agent or API key; actor id; reason), and RLS comparing `user_id = nullif(current_setting('app.current_user_id', true), '')::uuid`. Syncable tables soft-delete; every unique index on them is partial (`WHERE deleted_at IS NULL`), so a tombstone never blocks re-adding the same tag or saving the same item again. How tombstones stay visible to Synergy is in [Tombstones](#tombstones).
 
-- **`entity_index`**: id, provider, type, display name, optional title, status (`active`, `deprecated`, `superseded`), version, revision, `content_seq`, `edited_at`, `deleted_at`. "Deleted" is shown from `deleted_at`, not stored as a status, so a restore brings back whatever status the entity had. No external-reference columns ([[06-decisions/technical/capture-external-content|Capture external content]]).
-- **`content_seq`** goes up on every write to an entity's content: revision saves, version saves, and anchors added for someone else's link. It is the token for the stale-write check, the ETag and the render cache key. `version` and `revision` keep their meaning and only drive the dots ([[06-decisions/technical/content-sequence|Content sequence]]).
+- **`entity_index`**: id, provider, type, display name, optional title, status (`active`, `deprecated`, `superseded`), version, revision, `content_seq`, `edited_at`, `deleted_at`. "Deleted" is shown from `deleted_at`, not stored as a status, so a restore brings back whatever status the entity had. No external-reference columns ([[03-system-design/functional-design/04-synergy/capture-external-content|Capture external content]]).
+- **`content_seq`** goes up on every write to an entity's content: revision saves, version saves, and anchors added for someone else's link. It is the token for the stale-write check, the ETag and the render cache key. `version` and `revision` keep their meaning and only drive the dots ([[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]]).
 - **`version_log`**: entity, version, optional change note, actor, time.
 - **`entity_anchors`**: entity, anchor id, `removed_in_version` (empty while the passage exists). One row per passage that a link points at, written when the first link to it is made. A reference whose anchor row has `removed_in_version` set shows "passage removed".
 - **`entity_mentions`**: entity, relationship id. The direct and alias mentions in the entity's content, as last reported by its provider ([Save content](#write-path)). `relationships.mentioned` is kept true while the relationship's source has a row here.
@@ -109,7 +109,7 @@ Each provider table has a deferrable foreign key to `entity_index(id)`, so a pro
 
 ### Tombstones
 
-Synergy must see its own tombstones: a deleted target still shows its name, "No longer linked" must differ from "never existed", and undo and restore update deleted rows. Three of the existing database templates prevent that, so Synergy departs from them ([[06-decisions/technical/tombstone-visibility|Tombstone visibility]]):
+Synergy must see its own tombstones: a deleted target still shows its name, "No longer linked" must differ from "never existed", and undo and restore update deleted rows. Three of the existing database templates prevent that, so Synergy departs from them ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]):
 
 - **RLS compares only `user_id`.** The repository filters `deleted_at IS NULL` in each query that needs live rows. The template in [[03-system-design/non-functional/security/row-level-security|Row-level security]] also hides deleted rows in `USING`.
 - **Restore may update a deleted row.** The update trigger allows an update to a deleted row only when it restores it (`NEW.deleted_at IS NULL`). Every other update to a tombstone is still refused.
@@ -137,7 +137,7 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
    6. updates `entity_mentions` and `mentioned`, and tombstones links with neither `cited` nor `mentioned`;
    7. bumps `content_seq`, the revision or version, and `edited_at`, and writes the outbox events.
 
-   Sending the current set instead of the changes makes the call self-healing (a missed or buggy save is corrected by the next one) and safe to retry, and the comparison is written once, in Synergy ([[06-decisions/technical/anchors-in-content|Anchors in content]]).
+   Sending the current set instead of the changes makes the call self-healing (a missed or buggy save is corrected by the next one) and safe to retry, and the comparison is written once, in Synergy ([[03-system-design/functional-design/04-synergy/anchors-in-content|Anchors in content]]).
 
 - **Link from content:** the editor generates the relationship id, writes it into the mark, and the save that carries the mark declares the new link (target, anchor, type, label). Synergy creates it in that transaction with `mentioned = true` and `cited = false`, so removing the text later removes the link.
 - **Link from a field, the links panel or the API** (`POST /links`): creates a cited link (`cited = true`).
@@ -211,3 +211,15 @@ Integration tests through the guarded API are the main seam; the component is te
 
 - **Race tests with two database connections:** an anchor added while the target is open (stale save gets 409), a delete and a new reference into the same target (one fails), and a restore after the graph changed (`restore_conflict`).
 - A test pinning spec story 71 ("dep wor" finds "deep work"), tuning trigram `word_similarity` until it passes.
+
+## Design Decisions
+
+Each decision lives in its own page here; the [[06-decisions/log|decisions log]] lists them with dates.
+
+- [[03-system-design/functional-design/04-synergy/anchors-in-content|Anchors in content]]
+- [[03-system-design/functional-design/04-synergy/capture-external-content|Capture external content]]
+- [[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]]
+- [[03-system-design/functional-design/04-synergy/lexicon-highlighting|Lexicon highlighting]]
+- [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]]
+- [[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]]
+- [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]

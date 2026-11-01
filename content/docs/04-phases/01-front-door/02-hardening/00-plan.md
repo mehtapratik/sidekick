@@ -26,21 +26,21 @@ depends_on:
 >
 > **Completed:** October 2026 — walkthrough in [[04-phases/01-front-door/02-hardening/01-walkthrough]]
 
-| #        | Task                                                                                                                            | Complexity | Review source                                 | Status |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------- | ------ |
-| Pre-2.1  | Version creation of `app_runtime` as a non-superuser role; keep only its password out of Git.                                   | 🔴         | [[runtime-role-reproducibility]]              | ✅     |
-| Pre-2.2  | Correct `postgres.js` configuration for Supavisor transaction pooling: `prepare: false` (not `max_pipeline: 0`).                | 🟡         | [[pooler-client-configuration]]               | ✅     |
-| Pre-2.3  | Version the `auth.users` profile trigger and add the `profiles.id → auth.users(id)` foreign key with explicit delete semantics. | 🔴         | [[profile-trigger-and-referential-integrity]] | ✅     |
-| Pre-2.4  | Make the RLS-aware access path safer than raw database access; restrict unsafe imports and exports.                             | 🔴         | [[db-access-chokepoint]]                      | ✅     |
-| Pre-2.5  | Add an end-to-end RLS proof test: each user sees only their own row, and a context-free query sees zero rows.                   | 🔴         | [[security-proof-and-ci]]                     | ✅     |
-| Pre-2.6  | Add CI for lint, typecheck, build, and the RLS proof test.                                                                      | 🟡         | [[security-proof-and-ci]]                     | ✅     |
-| Pre-2.7  | Reconcile `.env.example` with code and document runtime versus direct database connection roles.                                | 🟢         | [[environment-contract-drift]]                | ✅     |
-| Pre-2.8  | Tighten ESLint package-boundary types to enforce `apps → feature packages → core`.                                              | 🟡         | [[package-boundary-enforcement]]              | ✅     |
-| Pre-2.9  | Require `withApiGuard` on route handlers (ESLint); ban other entry points; verify built endpoints from Next.js manifests.       | 🟡         | [[api-route-fail-open]]                       | ✅     |
-| Pre-2.10 | Choose a portable vault distribution strategy before cloud agents or CI require the external docs symlink.                      | 🟡         | [[portable-documentation-vault]]              | ✅     |
-| Pre-2.11 | Handle signup without a session by displaying the pending-confirmation state.                                                   | 🟢         | [[signup-confirmation-flow]]                  | ✅     |
-| Pre-2.12 | Pre-commit Prettier on staged files (`husky` + `lint-staged`); `prettier:check` in CI; pin Node 22 locally (`.nvmrc`).          | 🟢         | [[prettier-at-repo-level]]                    | ✅     |
-| Pre-2.13 | Protect `main` with a ruleset: changes arrive via branch + PR; the CI `checks` job must pass to merge.                          | 🟢         | [[security-proof-and-ci]]                     | ✅     |
+| #        | Task                                                                                                                                               | Complexity | Status |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ |
+| Pre-2.1  | Version creation of `app_runtime` as a non-superuser role; keep only its password out of Git.                                                      | 🔴         | ✅     |
+| Pre-2.2  | Correct `postgres.js` configuration for Supavisor transaction pooling: `prepare: false` (not `max_pipeline: 0`).                                   | 🟡         | ✅     |
+| Pre-2.3  | Version the `auth.users` profile trigger and add the `profiles.id → auth.users(id)` foreign key with explicit delete semantics.                    | 🔴         | ✅     |
+| Pre-2.4  | Make the RLS-aware access path safer than raw database access; restrict unsafe imports and exports.                                                | 🔴         | ✅     |
+| Pre-2.5  | Add an end-to-end RLS proof test: each user sees only their own row, and a context-free query sees zero rows.                                      | 🔴         | ✅     |
+| Pre-2.6  | Add CI for lint, typecheck, build, and the RLS proof test.                                                                                         | 🟡         | ✅     |
+| Pre-2.7  | Reconcile `.env.example` with code and document runtime versus direct database connection roles.                                                   | 🟢         | ✅     |
+| Pre-2.8  | Tighten ESLint package-boundary types to enforce `apps → feature packages → core`.                                                                 | 🟡         | ✅     |
+| Pre-2.9  | Require `withApiGuard` on route handlers (ESLint); ban other entry points; verify built endpoints from Next.js manifests.                          | 🟡         | ✅     |
+| Pre-2.10 | Choose a portable vault distribution strategy before cloud agents or CI require the external docs symlink.                                         | 🟡         | ✅     |
+| Pre-2.11 | Handle signup without a session by displaying the pending-confirmation state.                                                                      | 🟢         | ✅     |
+| Pre-2.12 | Pre-commit [[prettier-at-repo-level\|Prettier]] on staged files (`husky` + `lint-staged`); `prettier:check` in CI; pin Node 22 locally (`.nvmrc`). | 🟢         | ✅     |
+| Pre-2.13 | Protect `main` with a ruleset: changes arrive via branch + PR; the CI `checks` job must pass to merge.                                             | 🟢         | ✅     |
 
 **Pre-2 Exit Criteria:** ✅ All met.
 
@@ -61,6 +61,5 @@ depends_on:
 - **Pre-2.5/2.6 pin PostgreSQL 17** (Supabase's major) in tests and CI; `tests/with-test-db.sh` fails loudly on any other major. Principle recorded in [[pin-versions]].
 - **Pre-2.9 grew beyond one lint rule:** Server Actions, the Pages Router and `pageExtensions` are banned, and `apps/web`'s build verifies Next.js's endpoint manifests ([[server-actions]], [[with-api-guard]]).
 - **Pre-2.10 deleted a dead workflow** (`trigger-arkive-deploy.yml`) and runs `scripts/setup-docs.mjs` on `pnpm install`.
-- **Added beyond the original list:** an ESLint best-practice rule set with `verbatimModuleSyntax` ([[eslint-best-practice-rules]]), Vitest as the monorepo test framework ([[vitest]]), and Node 22 pinned through `.nvmrc` + `engineStrict`.
+- **Added beyond the original list:** an ESLint best-practice rule set with `verbatimModuleSyntax` ([[03-system-design/non-functional/code-quality-checks/eslint/best-practice-rules]]), Vitest as the monorepo test framework ([[03-system-design/non-functional/testing/testing-layers]]), and Node 22 pinned through `.nvmrc` + `engineStrict`.
 - **GitHub Pages** for the Sidekick repo was publishing `docs/` and failing since `docs/` became a symlink; it should stay disabled.
-

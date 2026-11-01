@@ -1,31 +1,20 @@
 ---
 publish: true
-id: decision.technical.mentions-and-link-lifetime
+id: system-design.functional-design.04-synergy.mentions-and-link-lifetime
 title: Mentions and Link Lifetime
 created: 2026-10-30
-kind: decision
-updated: 2026-10-31
+updated: 2026-11-01
+kind: spec
 version: 1.1.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
 status: accepted
-applies_to:
-   - "[[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships]]"
-   - "[[02-prd/03-features/01-synergy/05.prd.features.synergy.sneak-peek-link]]"
 ---
 
 ## What
 
-**Terms** (Pratik, 2026-10-30):
-
-- **Link** (relationship): the stored connection from a source to one target, or to several ordered targets (a list link). Its **kind** comes from its type: reference or association; untyped is a reference. Its **target** is a whole entity or a passage ([[06-decisions/technical/anchors-in-content|Anchors in content]]).
-- **Mention:** a place in the source or the target that shows a link. Either side may mention a link any number of times.
-   - **Direct mention:** shows the link itself, as minimal, inline, card or preview. Without a label, a minimal direct mention shows the target's title.
-   - **Alias mention:** the author's own words carry the link.
-   - **Cited mention:** the link is held outside the content, in a field (such as `related-to`) or a links panel. A field is a view of the source's cited links of that type.
+**Terms** (Pratik, 2026-10-30) are defined in the [[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships#Terms]].
 
 **Rules:**
 
@@ -41,3 +30,7 @@ applies_to:
 - Without the cited kind, a link held only by a field would be deleted when the last content mention went, or would linger as an orphan when every mention was gone. One rule over three kinds of mention covers both.
 - Per-mention display types let each side of a link show it the way its own text needs.
 - A link held only in a field would otherwise never tell its source that the target moved.
+
+## Decision History
+
+- 2026-10-30 · accepted · Mentions and Link Lifetime

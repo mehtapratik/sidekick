@@ -20,7 +20,7 @@ status: planned
 
 **What gets built:** the `outbox` table, written in the same transaction as every Synergy write, so a later reader (notifications, search indexing, push) never misses or invents an event. The entity writes from lessons 3 and 4 start writing their events. Also two small routes: `PATCH /entities/:id/status` (deprecate and back) and `GET /entities/:id/versions`.
 
-**Implements:** the overview's outbox ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]], Tables), [[06-decisions/technical/synergy-store-choices|Synergy store choices]].
+**Implements:** the overview's outbox ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]], Tables), [[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]].
 
 **Learning payoff:** the outbox pattern (why "write the row, then publish" loses events and "publish in the same transaction" doesn't); why a `bigserial` id isn't commit order and `pg_current_xact_id()` is; a non-syncable, hard-delete table with no soft-delete triggers; a read-only role outside RLS for readers that work across users; cursor paging.
 

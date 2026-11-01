@@ -20,7 +20,7 @@ status: planned
 
 **What gets built:** the first two feature packages, `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`, the mock providers Synergy is proven with. Each has its own table, migrations and feature manifest, and create and save routes that write the provider's row and call Synergy in the same transaction. Synergy gets its first route, `GET /api/synergy/entities/:id` with an ETag and 304, plus the error-to-HTTP map and its three entry points.
 
-**Implements:** the plan's [[04-phases/03-synergy/00-plan#Decisions made while planning|sandbox decision]], the overview's Packages, Write path ("Create", "Save content") and API sections ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[06-decisions/technical/content-sequence|Content sequence]] (the ETag).
+**Implements:** the plan's [[04-phases/03-synergy/00-plan#Decisions made while planning|sandbox decision]], the overview's Packages, Write path ("Create", "Save content") and API sections ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]] (the ETag).
 
 **Learning payoff:** what makes a feature package (manifest, own tables, own routes, imported by the registry and the app); one transaction across two packages; deferrable foreign keys and why the provider row can be written before its index row; conditional requests (`ETag`, `If-None-Match`, 304); mapping stable error codes to HTTP statuses in one place; package entry points (`exports`) and `server-only`.
 

@@ -1,20 +1,16 @@
 ---
 publish: true
-id: decision.technical.lexicon-highlighting
+id: system-design.functional-design.04-synergy.lexicon-highlighting
 title: Lexicon Highlighting
 created: 2026-10-30
-kind: decision
+updated: 2026-11-01
+kind: spec
 version: 1.0.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
    - taxila
 status: accepted
-applies_to:
-   - "[[02-prd/03-features/01-synergy/01.prd.features.synergy.entities]]"
-   - "[[03-system-design/non-functional/monorepo/dependency-flow]]"
 ---
 
 ## What
@@ -33,3 +29,7 @@ Whether the Lexicon ships in the MVP or after it is decided when Taxila is scope
 - Inside Taxila, other features couldn't use it without importing a feature.
 - Synergy holds no aliases or definitions, and a platform package can't import a feature to read them.
 - A new platform package would own no data or rules of its own. Highlighting given phrases is domain-free mechanism, which is foundation by the [[03-system-design/non-functional/monorepo/dependency-flow|layer rule]].
+
+## Decision History
+
+- 2026-10-30 · accepted · Lexicon Highlighting

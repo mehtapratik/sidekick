@@ -19,7 +19,7 @@ status: planned
 
 **What gets built:** deleting an entity, with the rule that keeps links true: a delete is refused while a live reference points at the entity. A delete that goes through tombstones the entity and its outgoing links as one batch. Restore, undo of an unlink, and relink bring back exactly what was removed, but only after re-running the delete block and the cycle check, because the graph may have changed since.
 
-**Implements:** the overview's Write path ("Delete", "Restore and undo") and Tombstones ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[06-decisions/technical/tombstone-visibility|Tombstone visibility]], [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]] (only references block a delete).
+**Implements:** the overview's Write path ("Delete", "Restore and undo") and Tombstones ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]), [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]], [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]] (only references block a delete).
 
 **Learning payoff:** a delete as a guarded state change, not a row removal; grouping tombstones with a batch id; why a restore must re-check rules that held when the row was deleted (time-of-check versus time-of-use); naming every conflicting edge in an error so a client can explain it; erasure as the override.
 

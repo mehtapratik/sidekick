@@ -1,21 +1,16 @@
 ---
 publish: true
-id: decision.technical.capture-external-content
+id: system-design.functional-design.04-synergy.capture-external-content
 title: Capture External Content
 created: 2026-10-30
-kind: decision
-updated: 2026-10-31
+updated: 2026-11-01
+kind: spec
 version: 1.1.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
    - taxila
 status: accepted
-applies_to:
-   - "[[02-prd/03-features/01-synergy/04.prd.features.synergy.keeping-links-true]]"
-   - "[[06-decisions/technical/platform-layer]]"
 ---
 
 ## What
@@ -38,3 +33,7 @@ Synergy versions only content that Sidekick holds. A provider of external conten
 
 - No special statuses or columns in Synergy for external content. Phase 3 builds nothing for it.
 - The provider (Taxila, from Phase 4) owns capture, extraction, file storage and the Refresh action. Detect arrives with the AI layer.
+
+## Decision History
+
+- 2026-10-30 · accepted · Capture External Content

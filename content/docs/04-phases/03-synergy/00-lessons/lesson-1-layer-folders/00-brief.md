@@ -19,7 +19,7 @@ status: planned
 
 **What gets built:** every layer gets its own folder. `core`, `ui` and `copy` move into `packages/foundation/`, an empty `packages/platform/synergy` (`@sidekick/synergy`) appears, and lint fails on a package that sits in no layer.
 
-**Implements:** [[06-decisions/technical/platform-layer|Platform layer]], [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]] 1.3.0, [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]] 2.2.0.
+**Implements:** [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]], [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]] 1.3.0, [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]] 2.2.0.
 
 **Learning payoff:** what foundation, platform and feature mean and why the folder is the layer; moving files without losing history (`git mv`); how pnpm workspace globs, TypeScript project references and the boundaries plugin each find a package; policies that default to "disallow".
 

@@ -1,21 +1,16 @@
 ---
 publish: true
-id: decision.technical.synergy-store-choices
+id: system-design.functional-design.04-synergy.synergy-store-choices
 title: Synergy Store Choices
 created: 2026-10-30
-kind: decision
-updated: 2026-10-31
+updated: 2026-11-01
+kind: spec
 version: 1.1.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
    - postgresql
 status: accepted
-applies_to:
-   - "[[02-prd/03-features/01-synergy/07.prd.features.synergy.foundations]]"
-   - "[[02-prd/03-features/01-synergy/06.prd.features.synergy.search-and-backlinks]]"
 ---
 
 Four smaller choices about Synergy's store (Pratik, 2026-10-30), tightened after the design review (2026-10-31).
@@ -38,4 +33,8 @@ MVP search covers titles and metadata, which all live in the entity index, so a 
 
 The outbox carries change events for later readers (notifications, Factory automations, cache warming, reindexing). Lasting history lives in the version log and the actor and reason fields, so an event is deleted 90 days after every reader has processed it. Nothing reads the outbox in Phase 3 and one user's rows are small, so the pruning job arrives with the first reader.
 
-Each row stores `pg_current_xact_id()`, so readers can process events in commit order (a `bigserial` id doesn't give that: a long transaction can commit a lower id after a reader has moved past it), and this can't be rebuilt for rows written without it. The [[03-system-design/functional-design/04-synergy/00-overview|overview]] lists every event type. Readers use a dedicated read-only role outside RLS, because they work across users. The outbox and idempotency keys are non-syncable and hard-deleted ([[06-decisions/technical/tombstone-visibility|Tombstone visibility]]).
+Each row stores `pg_current_xact_id()`, so readers can process events in commit order (a `bigserial` id doesn't give that: a long transaction can commit a lower id after a reader has moved past it), and this can't be rebuilt for rows written without it. The [[03-system-design/functional-design/04-synergy/00-overview|overview]] lists every event type. Readers use a dedicated read-only role outside RLS, because they work across users. The outbox and idempotency keys are non-syncable and hard-deleted ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]).
+
+## Decision History
+
+- 2026-10-30 · accepted · Synergy Store Choices

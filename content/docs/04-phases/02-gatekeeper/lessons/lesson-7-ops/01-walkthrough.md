@@ -39,12 +39,12 @@ The brief planned a script in `packages/features-registry/scripts/`. The lesson 
 
 3. **Why not the registry's `scripts/` folder.** The registry is the only package that knows every feature key, which made it the brief's choice. But it would have given the registry a database driver, needed a lint ban to keep that driver out of `src/` (which `apps/web` imports), and had to move once a second privileged script arrived. The options weighed:
 
-| Option                          | For                                                | Against                                                                         |
-| ------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Registry `scripts/`             | knows every key                                    | the registry gains a database driver                                            |
-| Core `scripts/`, keys as flags  | core already has the driver and the schema         | core can't import the registry, so `--all` is impossible and typos go unchecked |
-| SQL snippet in the SQL editor   | no code                                            | manual, repeated per feature, keys drift from the registry                      |
-| **A dedicated `ops` package**   | may import both registry and core; nothing may import it | a new package and a lint rule                                             |
+| Option                         | For                                                      | Against                                                                         |
+| ------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Registry `scripts/`            | knows every key                                          | the registry gains a database driver                                            |
+| Core `scripts/`, keys as flags | core already has the driver and the schema               | core can't import the registry, so `--all` is impossible and typos go unchecked |
+| SQL snippet in the SQL editor  | no code                                                  | manual, repeated per feature, keys drift from the registry                      |
+| **A dedicated `ops` package**  | may import both registry and core; nothing may import it | a new package and a lint rule                                                   |
 
 Pratik chose the dedicated package: one home for **dev seeds, provisioning backdoors and break-glass scripts**, each retired when an admin UI, the public API or the CLI covers it.
 
@@ -77,25 +77,25 @@ git switch -c feature/P2L7-ops
 
 ```json
 {
-  "name": "@sidekick/ops",
-  "private": true,
-  "license": "MIT",
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
-  },
-  "dependencies": {
-    "@sidekick/core": "workspace:*",
-    "@sidekick/features-registry": "workspace:*",
-    "drizzle-orm": "^0.45.4",
-    "postgres": "^3.4.9"
-  },
-  "devDependencies": {
-    "@types/node": "^24.19.2",
-    "tsx": "^4.23.15"
-  }
+   "name": "@sidekick/ops",
+   "private": true,
+   "license": "MIT",
+   "version": "0.0.0",
+   "type": "module",
+   "scripts": {
+      "lint": "eslint .",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
+   },
+   "dependencies": {
+      "@sidekick/core": "workspace:*",
+      "@sidekick/features-registry": "workspace:*",
+      "drizzle-orm": "^0.45.4",
+      "postgres": "^3.4.9"
+   },
+   "devDependencies": {
+      "@types/node": "^24.19.2",
+      "tsx": "^4.23.15"
+   }
 }
 ```
 
@@ -109,11 +109,11 @@ git switch -c feature/P2L7-ops
 
 ```json
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "types": ["node"]
-  },
-  "include": ["src"]
+   "extends": "../../tsconfig.base.json",
+   "compilerOptions": {
+      "types": ["node"]
+   },
+   "include": ["src"]
 }
 ```
 
@@ -201,10 +201,10 @@ In `eslint.config.js`:
 Create `packages/ops/src/lib/db.ts`:
 
 ```ts
-import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
-import * as schema from '@sidekick/core/db/schema';
+import * as schema from "@sidekick/core/db/schema";
 
 export type PrivilegedDb = PostgresJsDatabase<typeof schema>;
 
@@ -212,24 +212,26 @@ export type PrivilegedDbHandler<T> = (db: PrivilegedDb) => Promise<T>;
 
 // Runs fn on a connection as the privileged role (DATABASE_DIRECT_URL: postgres,
 // bypasses RLS), then closes it. Only ops scripts use this role; the app never does.
-export async function withPrivilegedDb<T>(fn: PrivilegedDbHandler<T>): Promise<T> {
-  const url = process.env.DATABASE_DIRECT_URL;
+export async function withPrivilegedDb<T>(
+   fn: PrivilegedDbHandler<T>,
+): Promise<T> {
+   const url = process.env.DATABASE_DIRECT_URL;
 
-  if (!url) {
-    throw new Error(
-      'Missing DATABASE_DIRECT_URL. Set it in the root .env.local (see .env.example).',
-    );
-  }
+   if (!url) {
+      throw new Error(
+         "Missing DATABASE_DIRECT_URL. Set it in the root .env.local (see .env.example).",
+      );
+   }
 
-  // Supavisor session mode (port 5432) keeps one Postgres connection per client,
-  // so prepared statements work and a script needs only one connection.
-  const client = postgres(url, { max: 1 });
+   // Supavisor session mode (port 5432) keeps one Postgres connection per client,
+   // so prepared statements work and a script needs only one connection.
+   const client = postgres(url, { max: 1 });
 
-  try {
-    return await fn(drizzle(client, { schema }));
-  } finally {
-    await client.end();
-  }
+   try {
+      return await fn(drizzle(client, { schema }));
+   } finally {
+      await client.end();
+   }
 }
 ```
 
@@ -244,7 +246,7 @@ export async function withPrivilegedDb<T>(fn: PrivilegedDbHandler<T>): Promise<T
 **Prove the boundary.** Plant `packages/features-registry/src/probe.ts`:
 
 ```ts
-export { withPrivilegedDb } from '../../ops/src/lib/db';
+export { withPrivilegedDb } from "../../ops/src/lib/db";
 ```
 
 ```bash
@@ -266,90 +268,92 @@ Delete `probe.ts`. `pnpm --filter @sidekick/ops lint` and `typecheck` pass.
 Create `packages/ops/src/scripts/entitlements-grant.ts` with the flag parsing and the entry point. Step 6 adds `grantEntitlements` and the imports it needs.
 
 ```ts
-import { parseArgs } from 'node:util';
+import { parseArgs } from "node:util";
 
-import { ALL_FEATURES } from '@sidekick/features-registry';
+import { ALL_FEATURES } from "@sidekick/features-registry";
 
 // Gives one account features: all of them (--all) or the ones named (--feature, repeatable).
 // Prints the plan; writes only with --apply.
 // Replaced by: an admin entitlements API, called from the admin UI and the CLI.
 
 const USAGE =
-  'Usage: entitlements grant --email <email> (--all | --feature <key> [--feature <key>…]) [--apply]';
+   "Usage: entitlements grant --email <email> (--all | --feature <key> [--feature <key>…]) [--apply]";
 
 class UsageError extends Error {}
 
 interface GrantRequest {
-  email: string;
-  featureKeys: string[];
-  apply: boolean;
+   email: string;
+   featureKeys: string[];
+   apply: boolean;
 }
 
 function parseGrantArgs(args: string[]): GrantRequest {
-  let email, feature, apply, all;
-  try {
-    const { values } = parseArgs({
-      args: args,
-      strict: true,
-      options: {
-        email: { type: 'string' },
-        all: { type: 'boolean', default: false },
-        feature: { type: 'string', multiple: true, default: [] },
-        apply: { type: 'boolean', default: false },
-      },
-    });
-    ({ email, feature, apply, all } = values);
-  } catch (err) {
-    throw new UsageError(err instanceof Error ? err.message : String(err));
-  }
+   let email, feature, apply, all;
+   try {
+      const { values } = parseArgs({
+         args: args,
+         strict: true,
+         options: {
+            email: { type: "string" },
+            all: { type: "boolean", default: false },
+            feature: { type: "string", multiple: true, default: [] },
+            apply: { type: "boolean", default: false },
+         },
+      });
+      ({ email, feature, apply, all } = values);
+   } catch (err) {
+      throw new UsageError(err instanceof Error ? err.message : String(err));
+   }
 
-  if (!email) {
-    throw new UsageError('--email is required.');
-  }
+   if (!email) {
+      throw new UsageError("--email is required.");
+   }
 
-  // XOR -> false === false -> error | true === true -> error | false === true -> ok | true === false -> ok
-  if (all === feature.length > 0) {
-    throw new UsageError('Pass either --all or at least one --feature, not both.');
-  }
+   // XOR -> false === false -> error | true === true -> error | false === true -> ok | true === false -> ok
+   if (all === feature.length > 0) {
+      throw new UsageError(
+         "Pass either --all or at least one --feature, not both.",
+      );
+   }
 
-  const knownKeys = ALL_FEATURES.map(({ key }) => key);
-  const unknownKeys = feature.filter((key) => !knownKeys.includes(key));
+   const knownKeys = ALL_FEATURES.map(({ key }) => key);
+   const unknownKeys = feature.filter((key) => !knownKeys.includes(key));
 
-  if (unknownKeys.length > 0) {
-    throw new UsageError(
-      `Unknown feature key: ${unknownKeys.join(', ')}. Known keys: ${knownKeys.join(', ') || '(none)'}.`,
-    );
-  }
+   if (unknownKeys.length > 0) {
+      throw new UsageError(
+         `Unknown feature key: ${unknownKeys.join(", ")}. Known keys: ${knownKeys.join(", ") || "(none)"}.`,
+      );
+   }
 
-  return {
-    email,
-    featureKeys: all ? knownKeys : [...new Set(feature)],
-    apply,
-  };
+   return {
+      email,
+      featureKeys: all ? knownKeys : [...new Set(feature)],
+      apply,
+   };
 }
 
 async function main(args: string[]): Promise<number> {
-  let request: GrantRequest;
-  try {
-    request = parseGrantArgs(args);
-  } catch (error) {
-    if (error instanceof UsageError) {
-      console.error(`${error.message}\n${USAGE}`);
-      return 2;
-    }
-    throw error;
-  }
+   let request: GrantRequest;
+   try {
+      request = parseGrantArgs(args);
+   } catch (error) {
+      if (error instanceof UsageError) {
+         console.error(`${error.message}\n${USAGE}`);
+         return 2;
+      }
+      throw error;
+   }
 
-  return grantEntitlements(request);
+   return grantEntitlements(request);
 }
 
 if (import.meta.main) {
-  try {
-    process.exitCode = await main(process.argv.slice(2));
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
-    process.exitCode = 1;
-  }
+   try {
+      process.exitCode = await main(process.argv.slice(2));
+   } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+   }
 }
 ```
 
@@ -366,12 +370,12 @@ if (import.meta.main) {
 
 Run each case from `packages/ops` with `pnpm exec tsx src/scripts/entitlements-grant.ts …`, and check `echo $?`:
 
-| Arguments                                                      | Output                                                   | Exit |
-| -------------------------------------------------------------- | -------------------------------------------------------- | ---- |
-| `--email a@b.c --aply --all`                                   | `Unknown option '--aply'`                                | 2    |
-| `--all`                                                        | `--email is required.`                                   | 2    |
+| Arguments                                                             | Output                                                   | Exit |
+| --------------------------------------------------------------------- | -------------------------------------------------------- | ---- |
+| `--email a@b.c --aply --all`                                          | `Unknown option '--aply'`                                | 2    |
+| `--all`                                                               | `--email is required.`                                   | 2    |
 | `--email a@b.c --all --feature x`, or neither `--all` nor `--feature` | `Pass either --all or at least one --feature, not both.` | 2    |
-| `--email a@b.c --feature x --feature y`                        | `Unknown feature key: x, y. Known keys: (none).`         | 2    |
+| `--email a@b.c --feature x --feature y`                               | `Unknown feature key: x, y. Known keys: (none).`         | 2    |
 
 ---
 
@@ -382,69 +386,75 @@ Run each case from `packages/ops` with `pnpm exec tsx src/scripts/entitlements-g
 1. Change the imports at the top of the file:
 
 ```ts
-import { and, eq, inArray } from 'drizzle-orm';
-import { parseArgs } from 'node:util';
+import { and, eq, inArray } from "drizzle-orm";
+import { parseArgs } from "node:util";
 
-import { profiles, userFeatureEntitlements } from '@sidekick/core/db/schema';
-import { ALL_FEATURES } from '@sidekick/features-registry';
+import { profiles, userFeatureEntitlements } from "@sidekick/core/db/schema";
+import { ALL_FEATURES } from "@sidekick/features-registry";
 
-import { withPrivilegedDb } from '../lib/db';
+import { withPrivilegedDb } from "../lib/db";
 ```
 
 2. Add above `main`:
 
 ```ts
 async function grantEntitlements(request: GrantRequest): Promise<number> {
-  const { email, featureKeys, apply } = request;
+   const { email, featureKeys, apply } = request;
 
-  return withPrivilegedDb(async (db) => {
-    const matches = await db
-      .select({ id: profiles.id })
-      .from(profiles)
-      .where(eq(profiles.email, email));
+   return withPrivilegedDb(async (db) => {
+      const matches = await db
+         .select({ id: profiles.id })
+         .from(profiles)
+         .where(eq(profiles.email, email));
 
-    if (matches.length !== 1) {
-      console.error(`Unique profile not found for email ${email} (found ${matches.length}).`);
-      return 1;
-    }
+      if (matches.length !== 1) {
+         console.error(
+            `Unique profile not found for email ${email} (found ${matches.length}).`,
+         );
+         return 1;
+      }
 
-    const userId = matches[0].id;
-    console.log(`Account: ${email} (${userId})`);
+      const userId = matches[0].id;
+      console.log(`Account: ${email} (${userId})`);
 
-    if (featureKeys.length === 0) {
-      console.log('No features to grant: ALL_FEATURES is empty.');
+      if (featureKeys.length === 0) {
+         console.log("No features to grant: ALL_FEATURES is empty.");
+         return 0;
+      }
+
+      if (!apply) {
+         const existing = await db
+            .select({ featureKey: userFeatureEntitlements.featureKey })
+            .from(userFeatureEntitlements)
+            .where(
+               and(
+                  eq(userFeatureEntitlements.userId, userId),
+                  inArray(userFeatureEntitlements.featureKey, featureKeys),
+               ),
+            );
+         const alreadyEnabled = new Set(existing.map((row) => row.featureKey));
+         const toGrant = featureKeys.filter((key) => !alreadyEnabled.has(key));
+
+         console.log(
+            `Already enabled: ${[...alreadyEnabled].join(", ") || "(none)"}`,
+         );
+         console.log(`To enable:       ${toGrant.join(", ") || "(none)"}`);
+         console.log("Dry run: nothing written. Add --apply to grant.");
+         return 0;
+      }
+
+      const granted = await db
+         .insert(userFeatureEntitlements)
+         .values(featureKeys.map((featureKey) => ({ userId, featureKey })))
+         .onConflictDoNothing()
+         .returning({ featureKey: userFeatureEntitlements.featureKey });
+
+      console.log(
+         `Granted: ${granted.map(({ featureKey }) => featureKey).join(", ") || "(none)"}`,
+      );
+
       return 0;
-    }
-
-    if (!apply) {
-      const existing = await db
-        .select({ featureKey: userFeatureEntitlements.featureKey })
-        .from(userFeatureEntitlements)
-        .where(
-          and(
-            eq(userFeatureEntitlements.userId, userId),
-            inArray(userFeatureEntitlements.featureKey, featureKeys),
-          ),
-        );
-      const alreadyEnabled = new Set(existing.map((row) => row.featureKey));
-      const toGrant = featureKeys.filter((key) => !alreadyEnabled.has(key));
-
-      console.log(`Already enabled: ${[...alreadyEnabled].join(', ') || '(none)'}`);
-      console.log(`To enable:       ${toGrant.join(', ') || '(none)'}`);
-      console.log('Dry run: nothing written. Add --apply to grant.');
-      return 0;
-    }
-
-    const granted = await db
-      .insert(userFeatureEntitlements)
-      .values(featureKeys.map((featureKey) => ({ userId, featureKey })))
-      .onConflictDoNothing()
-      .returning({ featureKey: userFeatureEntitlements.featureKey });
-
-    console.log(`Granted: ${granted.map(({ featureKey }) => featureKey).join(', ') || '(none)'}`);
-
-    return 0;
-  });
+   });
 }
 ```
 
@@ -476,14 +486,14 @@ async function grantEntitlements(request: GrantRequest): Promise<number> {
     "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
 ```
 
-- **`dotenv -e ../../.env.local --`** is how Sidekick scripts load env ([[06-decisions/technical/dotenv-cli|dotenv-cli decision]]); core's `db:*` scripts do the same. The path is relative to `packages/ops`, where pnpm runs the package's scripts. Tested behaviour: a missing file is skipped (our own "Missing DATABASE_DIRECT_URL…" error takes over), a variable set in the shell beats the file (so a later break-glass run can point elsewhere without editing files), an empty value (`DATABASE_DIRECT_URL=`) also beats the file, and the script's exit code comes back unchanged. Node's own `--env-file-if-exists`, passed as a `tsx` flag, behaves the same; the lesson first used it, then switched to match the decision ([sidekick#24](https://github.com/mehtapratik/sidekick/pull/24), which landed after #23 merged).
+- **`dotenv -e ../../.env.local --`** is how Sidekick scripts load env ([[03-system-design/non-functional/config/dotenv-cli|dotenv-cli decision]]); core's `db:*` scripts do the same. The path is relative to `packages/ops`, where pnpm runs the package's scripts. Tested behaviour: a missing file is skipped (our own "Missing DATABASE_DIRECT_URL…" error takes over), a variable set in the shell beats the file (so a later break-glass run can point elsewhere without editing files), an empty value (`DATABASE_DIRECT_URL=`) also beats the file, and the script's exit code comes back unchanged. Node's own `--env-file-if-exists`, passed as a `tsx` flag, behaves the same; the lesson first used it, then switched to match the decision ([sidekick#24](https://github.com/mehtapratik/sidekick/pull/24), which landed after #23 merged).
 - **`pnpm -C packages/ops`, not `--filter`.** `--filter` is a recursive run, built for many packages, and reports any failure as exit 1 with an extra `ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL` block. `-C` (`--dir`) runs pnpm as if from that folder, so the script's 2 stays 2:
 
-| Command                                                  | Exit for a usage error |
-| -------------------------------------------------------- | ---------------------- |
-| `pnpm entitlements:grant --all` (in `packages/ops`)      | 2                      |
-| `pnpm --filter @sidekick/ops entitlements:grant --all`   | 1                      |
-| `pnpm -C packages/ops entitlements:grant --all`          | 2                      |
+| Command                                                | Exit for a usage error |
+| ------------------------------------------------------ | ---------------------- |
+| `pnpm entitlements:grant --all` (in `packages/ops`)    | 2                      |
+| `pnpm --filter @sidekick/ops entitlements:grant --all` | 1                      |
+| `pnpm -C packages/ops entitlements:grant --all`        | 2                      |
 
 - **Root scripts exist only at the root.** Run from `packages/ops`, `pnpm ops:entitlements:grant` finds no such script there, falls back to running it as a shell command, and fails with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL … Command "ops:entitlements:grant" not found`. Inside the package, use the local name, `pnpm entitlements:grant`.
 - **The `ops:` prefix** marks a privileged tool wherever it's seen; the rest is noun and verb, so a later `pnpm ops entitlements grant` maps one-to-one.
@@ -497,26 +507,30 @@ async function grantEntitlements(request: GrantRequest): Promise<number> {
 
 From the repo root, with your sign-up email:
 
-| Run                                                                     | Output                                                                         | Exit |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---- |
-| `pnpm ops:entitlements:grant --email <you> --all`                       | `Account: <you> (<uuid>)`, `No features to grant: ALL_FEATURES is empty.`      | 0    |
-| `pnpm ops:entitlements:grant --email nobody@example.com --all`          | `Unique profile not found for email nobody@example.com (found 0).`             | 1    |
-| `DATABASE_DIRECT_URL= pnpm ops:entitlements:grant --email <you> --all`  | `Missing DATABASE_DIRECT_URL. Set it in the root .env.local (see .env.example).` | 1    |
+| Run                                                                    | Output                                                                           | Exit |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---- |
+| `pnpm ops:entitlements:grant --email <you> --all`                      | `Account: <you> (<uuid>)`, `No features to grant: ALL_FEATURES is empty.`        | 0    |
+| `pnpm ops:entitlements:grant --email nobody@example.com --all`         | `Unique profile not found for email nobody@example.com (found 0).`               | 1    |
+| `DATABASE_DIRECT_URL= pnpm ops:entitlements:grant --email <you> --all` | `Missing DATABASE_DIRECT_URL. Set it in the root .env.local (see .env.example).` | 1    |
 
 Then add a temporary manifest to `ALL_FEATURES` in `packages/features-registry/src/index.ts`:
 
 ```ts
 export const ALL_FEATURES: readonly FeatureManifest[] = [
-  { key: 'seed-probe', name: 'Seed probe', description: 'Temporary, for lesson 7' },
+   {
+      key: "seed-probe",
+      name: "Seed probe",
+      description: "Temporary, for lesson 7",
+   },
 ];
 ```
 
-| Run                                   | Output                                                                       |
-| ------------------------------------- | ---------------------------------------------------------------------------- |
-| `--email <you> --all`                 | `Already enabled: (none)`, `To enable: seed-probe`, `Dry run: nothing written…` |
-| `--email <you> --all --apply`         | `Granted: seed-probe`                                                        |
-| `--email <you> --all --apply` again   | `Granted: (none)`                                                            |
-| `--email <you> --feature seed-probe`  | `Already enabled: seed-probe`, `To enable: (none)`                           |
+| Run                                  | Output                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------- |
+| `--email <you> --all`                | `Already enabled: (none)`, `To enable: seed-probe`, `Dry run: nothing written…` |
+| `--email <you> --all --apply`        | `Granted: seed-probe`                                                           |
+| `--email <you> --all --apply` again  | `Granted: (none)`                                                               |
+| `--email <you> --feature seed-probe` | `Already enabled: seed-probe`, `To enable: (none)`                              |
 
 Clean up: `git checkout -- packages/features-registry/src/index.ts`, and in the Supabase SQL editor:
 

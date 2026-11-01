@@ -1,19 +1,15 @@
 ---
 publish: true
-id: decision.technical.content-sequence
+id: system-design.functional-design.04-synergy.content-sequence
 title: Content Sequence
 created: 2026-10-31
-kind: decision
+updated: 2026-11-01
+kind: spec
 version: 1.0.0
 tags:
-   - decision
-   - technical
-   - architecture-decision
+   - system-design
    - synergy
 status: accepted
-applies_to:
-   - "[[02-prd/03-features/01-synergy/07.prd.features.synergy.foundations]]"
-   - "[[03-system-design/functional-design/04-synergy/00-overview]]"
 ---
 
 ## What
@@ -35,9 +31,13 @@ The entity index gets a third counter, **`content_seq`**, that goes up on every 
 ## Options not taken
 
 - **Revision goes up on version saves too.** Fixes the version case, not the anchor case.
-- **Anchors stored outside the content** (standoff), which would leave content untouched by anchor writes. Offsets inside a block would shift with every edit and need updating on each save; whole-document saves from bots would fall back to guessing by quote, in a rule that refuses saves; undo can't bring back a position stored outside the text; collaboration would need relative positions. See [[06-decisions/technical/anchors-in-content|Anchors in content]].
+- **Anchors stored outside the content** (standoff), which would leave content untouched by anchor writes. Offsets inside a block would shift with every edit and need updating on each save; whole-document saves from bots would fall back to guessing by quote, in a rule that refuses saves; undo can't bring back a position stored outside the text; collaboration would need relative positions. See [[03-system-design/functional-design/04-synergy/anchors-in-content|Anchors in content]].
 
 ## Consequences
 
 - When an anchor lands in a document that is open in an editor, that editor's next save gets 409. The editor fetches the latest content, copies in the anchor marks it lacks (by block id and quote) and saves again, without showing anything. A planned task for the editor lesson.
 - Overrides PRD page 07 items 5 and 11, and the spec's Contracts, which keyed concurrency, the ETag and the cache on revision.
+
+## Decision History
+
+- 2026-10-31 · accepted · Content Sequence
