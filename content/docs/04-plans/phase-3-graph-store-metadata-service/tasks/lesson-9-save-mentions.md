@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-9-save-mentions
-title: "Phase 3 Lesson 9: Save Call, Mentions"
+title: "Synergy Lesson 9: Save Call, Mentions"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -15,7 +15,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 9 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-8-lists-and-supersede|lesson 8]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-10-save-anchors|lesson 10]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 9 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-8-lists-and-supersede|lesson 8]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-10-save-anchors|lesson 10]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** links that live in content. A note's body can mention a link (a mark carrying the relationship id), and the note's save tells Synergy every relationship id its content now mentions. Synergy compares that set with what it stored, keeps `mentioned` true or false on each link, creates the links the save declares, and tombstones a link once its source neither cites nor mentions it.
 

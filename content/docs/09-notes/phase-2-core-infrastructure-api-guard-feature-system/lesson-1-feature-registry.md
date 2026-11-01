@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-1
-title: "Phase 2 Lesson 1 Notes: Feature Registry"
+title: "Gatekeeper Lesson 1 Notes: Feature Registry"
 created: 2026-10-18
 updated: 2026-10-18
 kind: notes

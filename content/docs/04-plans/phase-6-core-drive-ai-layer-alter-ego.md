@@ -17,7 +17,7 @@ tags:
    - core-drive
 status: planned
 depends_on:
-   - "[[04-plans/phase-3-graph-store-metadata-service]]"
+   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
    - "[[04-plans/phase-4-taxila-v1-knowledge-management]]"
    - "[[04-plans/phase-5-zinsser-v1-writing-editor-first]]"
 ---

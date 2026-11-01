@@ -1,7 +1,7 @@
 ---
 publish: true
 id: prd.synergy.ticket-08
-title: Rich Live Link Draft
+title: Sneak Peek Link Draft
 created: 2026-10-25
 kind: plan
 type: prototype
@@ -18,7 +18,7 @@ tags:
 
 ## Question
 
-A rough Rich Live Link with its three display types (inline, card, live preview): what each shows, what it asks a resolver for, and how a stale, deprecated or superseded target looks in each.
+A rough Sneak Peek Link with its three display types (inline, card, live preview): what each shows, what it asks a resolver for, and how a stale, deprecated or superseded target looks in each.
 
 ## Prototype
 
@@ -46,4 +46,4 @@ Throwaway page, kept outside this repo as a private Artifact (https://claude.ai/
 
 **Amended by ticket 11 (2026-10-27):** a labeled link is a fourth display type, **minimal**. It shows only the author's label: no type, no status, no `*`/`#`. A superscript dot marks a state that needs attention. Hovering to see the details is post-MVP. Unlabeled inline keeps `{type} - {title} [{status}]{*|#}`.
 
-**Amended 2026-10-28 (Pratik, PRD review):** inline reads `{title} ({type}) - [{status}]`. The `*` and `#` marks become dots, the way editors show a dirty file: a standard-colour dot for edited, a red dot for changed (new version). They also differ in shape, so colour is never the only cue. Minimal links keep a single red dot. Rich Live Links are consumable by third parties (Notion, Slack), so the component is host-agnostic; the integrations are post-MVP.
+**Amended 2026-10-28 (Pratik, PRD review):** inline reads `{title} ({type}) - [{status}]`. The `*` and `#` marks become dots, the way editors show a dirty file: a standard-colour dot for edited, a red dot for changed (new version). They also differ in shape, so colour is never the only cue. Minimal links keep a single red dot. Sneak Peek Links are consumable by third parties (Notion, Slack), so the component is host-agnostic; the integrations are post-MVP.

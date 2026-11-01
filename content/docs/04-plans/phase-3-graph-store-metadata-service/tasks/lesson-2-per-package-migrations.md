@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-2-per-package-migrations
-title: "Phase 3 Lesson 2: Per-Package Migrations"
+title: "Synergy Lesson 2: Per-Package Migrations"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -16,7 +16,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 2 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-1-layer-folders|lesson 1]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-3-entity-index|lesson 3]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 2 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-1-layer-folders|lesson 1]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-3-entity-index|lesson 3]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** each package that owns tables gets its own Drizzle config, its own migrations folder and its own migrations table. `pnpm db:migrate` runs them in dependency order (foundation, then platform, then features), and the throwaway test database is built the same way, so Synergy's integration tests in lesson 3 run against every migration.
 

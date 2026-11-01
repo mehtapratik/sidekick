@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-2and2-3
-title: "Lesson 4 (tasks 2.2, 2.3): withApiGuard With withRLS"
+title: "Gatekeeper Lesson 4 (Tasks 2.2, 2.3): withApiGuard With withRLS"
 created: 2026-10-18
 updated: 2026-10-23
 kind: plan

@@ -14,7 +14,7 @@ tags:
 status: accepted
 applies_to:
    - "[[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships]]"
-   - "[[02-prd/03-features/01-synergy/05.prd.features.synergy.rich-live-link]]"
+   - "[[02-prd/03-features/01-synergy/05.prd.features.synergy.sneak-peek-link]]"
 ---
 
 ## What

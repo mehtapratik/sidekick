@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-12-tags
-title: "Phase 3 Lesson 12: Tags"
+title: "Synergy Lesson 12: Tags"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -15,7 +15,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 12 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-11-delete-and-restore|lesson 11]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-13-race-tests|lesson 13]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 12 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-11-delete-and-restore|lesson 11]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-13-race-tests|lesson 13]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** tags on entities and on links. Tags can be plain (`deep-work`) or `key:value` (`status:draft`), can be aliases of another tag, can be renamed, merged and deprecated, and are applied and removed through the API.
 

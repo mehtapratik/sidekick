@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-7-staleness
-title: "Phase 3 Lesson 7: Staleness Dots and the Roll-Up"
+title: "Synergy Lesson 7: Staleness Dots and the Roll-Up"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -15,7 +15,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 7 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-6-links|lesson 6]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-8-lists-and-supersede|lesson 8]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 7 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-6-links|lesson 6]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-8-lists-and-supersede|lesson 8]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** the dots that tell a reader a link's target moved on. Each reference compares its snapshot with the target's current version and revision and status, and gets its marks (edited, changed) on every read. The referencer can confirm "still holds" to move the snapshot. An entity's read response carries the roll-up of its outgoing references that need attention.
 

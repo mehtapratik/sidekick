@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-5-outbox
-title: "Phase 3 Lesson 5: Outbox, Status and Versions"
+title: "Synergy Lesson 5: Outbox, Status and Versions"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -16,7 +16,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 5 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-4-sandbox-providers|lesson 4]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-6-links|lesson 6]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 5 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-4-sandbox-providers|lesson 4]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-6-links|lesson 6]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** the `outbox` table, written in the same transaction as every Synergy write, so a later reader (notifications, search indexing, push) never misses or invents an event. The entity writes from lessons 3 and 4 start writing their events. Also two small routes: `PATCH /entities/:id/status` (deprecate and back) and `GET /entities/:id/versions`.
 

@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-5
-title: "Phase 2 Lesson 5 Notes: Request and Auth-Failure Logging"
+title: "Gatekeeper Lesson 5 Notes: Request and Auth-Failure Logging"
 created: 2026-10-23
 updated: 2026-10-23
 kind: notes

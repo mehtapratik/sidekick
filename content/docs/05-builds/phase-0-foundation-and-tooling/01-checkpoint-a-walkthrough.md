@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-0.checkpoint-a
-title: Checkpoint A Walkthrough
+title: Groundwork Checkpoint A Walkthrough
 created: 2026-05-29
 kind: guidance
 version: 1.0.0

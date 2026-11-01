@@ -13,7 +13,7 @@ tags:
 
 A place in an entity that shows a [[relationship|link]]. Either end of a link may mention it any number of times; mentions in the target read with the link's inverse name. There are three kinds:
 
-- **Direct mention:** shows the link itself as a [[rich-live-link|Rich Live Link]] (minimal, inline, card or preview).
+- **Direct mention:** shows the link itself as a [[sneak-peek-link|Sneak Peek Link]] (minimal, inline, card or preview).
 - **Alias mention:** the author's own words carry the link.
 - **Cited mention:** the link is held outside the content, in a field (such as `related-to`) or a links panel.
 

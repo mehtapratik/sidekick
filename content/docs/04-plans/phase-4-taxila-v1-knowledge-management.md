@@ -17,7 +17,7 @@ tags:
    - authentication
 status: planned
 depends_on:
-   - "[[04-plans/phase-3-graph-store-metadata-service]]"
+   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
 ---
 
 **Taxila** is Phase 4: the first product module, a knowledge base of atomic notes and sources. Scope: notes and knowledge sources you can create, enrich with metadata, link and browse through the command palette. Every later module follows its pattern.

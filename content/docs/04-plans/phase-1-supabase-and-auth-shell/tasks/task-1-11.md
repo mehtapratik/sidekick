@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-1.task-1-11
-title: Task 1.11
+title: Front Door Task 1.11
 created: 2026-09-19
 kind: plan
 version: 1.0.0

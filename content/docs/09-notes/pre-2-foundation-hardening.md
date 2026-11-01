@@ -19,7 +19,7 @@ tags:
    - eslint
 status: completed
 applies_to:
-   - "[[04-plans/pre-2-foundation-hardening-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/pre-2-foundation-hardening-complete]]"
 ---
 
 These notes record what Pre-2 taught, task by task: the mental models, the surprises, and the mistakes worth remembering. Pre-2 turned a foundation that worked on one machine into one that is reproducible, proven by tests, and enforced by tools.

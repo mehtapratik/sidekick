@@ -1,7 +1,7 @@
 ---
 publish: false
-id: glossary.rich-live-link
-title: Rich Live Link
+id: glossary.sneak-peek-link
+title: Sneak Peek Link
 created: 2026-10-25
 updated: 2026-10-30
 kind: glossary

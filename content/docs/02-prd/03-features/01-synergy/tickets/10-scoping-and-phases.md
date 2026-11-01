@@ -84,7 +84,7 @@ Styling can wait. These can't, because every module will build on the component'
 **3b. Render and find**
 
 - Resolver registry and renderer registry, both batched.
-- The Rich Live Link component, MVP-complete in all four display types and every state, in plain text (no icons, no pills, no hover), built on the frontend foundations.
+- The Sneak Peek Link component, MVP-complete in all four display types and every state, in plain text (no icons, no pills, no hover), built on the frontend foundations.
 - Note and task renderers. Render cache.
 - Backlinks API ("who references me").
 - Search over title and metadata (type, status, tags, module), with filters and cursors.
@@ -92,7 +92,7 @@ Styling can wait. These can't, because every module will build on the component'
 
 ### Rest of the MVP (lands with the modules that need it)
 
-- **Rule for every module:** each entity type that can appear as a Rich Live Link (datum, narrative, plan, chat session, and so on) ships its own renderer, registered for any consumer that needs to show that type.
+- **Rule for every module:** each entity type that can appear as a Sneak Peek Link (datum, narrative, plan, chat session, and so on) ships its own renderer, registered for any consumer that needs to show that type.
 
 - **Phase 4, Taxila:** datums and narratives as the first real tenant. Labeled list links, `derived-from` between narratives and datums, supersede confirmation flow. Source anchors (selected text becomes a minimal link) and block-level target anchors in Taxila's editor.
 - **Phase 5, Zinsser:** word and sentence target anchors, using the algorithm system design chooses.

@@ -18,7 +18,7 @@ tags:
    - cli
 status: planned
 depends_on:
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
 **Terminal** is Phase 9: using Sidekick from the command line. Scope: API keys managed from the UI, Bearer authentication in `resolveApiCaller`, and a working CLI.

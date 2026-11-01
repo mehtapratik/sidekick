@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-0.checkpoint-c
-title: Checkpoint C Walkthrough
+title: Groundwork Checkpoint C Walkthrough
 created: 2026-05-29
 kind: guidance
 version: 1.0.0

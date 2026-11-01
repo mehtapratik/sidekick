@@ -22,7 +22,7 @@ A user can select part of an entity (a word, a sentence, a paragraph) and make i
 
 ## Round 1 answers (2026-10-27)
 
-- Selecting text and linking it is the same thing as a labeled link. Both render as a fourth Rich Live Link display type, **minimal**: only the label, with a superscript dot for a critical state. No type, status, `*` or `#`. Hover or click details are post-MVP.
+- Selecting text and linking it is the same thing as a labeled link. Both render as a fourth Sneak Peek Link display type, **minimal**: only the label, with a superscript dot for a critical state. No type, status, `*` or `#`. Hover or click details are post-MVP.
 - Removing a link is never special. Whoever can edit the source can delete the anchored text or the link, and the relationship goes with it. (Only deleting a referenced _target_ is ever blocked; see ticket 02.)
 - Target anchors: block level to start, but word and sentence anchors are in MVP scope.
 - Staleness stays per entity, not per block.

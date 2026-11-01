@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-7
-title: "Phase 2 Lesson 7 Notes: The Ops Package and Entitlements Grant"
+title: "Gatekeeper Lesson 7 Notes: The Ops Package and Entitlements Grant"
 created: 2026-10-24
 updated: 2026-10-24
 kind: notes

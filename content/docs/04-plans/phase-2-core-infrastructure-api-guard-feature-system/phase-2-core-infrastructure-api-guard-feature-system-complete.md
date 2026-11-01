@@ -17,8 +17,8 @@ tags:
    - feature-system
 status: completed
 depends_on:
-   - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
-   - "[[04-plans/pre-2-foundation-hardening-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/pre-2-foundation-hardening-complete]]"
 ---
 
 **Gatekeeper** is Phase 2: the single checkpoint every request passes. Scope: `resolveApiCaller` (who is asking), `withApiGuard` (scope, feature and RLS transaction), the feature registry, per-user entitlements, structured logging, `/api/health` and the `ops` scripts.
@@ -27,7 +27,7 @@ depends_on:
 >
 > **Learning payoff:** Middleware patterns, centralized auth, feature flags, the "why" behind the architecture.
 >
-> **Completed:** October 2026 — walkthrough in [[05-builds/phase-2-walkthrough]]
+> **Completed:** October 2026 — walkthrough in [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough]]
 
 > **Gate:** ✅ Met — [[pre-2-foundation-hardening-complete]] was required before beginning the original Phase 2 tasks.
 
@@ -79,7 +79,7 @@ and that lesson's brief (the plan's Lessons table links each one) before we star
 
 Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[contracts]], which changes when Pratik's own design wins.
 
-**Close-out (lesson 8):** the coach wrote [[05-builds/phase-2-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `09-notes/` (`publish: false`). The brief is [[lesson-8-close-out]].
+**Close-out (lesson 8):** the coach wrote [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `09-notes/` (`publish: false`). The brief is [[lesson-8-close-out]].
 
 **Design decisions made while planning** (details in [[contracts]]; each can be revisited in its lesson):
 
@@ -102,7 +102,7 @@ Every brief has the same parts: what gets built, the concepts, what the coach re
 - **Task 2.10 shipped as a package, not a registry script.** `packages/ops` holds privileged scripts (dev seeds, provisioning, break-glass), runs them as the `postgres` role through `withPrivilegedDb`, and nothing may import it. The dependency direction gained a side branch, `ops → registry, foundation` ([[contracts#Ops|contracts]]).
 - **The guard's order changed from the planning sketch.** The scope check runs before the transaction and the feature check inside it, so a rejected key never takes a pooled connection and entitlements are read under RLS. [[with-api-guard]] now describes the shipped order.
 - **Tasks 2.4 and 2.5 already cover Phase 10's 10.1 and 10.2** (request and auth-failure logging inside `withApiGuard`), and the guard's errors already use 10.5's `{ error, code }` shape. Phase 10 still owns the shape for handler errors.
-- **Late fixes landed as post notes in earlier walkthroughs:** the Data API roles (Phase 1.1 and Pre-2, [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17)), the lazy database client (Pre-2, [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)), the `ops` boundaries element (Pre-2, [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)) and pnpm build approvals (Phase 0, [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14)). [[05-builds/phase-2-walkthrough#Post notes in earlier walkthroughs|The walkthrough]] lists them.
+- **Late fixes landed as post notes in earlier walkthroughs:** the Data API roles (Phase 1.1 and Pre-2, [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17)), the lazy database client (Pre-2, [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)), the `ops` boundaries element (Pre-2, [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)) and pnpm build approvals (Phase 0, [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14)). [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough#Post notes in earlier walkthroughs|The walkthrough]] lists them.
 - **Added beyond the original list:** a startup check for required variables (`apps/web/src/instrumentation.ts`, [sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)), shared test helpers in `packages/core/tests/helpers/` ([sidekick#18](https://github.com/mehtapratik/sidekick/pull/18)), and the `interface` lint rule ([sidekick#10](https://github.com/mehtapratik/sidekick/pull/10)).
 
 **Carried forward, not built in Phase 2:**

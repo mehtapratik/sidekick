@@ -19,7 +19,7 @@ tags:
 1. Centralizes common security concerns at public API layer so these checks aren’t scattered across multiple clients.
 2. Funnels request through auth, feature entitlement checks, API scope validations, and RLS context setup before handing over request to handler.
 
-This note is the short spec. The source of truth for the details is [[contracts#Guard|Phase 2 contracts]] (guard, error shape and logging), and the code is `packages/core/src/api/guard.ts`, exported from `@sidekick/core/api`. It shipped in Phase 2 ([[05-builds/phase-2-walkthrough]]).
+This note is the short spec. The source of truth for the details is [[contracts#Guard|Phase 2 contracts]] (guard, error shape and logging), and the code is `packages/core/src/api/guard.ts`, exported from `@sidekick/core/api`. It shipped in Phase 2 ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough]]).
 
 ## Signature
 

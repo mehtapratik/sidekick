@@ -17,8 +17,8 @@ tags:
    - graph
 status: planned
 depends_on:
-   - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
 **Synergy** is Phase 3: how any entity in any module links to any other. Scope: the entity index and version log, links and relation types, staleness, lists, mentions and anchors, delete and restore, and tags, built in two parts (3a the store and its API, 3b resolving and rendering links).
@@ -56,7 +56,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 
 ```
 Coach me through Phase 3 lesson 1. Read AGENTS.md, the Phase 3 plan
-(docs/04-plans/phase-3-graph-store-metadata-service.md) and that lesson's
+(docs/04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service.md) and that lesson's
 brief (the plan's Lessons table links each one) before we start.
 ```
 
@@ -96,7 +96,7 @@ Candidates from the planning handover, to be merged, split or reordered at the c
 - **One React:** a pnpm catalog for `react`, `react-dom` and `@types/react`; `apps/web` uses `catalog:`; `@sidekick/ui` and `@sidekick/synergy` list React as a peer ([[06-decisions/technical/react-as-peer-dependency|decision]]). Check: `pnpm why react` resolves to one version.
 - **Resolve and the React registry:** `resolve` on `LinkableTypeServer` (batched per provider), `LinkableTypeReact`, the registry assembling both maps, `POST /api/synergy/links/resolve`, the resolved-link zod schema frozen in `/contracts`.
 - **Sandbox renderers:** `resolve` and `render` for the sandbox notes and tasks.
-- **Rich Live Link:** the `/react` component with pure `render`, an injected `resolveLinks` transport and labels from `packages/copy`, tested in Vitest browser mode with Testing Library and MSW.
+- **Sneak Peek Link:** the `/react` component with pure `render`, an injected `resolveLinks` transport and labels from `packages/copy`, tested in Vitest browser mode with Testing Library and MSW.
 - **Render cache and backlinks:** cache keyed by (entity, `content_seq`, display type); backlinks list live links only.
 - **Search:** `simple` full-text plus `pg_trgm` on display names, `btree_gin` indexes leading with `user_id`, `GET /api/synergy/search`, and the test pinning spec story 71 (trigram `word_similarity`).
 - **Playground and the RLS uuid fix:** a playground page in `apps/web` behind the sandbox entitlements, built on the public API; Sidekick migrations 0002 and 0007 compare uuids directly instead of casting to text.
@@ -138,7 +138,7 @@ Every item from the system-design session, and where it is built.
 | Race tests with two connections; the cycle check on a large synthetic graph                                                                                                                                                                                                                                                                                                                    | lesson 13                                |
 | Keys, never copy: Synergy stores and returns keys only                                                                                                                                                                                                                                                                                                                                         | every lesson; the response test in 3b    |
 | Testing: integration tests through the guarded API ([[03-system-design/non-functional/testing/testing-layers\|testing layers]])                                                                                                                                                                                                                                                                | every lesson                             |
-| React as a peer dependency; `resolve`, `POST /links/resolve` and the frozen resolved-link schema; the Rich Live Link in Vitest browser mode with MSW; render cache; `simple` full-text and `pg_trgm`; spec story 71                                                                                                                                                                            | 3b, planned at Checkpoint 3a             |
+| React as a peer dependency; `resolve`, `POST /links/resolve` and the frozen resolved-link schema; the Sneak Peek Link in Vitest browser mode with MSW; render cache; `simple` full-text and `pg_trgm`; spec story 71                                                                                                                                                                            | 3b, planned at Checkpoint 3a             |
 | Editor order; the 409 auto-merge and the "Page updated" banner (built with the shared editor, not in Phase 3)                                                                                                                                                                                                                                                                                  | decided at Checkpoint 3a                 |
 
 > [!note]

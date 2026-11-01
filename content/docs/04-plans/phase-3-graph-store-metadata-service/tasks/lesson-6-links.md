@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-6-links
-title: "Phase 3 Lesson 6: Links, Relation Types and Cycles"
+title: "Synergy Lesson 6: Links, Relation Types and Cycles"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -17,7 +17,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 6 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-5-outbox|lesson 5]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-7-staleness|lesson 7]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 6 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-5-outbox|lesson 5]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-7-staleness|lesson 7]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** single links ("solo" relationships) between any two entities, with an optional label and a type from a seeded vocabulary; the cycle check that refuses a reference loop; the server half of type registration, so Synergy knows which feature gates each type and can refuse or show a link as `locked`; and the links routes with idempotent creates.
 

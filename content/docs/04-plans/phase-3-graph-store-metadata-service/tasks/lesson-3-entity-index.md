@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-3-entity-index
-title: "Phase 3 Lesson 3: Entity Index and Version Log"
+title: "Synergy Lesson 3: Entity Index and Version Log"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -17,7 +17,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 3 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-2-per-package-migrations|lesson 2]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-4-sandbox-providers|lesson 4]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 3 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-2-per-package-migrations|lesson 2]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-4-sandbox-providers|lesson 4]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** Synergy's first tables, `entity_index` and `version_log`, with RLS on `user_id` only, the restore-aware trigger bound, partial unique indexes and provenance columns. Also the lock-first helper and the first repository functions: register an entity, save content with the `content_seq` stale check, and read one. And a written rule for choosing a table's delete model.
 

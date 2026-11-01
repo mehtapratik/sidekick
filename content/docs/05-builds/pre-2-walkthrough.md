@@ -18,7 +18,7 @@ tags:
    - eslint
 status: completed
 applies_to:
-   - "[[04-plans/pre-2-foundation-hardening-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/pre-2-foundation-hardening-complete]]"
 ---
 
 # Pre-2 Walkthrough — Foundation Hardening

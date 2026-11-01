@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.contracts
-title: Phase 2 Build Rules and Target Design
+title: Gatekeeper Build Rules and Target Design
 created: 2026-10-18
 updated: 2026-10-24
 kind: plan

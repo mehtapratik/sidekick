@@ -18,7 +18,7 @@ tags:
    - typescript
 status: completed
 applies_to:
-   - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
 ---
 
 This guide walks through Phase 1.1 step by step. It assumes you have completed Phase 1: Supabase is connected, the `profiles` table exists, Drizzle migrations are working, and the basic RLS policy was created via the Supabase dashboard.

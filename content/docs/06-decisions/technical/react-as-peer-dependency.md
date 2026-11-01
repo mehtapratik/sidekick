@@ -36,7 +36,7 @@ Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `
 ## Why
 
 - Two copies of React in one page break it: a context provided by one copy is invisible to components rendered by the other ("context store" lost), and hooks throw "Invalid hook call". A package that brings its own `react` dependency can end up with a second copy whenever its range and the app's resolve differently.
-- A peer dependency says "use the host's React", which is also what a third-party host (Notion, an embed page) needs from the Rich Live Link later.
+- A peer dependency says "use the host's React", which is also what a third-party host (Notion, an embed page) needs from the Sneak Peek Link later.
 - A catalog keeps the peer range, the dev copy and the app's version from drifting apart, without hand-editing several `package.json` files on every upgrade.
 
 ## Consequences

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.checkpoint-3a
-title: "Phase 3 Checkpoint 3a: Prove the Store, Plan 3b"
+title: "Synergy Checkpoint 3a: Prove the Store, Plan 3b"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -14,13 +14,13 @@ tags:
 status: planned
 ---
 
-> **Checkpoint after lesson 13.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-13-race-tests|lesson 13]]. Next: the first 3b lesson, planned here. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Checkpoint after lesson 13.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-13-race-tests|lesson 13]]. Next: the first 3b lesson, planned here. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** no code. 3a is proven on `main`, and 3b is planned from what 3a actually built (Pratik, 2026-11-01: what 3b needs depends on how 3a gets built and the decisions made on the way).
 
 **Learning payoff:** reading thirteen lessons as one system (the save path from a provider route to an outbox row); planning from what was built rather than from the design; deciding what to carry forward versus fix now.
 
-**Coach reads first:** [[04-plans/phase-3-graph-store-metadata-service|the Phase 3 plan]] (exit criteria, decisions, the 3b candidate list), the thirteen walkthroughs in `05-builds/phase-3-graph-store-metadata-service/`, the Synergy overview at its current version, and every change it went through in 3a.
+**Coach reads first:** [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service|the Phase 3 plan]] (exit criteria, decisions, the 3b candidate list), the thirteen walkthroughs in `05-builds/phase-3-graph-store-metadata-service/`, the Synergy overview at its current version, and every change it went through in 3a.
 
 ## Steps
 

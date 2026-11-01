@@ -48,14 +48,14 @@ Settled while charting, before any ticket existed:
 - **Lifecycle:** one shared status in core (active, deprecated, superseded). "Superseded by" is a `supersedes` relationship.
 - **Notifications:** later, most likely in Taxila, configurable per user. The default notifies the author (how many referencers are affected) and each referencer. Anyone opening a referrer sees the target marked deprecated or superseded.
 - **Handoff:** automation between modules belongs to Factory, not to Synergy.
-- **No copies:** a document is never copied when referenced. It appears as a Rich Live Link.
-- **Rich Live Link:** the component that renders a relationship inside a document. Display type (inline, card, live preview) is a prop chosen where it renders, so one document can show several in different types. A draft of the component belongs to Synergy so every module can use it.
+- **No copies:** a document is never copied when referenced. It appears as a Sneak Peek Link.
+- **Sneak Peek Link:** the component that renders a relationship inside a document. Display type (inline, card, live preview) is a prop chosen where it renders, so one document can show several in different types. A draft of the component belongs to Synergy so every module can use it.
 - **Entity:** anything linkable in any module (a datum, a War Room plan, a scheduled job, an Alter Ego conversation). "Datum" stays the name of Taxila's compact entry.
 - **Datum:** Taxila's smallest meaningful piece of knowledge, one fact per entry. The user picks a compact entry (datum) or a narrative entry. A narrative can be generated from datums, or datums split from a narrative, and either way the result links to its sources with `derived-from`.
 - **Relationship:** the stored link, a first-class row with its own id, tags and metadata. Its free-text label says what the target answers from this source, so the same pair can be linked more than once ("Am I lying to myself?" and "Why?" both lead to the same datum). Linking to a relationship waits until it's needed.
 - **Relation types:** Sidekick ships a starter vocabulary. User-defined types are out of the MVP (narrowed by ticket 04).
 - **List relationships:** one table. A single link is one row. A list link is a header row (label, type, tags, no target) plus one member row per target with its own position and version snapshot. Revisit if it grows clumsy.
-- **Entity index:** core keeps one thin row per linkable entity, created with the entity: id, type, owner, title, version, status and updated time. Tags live in core beside it. Its job is cross-module questions (staleness, backlinks, everything deprecated, search) and real foreign keys for relationships. Richer render data comes from a resolver each module registers, called when a Rich Live Link renders.
+- **Entity index:** core keeps one thin row per linkable entity, created with the entity: id, type, owner, title, version, status and updated time. Tags live in core beside it. Its job is cross-module questions (staleness, backlinks, everything deprecated, search) and real foreign keys for relationships. Richer render data comes from a resolver each module registers, called when a Sneak Peek Link renders.
 - [What counts as a change](tickets/01-what-counts-as-a-change.md): two counters. The author flags a version for changes that might invalidate references, with a required change note; every other save bumps the revision. Only title, body and blurb count.
 - [Where the resolver contract lives](tickets/05-resolver-contract-home.md) (research): facts in `research/05`. Three options fit today's boundaries; the contract in core with the app wiring resolvers in matches the `withApiGuard` precedent.
 - [Search across modules](tickets/07-search-across-modules.md) (research): facts in `research/07`. Full text plus `pg_trgm` covers the MVP; new RLS policies compare `uuid` to `uuid` so indexes stay usable.
@@ -64,9 +64,9 @@ Settled while charting, before any ticket existed:
 - [The starter relation vocabulary](tickets/04-starter-relation-vocabulary.md): references (derive meaning from the target; stale warnings; block delete) and associations (only connect). Untyped links are references. Eight starter types plus `supersedes`, each with an inverse. User-defined types are out of the MVP; types and tags can be deprecated.
 - [Links into a module you can't use](tickets/06-links-into-disabled-modules.md): locked links show title, type and status with a lock and no content; redacted links (other users, later) show nothing. One server-side entitlement check where a link resolves.
 - [Cycles between links](tickets/12-cycles.md): references can't form a cycle, associations can. The picker greys out entities that would close a loop, and the server checks again on create. Scaling the lookup is for system design.
-- [Rich Live Link draft](tickets/08-rich-live-link-draft.md): a labeled link is always inline (`{type} - {label} [{status}]`); an unlabeled one is inline, card or live preview. One status, plus a `*` (edited) or `#` (changed) mark. Inline reads only the index; card and preview call the resolver.
+- [Sneak Peek Link draft](tickets/08-sneak-peek-link-draft.md): a labeled link is always inline (`{type} - {label} [{status}]`); an unlabeled one is inline, card or live preview. One status, plus a `*` (edited) or `#` (changed) mark. Inline reads only the index; card and preview call the resolver.
 - [Links anchored to part of an entity](tickets/11-anchored-links.md): selected text becomes a minimal link (label plus a dot). Deleting a target block deletes the links into it. Word and sentence target anchors are MVP; how they survive edits is for system design.
-- [What Phase 3 can prove](tickets/09-what-phase-3-can-prove.md): mock note and task modules in `packages/ops`. The only UI is the Rich Live Link component, on a provider model (each package renders its own content inside the component's frame). Exit is integration tests through the public API. Search covers title and metadata only.
+- [What Phase 3 can prove](tickets/09-what-phase-3-can-prove.md): mock note and task modules in `packages/ops`. The only UI is the Sneak Peek Link component, on a provider model (each package renders its own content inside the component's frame). Exit is integration tests through the public API. Search covers title and metadata only.
 - [Scope and phases](tickets/10-scoping-and-phases.md): judge by cost to add later. Phase 3 is 3a (store and rules) and 3b (render and find) with the backend and frontend foundations; the rest of the MVP lands with Taxila, Zinsser, the AI layer and War Room. All user metadata is optional.
 - **Tags:** flat (`finance`) and `key:value` (`domain:spending`) both work. People, AI and jobs can all apply them, and each tag records who applied it.
 
@@ -74,11 +74,11 @@ Settled while charting, before any ticket existed:
 
 - **Events between modules.** A real event bus for notifications and Factory automations. The version bump on every write is the seed; the shape waits until notifications are designed.
 - **Anchors that survive edits.** How a word or sentence target anchor keeps pointing at the right text as the target changes. System design surveys the common algorithms and how other tools do it.
-- **Search providers.** Whether core passes a query to each module and merges the matches, like Rich Live Link renderers.
+- **Search providers.** Whether core passes a query to each module and merges the matches, like Sneak Peek Link renderers.
 - **Testing modules in isolation.** Storybook or something better for mocks and component tests.
 - **Judging intent.** Whether AI or something more deterministic decides that a changed target no longer supports a reference.
 - **Drift between near-duplicates.** Detecting two entries that tell the same truth differently, beyond the no-copies rule.
-- **Publishing.** What a Rich Live Link becomes on a public Taxila post, where readers can't follow private links.
+- **Publishing.** What a Sneak Peek Link becomes on a public Taxila post, where readers can't follow private links.
 
 ## Post-MVP
 

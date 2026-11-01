@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-2
-title: "Phase 2 Lesson 2 Notes: resolveApiCaller"
+title: "Gatekeeper Lesson 2 Notes: resolveApiCaller"
 created: 2026-10-20
 updated: 2026-10-23
 kind: notes

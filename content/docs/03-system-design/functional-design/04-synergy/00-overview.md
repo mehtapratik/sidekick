@@ -11,10 +11,12 @@ tags:
    - synergy
 applies_to:
    - "[[02-prd/03-features/01-synergy/spec]]"
-   - "[[04-plans/phase-3-graph-store-metadata-service]]"
+   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
 ---
 
 How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] say what it does; this page and the decisions it links say where each piece lives and how the pieces meet. Terms follow [[06-decisions/technical/mentions-and-link-lifetime|Mentions and link lifetime]].
+
+Synergy is a graph _pattern_, not a graph _database_. At this scale, plain PostgreSQL tables with recursive queries are enough, and everything goes through Synergy's own repository, which is the one place to change if scale ever calls for a dedicated graph engine.
 
 ## Packages
 
@@ -25,7 +27,7 @@ An arrow means "imports". The features registry and the type packages register t
 | Package                                    | Holds                                                                                                                                                                    |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `packages/core` (foundation)               | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                   |
-| `packages/platform/synergy` (platform)     | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Rich Live Link component. |
+| `packages/platform/synergy` (platform)     | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Sneak Peek Link component. |
 | `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                              |
 | Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                        |
 | `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                         |
@@ -34,7 +36,7 @@ An arrow means "imports". The features registry and the type packages register t
 Synergy ships three entry points, so a browser bundle can never pull in database code:
 
 - `@sidekick/synergy/server`: the repository, the save call and the resolvers' contract. It imports `server-only`.
-- `@sidekick/synergy/react`: the Rich Live Link component and the renderers' contract. No database code, so it runs on the server and in the browser.
+- `@sidekick/synergy/react`: the Sneak Peek Link component and the renderers' contract. No database code, so it runs on the server and in the browser.
 - `@sidekick/synergy/contracts`: zod schemas and types shared by both, the content helpers (`extractRefs`, the quote re-matcher) and the error codes.
 
 See [[06-decisions/technical/platform-layer|Platform layer]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
@@ -74,7 +76,7 @@ Synergy holds no user-visible text ([[03-system-design/non-functional/content/ce
 - `provider` and `type` on registrations and index rows (`sandbox-notes`, `note`): the type's label ("Note") is a copy key such as `synergy.type.sandbox-notes.note`.
 - Relation types store a `source_key` and a `target_key`, named by the end that reads them (`explained-by` at the source, `explains` at the target); "explained by" on screen comes from copy. User-defined types (post-MVP) are the exception, because their names are the user's own content.
 - Statuses, states, marks and display types are enums (`deprecated`, `no_longer_linked`, `passage_removed`), and error codes carry no message; the client looks up the message by code.
-- The resolved link and every API response carry keys only. Sidekick's UI and the Rich Live Link map them through copy; a third party maps them its own way.
+- The resolved link and every API response carry keys only. Sidekick's UI and the Sneak Peek Link map them through copy; a third party maps them its own way.
 
 User content (titles, display names, labels, change notes, tag names) is stored as written.
 
@@ -193,7 +195,7 @@ A page someone is viewing or editing can learn that the entity changed elsewhere
 | `stale_content`, `delete_blocked`, `passage_referenced`, `cycle`, `restore_conflict`, `confirmation_required` | 409  |
 | `invalid_tag`, `deprecated_vocabulary`                                                                        | 422  |
 
-## Rich Live Link
+## Sneak Peek Link
 
 Lives in Synergy (`/react`) and builds on `ui` primitives. It renders on the server and in the browser. It takes the mentions to show and a **transport**, `resolveLinks(requests) => Promise<ResolvedLink[]>`, so the host decides how the request travels: a Sidekick server component calls the same handler as `POST /links/resolve`, Sidekick's browser code (the editor inserting a link) calls the route with the session cookie, and a third party calls it with its own credentials. It owns the frame and every state, and calls the registered renderers with the resolved render data. The display type belongs to each mention.
 

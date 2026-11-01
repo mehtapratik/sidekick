@@ -36,7 +36,7 @@ To place a new package, ask in order:
 
 Every layer has its own folder, so the path tells you the layer: `packages/foundation/*`, `packages/platform/*`, `packages/features/*`. `core`, `ui` and `copy` move into `packages/foundation/` in Phase 3a (Pratik, 2026-10-31); their package names (`@sidekick/core` and so on) don't change, so no import changes. The registry, tooling (`packages/eslint-plugin-sidekick`) and ops (`packages/ops`) are singletons and stay at the root of `packages/`.
 
-A design system (tokens, theme, primitives such as buttons and inputs) is domain-free, so it is foundation and lives in `packages/foundation/ui`. A component that knows a platform concept, such as the Rich Live Link (resolved links, states, dots), lives in that platform package and builds on `ui`.
+A design system (tokens, theme, primitives such as buttons and inputs) is domain-free, so it is foundation and lives in `packages/foundation/ui`. A component that knows a platform concept, such as the Sneak Peek Link (resolved links, states, dots), lives in that platform package and builds on `ui`.
 
 ## Who may import whom
 

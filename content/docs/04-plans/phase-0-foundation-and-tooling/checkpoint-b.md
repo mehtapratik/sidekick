@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-0.checkpoint-b
-title: Checkpoint B
+title: Groundwork Checkpoint B
 created: 2026-09-19
 kind: plan
 version: 1.0.0

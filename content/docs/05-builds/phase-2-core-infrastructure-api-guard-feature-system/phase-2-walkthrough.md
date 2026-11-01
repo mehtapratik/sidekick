@@ -1,7 +1,7 @@
 ---
 publish: true
 id: build.phase-2
-title: Phase 2 Walkthrough
+title: Gatekeeper Walkthrough
 created: 2026-10-24
 updated: 2026-10-24
 kind: guidance
@@ -16,14 +16,14 @@ tags:
    - authentication
 status: completed
 applies_to:
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
 # Phase 2 Walkthrough — API Guard and Feature System
 
 Phase 2 is reproduced lesson by lesson: each lesson's walkthrough has the steps and the code. This page adds only what no single lesson shows: the order to follow them in, how the finished pieces work together on one request, and where to re-prove the phase's exit criteria. It assumes Pre-2 is complete ([[pre-2-walkthrough]]), including the post notes listed [below](#post-notes-in-earlier-walkthroughs).
 
-The design is recorded in [[contracts]] (version 2.8.1), the plan in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed Phase 2 plan]].
+The design is recorded in [[contracts]] (version 2.8.1), the plan in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed Phase 2 plan]].
 
 ## Follow the lessons in order
 
@@ -110,4 +110,4 @@ Fixes found during Phase 2 that belong to an earlier phase went into that phase'
 
 Within Phase 2, three lesson walkthroughs carry post notes of their own: lesson 3 (the follow-ups above), lesson 4 (changed in lesson 5) and lesson 6 (the startup check). Lesson 2 was edited in place for `undefined`, with a note at the top.
 
-Next: [[04-plans/phase-3-graph-store-metadata-service|Phase 3, Synergy]], the graph store and metadata service. What Phase 2 left for later is listed in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed plan]].
+Next: [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service|Phase 3, Synergy]], the graph store and metadata service. What Phase 2 left for later is listed in [[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete|the completed plan]].

@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-6and2-7
-title: "Lesson 1 (tasks 2.6, 2.7): FeatureManifest and ALL_FEATURES"
+title: "Gatekeeper Lesson 1 (Tasks 2.6, 2.7): FeatureManifest and ALL_FEATURES"
 created: 2026-10-18
 updated: 2026-10-18
 kind: plan

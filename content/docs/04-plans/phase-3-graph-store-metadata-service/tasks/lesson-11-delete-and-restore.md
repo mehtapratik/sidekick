@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-3.lesson-11-delete-and-restore
-title: "Phase 3 Lesson 11: Delete and Restore"
+title: "Synergy Lesson 11: Delete and Restore"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
@@ -15,7 +15,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 11 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-10-save-anchors|lesson 10]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-12-tags|lesson 12]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service#How we build|how we build]].
+> **Lesson 11 of 13 in Phase 3a.** Before this: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-10-save-anchors|lesson 10]]. Next: [[04-plans/phase-3-graph-store-metadata-service/tasks/lesson-12-tags|lesson 12]]. The coach follows the plan's [[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service#How we build|how we build]].
 
 **What gets built:** deleting an entity, with the rule that keeps links true: a delete is refused while a live reference points at the entity. A delete that goes through tombstones the entity and its outgoing links as one batch. Restore, undo of an unlink, and relink bring back exactly what was removed, but only after re-running the delete block and the cycle check, because the graph may have changed since.
 

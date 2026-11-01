@@ -15,7 +15,7 @@ tags:
    - database
    - testing
 depends_on:
-   - "[[04-plans/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
+   - "[[04-plans/phase-1-supabase-and-auth-shell/phase-1-1-db-level-rls-soft-delete-enforcement-complete]]"
 ---
 
 **Front Door: Hardening** (Pre-2) makes the Phase 1 foundation reproducible, runtime-safe and proven by tests before the first API guard is written. Scope: versioned roles and triggers, pooler settings, an RLS proof test, CI, lint rules that enforce the package boundaries, and a protected `main`. It finishes [[phase-1-supabase-auth-shell-complete|Front Door]].

@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2
-title: "Phase 2 Notes: What the Phase Taught"
+title: "Gatekeeper Notes: What the Phase Taught"
 created: 2026-10-24
 updated: 2026-10-24
 kind: notes
@@ -15,10 +15,10 @@ tags:
    - guidance
 status: completed
 applies_to:
-   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
+   - "[[04-plans/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system-complete]]"
 ---
 
-These notes record the themes that ran across Phase 2's seven lessons. Each lesson has its own notes, in `09-notes/phase-2-core-infrastructure-api-guard-feature-system/`, with the details and the mistakes; this note doesn't repeat them. It names the patterns that showed up more than once, so they carry into Phase 3. The steps are in [[05-builds/phase-2-walkthrough]].
+These notes record the themes that ran across Phase 2's seven lessons. Each lesson has its own notes, in `09-notes/phase-2-core-infrastructure-api-guard-feature-system/phase-2-core-infrastructure-api-guard-feature-system/`, with the details and the mistakes; this note doesn't repeat them. It names the patterns that showed up more than once, so they carry into Phase 3. The steps are in [[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough]].
 
 The thread running through the phase: **a security property is only as real as the failure you've watched it produce.** Every layer of the guard was proven by breaking it, and the bugs that slipped through were all checks that ran green while checking nothing.
 
@@ -117,7 +117,7 @@ Lessons 1–3 were Socratic: the coach asked, Pratik designed and wrote. Open qu
 
 ## Docs follow the end state
 
-- **Late fixes go into the walkthrough of the phase they belong to,** as dated post notes, so someone following the guides in order ends where Sidekick is. Phase 2 added five to Phase 0, Phase 1.1 and Pre-2 ([[05-builds/phase-2-walkthrough#Post notes in earlier walkthroughs|list]]).
+- **Late fixes go into the walkthrough of the phase they belong to,** as dated post notes, so someone following the guides in order ends where Sidekick is. Phase 2 added five to Phase 0, Phase 1.1 and Pre-2 ([[05-builds/phase-2-core-infrastructure-api-guard-feature-system/phase-2-walkthrough#Post notes in earlier walkthroughs|list]]).
 - **Arkive's Prettier rewrites Sidekick's code samples** (three spaces, double quotes). Run it with `--embedded-language-formatting=off`, or not at all on notes with code.
 - **A squash merge uses the PR title as the commit,** so the title gets checked before merging; `git commit -m` with a pasted multi-line message flattens it.
 

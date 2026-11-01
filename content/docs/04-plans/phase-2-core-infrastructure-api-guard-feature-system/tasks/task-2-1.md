@@ -1,7 +1,7 @@
 ---
 publish: true
 id: plan.phase-2.task-2-1
-title: "Lesson 2 (task 2.1): resolveApiCaller"
+title: "Gatekeeper Lesson 2 (Task 2.1): resolveApiCaller"
 created: 2026-10-18
 updated: 2026-10-20
 kind: plan

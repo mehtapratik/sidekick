@@ -1,7 +1,7 @@
 ---
 publish: false
 id: notes.phase-2.lesson-6
-title: "Phase 2 Lesson 6 Notes: /api/health and Guard Verification"
+title: "Gatekeeper Lesson 6 Notes: /api/health and Guard Verification"
 created: 2026-10-23
 updated: 2026-10-23
 kind: notes

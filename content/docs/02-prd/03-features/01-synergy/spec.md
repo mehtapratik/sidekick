@@ -12,7 +12,7 @@ tags:
    - spec
    - synergy
 applies_to:
-   - "[[04-plans/phase-3-graph-store-metadata-service]]"
+   - "[[04-plans/phase-3-graph-store-metadata-service/phase-3-graph-store-metadata-service]]"
 publish: true
 ---
 
@@ -24,7 +24,7 @@ Each Sidekick module holds a different kind of information, and the value comes 
 
 ## Solution
 
-Synergy is a substrate in `packages/platform/synergy` that every module builds on. Any entity in any module can link to any other through a stored relationship, with an optional label and type. Each reference remembers the target's version and revision when it was made and reports, when read, whether the target was edited, changed, deprecated, superseded, deleted or locked. A referenced entity can't be deleted, and reference cycles are refused. Tags (flat or `key:value`) apply to entities and relationships. A Rich Live Link component shows any relationship inline, as a card, as a live preview or as a minimal label, with the type's provider supplying the content through a registered renderer. Search covers titles and metadata across modules, and every entity can list who references it. People, bots, jobs and agents all use the same guarded API.
+Synergy is a substrate in `packages/platform/synergy` that every module builds on. Any entity in any module can link to any other through a stored relationship, with an optional label and type. Each reference remembers the target's version and revision when it was made and reports, when read, whether the target was edited, changed, deprecated, superseded, deleted or locked. A referenced entity can't be deleted, and reference cycles are refused. Tags (flat or `key:value`) apply to entities and relationships. A Sneak Peek Link component shows any relationship inline, as a card, as a live preview or as a minimal label, with the type's provider supplying the content through a registered renderer. Search covers titles and metadata across modules, and every entity can list who references it. People, bots, jobs and agents all use the same guarded API.
 
 Phase 3 proves all of this on two mock modules, notes and tasks, and a playground page where the owner can see real relationships, tags, fields and links rendered on mock entities.
 
@@ -103,7 +103,7 @@ A prefix in brackets names the only actors a story applies to. A story without o
 55. A link whose passage was removed in a new version shows the red dot and "passage removed" until its author re-anchors it, widens it to the whole entity, or unlinks.
 56. Removing a link from an entry's content counts as a revision of that entry. Synergy removing a link (an association into a deleted passage) never does.
 
-**Rich Live Link**
+**Sneak Peek Link**
 
 57. Choose per direct mention: minimal, inline, card or live preview. The two ends of a link may show it differently.
 58. Inline reads `{title} ({type}) - [{status}]`, followed by any dot.
@@ -154,11 +154,11 @@ A prefix in brackets names the only actors a story applies to. A story without o
 
 **Modules**
 
-- A new platform package, `packages/platform/synergy`, holds the Synergy store: entity index, version log, relationships (single and list in one table), relation-type vocabulary, tags and tag applications, an outbox, and a repository that is the only access path. It also holds the resolver and renderer contracts, the render cache interface and the Rich Live Link component. It takes feature keys as data and never imports the feature registry (see [[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]]).
-- The Rich Live Link component lives in Synergy and builds on `packages/ui` primitives, owning the frame and the states. Renderers supply content. It is host-agnostic: it takes the mentions to show and a transport (`resolveLinks(requests) => Promise<ResolvedLink[]>`) that each host supplies, with no app-wide context, so third parties can use it later. It renders on the server (a page's first paint) and in the browser (the editor inserting or changing a link). The package ships `/server`, `/react` and `/contracts` entry points so database code never reaches a browser bundle.
+- A new platform package, `packages/platform/synergy`, holds the Synergy store: entity index, version log, relationships (single and list in one table), relation-type vocabulary, tags and tag applications, an outbox, and a repository that is the only access path. It also holds the resolver and renderer contracts, the render cache interface and the Sneak Peek Link component. It takes feature keys as data and never imports the feature registry (see [[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]]).
+- The Sneak Peek Link component lives in Synergy and builds on `packages/ui` primitives, owning the frame and the states. Renderers supply content. It is host-agnostic: it takes the mentions to show and a transport (`resolveLinks(requests) => Promise<ResolvedLink[]>`) that each host supplies, with no app-wide context, so third parties can use it later. It renders on the server (a page's first paint) and in the browser (the editor inserting or changing a link). The package ships `/server`, `/react` and `/contracts` entry points so database code never reaches a browser bundle.
 - Guarded API routes in the web app for entities' Synergy fields, relationships, tags, search, backlinks and link resolution, all through `withApiGuard`.
 - Mock note and task modules in `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`, behind the `sandbox-notes` and `sandbox-tasks` entitlements granted with the existing ops script. Each registers an entity type (provider and entitlement `sandbox-notes` or `sandbox-tasks`), a resolver and a renderer. Checkpoint 3a names the lessons that retire them; their renderers stay as test fixtures.
-- A playground page in the web app, behind the same entitlements, built only on the public API and the Rich Live Link component. Plain, unstyled HTML: forms, textareas, lists, buttons and the raw API response beside each result. No rich-text editor, modals, hovers or styling; just enough to test the responses and check readiness against the PRD.
+- A playground page in the web app, behind the same entitlements, built only on the public API and the Sneak Peek Link component. Plain, unstyled HTML: forms, textareas, lists, buttons and the raw API response beside each result. No rich-text editor, modals, hovers or styling; just enough to test the responses and check readiness against the PRD.
 
 **Schema**
 
@@ -245,7 +245,7 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
    - turning a module's entitlement off makes its links locked, with no content in the response
    - another user's entities never appear in any response
 - Further cases at the same seam: list links keep their order, restore brings back what delete removed, erasure leaves a placeholder, removing a referenced passage is refused with `passage_referenced` unless the save is a new version (then the reference shows the red dot and "passage removed"), deleting a passage removes associations into it and moves only the source's `updated_at`, a stale-content update is refused (including after an anchor was added), restore and undo are refused with `restore_conflict` when the graph changed, a retried create with the same idempotency key links once, backlinks page correctly, a relationship mentioned from both ends stays one relationship and creates no cycle, removing the source's last mention leaves the target's mentions "No longer linked", and undoing an unlink restores the same relationship id.
-- **Second seam: the Rich Live Link component.** Component tests render it with a fake renderer registry and stubbed resolved links, and assert what a reader perceives (text, link roles, text equivalents of the marks) for each display type and state. Sidekick has no component tests yet. They run in Vitest browser mode with Testing Library and MSW ([[03-system-design/non-functional/testing/testing-layers|Testing layers]]).
+- **Second seam: the Sneak Peek Link component.** Component tests render it with a fake renderer registry and stubbed resolved links, and assert what a reader perceives (text, link roles, text equivalents of the marks) for each display type and state. Sidekick has no component tests yet. They run in Vitest browser mode with Testing Library and MSW ([[03-system-design/non-functional/testing/testing-layers|Testing layers]]).
 - **The playground is for eyes, not assertions.** It lets the owner check the outcome by hand and doubles as the natural target for end-to-end or visual regression tests later.
 - Race tests open two database connections: an anchor added while the target is open, a delete racing a new reference into the same target, and a restore after the graph changed.
 - A test pins story 71 ("dep wor" finds "deep work"), tuning trigram `word_similarity` until it passes.
@@ -263,12 +263,12 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
 - Bulk link and tag endpoints.
 - Judging intent with AI, AI advice on version bumps, and drift detection.
 - External renderers (Slack and similar) and publishing links on public posts.
-- Third-party integrations of Rich Live Links (Slack unfurls, Notion embeds, oEmbed). The component is host-agnostic from the start.
+- Third-party integrations of Sneak Peek Links (Slack unfurls, Notion embeds, oEmbed). The component is host-agnostic from the start.
 - AI tag-merge suggestions (the user approves each merge).
 
 ## Further Notes
 
 - Phase 3 splits into 3a (store and rules) and 3b (render and find). See [[08.prd.features.synergy.scope-and-phases|Scope and phases]].
 - Settled in system design ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]): how word and sentence anchors survive edits (operation-based anchors are the bar to beat), how the referenced-passage check stays proportional to the change, how the cycle check scales, whether search uses a provider model, and which tool tests modules and components in isolation.
-- A throwaway prototype of the display types and states is linked from [[02-prd/03-features/01-synergy/tickets/08-rich-live-link-draft|ticket 08]].
+- A throwaway prototype of the display types and states is linked from [[02-prd/03-features/01-synergy/tickets/08-sneak-peek-link-draft|ticket 08]].
 - Watch whether metadata on micronotes outweighs their content, and study how other tools handle it.
