@@ -5,7 +5,7 @@ title: "Synergy Lesson 11: Delete and Restore"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -33,7 +33,7 @@ status: planned
 2. **Restore an entity.** The provider's restore route and Synergy bring back the index row and exactly that batch of links.
 3. **Re-check.** Before any restore, undo (`POST /links/:id/restore`) or relink, under the user lock: a restored reference into a deleted entity, or one that would close a cycle, is refused with `restore_conflict`, naming each edge.
 4. **Erasure.** Permanent erasure overrides the delete block and leaves referencers a "permanently removed" placeholder (spec story 48). Emits entity erased.
-5. **Prove it.** Integration tests: deleting a referenced task is refused, and deleting the note that references it is allowed; the deleted target still shows its name and the `deleted` state on the note's links read; restoring the note brings back its links; a restore that would close a cycle (because a new reference was added meanwhile) is refused and names the edge; undoing an unlink brings back the same relationship id, and undoing one into a now-deleted target is refused; erasing a referenced task leaves the note's link a placeholder; outbox events for each step.
+5. **Prove it.** Integration tests: deleting a referenced task is refused, and deleting the note that references it is allowed; the deleted target still shows its name and the `deleted` state on the note's links read; restoring the note brings back its links; a restore that would close a cycle (because a new reference was added meanwhile) is refused and names the edge; undoing an unlink brings back the same relationship id, and undoing one into a now-deleted target is refused; erasing a referenced task leaves the note's link a placeholder; a task that only a `violates` link points at can be deleted, and one with an `exception-to` link pointing at it can't ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]); outbox events for each step.
 
 **Exit check:** step 5 green in CI. Proves the exit criterion "deleting a referenced target is blocked", and with lesson 6, "reference cycles are rejected".
 

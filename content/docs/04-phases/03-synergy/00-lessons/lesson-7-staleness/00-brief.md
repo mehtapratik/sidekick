@@ -5,7 +5,7 @@ title: "Synergy Lesson 7: Staleness Dots and the Roll-Up"
 created: 2026-11-01
 updated: 2026-11-01
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -33,7 +33,7 @@ status: planned
 2. **Links read.** `GET /entities/:id/links` returns each link's marks beside its state.
 3. **Snapshot.** `POST /api/synergy/links/:id/snapshot` moves the snapshot to the target's current version and revision ("the link still holds") and emits snapshot moved. Metadata only: no counter moves on either end.
 4. **Roll-up.** `GET /entities/:id` carries the roll-up: whether any outgoing reference needs attention, red or standard, and which links are the reason. One query, not one per link.
-5. **Prove it.** Integration tests: a version save on the task with a change note gives the note's reference a red mark and a red roll-up; a revision save gives a standard one; a status change to deprecated gives red; moving the snapshot clears it; an association to the same task never shows a mark.
+5. **Prove it.** Integration tests: a version save on the task with a change note gives the note's reference a red mark and a red roll-up; a revision save gives a standard one; a status change to deprecated gives red; moving the snapshot clears it; an association to the same task never shows a mark, `violates` included; an `exception-to` link shows red when its rule gets a new version, and none right after a `violates` link is retyped to it ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]).
 6. **Decide in the lesson: what the ETag covers.** Found while planning. `GET /entities/:id` answers 304 when `content_seq` matches, but its body also carries status and now the roll-up, which change without moving `content_seq`. A client that reuses its cached body on 304 would show a stale status or roll-up. Options: keep the ETag on `content_seq` and document that a 304 means only "content unchanged" (enough for the "Page updated" check), or build the ETag from `content_seq` plus the status and the roll-up. Pratik decides; the overview and [[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]] are updated to match.
 
 **Exit check:** step 5 green in CI, and step 6 decided and tested. Proves the exit criterion "a version bump with a change note shows the red dot".

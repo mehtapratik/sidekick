@@ -5,7 +5,7 @@ title: "Synergy: System Design"
 created: 2026-10-30
 updated: 2026-11-01
 kind: spec
-version: 1.2.0
+version: 1.3.0
 tags:
    - system-design
    - synergy
@@ -98,7 +98,7 @@ An arrow points from a table to the tables that hang off it. `relationships.from
    - `type` is NOT NULL so the FK can't be skipped (Postgres ignores a composite FK when any column is null). An untyped link uses the seeded system type `untyped`, kind reference, which displays no type name.
    - Positions are fractional text keys (lexorank) with a unique index on `(parent_id, position)`, so moving one member writes one row.
    - `deletion_batch_id` groups the tombstones written by one delete, so a restore brings back exactly that batch.
-- **`relation_types`**: `source_key` (the type's identity, which `relationships.type` references), `target_key`, kind (reference or association; `untyped` and `superseded-by` are system rows of kind reference, not extra kinds), status, system flag; seeded with the starter vocabulary plus `untyped`. Labels live in copy.
+- **`relation_types`**: `source_key` (the type's identity, which `relationships.type` references), `target_key`, kind (reference or association; `untyped` and `superseded-by` are system rows of kind reference, not extra kinds), status, system flag; seeded with the starter vocabulary plus `untyped`, including `violates` (association) and `exception-to` (reference) ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]). Labels live in copy.
 - **`tags`** and **`tag_applications`**: as in the spec, with the format check constraint.
 - **`outbox`**: event type, subject, actor, payload, time, and `xact_id` (`pg_current_xact_id()`), which lets a reader process events in commit order. A long transaction can commit a lower `bigserial` id after a reader has moved past it; the transaction id can't be rebuilt later, so it is stored from the first row. Event types: entity created, content saved, version bumped, status changed, entity deleted, restored or erased; relationship created, updated (label or type), cited, uncited, deleted or restored; snapshot moved (the referencer confirmed the link still holds); passage removed; tag created, renamed, merged or deprecated; tag applied or removed. Read by a dedicated read-only role outside RLS, since readers work across users. 90-day retention after every reader has processed it.
 - **`idempotency_keys`** for creates.
@@ -117,7 +117,7 @@ Synergy must see its own tombstones: a deleted target still shows its name, "No 
 
 ### Indexes
 
-`to_id` (backlinks), `(to_id, to_anchor_id)` (passage check), `from_id`, the unique `(parent_id, position)`, `entity_anchors (entity_id, anchor_id)`, `entity_mentions (entity_id)` and `(relationship_id)`, tag applications by tag, index rows by owner and status, an index on outbox `xact_id`, and the search indexes. Trigram and full-text GIN indexes lead with `user_id` (`btree_gin`: `(user_id, display_name gin_trgm_ops)` and the same for the `simple` tsvector), so a search reads one user's rows instead of every user's.
+`to_id` (backlinks), `(to_id, to_anchor_id)` (passage check), `from_id`, the unique `(parent_id, position)`, `entity_anchors (entity_id, anchor_id)`, `entity_mentions (entity_id)` and `(relationship_id)`, tag applications by tag, `relationships (user_id, type)` (links by type across the graph), index rows by owner and status, an index on outbox `xact_id`, and the search indexes. Trigram and full-text GIN indexes lead with `user_id` (`btree_gin`: `(user_id, display_name gin_trgm_ops)` and the same for the `simple` tsvector), so a search reads one user's rows instead of every user's.
 
 ## Write path
 
@@ -142,6 +142,7 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 - **Link from content:** the editor generates the relationship id, writes it into the mark, and the save that carries the mark declares the new link (target, anchor, type, label). Synergy creates it in that transaction with `mentioned = true` and `cited = false`, so removing the text later removes the link.
 - **Link from a field, the links panel or the API** (`POST /links`): creates a cited link (`cited = true`).
 - **Every link create** snapshots the target's version and revision and runs the cycle check for a reference. A passage target calls the target provider's `addAnchor`, which writes the mark into the target and moves its `content_seq` and `updated_at`, never its version or revision. The response carries an **anchor receipt** per passage target, `{ targetId, contentSeq, anchor: { id, blockId, quote } }`, so an editor in the same page that has the target open adds the mark itself and moves its base `content_seq` (no 409). Not the whole target: version and revision don't change on an anchor write, and the request was about the source. An editor the receipt can't reach (another tab, another device) gets 409 on its next save; it fetches the latest content, copies in the anchors it lacks (by block id and quote) and saves again, with nothing shown to the user. The 409 merge is the guarantee; the receipt only saves a round trip.
+- **Change a link's type** (`PATCH /links/:id`): runs the cycle check when the new type is a reference. A change from an association to a reference also moves the snapshot to the target's current version and revision, so a waived violation (`violates` retyped to `exception-to`) starts without a dot. An open violation is a live `violates` link; resolving it is `DELETE /links/:id`. There is no violation status ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]).
 - **Supersede:** a `superseded-by` link, stored from the old entity to each replacement, kind reference. An entity may have any number of successors. Creating the first one marks the source superseded, after the confirmation that reports how many entities reference it (`confirmation_required` until the request confirms). Removing the last one sets the source back to active.
 - **Status, tags, cite and uncite:** metadata writes that bump no counter.
 - **Delete:** refused with `delete_blocked` while a live reference points at the entity; otherwise soft-delete, which tombstones its outgoing links under one `deletion_batch_id`. Erasure overrides.
@@ -164,13 +165,14 @@ Entity content (create, save, delete, restore) goes through each provider's own 
 | `GET /entities/:id`                     | `If-None-Match` (optional)                                | index fields, roll-up, `ETag`; 304 when unchanged | `not_found`                                                                      |
 | `PATCH /entities/:id/status`            | `{ status: 'active' \| 'deprecated' }`                    | index fields                                      | `not_found`                                                                      |
 | `GET /entities/:id/versions`            | cursor                                                    | version log page                                  | `not_found`                                                                      |
-| `GET /entities/:id/links`               | `direction` (`out` or `in`), cursor                       | resolved links page (`in` = backlinks)            | `not_found`                                                                      |
+| `GET /entities/:id/links`               | `direction` (`out` or `in`), `type` (optional), cursor    | resolved links page (`in` = backlinks)            | `not_found`                                                                      |
 | `POST /links`                           | id, from, to, anchor, type, label, `confirm`; idempotency | resolved link, anchor receipt                     | `cycle`, `locked`, `deprecated_vocabulary`, `confirmation_required`, `not_found` |
 | `PATCH /links/:id`                      | label, type, `cited`, list position                       | resolved link                                     | `cycle`, `deprecated_vocabulary`, `not_found`                                    |
 | `DELETE /links/:id`                     | none                                                      | tombstone                                         | `not_found`                                                                      |
 | `POST /links/:id/restore`               | none                                                      | resolved link                                     | `restore_conflict`, `not_found`                                                  |
 | `POST /links/:id/snapshot`              | none (moves the snapshot: "still holds")                  | resolved link                                     | `not_found`                                                                      |
 | `POST /links/resolve`                   | `[{ relationshipId, display }]`                           | resolved links, in request order                  | none per item: a missing one resolves as not found                               |
+| `GET /links`                            | `type`, cursor                                            | resolved links page, across every provider        | none                                                                             |
 | `GET /search`                           | `q`, type, provider, status, tag, cursor                  | index rows page                                   | none                                                                             |
 | `GET /tags`, `POST /tags`               | cursor; name, description; idempotency                    | tags page; tag                                    | `invalid_tag`                                                                    |
 | `PATCH /tags/:id`                       | rename, description, deprecate, merge into                | tag                                               | `invalid_tag`, `not_found`                                                       |
@@ -223,3 +225,4 @@ Each decision lives in its own page here; the [[06-decisions/log|decisions log]]
 - [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]]
 - [[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]]
 - [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]
+- [[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]

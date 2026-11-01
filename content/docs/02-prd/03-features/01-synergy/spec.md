@@ -5,7 +5,7 @@ created: 2026-10-28
 kind: prd
 audience: everyone
 updated: 2026-11-01
-version: 1.2.1
+version: 1.3.0
 status: accepted
 tags:
    - prd
@@ -51,7 +51,7 @@ A prefix in brackets names the only actors a story applies to. A story without o
 12. Give a link an optional label that says what the target answers ("Why?").
 13. Give a link an optional type from the starter vocabulary.
 14. An untyped link counts as a reference.
-15. Associations (`related-to`, `inspired-by`, `next`, `contradicts`) never go stale and never block anything.
+15. Associations (`related-to`, `inspired-by`, `next`, `contradicts`, `violates`) never go stale and never block anything.
 16. Backlinks show each type by its inverse name ("explains", "source of").
 17. Link the same pair more than once, in the same direction, with different labels.
 18. Make a list link: several ordered targets under one label ("Why? guilt, new ideas, perfectionism").
@@ -150,6 +150,15 @@ A prefix in brackets names the only actors a story applies to. A story without o
 87. Cite a link from a field (such as `related-to`) or a links panel. It counts as a mention of the source, so the link lives until the source drops its last mention of any kind.
 88. An entity's title shows a dot when any of its outgoing references needs attention, with the links as the reason.
 
+**Added for violations and exceptions (2026-11-01)**
+
+89. Mark that an entity breaks a rule, principle or decision with a `violates` link. The rule's backlinks read "violated by".
+90. Record an exception to a rule with an `exception-to` link. It goes stale when the rule changes, and the rule can't be deleted while it has one.
+91. Resolve a violation by unlinking it.
+92. Waive a violation by changing its type to `exception-to`. It stays the same link, with a fresh snapshot of the rule.
+93. Filter an entity's links or backlinks by type: "what violates this rule?"
+94. List links of one type across every module: every open violation in one list.
+
 ## Implementation Decisions
 
 **Modules**
@@ -166,7 +175,7 @@ A prefix in brackets names the only actors a story applies to. A story without o
 - Entity anchors (the linked passages of an entity, with `removed_in_version` once a new version removes one) and entity mentions (the relationship ids its content mentions), both kept by Synergy from what each save reports.
 - Version log: entity, version, optional change note, actor, time.
 - Relationships: id, owner, from, to (empty on a list row), parent (list members), position, optional label, optional type, version and revision snapshot, `to_anchor` (anchor id and a quote of the passage), `cited`, `mentioned`, actor, timestamps, soft delete with actor, reason and `deletion_batch_id` (a tombstone, so mentions can explain why a link is gone and undo or restore brings back exactly what one delete removed). `type` is never empty: untyped links use the seeded system type `untyped`. A `role` (`solo`, `list`, `member`) and fractional positions with a unique `(parent, position)`. Every row with a `to` is a complete `from → to` edge: list members repeat their list row's `from` and `type`, and a composite foreign key, `(parent_id, from_id, type, parent_role)` referencing `(id, from_id, type, role)`, makes a mismatch or a nested list impossible. `from` never changes after creation.
-- Relation types: source key (how the source reads it, the type's identity), target key (how the target reads it), kind (reference or association), status (active or deprecated), system flag. Their labels, like every label Synergy shows (type names, statuses, states, error messages), come from `packages/copy`; Synergy stores and returns keys only. Seeded with the starter vocabulary: `derived-from`/`source-of`, `cites`/`cited-by`, `supported-by`/`evidence-for`, `explained-by`/`explains`, `inspired-by`/`inspiration-for`, `next`/`previous`, `related-to`, `contradicts`, `defined-by`/`defines`, `superseded-by`/`supersedes` (a reference, stored from the old entity to each replacement), and the system type `untyped`.
+- Relation types: source key (how the source reads it, the type's identity), target key (how the target reads it), kind (reference or association), status (active or deprecated), system flag. Their labels, like every label Synergy shows (type names, statuses, states, error messages), come from `packages/copy`; Synergy stores and returns keys only. Seeded with the starter vocabulary: `derived-from`/`source-of`, `cites`/`cited-by`, `supported-by`/`evidence-for`, `explained-by`/`explains`, `inspired-by`/`inspiration-for`, `next`/`previous`, `related-to`, `contradicts`, `defined-by`/`defines`, `violates`/`violated-by` (an association from the offender to the rule it breaks), `exception-to`/`has-exception` (a reference from an exception to the rule it limits), `superseded-by`/`supersedes` (a reference, stored from the old entity to each replacement), and the system type `untyped`.
 - Tags: id, owner, name (one optional `key:` prefix), description, status, alias-of. A check constraint enforces lowercase ASCII letters, digits, dashes and at most one colon. Tag applications link a tag to an entity or a relationship.
 - Outbox: event type, subject, actor, time, payload and transaction id (`pg_current_xact_id()`, so readers can follow commit order). Written in the same transaction as the change. The event types are listed in the [[03-system-design/functional-design/04-synergy/00-overview|system design]]. Read by a dedicated read-only role outside RLS. Nothing consumes it in Phase 3.
 - Every table: client-generated UUIDs, `updated_at`, actor on writes, and RLS comparing the uuid column directly to `nullif(current_setting('app.current_user_id', true), '')::uuid`, and nothing else: the repository filters tombstones per query, and the update trigger lets a restore through ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]). Syncable tables soft-delete, and their unique indexes are partial on live rows. The outbox and idempotency keys are non-syncable and hard-deleted. Phase 3 also rewrites the existing policies in migrations 0002 and 0007, which cast the column to text.
@@ -181,6 +190,7 @@ A prefix in brackets names the only actors a story applies to. A story without o
 - Every Synergy write takes the per-user lock first, before reading anything, so the delete block and the cycle check can't race and there is one lock order.
 - A reference may not close a cycle. The server checks reachability under that lock in the same transaction as the insert. A recursive query (with Postgres's `CYCLE` clause) is the starting point; the closure table waits for measurements.
 - Restore and undo re-run the delete block and the cycle check, and are refused with `restore_conflict` naming each edge that now points into a tombstone or would close a cycle.
+- An open violation is a live `violates` link; there is no status. Resolving it unlinks it, and waiving it changes its type to `exception-to`. A type change from an association to a reference takes a fresh snapshot of the target and runs the cycle check. See [[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships#Violations and exceptions|Violations and exceptions]].
 - `superseded-by` is a reference stored from the old entity to each of its replacements, any number of them. Creating the first one marks the source superseded after a confirmation step that reports the referencer count; removing the last one sets it back to active.
 - Locked, redacted and deleted are decided on the server, before any resolver runs, using the same entitlement check as `withApiGuard`.
 - A mention is a place in an entity that shows a relationship: direct (the link itself, with its own display type), alias (the author's words carry it) or cited (held in a field or links panel). A relationship may have any number of mentions, in its source and in its target; mentions in the target read with the inverse name. Staleness, the delete block and the cycle check follow the stored direction only. Unlinking, or removing the source's last mention of any kind, soft-deletes the relationship; removing the target's mentions never does. On each save the provider reports the current set of relationship ids its content mentions, and Synergy works out what changed; a mention of a relationship with neither end at that entity is refused. A link made from selected text is declared by the save that carries its mark, so it starts mentioned, not cited. See [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]].
@@ -244,7 +254,7 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
    - search finds entities by title and metadata
    - turning a module's entitlement off makes its links locked, with no content in the response
    - another user's entities never appear in any response
-- Further cases at the same seam: list links keep their order, restore brings back what delete removed, erasure leaves a placeholder, removing a referenced passage is refused with `passage_referenced` unless the save is a new version (then the reference shows the red dot and "passage removed"), deleting a passage removes associations into it and moves only the source's `updated_at`, a stale-content update is refused (including after an anchor was added), restore and undo are refused with `restore_conflict` when the graph changed, a retried create with the same idempotency key links once, backlinks page correctly, a relationship mentioned from both ends stays one relationship and creates no cycle, removing the source's last mention leaves the target's mentions "No longer linked", and undoing an unlink restores the same relationship id.
+- Further cases at the same seam: list links keep their order, restore brings back what delete removed, erasure leaves a placeholder, removing a referenced passage is refused with `passage_referenced` unless the save is a new version (then the reference shows the red dot and "passage removed"), deleting a passage removes associations into it and moves only the source's `updated_at`, a stale-content update is refused (including after an anchor was added), restore and undo are refused with `restore_conflict` when the graph changed, a retried create with the same idempotency key links once, backlinks page correctly, a relationship mentioned from both ends stays one relationship and creates no cycle, removing the source's last mention leaves the target's mentions "No longer linked", undoing an unlink restores the same relationship id, a `violates` link neither goes stale nor blocks deleting the rule, and retyping it to `exception-to` keeps its id, takes a fresh snapshot and then blocks the rule's delete.
 - **Second seam: the Sneak Peek Link component.** Component tests render it with a fake renderer registry and stubbed resolved links, and assert what a reader perceives (text, link roles, text equivalents of the marks) for each display type and state. Sidekick has no component tests yet. They run in Vitest browser mode with Testing Library and MSW ([[03-system-design/non-functional/testing/testing-layers|Testing layers]]).
 - **The playground is for eyes, not assertions.** It lets the owner check the outcome by hand and doubles as the natural target for end-to-end or visual regression tests later.
 - Race tests open two database connections: an anchor added while the target is open, a delete racing a new reference into the same target, and a restore after the graph changed.
@@ -259,6 +269,7 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
 - Notifications and digests, readers reporting broken sources, diffs and "as linked" views.
 - Body-text search, search providers and embeddings.
 - User-defined relation types, links to links, and nested tags.
+- Issue tracking on violations: a status, who resolved one and why, and a history of closed ones.
 - References between users and redaction across users.
 - Bulk link and tag endpoints.
 - Judging intent with AI, AI advice on version bumps, and drift detection.

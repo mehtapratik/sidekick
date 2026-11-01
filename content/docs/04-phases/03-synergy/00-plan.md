@@ -5,7 +5,7 @@ title: Synergy
 created: 2026-09-19
 updated: 2026-11-01
 kind: plan
-version: 2.0.0
+version: 2.1.0
 tags:
    - plan
    - living-plan
@@ -27,7 +27,7 @@ depends_on:
 >
 > **Learning payoff:** graph modelling in Postgres (recursive CTEs, composite foreign keys, partial unique indexes), concurrency (advisory locks, stale-write checks, race tests with two connections), an outbox, per-package migrations, layered packages enforced by lint, and contracts shared by server and browser.
 
-The design is settled: [[02-prd/03-features/01-synergy/spec|the Synergy PRD and spec]] say what Synergy does, and the [[03-system-design/functional-design/04-synergy/00-overview|Synergy system design]] (1.1.0) and its decisions say how. This plan turns that design into lessons.
+The design is settled: [[02-prd/03-features/01-synergy/spec|the Synergy PRD and spec]] say what Synergy does, and the [[03-system-design/functional-design/04-synergy/00-overview|Synergy system design]] (1.3.0) and its decisions say how. This plan turns that design into lessons.
 
 Phase 3 has two parts. **3a** builds the store, its rules and its API. **3b** resolves and renders links. Only 3a is planned in lessons now: what 3b needs depends on how 3a gets built, so [[04-phases/03-synergy/01-checkpoint-3a/00-brief|Checkpoint 3a]] plans 3b (Pratik, 2026-11-01).
 
@@ -98,6 +98,7 @@ Candidates from the planning handover, to be merged, split or reordered at the c
 - **Sandbox renderers:** `resolve` and `render` for the sandbox notes and tasks.
 - **Sneak Peek Link:** the `/react` component with pure `render`, an injected `resolveLinks` transport and labels from `packages/copy`, tested in Vitest browser mode with Testing Library and MSW.
 - **Render cache and backlinks:** cache keyed by (entity, `content_seq`, display type); backlinks list live links only.
+- **Links by type across the graph:** `GET /api/synergy/links?type=`, cursor-paged, with a `(user_id, type)` index, so one list shows every open violation from any module ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|decision]]).
 - **Search:** `simple` full-text plus `pg_trgm` on display names, `btree_gin` indexes leading with `user_id`, `GET /api/synergy/search`, and the test pinning spec story 71 (trigram `word_similarity`).
 - **Playground and the RLS uuid fix:** a playground page in `apps/web` behind the sandbox entitlements, built on the public API; Sidekick migrations 0002 and 0007 compare uuids directly instead of casting to text.
 - **A test that no API response carries label text** (keys, never copy), once the resolved link exists.
@@ -113,6 +114,7 @@ Settled with Pratik on 2026-10-31 and 2026-11-01. Each can be revisited in its l
 - **One Phase 3, with Checkpoint 3a.** 3b is part of Phase 3's exit criteria, not a new phase, because Phase 4 needs its renderers and a new phase would renumber Phases 4 to 12. 3b is planned at the checkpoint.
 - **Delete models are chosen, not drifted into** (Pratik, 2026-11-01). Lesson 3 revises [[03-system-design/non-functional/security/row-level-security|row-level security]] and [[03-system-design/non-functional/database/soft-delete-support|soft-delete support]] into explicit variants, with a guide for choosing among hard delete, soft delete with tombstones hidden (the default) and soft delete with tombstones visible. The guide lists every table and its model; each Drizzle schema file and each new migration names its model. Applied migrations are not edited.
 - **Cloudflare builds arkive on Node 24.** `undici` 8 (through Astro's `unifont`) needs Node 22.19 or later, and Pages built on 22.12. Cloudflare reads the version from the repo's `.node-version` (was `22`, now `24`), not from a dashboard setting; arkive's `engines` asks for `>=22.19.0`.
+- **`violates` and `exception-to` are in Phase 3** (Pratik, 2026-11-01). Dogfooding Synergy on Arkive found two gaps in the vocabulary: no directed violation and no exception. Both types are seeded in lesson 6. A violation has no status: unlinking resolves it, retyping it to `exception-to` waives it, and that retype takes a fresh snapshot. The graph-wide list of links by type (every open violation, from any module) is a 3b candidate; issue tracking is post-MVP ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]).
 - **Deferred to Checkpoint 3a:** whether the shared editor moves ahead of Taxila's passages (Phase 4) or the passages move to Phase 5, and which lessons retire the sandbox providers. Both shape Phase 4, not 3a; mock note bodies are minimal Tiptap JSON either way.
 
 ## Handover from system design
@@ -129,6 +131,7 @@ Every item from the system-design session, and where it is built.
 | Tombstones: RLS compares only `user_id`, the restore-aware update trigger ([[03-system-design/functional-design/04-synergy/tombstone-visibility\|decision]]); revising the RLS and soft-delete templates                                                                                                                                                                                                          | lesson 3                                 |
 | `GET /entities/:id` with `If-None-Match` and 304; the error-to-HTTP map; `/server`, `/react` and `/contracts` entry points                                                                                                                                                                                                                                                                                        | lesson 4 (`/react` stays empty until 3b) |
 | Outbox with `xact_id`, every event type, a read-only consumer role; outbox and idempotency keys hard-deleted; no pruning job until the first reader ([[03-system-design/functional-design/04-synergy/synergy-store-choices\|decision]])                                                                                                                                                                           | lesson 5 (idempotency keys: lesson 6)    |
+| `violates` (association) and `exception-to` (reference) seeded; an association-to-reference type change takes a fresh snapshot; the `type` filter on `GET /entities/:id/links` ([[03-system-design/functional-design/04-synergy/violations-and-exceptions\|decision]])                                                                                                                                            | lessons 6, 7, 11                         |
 | List links: `type` NOT NULL with seeded `untyped`, `role` in the composite FK, relation types keyed by `source_key` and `target_key`, lexorank with unique `(parent_id, position)`                                                                                                                                                                                                                                | lessons 6, 8                             |
 | Links and mentions: `cited` and `mentioned`, tombstone when both are false; the outgoing-reference roll-up ([[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime\|decision]])                                                                                                                                                                                                               | lessons 6, 7, 9                          |
 | Supersede: `superseded-by` from old to each replacement, any number of successors                                                                                                                                                                                                                                                                                                                                 | lesson 8                                 |
