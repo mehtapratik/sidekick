@@ -13,6 +13,8 @@ tags:
    - vercel
 ---
 
+**D39** `decision` #monorepo #env: Every environment variable is listed in the `build` task's `env` array in `turbo.json`.
+
 List all environment variables as `env` array of the `build` task of `turbo.json`.
 
 [[turborepo]] caches builds by hashing source files. Without declaring environment variables, Turbo has no way to know that a change to `NEXT_PUBLIC_APP_URL` should invalidate the cached build. Declaring variables in `env` includes their values in the cache hash. If a value changes, the cache is invalidated and the app.

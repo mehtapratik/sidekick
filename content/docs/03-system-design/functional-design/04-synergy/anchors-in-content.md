@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D61** `decision` #synergy #anchors: A link can point at a passage of its target, identified by an anchor stored in the target's content with a quote as the safety net.
+
 ## What
 
 A link can point at a **passage** of its target: a block, or some words inside one. The passage is identified by an **anchor** stored in the target's own content, with a quote as the safety net. The [[03-system-design/functional-design/04-synergy/anchors-survey|survey]] has the algorithms compared and the full reasoning.

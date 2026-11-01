@@ -13,6 +13,8 @@ tags:
    - postgresql
 ---
 
+**D35** `decision` #rls #database #security: Runtime queries use the non-superuser `app_runtime` role, so the database itself enforces row-level security on every request.
+
 Regular `drizzle-orm` queries flow through the nonsuperuser `app_runtime` role using `DATABASE_URL`.
 
 For Supavisor transaction pooling, `DATABASE_URL` uses:

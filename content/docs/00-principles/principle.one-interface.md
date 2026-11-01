@@ -11,6 +11,8 @@ tags:
 publish: true
 ---
 
+**D3** `principle` #product #api: Every capability has one interface that Sidekick's own clients use exactly as bots, jobs, agents and third parties do; there is no private path.
+
 A bot calls Sidekick's API at three in the morning. It has no other way in. It gets what the documentation promises, or it fails. If Sidekick's own app uses a different path, nobody inside notices the failure.
 
 So every capability gets one interface. The web app, the CLI, scheduled jobs, agents and third parties all use it the same way. Sidekick never keeps a private path for itself beside a public one it doesn't use.

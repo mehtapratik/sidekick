@@ -8,7 +8,7 @@
    },
    "scripts": {
       "dev": "astro dev",
-      "build": "astro build && node scripts/check-privacy.mjs",
+      "build": "astro build && node scripts/check-privacy.mjs && node scripts/check-datums.mjs",
       "preview": "astro preview"
    },
    "dependencies": {

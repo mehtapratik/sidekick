@@ -13,6 +13,8 @@ tags:
    - pnpm
 ---
 
+**D55** `decision` #monorepo: Turborepo runs tasks across packages, for parallelism and caching that pnpm alone does not provide.
+
 <div class=card>
 	<header>Why pnpm isn’t enough? Doesn’t pnpm support workspaces, and by extension, wouldn’t it support task orchestration?</header>
 	<section> 

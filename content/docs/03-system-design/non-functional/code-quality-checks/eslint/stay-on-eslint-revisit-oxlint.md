@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D68** `decision` #eslint #tooling: Stay on ESLint and do not migrate to Oxlint yet.
+
 **What we chose:** stay on ESLint. Do not migrate to Oxlint — fully or as a hybrid — yet.
 
 **Why — measured, October 2026:** a full `pnpm lint` takes about 7 s, but running every rule costs only 0.26–0.35 s per package. The rest is fixed startup: about 0.6 s of Node and plugin loading, and 1.1–1.6 s per package building the TypeScript program that type-aware rules (`no-floating-promises`, `no-misused-promises`, …) need. Adding rules is nearly free; the cost grows with codebase size, like `tsc`. Turborepo's cache replays unchanged packages, so day-to-day linting pays only for edited packages.

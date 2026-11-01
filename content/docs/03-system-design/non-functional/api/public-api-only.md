@@ -14,6 +14,8 @@ tags:
    - cli
 ---
 
+**D48** `decision` #api #interface: Every capability has one interface, and Sidekick's own clients use it the way bots, jobs and third parties do. derived-from [[D3]]
+
 ## Reasons
 
 1. One of the motivation is [[motivation.commercialization]] and modern services aren’t just consumed by humans via user interfaces. They are also accessed by bots, scheduled jobs, shell scripts, and third-party applications via CLI or public APIs.

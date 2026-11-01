@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D65** `decision` #synergy #database: Synergy's store keeps list links in the one `relationships` table and settles three other smaller choices.
+
 Four smaller choices about Synergy's store (Pratik, 2026-10-30), tightened after the design review (2026-10-31).
 
 ## List links stay in the one `relationships` table

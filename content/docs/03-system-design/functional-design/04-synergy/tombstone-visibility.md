@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D66** `decision` #synergy #soft-delete #rls: Synergy's soft-deleted rows stay visible to Synergy's own queries, and restoring one is allowed. exception-to [[D11]]
+
 ## What
 
 Synergy's soft-deleted rows (tombstones) stay visible to Synergy's own queries, and restoring one is allowed. Three existing templates are adjusted for Synergy's tables:

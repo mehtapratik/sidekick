@@ -12,6 +12,8 @@ tags:
    - prettier
 ---
 
+**D56** `decision` #formatting: Prettier runs once from the repo root, not once per package.
+
 Sidekick has repo-level Prettier commands instead of fanning out per package:
 
 ```json

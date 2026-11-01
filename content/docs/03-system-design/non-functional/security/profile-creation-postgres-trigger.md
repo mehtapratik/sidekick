@@ -16,6 +16,8 @@ tags:
    - authentication
 ---
 
+**D53** `decision` #auth #database: A Postgres trigger on `auth.users` creates each user's profile row in the same transaction as signup.
+
 \> User profiles are created via a Postgres trigger on `auth.users`, not via an API route. This ensures reliability across auth providers and prevents race conditions, as profile creation becomes part of the same database transaction.
 
 \> Prefix tables with `public.` while referencing them in triggers and functions. A function resolves unqualified names through the `search_path` of the role running it, not the schema of the table that fired the trigger. Supabase sets `search_path=auth` for `supabase_auth_admin`, the role that inserts into `auth.users`, so an unqualified `INSERT INTO profiles` would look for `auth.profiles`, which does not exist.

@@ -12,6 +12,8 @@ tags:
    - pnpm
 ---
 
+**D52** `decision` #tooling: Corepack pins the package manager version, and nobody installs pnpm globally.
+
 To avoid package manager version drifts between developers, machines and environments, we chose Corepack over straight pnpm install (`npm install -g pnpm`). This means:
 
 ```shell

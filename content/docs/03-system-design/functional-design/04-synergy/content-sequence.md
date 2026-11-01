@@ -12,6 +12,8 @@ tags:
 status: accepted
 ---
 
+**D63** `decision` #synergy #concurrency: The entity index keeps a `content_seq` counter that goes up on every write to an entity's content.
+
 ## What
 
 The entity index gets a third counter, **`content_seq`**, that goes up on every write to an entity's content: a revision save, a version save, and an anchor mark added to the content for someone else's link (Pratik, 2026-10-31).

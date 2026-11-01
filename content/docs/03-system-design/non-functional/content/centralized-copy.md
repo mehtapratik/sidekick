@@ -11,6 +11,8 @@ tags:
    - content
 ---
 
+**D36** `decision` #copy: All user-visible strings live in `packages/copy`; source files never hardcode them.
+
 All user-visible strings such as labels, error messages, button text, and page titles live in `packages/copy`. Source files never contain hardcoded strings.
 
 ```ts

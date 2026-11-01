@@ -11,6 +11,8 @@ tags:
    - typescript
 ---
 
+**D49** `decision` #validation: External input is validated at runtime with Zod at every boundary, because TypeScript types are erased.
+
 TypeScript types are erased at runtime. They cannot be used to validate data that arrives from outside the codebase — user inputs, API request bodies, query parameters, external API responses, and database rows are all untyped at runtime, regardless of what TypeScript says they are at compile time.
 
 Runtime validation is required at every boundary where external data enters the system.

@@ -10,6 +10,8 @@ tags:
 publish: true
 ---
 
+**D1** `principle` #product #metadata: Sidekick is built for one person, who decides: every field, link and piece of metadata is optional and adapts to that person's workflow.
+
 Most productivity software is built for a team. It assumes a manager who wants visibility, a workflow that has to fit twenty people, and fields that exist because a report needs them. A person using it alone inherits all of that weight and none of the reasons for it.
 
 Sidekick is built for one person. Every module adapts to how that individual thinks and works, not to how a team should coordinate. The user sits in the decision maker's seat: they choose which fields an entry carries, which links matter, what counts as a change and when to act on one. The system can suggest. The user decides.

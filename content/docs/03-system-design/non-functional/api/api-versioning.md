@@ -11,6 +11,8 @@ tags:
    - api
 ---
 
+**D46** `decision` #api: API routes carry no version prefix for now; versioning is deferred.
+
 ## What
 
 Current API routes live at `/api/` with no version prefix. Versioning (`/api/v1/`, `/api/v2/`) is deferred.

@@ -42,8 +42,10 @@ src/lib/vault.mjs                slug rules, exclude globs, title derivation, va
 src/lib/entries.ts               published gate, asOf, the one comparator, neighbours, tags
 src/lib/tree.ts                  folder tree for the Index (port of the handover's tree.py)
 src/plugins/                     remark (wikilinks, embeds, callouts, leading H1) and rehype (tables, code figure)
-src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/
+src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/, /datums.json
+src/lib/datums.mjs               datum scan, relation parsing, id checks
 scripts/check-privacy.mjs        post-build gate, run by `npm run build`
+scripts/check-datums.mjs         post-build datum gate; `--next` prints the next free id
 ```
 
 ## Publishing
@@ -53,6 +55,25 @@ An entry is built only when its frontmatter has `publish: true`. Nothing else li
 `01-motivations/` are published like any other folder, as the Principles and Motivations sections.)
 The old site hid notes with a `private` tag; that tag no longer gates anything, so **do not add
 `publish: true` to a note tagged `private`**. The build fails if a published note carries it.
+
+## Datums
+
+A datum is one claim that can be pointed at: a principle, decision, rule, requirement, concept, learning or
+outcome. Plans, walkthroughs, lessons and notes stay prose and cite datums. A datum is one line in a page:
+
+```
+**D12** `rule` #api #security: The claim, in one or two sentences. derived-from [[D5]]
+```
+
+- The id is `D<n>`: global, never reused, never changed. It says nothing about kind, so a decision promoted to a
+  principle keeps it. `node scripts/check-datums.mjs --next` prints the next free id.
+- Kinds: principle, decision, rule, requirement, concept, learning, outcome. `#tags` are optional.
+- Relations are a relation word then a wikilink: Synergy's vocabulary (`derived-from`, `supersedes`,
+  `contradicts`, `cites`, ...) plus `violates` and `exception-to`. `[[D12]]` links to a datum; the page
+  gets `#D12` on the bold id. Direction runs from the dependent to what it relies on.
+- A markdown list item may hold a datum (`1. **D4** ...`). A datum is never written inside a code fence.
+- `npm run build` fails on a duplicate id, an unknown kind or a relation that does not resolve, and prints every
+  `violates` link. `/datums.json` is the index of datums in published pages.
 
 ## Where this repo departs from the handover SPEC
 

@@ -11,6 +11,8 @@ tags:
 publish: true
 ---
 
+**D2** `principle` #product #planning: Draw the MVP line by what an item costs to add later: irreversible foundations ship now, everything else waits, and a foundation needs a planned near-term use.
+
 Every MVP is a bet on what can wait. Most teams draw the line by layer: backend now, polish later, or the reverse. That line is in the wrong place. Some backend work is cheap to add next year, and some frontend work becomes a rewrite if it waits.
 
 Sidekick draws the line by asking one question of every item: what does it cost to add later? If the answer is "a new endpoint" or "a stylesheet", it waits. If the answer is "a data migration across every user's records" or "changing every caller of a shared component", it ships now, even when nothing uses it yet.

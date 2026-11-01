@@ -10,6 +10,7 @@ import {
    resolveWikilink,
    scanVault,
 } from "../lib/vault.mjs";
+import { scanDatums } from "../lib/datums.mjs";
 
 const WIKI = /(!?)\[\[([^\]\n]+)\]\]/g;
 const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
@@ -90,9 +91,21 @@ function embed(raw) {
    };
 }
 
+let datums;
+function datumById() {
+   datums ??= new Map(scanDatums().map((d) => [d.id, d]));
+   return datums;
+}
+
 /** Resolve `target#heading` to a published URL, or null (unpublished, private or missing). */
 function resolveTarget(targetAndHeading, fromRel, fromCollection) {
    const [target, ...h] = targetAndHeading.split("#");
+   if (/^D\d+$/.test(target.trim())) {
+      const d = datumById().get(target.trim());
+      return d?.published
+         ? { url: `${d.url}#${d.id}`, title: d.id, heading: "" }
+         : null;
+   }
    const heading = h.join("#").trim();
    const anchor = heading ? "#" + headingSlug(heading) : "";
    if (!target.trim()) return { url: anchor, title: heading, heading: "" };
@@ -160,6 +173,22 @@ function spanningWikilinks(parent, fromRel, fromCollection) {
       ].filter((n) => n.type !== "text" || n.value);
       kids.splice(i, j - i + 1, ...replacement);
    }
+}
+
+/** A datum line starts `**D12** `kind``: give its id to the bold id, so `page/#D12` lands on it. */
+function datumAnchors(tree) {
+   visit(tree, "paragraph", (p) => {
+      const [a, b, c] = p.children;
+      if (
+         a?.type === "strong" &&
+         a.children.length === 1 &&
+         /^D\d+$/.test(a.children[0].value ?? "") &&
+         b?.type === "text" &&
+         b.value.trim() === "" &&
+         c?.type === "inlineCode"
+      )
+         a.data = { hName: "strong", hProperties: { id: a.children[0].value } };
+   });
 }
 
 function callouts(tree) {
@@ -232,6 +261,7 @@ export function remarkVault() {
       });
 
       callouts(tree);
+      datumAnchors(tree);
       obsidianInlineMath(tree, String(file.value));
 
       visit(

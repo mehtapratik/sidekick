@@ -12,6 +12,8 @@ tags:
    - cli
 ---
 
+**D37** `decision` #config: Environment variables load through `dotenv-cli`, not Node's `--env-file` flag.
+
 Sidekick to use `dotenv-cli` over Node.js `--env-file` flag to load environment variables.
 
 **Why:**

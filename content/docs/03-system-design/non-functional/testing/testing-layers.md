@@ -13,6 +13,8 @@ tags:
    - playwright
 ---
 
+**D60** `decision` #testing: Tests run at four layers, and a behaviour is proven at the cheapest layer that can observe it.
+
 Sidekick tests at four layers. Each answers a different question, and a behaviour is proven at the cheapest layer that can observe it. Many unit tests, the most coverage at integration, a few end-to-end journeys, and visual regression once there is a design system to protect. The tools are in [[03-system-design/non-functional/testing/testing-layers|Vitest]].
 
 ## Every layer
@@ -56,6 +58,8 @@ A screenshot per component state, compared with a committed baseline, so upgrade
 A playground page (such as Synergy's, behind the sandbox entitlements) is for looking, not asserting. It is the natural target for end-to-end and visual tests later. A component catalogue (Storybook or Ladle) is added only if one is wanted.
 
 ## Test Framework: Vitest
+
+**D59** `decision` #testing: Vitest is the single unit and integration test framework for the whole monorepo.
 
 **What we chose:** Vitest is the single unit and integration test framework for the whole monorepo — every package, `apps/web`, and `apps/cli`, client and server code alike. One API to learn, and one `test` task that Turborepo runs per package, the same way it runs `lint` and `typecheck`.
 

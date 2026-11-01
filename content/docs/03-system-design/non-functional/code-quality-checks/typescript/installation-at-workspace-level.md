@@ -13,6 +13,8 @@ tags:
    - pnpm
 ---
 
+**D51** `decision` #typescript #monorepo: TypeScript is a root `devDependency`, so every package uses the same version.
+
 **What we chose:** TypeScript in root `devDependencies` (`pnpm add -D -w typescript`), hoisted to all packages.
 
 **Why:** The Next.js scaffolder installs TypeScript as a local dependency of `apps/web`. Without TypeScript at the root, all other packages (`packages/core`, `packages/ui`, etc.) fall back to whatever `tsc` binary is on the system PATH — which could be an old version that doesn't support `ES2022` target or `moduleResolution: "bundler"` (both require TypeScript 5+).

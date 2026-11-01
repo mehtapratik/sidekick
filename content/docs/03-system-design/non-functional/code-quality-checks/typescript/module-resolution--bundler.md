@@ -12,6 +12,8 @@ tags:
    - typescript
 ---
 
+**D45** `decision` #typescript: `tsconfig.base.json` sets `moduleResolution` to `bundler`.
+
 **What we chose:** `"moduleResolution": "bundler"` in `tsconfig.base.json`.
 
 **Why:** There are several moduleResolution strategies in TypeScript:

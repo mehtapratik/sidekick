@@ -53,6 +53,8 @@ The questions this note used to leave open are settled: features live in `packag
 
 ## Platform Layer
 
+**D57** `decision` #monorepo #synergy: A platform layer, `packages/platform/*`, sits between features and the foundation, one package per shared service; Synergy is the first.
+
 ### What
 
 A platform layer sits between features and the foundation: `packages/platform/*`, one package per shared service. Synergy is the first, `packages/platform/synergy` (`@sidekick/synergy`). It owns the entity index, version log, relationships, relation vocabulary, tags, outbox and their rules, the resolver and renderer contracts, and the Sneak Peek Link component. `packages/core` keeps the DB client and RLS, auth, the API guard, entitlements and logging.
@@ -88,6 +90,8 @@ Foundation says _how_, platform says _what_, features say _which_. **Each layer 
 - **Supersedes** points 1 and 2 of the retired Design Constraints page (entity types in the registry, edges in `core`).
 
 ## React as Peer Dependency
+
+**D58** `decision` #react #dependencies: Packages that use React list it as a peer dependency, and `apps/web` owns the installed version.
 
 ### What
 

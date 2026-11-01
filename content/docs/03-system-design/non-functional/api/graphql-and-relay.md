@@ -13,6 +13,8 @@ tags:
    - relay
 ---
 
+**D44** `decision` #api: The MVP API is REST; evaluating GraphQL and Relay is deferred.
+
 REST API for MVP. GraphQL evaluation is deferred. All API routes use standard Next.js Route Handlers returning JSON.
 
 ## Why not now

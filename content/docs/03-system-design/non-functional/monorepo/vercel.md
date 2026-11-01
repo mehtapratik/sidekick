@@ -14,6 +14,8 @@ tags:
    - vercel
 ---
 
+**D54** `decision` #deployment: Vercel hosts Sidekick, with `apps/web` as its root directory.
+
 Vercel to be host provider of Sidekick.
 
 ## Setup

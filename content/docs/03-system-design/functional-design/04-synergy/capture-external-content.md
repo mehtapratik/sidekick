@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D62** `decision` #synergy: Synergy versions only content Sidekick holds, so a provider captures a copy of external content when the user saves it.
+
 ## What
 
 Synergy versions only content that Sidekick holds. A provider of external content (a tweet, a blog post, a news article, a PDF, a Word document) captures a copy into its own tables or file storage when the user saves it. From then on the item is an ordinary entity, and every Synergy rule applies to it unchanged.

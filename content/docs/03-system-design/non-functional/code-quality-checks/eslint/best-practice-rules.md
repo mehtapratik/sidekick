@@ -12,6 +12,8 @@ tags:
    - eslint
 ---
 
+**D40** `decision` #eslint: A curated set of ESLint rules, each aimed at a class of bug, runs on top of the recommended presets; formatting stays with Prettier.
+
 Sidekick's root `eslint.config.js` enforces, on top of `@eslint/js` and `typescript-eslint` recommended:
 
 | Group                       | Rules                                                                                                                                                                                       | Scope                     |

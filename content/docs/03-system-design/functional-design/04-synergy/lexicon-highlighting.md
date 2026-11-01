@@ -13,6 +13,8 @@ tags:
 status: accepted
 ---
 
+**D64** `decision` #synergy #editor: Lexicon highlighting splits data from mechanism: an editor spots a term's first use and suggests a `defined-by` link.
+
 ## What
 
 Lexicon highlighting (any feature's editor spots the first use of a term or alias and suggests a `defined-by` link) splits data from mechanism:

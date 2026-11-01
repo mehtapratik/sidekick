@@ -12,6 +12,8 @@ tags:
    - typescript
 ---
 
+**D50** `decision` #typescript: A single `tsconfig.base.json` at the repo root is extended by every package.
+
 **What we chose:** A single `tsconfig.base.json` at the repo root that all packages extend.
 
 **Why:** Without a shared base, every package repeats the same 6-7 `compilerOptions`. When you need to change a setting (e.g. upgrading `target` from `ES2022` to `ES2024`), you'd have to update every package's `tsconfig.json` individually. With a shared base, one change propagates everywhere.

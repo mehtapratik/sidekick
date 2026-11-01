@@ -12,6 +12,8 @@ tags:
    - eslint
 ---
 
+**D42** `decision` #eslint: ESLint uses the flat config format in `eslint.config.js`.
+
 Sidekick to have Eslint 9+ flat config format: `eslint.config.js`.
 
 **Why:** ESLint deprecated the legacy `.eslintrc.*` format in ESLint 9. The new flat config format:
