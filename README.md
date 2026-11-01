@@ -25,7 +25,7 @@ What exists today:
 - **CI and branch protection:** `main` accepts changes only through pull requests whose CI `checks` job passes.
 - **Current toolchain:** Node 24, TypeScript 6.0, ESLint 10, kept up to date by Renovate.
 
-Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry and entitlements on top of them. The plan lives in `docs/04-plans/`.
+Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry and entitlements on top of them. The plan lives in `docs/04-phases/`.
 
 ---
 
@@ -135,12 +135,10 @@ docs/                    # Symlink to ../arkive/sources/docs — Sidekick's cano
   01-motivations/        # Why Sidekick exists
   02-prd/                # Product requirements
   03-system-design/      # System design (functional and non-functional)
-  04-plans/              # Living plan and phase work breakdowns
-  05-builds/             # Step-by-step build walkthroughs per phase
+  04-phases/             # One folder per phase: plan, lessons, walkthroughs and private learnings
   06-decisions/          # Architecture and technical decisions
   07-glossary/           # Shared vocabulary
   08-ai-coding-harness/  # Task-specific implementation guidance (agent-guide.md is AGENTS.md)
-  09-notes/              # Private per-phase learnings (not published)
 ```
 
 ---
