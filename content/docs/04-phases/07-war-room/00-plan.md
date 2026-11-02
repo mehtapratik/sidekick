@@ -31,7 +31,7 @@ depends_on:
 
 | #    | Task                                                                                                                         | Complexity | Learning |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 7A.1 | Create `packages/feature-war-room`; define `tasks` (and optionally `plans`) schema — syncable                                | 🟡         | 📦 🗄️    |
+| 7A.1 | Create `packages/features/war-room`; define `tasks` (and optionally `plans`) schema — syncable                               | 🟡         | 📦 🗄️    |
 | 7A.2 | Migration, RLS, trigger bindings, registry entry + entity types                                                              | 🟡         | 🔐 🗄️    |
 | 7A.3 | Repository + guarded API routes (CRUD, soft-delete)                                                                          | 🟡         | 🧩 🔐    |
 | 7A.4 | Palette-reachable UI: today view, task create/complete flows                                                                 | 🟡         | 🧩 🎨    |
@@ -41,8 +41,8 @@ depends_on:
 
 | #    | Task                                                                                                                           | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------- |
-| 7B.1 | Create `packages/feature-factory`; define `workflows` schema — name, icon, action definition (typed payload), enabled          | 🔴         | 📦 🗄️   |
-| 7B.2 | Migration, RLS, registry entry                                                                                                 | 🟡         | 🔐 🗄️   |
+| 7B.1 | Create `packages/features/factory`; define `workflows` schema — name, icon, action definition (typed payload), enabled         | 🔴         | 📦 🗄️    |
+| 7B.2 | Migration, RLS, registry entry                                                                                                 | 🟡         | 🔐 🗄️    |
 | 7B.3 | Implement workflow execution through public APIs only (API-first guarantee) — e.g., "create War Room task with preset payload" | 🔴         | 🧩 🔐    |
 | 7B.4 | UI: configure a push-button workflow; surface buttons in the command palette / toolbar                                         | 🟡         | 🧩 🎨    |
 | 7B.5 | Implement configurable input defaults — forms open pre-filled with previously typed inputs                                     | 🟡         | 🧩       |

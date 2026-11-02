@@ -3,9 +3,9 @@ publish: true
 title: Living Implementation Plan
 id: plan.living
 created: 2026-09-19
-updated: 2026-10-24
+updated: 2026-11-01
 kind: plan
-version: 1.0.2
+version: 1.0.3
 tags:
    - plan
    - living-plan
@@ -76,8 +76,8 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 
 - [[04-phases/00-groundwork/00-plan|Phase 0 — Groundwork ✅ COMPLETE]]
 - [[04-phases/01-front-door/00-plan|Phase 1 — Front Door ✅ COMPLETE]]
-- [[04-phases/01-front-door/01-row-level-security/00-plan|Phase 1.1 — Front Door]]
-- [[04-phases/01-front-door/02-hardening/00-plan|Pre-2 — Front Door]]
+- [[04-phases/01-front-door/01-row-level-security/00-plan|Phase 1.1 — Front Door ✅ COMPLETE]]
+- [[04-phases/01-front-door/02-hardening/00-plan|Pre-2 — Front Door ✅ COMPLETE]]
 - [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper ✅ COMPLETE]]
 - [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]]
 - [[04-phases/04-taxila/00-plan|Phase 4 — Taxila]]
@@ -136,7 +136,7 @@ Before moving to the next phase, verify:
 | -------- | ------------------ | ---------------------------------------------- |
 | Phase 0  | 2–3 sessions       | Mostly config, fast with AI help ✅            |
 | Phase 1  | 3–5 sessions       | Auth has depth; worth going slow ✅            |
-| Phase 2  | 2–4 sessions       | Conceptually dense; revisit often              |
+| Phase 2  | 2–4 sessions       | Conceptually dense; revisit often ✅           |
 | Phase 3  | 3–5 sessions       | Graph modeling + first full vertical           |
 | Phase 4  | 5–7 sessions       | Highest learning payoff; includes the palette  |
 | Phase 5  | 2–4 sessions       | Tiptap is well-documented                      |

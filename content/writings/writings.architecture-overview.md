@@ -4,8 +4,8 @@ title: Architectural Overview
 description: Sidekick's architectural overview — an API-first platform tuned for solo developers
 kind: document
 created: 2026-07-09
-updated: 2026-08-24
-version: 2.1.0
+updated: 2026-11-01
+version: 2.2.0
 tags:
    - sidekick
    - project
@@ -78,12 +78,7 @@ The MVP serves an audience of one, but Sidekick is intended to grow into a real 
 - `packages/features-registry` serves as the ledger of all features Sidekick will offer. It will host feature manifests, metadata, and registration information.
 - `packages/core` must ALWAYS remain feature-agnostic.
 
-> [!question]
-> Should we enforce the following dependency flows?
->
-> 1. Use folder-level depth to reflect dependency boundaries (e.g., packages `foo` and `bar` cannot depend on each other, but both can depend on `packages/globals/core`. Similarly, `apps/web` and `apps/cli` cannot reference each other).
-> 2. Move features into a dedicated `packages/features/` folder.
-> 3. House `features-registry` inside the `packages/` folder solely as a registry.
+Layers are enforced by folder and by `pnpm lint`: apps, the registry, features (`packages/features/*`), platform (`packages/platform/*`) and foundation (`packages/foundation/*`), each importing only layers below it. The full rules are in [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
 
 ---
 
@@ -93,15 +88,15 @@ Sidekick's features are **named product modules**, defined in the high-level PRD
 
 ### 5.1 Module → package mapping
 
-| Module         | Purpose                                                                                                                             | Package                       | MVP                                      |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------- |
-| **Taxila**     | Knowledge management: atomic notes + knowledge sources (live links, captured content, markdown), metadata enrichment, RAG substrate | `packages/feature-taxila`     | Yes                                      |
-| **Zinsser**    | Writing app + AI writing coach trained on the user's own style                                                                      | `packages/feature-zinsser`    | Yes (editor first; coach after AI layer) |
-| **Core Drive** | The value system: principles, mental models, priorities, plans — context layer for all AI features                                  | `packages/feature-core-drive` | Yes                                      |
-| **Alter Ego**  | AI confidant grounded in Core Drive + Taxila                                                                                        | `packages/feature-alter-ego`  | Yes                                      |
-| **War Room**   | Planning and strategy (tasks, day planning)                                                                                         | `packages/feature-war-room`   | Yes                                      |
-| **Factory**    | Execution and automation. MVP scope: push-button workflows + configurable input defaults                                            | `packages/feature-factory`    | Partial                                  |
-| **Parrot**     | Voice dictation with gesture support                                                                                                | —                             | No (post-MVP)                            |
+| Module         | Purpose                                                                                                                             | Package                        | MVP                                      |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------- |
+| **Taxila**     | Knowledge management: atomic notes + knowledge sources (live links, captured content, markdown), metadata enrichment, RAG substrate | `packages/features/taxila`     | Yes                                      |
+| **Zinsser**    | Writing app + AI writing coach trained on the user's own style                                                                      | `packages/features/zinsser`    | Yes (editor first; coach after AI layer) |
+| **Core Drive** | The value system: principles, mental models, priorities, plans — context layer for all AI features                                  | `packages/features/core-drive` | Yes                                      |
+| **Alter Ego**  | AI confidant grounded in Core Drive + Taxila                                                                                        | `packages/features/alter-ego`  | Yes                                      |
+| **War Room**   | Planning and strategy (tasks, day planning)                                                                                         | `packages/features/war-room`   | Yes                                      |
+| **Factory**    | Execution and automation. MVP scope: push-button workflows + configurable input defaults                                            | `packages/features/factory`    | Partial                                  |
+| **Parrot**     | Voice dictation with gesture support                                                                                                | —                              | No (post-MVP)                            |
 
 Bookmarks are not a standalone feature: a bookmark is a Taxila _knowledge source_ of type `link`. Recipes and Budget are backlogged as future "minions".
 
@@ -163,13 +158,13 @@ A single **Context Assembler** service in `packages/core/ai` (alongside the mode
 
 New possibilities emerge when features combine ("power of synergies" in the PRD). While each feature owns its data tables, **relationships between entities and global metadata live in a shared service** — built in the MVP so Taxila uses it from day one.
 
-**This is a graph _pattern_, not a graph _database_.** At MVP scale, plain PostgreSQL tables with recursive CTEs for traversal are sufficient. All access goes through a `GraphRepository` in `packages/core` — the swap boundary if scale ever demands a dedicated graph engine.
+**This is a graph _pattern_, not a graph _database_.** At MVP scale, plain PostgreSQL tables with recursive CTEs for traversal are sufficient. All access goes through Synergy's own repository in `packages/platform/synergy` — the swap boundary if scale ever demands a dedicated graph engine.
 
 Design constraints:
 
-1. All feature entities use client-generated UUIDs (existing invariant) and register an **entity type** in `packages/features-registry` — the registry doubles as the entity-type ledger.
-2. The `edges` table (`fromId`, `fromType`, `toId`, `toType`, `relation`, timestamps) lives in `packages/core`. Core stays feature-agnostic because it stores opaque typed IDs, never feature schemas.
-3. Global `tags` and `entity_tags` tables provide metadata across all entity types.
+1. All feature entities use client-generated UUIDs (existing invariant) and register a linkable **entity type** with Synergy — the registry assembles those registrations.
+2. Synergy's tables and migrations (relationships, entity index, version log) live in `packages/platform/synergy`, not in `packages/core`. Synergy stays feature-agnostic because it stores opaque typed IDs, never feature schemas. See [[03-system-design/functional-design/04-synergy/00-overview|Synergy]].
+3. Global `tags` and `tag_applications` tables provide metadata across all entity types.
 4. Edges and tags are user data: RLS by `userId`, syncable (soft-delete + trigger) rules apply.
 
 ### 5.4 Interaction model — command palette first
@@ -516,18 +511,19 @@ The MVP native strategy remains **Capacitor + hosted Next.js application**. The 
 
 ### 19.14 MVP implementation phases
 
-1. Monorepo foundation ✅
-2. Auth + security shell (incl. DB-level RLS enforcement) ✅
-3. Core infrastructure — `withApiGuard` + feature system
-4. Graph store & metadata service
-5. Taxila v1 (+ command-palette shell)
-6. Zinsser v1 (editor)
-7. Core Drive + AI layer + Alter Ego
-8. War Room + Factory v1 (push-button workflows)
-9. PWA & native shell
-10.   API keys & CLI
-11.   Observability & hardening
-12.   Dogfooding, then billing (optional — not a product goal per PRD)
+0. Groundwork ✅
+1. Front Door (auth, DB-level RLS, hardening) ✅
+2. Gatekeeper (`withApiGuard`, feature system, entitlements, logging) ✅
+3. Synergy (relationships, entity index, tags, version log)
+4. Taxila (+ command-palette shell)
+5. Zinsser (editor)
+6. Alter Ego (Core Drive + AI layer)
+7. War Room (+ Factory push-button workflows)
+8. Pocket (PWA & native shell)
+9. Terminal (API keys & CLI)
+10.   Watchtower (observability & hardening)
+11.   Open House (dogfooding, optional)
+12.   Storefront (billing, optional)
 
 See the [living plan](/docs/phases/living-plan/) for the authoritative task breakdown.
 
