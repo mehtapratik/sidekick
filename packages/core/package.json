@@ -32,12 +32,12 @@
       "server-only": "^0.0.1"
    },
    "peerDependencies": {
-      "next": ">=16.4.2"
+      "next": ">=16.4.3"
    },
    "devDependencies": {
       "@types/node": "^24.19.2",
       "drizzle-kit": "^0.31.11",
-      "next": "^16.4.2",
+      "next": "^16.4.3",
       "vitest": "^5.0.5"
    }
 }
