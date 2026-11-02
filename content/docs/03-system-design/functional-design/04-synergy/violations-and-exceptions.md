@@ -12,6 +12,8 @@ tags:
 status: accepted
 ---
 
+**D212** `decision` #synergy #violations: `violates` is an association and `exception-to` a reference; a violation has no status, so unlinking resolves it and retyping it to `exception-to` waives it. derived-from [[D161]] derived-from [[D162]] derived-from [[D163]] derived-from [[D164]]
+
 ## What
 
 Two relation types join the starter vocabulary, as seeded rows with copy keys and no new code:

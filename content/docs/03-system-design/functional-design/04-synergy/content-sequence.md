@@ -12,7 +12,7 @@ tags:
 status: accepted
 ---
 
-**D63** `decision` #synergy #concurrency: The entity index keeps a `content_seq` counter that goes up on every write to an entity's content.
+**D63** `decision` #synergy #concurrency: The entity index keeps a `content_seq` counter that goes up on every write to an entity's content. derived-from [[D151]] derived-from [[D171]]
 
 ## What
 

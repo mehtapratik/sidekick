@@ -12,7 +12,7 @@ tags:
 status: accepted
 ---
 
-**D67** `decision` #synergy: A link lives while its source mentions it in any way, and it is soft-deleted when the source drops its last mention.
+**D67** `decision` #synergy: A link lives while its source mentions it in any way, and it is soft-deleted when the source drops its last mention. derived-from [[D96]]
 
 ## What
 

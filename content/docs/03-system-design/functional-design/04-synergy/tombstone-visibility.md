@@ -13,7 +13,7 @@ tags:
 status: accepted
 ---
 
-**D66** `decision` #synergy #soft-delete #rls: Synergy's soft-deleted rows stay visible to Synergy's own queries, and restoring one is allowed. exception-to [[D11]]
+**D66** `decision` #synergy #soft-delete #rls: Synergy's soft-deleted rows stay visible to Synergy's own queries, and restoring one is allowed. exception-to [[D11]] derived-from [[D112]] derived-from [[D98]]
 
 ## What
 

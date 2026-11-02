@@ -34,130 +34,130 @@ A prefix in brackets names the only actors a story applies to. A story without o
 
 **Entities**
 
-1. Every entity in every module is linkable.
-2. Every field a user fills in is optional. A one-sentence note never needs more metadata than content.
-3. An entity without a title appears by a short name taken from its content.
-4. Mark a save as a new version when the change may invalidate what others built on it.
-5. Ordinary saves (typos, formatting, additions) count as revisions only.
-6. Add an optional one-line change note to a new version.
-7. Deprecate an entity. It stays readable.
-8. Supersede an entity with one or more newer ones. Referencers are pointed at a replacement.
-9. Superseding first confirms how many entities reference the old one.
-10.   Only content edits (title, body, blurb) bump the version or revision. Status, tags and metadata never do.
+1. **D73** `requirement` #synergy #entities: Every entity in every module is linkable. derived-from [[D69]]
+2. **D74** `requirement` #synergy #entities: Every field a user fills in is optional. A one-sentence note never needs more metadata than content. derived-from [[D1]]
+3. **D75** `requirement` #synergy #entities: An entity without a title appears by a short name taken from its content. derived-from [[D1]]
+4. **D76** `requirement` #synergy #entities: Mark a save as a new version when the change may invalidate what others built on it. derived-from [[D70]]
+5. **D77** `requirement` #synergy #entities: Ordinary saves (typos, formatting, additions) count as revisions only. derived-from [[D70]]
+6. **D78** `requirement` #synergy #entities: Add an optional one-line change note to a new version. derived-from [[D70]]
+7. **D79** `requirement` #synergy #entities: Deprecate an entity. It stays readable. derived-from [[D70]]
+8. **D80** `requirement` #synergy #entities: Supersede an entity with one or more newer ones. Referencers are pointed at a replacement. derived-from [[D70]]
+9. **D81** `requirement` #synergy #entities: Superseding first confirms how many entities reference the old one. derived-from [[D70]]
+10.   **D82** `requirement` #synergy #entities: Only content edits (title, body, blurb) bump the version or revision. Status, tags and metadata never do. derived-from [[D70]]
 
 **Relationships**
 
-11. Link one entity to another. The connection is stored, never copied.
-12. Give a link an optional label that says what the target answers ("Why?").
-13. Give a link an optional type from the starter vocabulary.
-14. An untyped link counts as a reference.
-15. Associations (`related-to`, `inspired-by`, `next`, `contradicts`, `violates`) never go stale and never block anything.
-16. Backlinks show each type by its inverse name ("explains", "source of").
-17. Link the same pair more than once, in the same direction, with different labels.
-18. Make a list link: several ordered targets under one label ("Why? guilt, new ideas, perfectionism").
-19. Reorder the members of a list link.
-20. Tag a relationship.
-21. Delete a link at any time.
-22. The link picker greys out entries that would close a reference loop ("would create a loop") and offers to mention the existing link instead.
-23. (bot, agent) A request that would close a reference loop is refused with the chain named.
-24. Mention one link from both of its entities, as often as needed. It stays one relationship.
-25. (target's author) Mentions of a link its source removed show "No longer linked" until dismissed or relinked.
-26. Undoing an unlink restores the same link. Linking the pair again later creates a new one, and old mentions can be relinked to it.
-27. Linking into a module the account doesn't have is refused.
-28. Define a term in the Lexicon (Taxila): an entity of type `term` with a short definition or acronym expansion, aliases and abbreviations.
-29. Link any word to a term with a `defined-by` association. It renders as a minimal link: hovering shows the definition in the browser's native tooltip (an abbreviation element for acronyms), and clicking opens the term in Taxila.
+11. **D83** `requirement` #synergy #links: Link one entity to another. The connection is stored, never copied. derived-from [[D69]]
+12. **D84** `requirement` #synergy #links: Give a link an optional label that says what the target answers ("Why?"). derived-from [[D69]]
+13. **D85** `requirement` #synergy #links: Give a link an optional type from the starter vocabulary. derived-from [[D69]]
+14. **D86** `requirement` #synergy #links: An untyped link counts as a reference. derived-from [[D69]]
+15. **D87** `requirement` #synergy #links: Associations (`related-to`, `inspired-by`, `next`, `contradicts`, `violates`) never go stale and never block anything. derived-from [[D69]]
+16. **D88** `requirement` #synergy #links: Backlinks show each type by its inverse name ("explains", "source of"). derived-from [[D69]]
+17. **D89** `requirement` #synergy #links: Link the same pair more than once, in the same direction, with different labels. derived-from [[D69]]
+18. **D90** `requirement` #synergy #links: Make a list link: several ordered targets under one label ("Why? guilt, new ideas, perfectionism"). derived-from [[D69]]
+19. **D91** `requirement` #synergy #links: Reorder the members of a list link. derived-from [[D69]]
+20. **D92** `requirement` #synergy #links: Tag a relationship. derived-from [[D69]]
+21. **D93** `requirement` #synergy #links: Delete a link at any time. derived-from [[D69]]
+22. **D94** `requirement` #synergy #links: The link picker greys out entries that would close a reference loop ("would create a loop") and offers to mention the existing link instead. derived-from [[D70]]
+23. **D95** `requirement` #synergy #links: (bot, agent) A request that would close a reference loop is refused with the chain named. derived-from [[D70]] derived-from [[D3]]
+24. **D96** `requirement` #synergy #links: Mention one link from both of its entities, as often as needed. It stays one relationship. derived-from [[D69]]
+25. **D97** `requirement` #synergy #links: (target's author) Mentions of a link its source removed show "No longer linked" until dismissed or relinked. derived-from [[D69]]
+26. **D98** `requirement` #synergy #links: Undoing an unlink restores the same link. Linking the pair again later creates a new one, and old mentions can be relinked to it. derived-from [[D69]]
+27. **D99** `requirement` #synergy #links: Linking into a module the account doesn't have is refused. derived-from [[D69]]
+28. **D100** `requirement` #synergy #links: Define a term in the Lexicon (Taxila): an entity of type `term` with a short definition or acronym expansion, aliases and abbreviations. derived-from [[D69]]
+29. **D101** `requirement` #synergy #links: Link any word to a term with a `defined-by` association. It renders as a minimal link: hovering shows the definition in the browser's native tooltip (an abbreviation element for acronyms), and clicking opens the term in Taxila. derived-from [[D69]]
 
 **Tags**
 
-30. Tag any entity with flat or `key:value` tags.
-31. Tags are lowercased automatically. Anything else is rejected with a hint.
-32. Autocomplete suggests the keys already in use and the keys Sidekick ships.
-33. Rename a tag once; it changes everywhere.
-34. Merge one tag into another. The old name then suggests and applies the merged tag.
-35. Deprecate a tag or a relation type. Existing uses stay; new ones are refused.
-36. (agent) Suggest tags. They wait for approval unless the user turns on auto-accept.
+30. **D102** `requirement` #synergy #tags: Tag any entity with flat or `key:value` tags. derived-from [[D72]]
+31. **D103** `requirement` #synergy #tags: Tags are lowercased automatically. Anything else is rejected with a hint. derived-from [[D72]]
+32. **D104** `requirement` #synergy #tags: Autocomplete suggests the keys already in use and the keys Sidekick ships. derived-from [[D72]]
+33. **D105** `requirement` #synergy #tags: Rename a tag once; it changes everywhere. derived-from [[D72]]
+34. **D106** `requirement` #synergy #tags: Merge one tag into another. The old name then suggests and applies the merged tag. derived-from [[D72]]
+35. **D107** `requirement` #synergy #tags: Deprecate a tag or a relation type. Existing uses stay; new ones are refused. derived-from [[D72]]
+36. **D108** `requirement` #synergy #tags: (agent) Suggest tags. They wait for approval unless the user turns on auto-accept. derived-from [[D72]] derived-from [[D1]]
 
 **Keeping links true**
 
-37. A link whose target was edited since it was made shows a standard-colour dot.
-38. A link whose target has a new version shows a red dot, and the change note where there's room.
-39. A link shows its target's single status: active, deprecated, superseded or deleted.
-40. A deleted target keeps its name as plain, unclickable text.
-41. A link into a module the account no longer has shows name, type and status, and no content.
-42. (source's author) Mark a changed link "still holds" to clear its dot.
-43. (source's author) Point a link at one of the entries that superseded its target.
-44. (source's author) Unlink a stale link.
-45. Deleting an entity that others reference is refused with the referencer count. Deprecate or supersede it instead.
-46. Deleting a source removes its outgoing links, which can free its targets.
-47. Restore brings back exactly what a delete removed and never touches the version.
-48. Permanent erasure overrides the delete block and leaves referencers a "permanently removed" placeholder.
-49. Links into a disabled module stay as they are until it is re-enabled or the link is removed.
+37. **D109** `requirement` #synergy #staleness: A link whose target was edited since it was made shows a standard-colour dot. derived-from [[D70]]
+38. **D110** `requirement` #synergy #staleness: A link whose target has a new version shows a red dot, and the change note where there's room. derived-from [[D70]]
+39. **D111** `requirement` #synergy #staleness: A link shows its target's single status: active, deprecated, superseded or deleted. derived-from [[D70]]
+40. **D112** `requirement` #synergy #staleness: A deleted target keeps its name as plain, unclickable text. derived-from [[D70]]
+41. **D113** `requirement` #synergy #staleness: A link into a module the account no longer has shows name, type and status, and no content. derived-from [[D70]]
+42. **D114** `requirement` #synergy #staleness: (source's author) Mark a changed link "still holds" to clear its dot. derived-from [[D70]]
+43. **D115** `requirement` #synergy #staleness: (source's author) Point a link at one of the entries that superseded its target. derived-from [[D70]]
+44. **D116** `requirement` #synergy #staleness: (source's author) Unlink a stale link. derived-from [[D70]]
+45. **D117** `requirement` #synergy #staleness: Deleting an entity that others reference is refused with the referencer count. Deprecate or supersede it instead. derived-from [[D70]]
+46. **D118** `requirement` #synergy #staleness: Deleting a source removes its outgoing links, which can free its targets. derived-from [[D70]]
+47. **D119** `requirement` #synergy #staleness: Restore brings back exactly what a delete removed and never touches the version. derived-from [[D70]]
+48. **D120** `requirement` #synergy #staleness: Permanent erasure overrides the delete block and leaves referencers a "permanently removed" placeholder. derived-from [[D70]]
+49. **D121** `requirement` #synergy #staleness: Links into a disabled module stay as they are until it is re-enabled or the link is removed. derived-from [[D70]]
 
 **Anchored links**
 
-50. Select a word, sentence or paragraph and link it.
-51. Point a link at a passage of its target: a paragraph, sentence or word.
-52. The editor marks passages that others reference.
-53. Deleting a referenced passage offers keep, save as a new version, or supersede.
-54. Editing a referenced passage asks whether it is a new version.
-55. A link whose passage was removed in a new version shows the red dot and "passage removed" until its author re-anchors it, widens it to the whole entity, or unlinks.
-56. Removing a link from an entry's content counts as a revision of that entry. Synergy removing a link (an association into a deleted passage) never does.
+50. **D122** `requirement` #synergy #anchors: Select a word, sentence or paragraph and link it. derived-from [[D69]]
+51. **D123** `requirement` #synergy #anchors: Point a link at a passage of its target: a paragraph, sentence or word. derived-from [[D69]]
+52. **D124** `requirement` #synergy #anchors: The editor marks passages that others reference. derived-from [[D70]]
+53. **D125** `requirement` #synergy #anchors: Deleting a referenced passage offers keep, save as a new version, or supersede. derived-from [[D70]]
+54. **D126** `requirement` #synergy #anchors: Editing a referenced passage asks whether it is a new version. derived-from [[D70]]
+55. **D127** `requirement` #synergy #anchors: A link whose passage was removed in a new version shows the red dot and "passage removed" until its author re-anchors it, widens it to the whole entity, or unlinks. derived-from [[D70]]
+56. **D128** `requirement` #synergy #anchors: Removing a link from an entry's content counts as a revision of that entry. Synergy removing a link (an association into a deleted passage) never does. derived-from [[D70]]
 
 **Sneak Peek Link**
 
-57. Choose per direct mention: minimal, inline, card or live preview. The two ends of a link may show it differently.
-58. Inline reads `{title} ({type}) - [{status}]`, followed by any dot.
-59. A minimal mention or an alias mention shows only its label (the link's label, the target's title when there is none, or the author's words), with a red dot when the target needs attention, and a browser-default tooltip reading `{type} - {status}`.
-60. A card shows the title, an excerpt and module fields.
-61. A live preview shows the whole current target in place.
-62. Links inside a live preview render inline. Previews never nest.
-63. (developer) Register a renderer for an entity type. The component calls it wherever that type is linked.
-64. Renderers are async and batched: one call per provider per page.
-65. Loading, error and empty states look the same for every module.
-66. Links are real links in focus order. The dots have text equivalents and differ in shape as well as colour.
-67. Long lists of links or backlinks load more as the reader scrolls.
-68. (third-party app) Show a Sidekick link as a card or live preview through the public API.
-69. (developer) Add a new linkable type (a Twitter thread, a news article) by registering its resolver and renderer, without changing Synergy.
+57. **D129** `requirement` #synergy #sneak-peek-link: Choose per direct mention: minimal, inline, card or live preview. The two ends of a link may show it differently. derived-from [[D71]]
+58. **D130** `requirement` #synergy #sneak-peek-link: Inline reads `{title} ({type}) - [{status}]`, followed by any dot. derived-from [[D71]]
+59. **D131** `requirement` #synergy #sneak-peek-link: A minimal mention or an alias mention shows only its label (the link's label, the target's title when there is none, or the author's words), with a red dot when the target needs attention, and a browser-default tooltip reading `{type} - {status}`. derived-from [[D71]]
+60. **D132** `requirement` #synergy #sneak-peek-link: A card shows the title, an excerpt and module fields. derived-from [[D71]]
+61. **D133** `requirement` #synergy #sneak-peek-link: A live preview shows the whole current target in place. derived-from [[D71]]
+62. **D134** `requirement` #synergy #sneak-peek-link: Links inside a live preview render inline. Previews never nest. derived-from [[D71]]
+63. **D135** `requirement` #synergy #sneak-peek-link: (developer) Register a renderer for an entity type. The component calls it wherever that type is linked. derived-from [[D71]] derived-from [[D187]]
+64. **D136** `requirement` #synergy #sneak-peek-link: Renderers are async and batched: one call per provider per page. derived-from [[D71]] derived-from [[D183]]
+65. **D137** `requirement` #synergy #sneak-peek-link: Loading, error and empty states look the same for every module. derived-from [[D71]] derived-from [[D182]]
+66. **D138** `requirement` #synergy #sneak-peek-link: Links are real links in focus order. The dots have text equivalents and differ in shape as well as colour. derived-from [[D71]] derived-from [[D185]]
+67. **D139** `requirement` #synergy #sneak-peek-link: Long lists of links or backlinks load more as the reader scrolls. derived-from [[D71]] derived-from [[D181]]
+68. **D140** `requirement` #synergy #sneak-peek-link: (third-party app) Show a Sidekick link as a card or live preview through the public API. derived-from [[D71]] derived-from [[D186]]
+69. **D141** `requirement` #synergy #sneak-peek-link: (developer) Add a new linkable type (a Twitter thread, a news article) by registering its resolver and renderer, without changing Synergy. derived-from [[D71]] derived-from [[D187]]
 
 **Search and backlinks**
 
-70. Search every module by title, type, provider, status and tag.
-71. Search tolerates typos and partial words: "dep wor" finds "deep work".
-72. See everything that references an entry, with labels and types.
-73. Backlinks and search results page.
+70. **D142** `requirement` #synergy #search: Search every module by title, type, provider, status and tag. derived-from [[D72]]
+71. **D143** `requirement` #synergy #search: Search tolerates typos and partial words: "dep wor" finds "deep work". derived-from [[D72]]
+72. **D144** `requirement` #synergy #search: See everything that references an entry, with labels and types. derived-from [[D69]]
+73. **D145** `requirement` #synergy #search: Backlinks and search results page. derived-from [[D72]]
 
 **Machines**
 
-74. (bot, job, agent) Use the same guarded API that Sidekick's own screens use.
-75. (bot, agent) Get each resolved link as structured data: relationship, target fields, state and marks.
-76. (bot, agent) Retry a create safely with an idempotency key.
-77. (bot, agent) Get stable error codes: `delete_blocked` with the referencer count, `passage_referenced`, `cycle`, `locked`, and stale-content conflicts.
-78. Every write records who made it (a person, the system, an agent or an API key) and why.
-79. A save from a stale copy is refused, whether it comes from a second tab or, later, a second person.
+74. **D146** `requirement` #synergy #api: (bot, job, agent) Use the same guarded API that Sidekick's own screens use. derived-from [[D3]]
+75. **D147** `requirement` #synergy #api: (bot, agent) Get each resolved link as structured data: relationship, target fields, state and marks. derived-from [[D71]] derived-from [[D3]]
+76. **D148** `requirement` #synergy #api: (bot, agent) Retry a create safely with an idempotency key. derived-from [[D3]]
+77. **D149** `requirement` #synergy #api: (bot, agent) Get stable error codes: `delete_blocked` with the referencer count, `passage_referenced`, `cycle`, `locked`, and stale-content conflicts. derived-from [[D3]]
+78. **D150** `requirement` #synergy #api: Every write records who made it (a person, the system, an agent or an API key) and why. derived-from [[D168]]
+79. **D151** `requirement` #synergy #api: A save from a stale copy is refused, whether it comes from a second tab or, later, a second person. derived-from [[D171]]
 
 **Playground (Phase 3 only)**
 
-80. A playground page lists mock notes and tasks.
-81. Create, edit, version, deprecate, supersede and delete mock entities.
-82. Add relationships of every type, with labels, list links and tags.
-83. Each mock entity shows its fields, tags, outgoing links and backlinks.
-84. The same link shows in all four display types side by side.
-85. Switch the mock modules' entitlement off and on to watch links lock and come back.
-86. The playground and mock modules sit behind the `sandbox-notes` and `sandbox-tasks` entitlements, which real users never hold.
+80. **D152** `requirement` #synergy #playground: A playground page lists mock notes and tasks.
+81. **D153** `requirement` #synergy #playground: Create, edit, version, deprecate, supersede and delete mock entities.
+82. **D154** `requirement` #synergy #playground: Add relationships of every type, with labels, list links and tags.
+83. **D155** `requirement` #synergy #playground: Each mock entity shows its fields, tags, outgoing links and backlinks.
+84. **D156** `requirement` #synergy #playground: The same link shows in all four display types side by side.
+85. **D157** `requirement` #synergy #playground: Switch the mock modules' entitlement off and on to watch links lock and come back.
+86. **D158** `requirement` #synergy #playground: The playground and mock modules sit behind the `sandbox-notes` and `sandbox-tasks` entitlements, which real users never hold.
 
 **Added in system design (2026-10-30)**
 
-87. Cite a link from a field (such as `related-to`) or a links panel. It counts as a mention of the source, so the link lives until the source drops its last mention of any kind.
-88. An entity's title shows a dot when any of its outgoing references needs attention, with the links as the reason.
+87. **D159** `requirement` #synergy #links: Cite a link from a field (such as `related-to`) or a links panel. It counts as a mention of the source, so the link lives until the source drops its last mention of any kind. derived-from [[D69]] derived-from [[D67]]
+88. **D160** `requirement` #synergy #links: An entity's title shows a dot when any of its outgoing references needs attention, with the links as the reason. derived-from [[D70]]
 
 **Added for violations and exceptions (2026-11-01)**
 
-89. Mark that an entity breaks a rule, principle or decision with a `violates` link. The rule's backlinks read "violated by".
-90. Record an exception to a rule with an `exception-to` link. It goes stale when the rule changes, and the rule can't be deleted while it has one.
-91. Resolve a violation by unlinking it.
-92. Waive a violation by changing its type to `exception-to`. It stays the same link, with a fresh snapshot of the rule.
-93. Filter an entity's links or backlinks by type: "what violates this rule?"
-94. List links of one type across every module: every open violation in one list.
+89. **D161** `requirement` #synergy #violations: Mark that an entity breaks a rule, principle or decision with a `violates` link. The rule's backlinks read "violated by". derived-from [[D69]]
+90. **D162** `requirement` #synergy #violations: Record an exception to a rule with an `exception-to` link. It goes stale when the rule changes, and the rule can't be deleted while it has one. derived-from [[D70]]
+91. **D163** `requirement` #synergy #violations: Resolve a violation by unlinking it. derived-from [[D70]]
+92. **D164** `requirement` #synergy #violations: Waive a violation by changing its type to `exception-to`. It stays the same link, with a fresh snapshot of the rule. derived-from [[D70]]
+93. **D165** `requirement` #synergy #violations: Filter an entity's links or backlinks by type: "what violates this rule?" derived-from [[D72]]
+94. **D166** `requirement` #synergy #violations: List links of one type across every module: every open violation in one list. derived-from [[D72]]
 
 ## Implementation Decisions
 

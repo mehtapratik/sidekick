@@ -13,7 +13,7 @@ tags:
 status: accepted
 ---
 
-**D62** `decision` #synergy: Synergy versions only content Sidekick holds, so a provider captures a copy of external content when the user saves it.
+**D62** `decision` #synergy: Synergy versions only content Sidekick holds, so a provider captures a copy of external content when the user saves it. derived-from [[D141]]
 
 ## What
 

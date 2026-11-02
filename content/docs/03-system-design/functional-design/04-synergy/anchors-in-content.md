@@ -13,7 +13,7 @@ tags:
 status: accepted
 ---
 
-**D61** `decision` #synergy #anchors: A link can point at a passage of its target, identified by an anchor stored in the target's content with a quote as the safety net.
+**D61** `decision` #synergy #anchors: A link can point at a passage of its target, identified by an anchor stored in the target's content with a quote as the safety net. derived-from [[D123]]
 
 ## What
 

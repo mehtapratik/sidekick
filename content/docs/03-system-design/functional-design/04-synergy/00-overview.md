@@ -16,6 +16,8 @@ applies_to:
 
 How Synergy is built. The PRD and [[02-prd/03-features/01-synergy/spec|spec]] say what it does; this page and the decisions it links say where each piece lives and how the pieces meet. Terms follow [[03-system-design/functional-design/04-synergy/mentions-and-link-lifetime|Mentions and link lifetime]].
 
+**D198** `decision` #synergy #database: Synergy is a graph pattern on plain PostgreSQL, not a graph database, and its own repository is the only access path and the one place to change if scale ever needs a graph engine. derived-from [[D8]]
+
 Synergy is a graph _pattern_, not a graph _database_. At this scale, plain PostgreSQL tables with recursive queries are enough, and everything goes through Synergy's own repository, which is the one place to change if scale ever calls for a dedicated graph engine.
 
 ## Packages
@@ -33,6 +35,8 @@ An arrow means "imports". The features registry and the type packages register t
 | `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                          |
 | `apps/web`                                 | Guarded API routes and the playground.                                                                                                                                    |
 
+**D199** `decision` #synergy #monorepo: Synergy ships three entry points, `/server`, `/react` and `/contracts`, so a browser bundle can never pull in database code. derived-from [[D57]] derived-from [[D17]]
+
 Synergy ships three entry points, so a browser bundle can never pull in database code:
 
 - `@sidekick/synergy/server`: the repository, the save call and the resolvers' contract. It imports `server-only`.
@@ -42,6 +46,8 @@ Synergy ships three entry points, so a browser bundle can never pull in database
 See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
 
 ## Type registration
+
+**D200** `decision` #synergy #registry: Each linkable type is registered by its provider in two halves, a server half that resolves and a pure React half that renders, and the registry hands Synergy the maps as data, so Synergy never imports a provider. derived-from [[D187]] derived-from [[D182]]
 
 Each linkable type is registered by the package that provides it, never listed in Synergy. The registration comes in two halves, a server half and a React half, one per entry point:
 
@@ -70,6 +76,8 @@ interface LinkableTypeReact {
 `resolve` fetches and always runs on the server; `render` only turns the fetched data into React, so it runs wherever the component runs. Sidekick renders in both places: in a server component for a page's first paint, and in the browser when the editor inserts or changes a link, where the component fetches the new link's data through `POST /links/resolve` and renders it on the spot. A third party (Notion, Slack, a bot) uses the same JSON and renders it its own way. The registry or the app builds both maps and passes them to Synergy, so neither `core` nor Synergy imports a provider ([[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]], option A). Feature flags are separate and come later.
 
 ## Keys, never copy
+
+**D201** `decision` #synergy #copy: Synergy stores and returns keys only (types, statuses, states, error codes); every label comes from `packages/copy`, and only user content is stored as written. derived-from [[D36]]
 
 Synergy holds no user-visible text ([[03-system-design/non-functional/content/centralized-copy|Centralized copy]]; Pratik, 2026-10-31). Everything it stores or returns is a stable key, and every label comes from `packages/copy`, so a term can be renamed or translated without a migration or an API change:
 
@@ -125,6 +133,8 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 
 ![[synergy-save.svg|360]]
 
+**D202** `decision` #synergy #concurrency: Every Synergy write takes the per-user advisory lock before it reads anything, so the delete block and the cycle check can't race and there is one lock order. derived-from [[D117]] derived-from [[D95]]
+
 **Every Synergy write takes the per-user lock first**: `pg_advisory_xact_lock(hashtextextended(user_id::text, 0))`, before it reads or writes anything. That covers the delete block and the cycle check against each other (a delete and a new reference into the same target can't both commit), and one fixed lock order means no deadlocks between a save and a link create. For one user the contention is negligible.
 
 - **Create:** register the entity's index row (id, provider, type, display name).
@@ -148,6 +158,16 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 - **Delete:** refused with `delete_blocked` while a live reference points at the entity; otherwise soft-delete, which tombstones its outgoing links under one `deletion_batch_id`. Erasure overrides.
 - **Restore and undo** (restore an entity, undo an unlink, relink): bring back the same rows, but only after re-running the delete block and the cycle check under the lock, because the graph may have changed since. A restored reference into a tombstone, or one that would close a cycle, is refused with `restore_conflict`, naming each edge.
 
+**D203** `decision` #synergy #save: A save reports the current sets of block, anchor and mentioned relationship ids, and Synergy works out what changed, so the call heals itself after a missed save and is safe to retry. derived-from [[D61]] derived-from [[D67]]
+
+**D204** `decision` #synergy #staleness: Every link create snapshots the target's version and revision, and a reference create runs the cycle check. derived-from [[D109]] derived-from [[D94]]
+
+**D205** `decision` #synergy #anchors: A link into a passage returns an anchor receipt, so an editor that has the target open adds the mark itself; the 409 merge on the next save is the guarantee. derived-from [[D63]] derived-from [[D61]]
+
+**D206** `decision` #synergy #supersede: `superseded-by` is a reference stored from the old entity to each of any number of replacements; the first one marks the source superseded after a confirmation, and removing the last sets it back to active. derived-from [[D80]] derived-from [[D81]]
+
+**D207** `decision` #synergy #restore: Restore and undo re-run the delete block and the cycle check under the lock, and are refused with `restore_conflict` naming each edge. derived-from [[D119]] derived-from [[D98]]
+
 ## Read path
 
 1. The guarded route reads the caller's relationships joined to the target index rows: one query per page, cursor-paged.
@@ -155,6 +175,8 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 3. Inline and minimal mentions need nothing more. Card and preview mentions are grouped by provider and resolved with one batched `resolve` call each, through the render cache keyed by (entity, `content_seq`, display type).
 4. The cache holds render data only. Status, states and marks are read fresh from the index on every request, including the states of links shown inside a live preview: a preview's render data carries relationship ids, never their states.
 5. The response is the resolved link (frozen as a zod schema in `/contracts`): relationship, target index fields, state, marks, and render data when asked for. An entity's read response also carries the roll-up of its outgoing references and `ETag: "<content_seq>"`.
+
+**D208** `decision` #synergy #cache: The render cache holds render data only; status, states and marks are read fresh on every request, including for links inside a live preview. derived-from [[D177]] derived-from [[D175]]
 
 ## API
 
@@ -183,10 +205,14 @@ Entity content (create, save, delete, restore) goes through each provider's own 
 
 ### "Page updated"
 
+**D210** `decision` #synergy #concurrency: A page learns that its entity changed elsewhere by asking `GET /entities/:id` with `If-None-Match`, which answers 304 while nothing changed; pushing changes waits for post-MVP. derived-from [[D63]]
+
 A page someone is viewing or editing can learn that the entity changed elsewhere (another device, an agent, a bot) and offer "Page updated, reload". The foundation is already in the API: `GET /entities/:id` with `If-None-Match: "<content_seq>"` answers 304 with no body while nothing changed, so a check is one indexed read. Any module's page can use it, because the check is per entity in Synergy, not per module.
 
 - **MVP client strategy** (built with the shared editor, not in Phase 3): check when the tab regains focus or becomes visible, and every 30 seconds while it is visible; tabs of one browser tell each other through `BroadcastChannel`. While editing, the banner warns early; the 409 merge still protects the save.
 - **Post-MVP: push** instead of polling, fed by the outbox (server-sent events or Supabase Realtime broadcast from the server). It changes how the client hears about a change, not the API.
+
+**D209** `decision` #synergy #api #security: Another user's ids answer `not_found`, the same as ids that never existed, so a response never reveals whether an id exists. derived-from [[D172]]
 
 | Error code                                                                                                    | HTTP |
 | ------------------------------------------------------------------------------------------------------------- | ---- |
@@ -202,6 +228,8 @@ A page someone is viewing or editing can learn that the entity changed elsewhere
 Lives in Synergy (`/react`) and builds on `ui` primitives. It renders on the server and in the browser. It takes the mentions to show and a **transport**, `resolveLinks(requests) => Promise<ResolvedLink[]>`, so the host decides how the request travels: a Sidekick server component calls the same handler as `POST /links/resolve`, Sidekick's browser code (the editor inserting a link) calls the route with the session cookie, and a third party calls it with its own credentials. It owns the frame and every state, and calls the registered renderers with the resolved render data. The display type belongs to each mention.
 
 ## Content helpers
+
+**D211** `decision` #synergy #save: Every provider builds the save call's sets with the shared `extractRefs`, and the quote re-matcher asks the user when a match is weak instead of guessing. derived-from [[D203]] derived-from [[D1]]
 
 - **`extractRefs(content)`** walks Tiptap JSON and returns the block and anchor ids and the mentioned relationship ids. Every provider uses it to build the sets for the save call.
 - **The quote re-matcher** finds a quote in new content: Markdown import and Refresh of captured external content use it to re-attach anchors. When the best match is weak, the user is asked instead of the match being guessed.

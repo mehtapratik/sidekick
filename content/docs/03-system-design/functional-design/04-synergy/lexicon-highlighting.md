@@ -13,7 +13,7 @@ tags:
 status: accepted
 ---
 
-**D64** `decision` #synergy #editor: Lexicon highlighting splits data from mechanism: an editor spots a term's first use and suggests a `defined-by` link.
+**D64** `decision` #synergy #editor: Lexicon highlighting splits data from mechanism: an editor spots a term's first use and suggests a `defined-by` link. derived-from [[D101]]
 
 ## What
 
