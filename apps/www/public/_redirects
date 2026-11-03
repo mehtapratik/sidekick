@@ -9,3 +9,14 @@
 /docs/                          /   301
 /index/                         /   301
 /tags/                          /   301
+# Principles moved into life/ and sidekick/ subfolders (2026-11-03).
+/docs/principles/principle.focus-funnel/   /docs/principles/life/principle.focus-funnel/   301
+/docs/principles/principle.no-do-overs/   /docs/principles/life/principle.no-do-overs/   301
+/docs/principles/principle.pragmatism/   /docs/principles/life/principle.pragmatism/   301
+/docs/principles/principle.protect-your-mind-and-your-time/   /docs/principles/life/principle.protect-your-mind-and-your-time/   301
+/docs/principles/principle.reality/   /docs/principles/life/principle.reality/   301
+/docs/principles/principle.seek-closure/   /docs/principles/life/principle.seek-closure/   301
+/docs/principles/principle.start-today/   /docs/principles/life/principle.start-today/   301
+/docs/principles/principle.cost-to-add-later/   /docs/principles/sidekick/principle.cost-to-add-later/   301
+/docs/principles/principle.individual-first/   /docs/principles/sidekick/principle.individual-first/   301
+/docs/principles/principle.one-interface/   /docs/principles/sidekick/principle.one-interface/   301
