@@ -18,7 +18,7 @@ publish: true
 
 ## 1. Executive summary
 
-Sidekick will be a modular, API-first **Personal Operating System** designed with multiple types of clients in mind: a Next.js-powered web app, a Progressive Web Application (PWA), and above all, a programmable API platform for agents, automations, workflows, and CLI tooling. The product vision and its modules are defined in the high-level PRD, [Project Sidekick — A Bird's Eye View](/writings/01-sidekick-birds-eye-view/); section 5 of this document maps that vision onto the technical architecture.
+Sidekick will be a modular, API-first **Personal Operating System** designed with multiple types of clients in mind: a Next.js-powered web app, a Progressive Web Application (PWA), and above all, a programmable API platform for agents, automations, workflows, and CLI tooling. The product vision and its modules are defined in the high-level PRD, [Project Sidekick — A Bird's Eye View](/writings/writings.birds-eye-view/); section 5 of this document maps that vision onto the technical architecture.
 
 The application architecture intentionally prioritizes security through enforceable structures, maintainability for a solo developer, incremental scalability, future support for offline capabilities, and API parity across browsers, CLIs, and agents. The system is NOT designed as a hyper-scale enterprise platform from day one. Instead, it is designed to evolve safely without requiring major architectural rewrites.
 
@@ -84,7 +84,7 @@ Layers are enforced by folder and by `pnpm lint`: apps, the registry, features (
 
 ## 5. Product context — the module system
 
-Sidekick's features are **named product modules**, defined in the high-level PRD ([Bird's Eye View](/writings/01-sidekick-birds-eye-view/)). Module names are the canonical vocabulary everywhere: feature slugs, package names, entitlements, and plan phases all use them. Detailed per-module PRDs live under [Docs → Product requirements](/docs/prd/) and are written before each module's implementation begins.
+Sidekick's features are **named product modules**, defined in the high-level PRD ([Bird's Eye View](/writings/writings.birds-eye-view/)). Module names are the canonical vocabulary everywhere: feature slugs, package names, entitlements, and plan phases all use them. Detailed per-module PRDs live under [Docs → Product requirements](/docs/prd/lifecycle-and-traceability/) and are written before each module's implementation begins.
 
 ### 5.1 Module → package mapping
 
@@ -190,13 +190,13 @@ Sidekick's AI capabilities must not be coupled to any single LLM provider. A **s
 
 AI responses may blend two source classes: **internal knowledge** (RAG over Taxila/Core Drive) and **live web retrieval**. The response contract must carry per-segment source class — enabling color-coded rendering of sentences by origin — plus footnoted citations to sources.
 
-Architectural implication: AI responses are **structured streams (segments + sources), not plain text streams**. The streaming protocol must be designed with this in mind from the first AI feature, even if web retrieval itself ships later. First consumer: Alter Ego (see its PRD under [Docs → Product requirements](/docs/prd/) once written).
+Architectural implication: AI responses are **structured streams (segments + sources), not plain text streams**. The streaming protocol must be designed with this in mind from the first AI feature, even if web retrieval itself ships later. First consumer: Alter Ego (see its PRD under [Docs → Product requirements](/docs/prd/lifecycle-and-traceability/) once written).
 
 ### 5.7 Evolvability — how product changes flow
 
 Requirements will keep evolving as clarity grows. To keep both this document and the plan flexible:
 
-1. **The [PRDs](/docs/prd/) are product truth** — the high-level PRD plus per-feature PRDs written before each feature starts.
+1. **The [PRDs](/docs/prd/lifecycle-and-traceability/) are product truth** — the high-level PRD plus per-feature PRDs written before each feature starts.
 2. **This document describes mechanisms and invariants, not feature lists.** Module-level product changes should only ever touch section 5 (this mapping) — never the security, RLS, repository, or offline sections.
 3. Changes flow one way: **PRD → section 5 mapping → living plan phases**.
 
@@ -407,7 +407,7 @@ The MVP will support a feature system with build-time registration, treating iso
 
 ## 15. Database migration
 
-**Package-level migration scoping**: Every feature package owns its own `schema.ts`, `drizzle.config.js`, and migration scripts. There is NO global Drizzle config.
+**Package-level migration scoping**: Every feature package owns its own `schema.ts`, `drizzle.config.ts`, and migration scripts. There is NO global Drizzle config.
 **Migration orchestration**: We will use a `pnpm db:migrate` command in the root monorepo to orchestrate package discovery, run migration scripts in the correct order, and fail fast on errors.
 This package-level scoping eliminates schema drift, inconsistent environments, and hidden migration dependencies.
 
