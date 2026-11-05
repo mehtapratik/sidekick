@@ -4,7 +4,7 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.3.0
+version: 0.4.0
 status: draft
 updated: 2026-11-05
 tags:
@@ -48,10 +48,11 @@ Resolved tickets:
 - [Vercel Skips Content-Only Commits](tickets/one-repo-03-vercel-skips-content-commits.md): Vercel's built-in skip, with `content/` as a workspace package; `turbo query affected` as the fallback.
 - [Lesson 0: the Import](tickets/one-repo-04-lesson-0-import.md): five PRs (the import as the one merge commit, the `apps/app` rename, `content/` as a package with a `content` PR label, `astro check`, the Worker config) and a hosting step that moves arkive.blog to the new Worker; Arkive is archived before the rewrite; done when the sitemap matches the old site's.
 - [Pages or Workers for the Site](tickets/one-repo-11-pages-or-workers.md): a Worker with static assets (`sidekick-www`), built by Workers Builds from the repo root, with branch previews from day one; its `wrangler.jsonc` lives in `apps/www`. Every app takes the `@sidekick/` scope (`@sidekick/app` after the rename). A later `/app` route can be a script on the same Worker.
+- [The Phone Breakpoint](tickets/one-repo-05-phone-breakpoint.md): the house rule allows one width breakpoint, `@media (width < 58rem)`, only to swap chrome (header nav and theme into the Menu, the docs tree into a full-viewport Contents view, the `/` hint hidden). The docs sidebar stops fitting beside the article at 920px (57.5rem), rounded up; the handover's 40rem would stack the tree above the article on tablets. The theme control becomes one cycling button. The rule changes in the redesign lesson that builds the chrome.
 
 ## Not yet specified
 
-- How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. Clears once the phone breakpoint, milestone tiles and RSS tickets are settled.
+- How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. Clears once the milestone tiles and RSS tickets are settled.
 - The repo's licence story for content (MIT code, CC BY-NC 4.0 writings and docs) in one tree.
 - Updating the GitHub homepage field. (Archiving the arkive repo, the old Pages project, lesson-start prompts, project memory and the Obsidian vault path are settled in Lesson 0.)
 - Whether Renovate needs rules for the site's dependencies (Astro majors) beyond the defaults.
