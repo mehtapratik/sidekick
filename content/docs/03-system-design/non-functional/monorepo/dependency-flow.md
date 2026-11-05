@@ -22,11 +22,11 @@ An arrow means "may import". Packages in the same layer never import each other.
 
 Foundation says _how_, platform says _what_, features say _which_.
 
-| Layer      | Holds                                                                                                                                             | Packages                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| Foundation | Domain-free machinery: DB client and RLS, auth, the API guard, logging, design-system primitives, copy. Knows nothing about entities or features. | `packages/foundation/*`: `core`, `ui`, `copy` |
-| Platform   | A shared domain concept, with its data and rules, that more than one feature uses. Owns its own tables and migrations.                            | `packages/platform/*` (first: `synergy`)      |
-| Feature    | One product area.                                                                                                                                 | `packages/features/*` (from Phase 4)          |
+| Layer      | Holds                                                                                                                                             | Packages                                                   |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Foundation | Domain-free machinery: DB client and RLS, auth, the API guard, logging, design-system primitives, copy. Knows nothing about entities or features. | `packages/foundation/*`: `core`, `ui`, `copy`              |
+| Platform   | A shared domain concept, with its data and rules, that more than one feature uses. Owns its own tables and migrations.                            | `packages/platform/*` (first: `synergy`)                   |
+| Feature    | One product area.                                                                                                                                 | `packages/features/*` (from Phase 3, the sandbox features) |
 
 To place a new package, ask in order:
 
@@ -40,7 +40,7 @@ A design system (tokens, theme, primitives such as buttons and inputs) is domain
 
 ## Who may import whom
 
-- **Apps** (`apps/web`, later `apps/cli`) may import the registry, feature, platform and foundation packages.
+- **Apps** (`apps/web`, `apps/cli`) may import the registry, feature, platform and foundation packages.
 - **`packages/features-registry`** is the catalog of every feature. It may import feature, platform and foundation packages.
 - **Feature packages** may import platform and foundation packages. They never import each other or the registry.
 - **Platform packages** may import only foundation packages. They never import each other, a feature or the registry; loosen that deliberately, with a new rule, when a real need appears. They take feature keys and entity types as data.

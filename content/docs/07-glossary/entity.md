@@ -11,4 +11,4 @@ tags:
    - synergy
 ---
 
-Anything linkable in any Sidekick module: a datum, a War Room plan, a scheduled job, an Alter Ego conversation, a captured tweet. Every entity has one row in Synergy's entity index with its [[provider]], type, display name, a version and a revision, and a status (active, deprecated, superseded or deleted).
+Anything linkable in any Sidekick module: a datum, a War Room plan, a scheduled job, an Alter Ego conversation, a captured tweet. Every entity has one row in Synergy's entity index with its [[provider]], type, display name, a version and a revision, and a status (active, deprecated or superseded; a deleted entity is shown from its `deleted_at`, not a stored status).

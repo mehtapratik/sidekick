@@ -30,4 +30,4 @@ Why do we need offline-ready capabilities?
 
 **Open questions:**
 
-1. Support a user decides to close their account. This triggers hard deletion of associated user profile row since `user_profile` is non-syncable table. But, user also has content on various syncable tables. What should happen to them? Deleting user profile but leaving their content on other tables is merely waste of space and source of confusion. It may also introduce privacy and user rights issues in certain countries where users have right to permanently wipe out their data.
+1. Support a user decides to close their account. This triggers hard deletion of associated user profile row since `profiles` is non-syncable table. But, user also has content on various syncable tables. What should happen to them? Deleting user profile but leaving their content on other tables is merely waste of space and source of confusion. It may also introduce privacy and user rights issues in certain countries where users have right to permanently wipe out their data.

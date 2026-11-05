@@ -15,5 +15,5 @@ tags:
 ---
 
 1. MVP will support simple request logging, failed job logging, API latency logging, and auth failure logging.
-2. To be done inside `withAPIGuard` to ensure we log irrespective of client.
+2. To be done inside `withApiGuard` to ensure we log irrespective of client.
 3. Simpler plain text logs supported by Vercel should be sufficient for MVP scope.

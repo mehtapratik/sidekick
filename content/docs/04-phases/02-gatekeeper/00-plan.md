@@ -79,7 +79,7 @@ and that lesson's brief (the plan's Lessons table links each one) before we star
 
 Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[04-phases/02-gatekeeper/01-contracts]], which changes when Pratik's own design wins.
 
-**Close-out (lesson 8):** the coach wrote [[04-phases/02-gatekeeper/02-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `notes.md` (`publish: false`). The brief is [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief]].
+**Close-out (lesson 8):** the coach wrote [[04-phases/02-gatekeeper/02-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `03-notes.md` (`publish: false`). The brief is [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief]].
 
 **Design decisions made while planning** (details in [[04-phases/02-gatekeeper/01-contracts]]; each can be revisited in its lesson):
 

@@ -30,7 +30,7 @@ Some failures should crash the process or return an error immediately:
 
 Some failures should be swallowed:
 
-- **Cookie writes in Server Components.** Supabase's `setAll` callback (used in `createServerClient`) wraps cookie writes in a `try/catch` that swallows errors. This is intentional — Server Components in Next.js cannot write cookies (only Route Handlers and Server Actions can). Supabase attempts the write optimistically; if it fails because we're in a Server Component, the session will be refreshed on the next request that can write cookies.
+- **Cookie writes in Server Components.** Supabase's `setAll` callback (used in `createServerClient`) wraps cookie writes in a `try/catch` that swallows errors. This is intentional — Server Components in Next.js cannot write cookies (only Route Handlers can; Server Actions are banned). Supabase attempts the write optimistically; if it fails because we're in a Server Component, the session will be refreshed on the next request that can write cookies.
 - **Non-critical background operations.** Embedding generation should not crash the primary write operation. If embedding fails, set `embeddingStatus = 'failed'`, log the error, and move on. The user's note was saved successfully; the embedding can be retried.
 
 ## API Error Shape

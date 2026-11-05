@@ -95,7 +95,7 @@ Tasks:    5 successful, 5 total
 Cached:    4 cached, 5 total
 ```
 
-The 4 cached packages are `packages/core`, `packages/ui`, `packages/cli`, and `packages/features-registry` — nothing changed in them, so Turbo replays their cached results. Only `apps/web` rebuilds because `next.config.ts` changed.
+The 4 cached packages are `packages/core`, `packages/ui`, `apps/cli`, and `packages/features-registry` — nothing changed in them, so Turbo replays their cached results. Only `apps/web` rebuilds because `next.config.ts` changed.
 
 ---
 

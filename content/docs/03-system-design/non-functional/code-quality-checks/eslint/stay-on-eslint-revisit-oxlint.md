@@ -21,7 +21,7 @@ status: accepted
 
 **Why not Oxlint now:**
 
-- Oxlint's core is stable (v1.0, June 2025), and type-aware linting via tsgolint became stable in July 2026 — but tsgolint is built on TypeScript 7, and Sidekick is on TypeScript 5.9.
+- Oxlint's core is stable (v1.0, June 2025), and type-aware linting via tsgolint became stable in July 2026 — but tsgolint is built on TypeScript 7, and Sidekick is on TypeScript 6.0.
 - Sidekick's most important lint protections are custom: the five `sidekick/*` rules (including `require-api-guard`) and `eslint-plugin-boundaries`. Running them in Oxlint requires its ESLint-compatible JS plugins, which are still alpha and cannot run type-aware rules.
 - A hybrid (Oxlint for native rules, `eslint-plugin-oxlint` disabling them in ESLint) saves only the ~0.3 s of rule time, because the expensive TypeScript program stays in ESLint — two linters to maintain for little gain.
 

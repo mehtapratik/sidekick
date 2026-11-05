@@ -24,7 +24,7 @@ status: completed
 - Enforce pnpm usage for tooling/deploy detection by setting `packageManager` in the root `package.json` (e.g. `"packageManager": "pnpm@<version>"`).
 - Add Turborepo root config (`turbo.json`) with pipelines: `build`, `dev`, `lint`, `typecheck`.
 - Create packages (initially minimal):
-   - `apps/web` (Next.js 15 App Router, TypeScript strict)
+   - `apps/web` (Next.js 16 App Router, TypeScript strict)
    - `apps/cli` (bare TS package)
    - `packages/core` (empty TS package)
    - `packages/ui` (empty TS package)

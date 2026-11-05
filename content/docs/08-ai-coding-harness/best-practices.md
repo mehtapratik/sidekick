@@ -20,7 +20,7 @@ tags:
 ---
 
 1. **D4** `rule` #api #security: All handlers to be wrapped in [[03-system-design/non-functional/security/with-api-guard|withApiGuard]].
-2. **D5** `rule` #rls #database: Always use [[03-system-design/non-functional/security/row-level-security|row-level security]] via `withRLSGuard`. derived-from [[D35]]
+2. **D5** `rule` #rls #database: Always use [[03-system-design/non-functional/security/row-level-security|row-level security]] via `withRLS`. derived-from [[D35]]
 3. **D6** `rule` #api: [[03-system-design/non-functional/api/never-mutate-outside-api-layer|Never mutate outside the API layer]]. derived-from [[D48]]
 4. **D7** `rule` #monorepo: [[03-system-design/non-functional/monorepo/dependency-flow|Follow dependency flow]]. derived-from [[D57]]
 5. **D8** `rule` #database: [[03-system-design/non-functional/database/repository-client|Use the repository client]].

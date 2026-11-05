@@ -27,7 +27,7 @@ publish: true
 | Core Drive          | Yes                                |
 | Taxila              | Yes                                |
 | War Room            | Yes                                |
-| Factory             | Partial — todo: define exact scope |
+| Factory             | Partial — push-button workflows and configurable input defaults |
 | Alter Ego           | Yes                                |
 | Zinsser             | Yes                                |
 | Parrot              | No                                 |

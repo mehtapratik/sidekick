@@ -15,4 +15,4 @@ applies_to:
 ---
 
 1. Voice dictation with gesture support
-2. MCP Scope: No
+2. MVP Scope: No

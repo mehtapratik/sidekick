@@ -223,9 +223,9 @@ Requirements will keep evolving as clarity grows. To keep both this document and
 
 ## 7. Security
 
-All routes must use `withAPIGuard()`—direct route handlers are strictly prohibited.
+All routes must use `withApiGuard()`—direct route handlers are strictly prohibited.
 
-Every request must pass through authentication, feature entitlement checks, Row-Level Security (RLS) context setup, and API scope validation before the request is honored. Without `withAPIGuard`, routes begin to drift and security flows become inconsistent or even erroneous over time (e.g., a developer might forget to validate an API scope).
+Every request must pass through authentication, feature entitlement checks, Row-Level Security (RLS) context setup, and API scope validation before the request is honored. Without `withApiGuard`, routes begin to drift and security flows become inconsistent or even erroneous over time (e.g., a developer might forget to validate an API scope).
 
 This is in line with our philosophy of enforced conventions (section 2.2). We make secure behavior easy to implement and difficult to bypass.
 
@@ -329,15 +329,15 @@ By convention, we want to ensure that all queries are executed under the right c
 
 ## 10. API guard
 
-We will use the `withAPIGuard` wrapper to centralize authentication, feature entitlements, RLS, and scope validations.
+We will use the `withApiGuard` wrapper to centralize authentication, feature entitlements, RLS, and scope validations.
 
-### 10.1 How `withAPIGuard` will be implemented?
+### 10.1 How `withApiGuard` will be implemented?
 
-_(Pending implementation details)_
+See [[with-api-guard]] for how the guard is implemented and used.
 
-### 10.2 How `withAPIGuard` will be used?
+### 10.2 How `withApiGuard` will be used?
 
-_(Pending implementation details)_
+See [[with-api-guard]] for how the guard is implemented and used.
 
 ---
 
@@ -349,7 +349,7 @@ All queries flow strictly from **UI -> Repository -> API -> Database**. This abs
 
 ### 11.2 Server actions
 
-Server actions are allowed as long as they 1) pass through repositories, 2) do not bypass APIs, and 3) do not bypass authorization checks. This ensures our **API-first guarantee**.
+Server Actions are not allowed. Every mutation goes through an API route handler wrapped in `withApiGuard`, which is how we keep our **API-first guarantee**. See [[server-actions]].
 
 ---
 
@@ -421,13 +421,13 @@ This package-level scoping eliminates schema drift, inconsistent environments, a
 
 ## 17. Observability
 
-At minimum, the MVP will support request logging, failed job logging, API latency logging, and auth failure logging. Logging will be done inside `withAPIGuard()` for centralized visibility.
+At minimum, the MVP will support request logging, failed job logging, API latency logging, and auth failure logging. Logging will be done inside `withApiGuard()` for centralized visibility.
 
 ---
 
 ## 18. Developer rules
 
-1. All API routes must use `withAPIGuard()`.
+1. All API routes must use `withApiGuard()`.
 2. Never set RLS context manually. Use `withRLS()` only.
 3. Never mutate data outside the API layer.
 4. Never import from `apps/*` inside `packages/*`.
@@ -458,7 +458,7 @@ At minimum, the MVP will support request logging, failed job logging, API latenc
 
 ### 19.2 Middleware responsibilities
 
-`proxy.ts` is responsible for session refresh, redirecting unauthenticated users, and excluding API routes from redirect behavior. It must not contain authorization logic, which strictly belongs in `withAPIGuard()`.
+`proxy.ts` is responsible for session refresh, redirecting unauthenticated users, and excluding API routes from redirect behavior. It must not contain authorization logic, which strictly belongs in `withApiGuard()`.
 
 ### 19.3 Mantine setup requirements
 
