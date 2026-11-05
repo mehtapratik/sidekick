@@ -4,7 +4,7 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.7.0
+version: 0.8.0
 status: draft
 updated: 2026-11-05
 tags:
@@ -23,7 +23,7 @@ This map ends in a PRD for one repo and one domain: a new page, `prd.features.sy
 Today Sidekick's code and its docs live in two repos, joined by a `docs` symlink and an install script that clones Arkive. Every change that touches code and the docs that describe it takes two PRs. One repo puts docs, writings, the AI harness, source code and other artifacts side by side, and one domain gives the project one public face.
 
 - **Who builds:** Pratik types every change, in `content/` and `apps/www/` as much as in the root config, so he knows what Sidekick's configuration gained. The coach explains and never edits the implementation.
-- **The new site:** the design handover for the Sidekick public site is a throwaway prototype, never committed. Read it from the project's shared files (`one-repo/design/HANDOVER.md`, `tokens.css`, `plates.mjs`, `reference/`). Where it and this map disagree, this map wins. **Revised handover (Pratik, 2026-11-04):** only the typefaces changed. The site keeps arkive.blog's three faces, which already ship in `public/fonts/`: General Sans for headings and interface text, Sentient for reading text and the wordmark, IBM Plex Mono for code, dates and versions. Reading text is weight 400. SN Pro and LXGW WenKai Mono are dropped, so no new fonts and no font subsetting. Colours, layout and `plates.mjs` are unchanged. Its vocabulary is in `CONTEXT.md` at the repo root (Sidekick, App, Public site, Entry, Writing, Doc, About).
+- **The new site:** the design handover for the Sidekick public site is a throwaway prototype, never committed. Read it from the project's shared files (`one-repo/design/HANDOVER.md`, `tokens.css`, `plates.mjs`, `reference/`). Where it and this map disagree, this map wins. **Revised handover (Pratik, 2026-11-04):** only the typefaces changed. The site keeps arkive.blog's three faces, which already ship in `public/fonts/`: General Sans for headings and interface text, Sentient for reading text and the wordmark, IBM Plex Mono for code, dates and versions. Reading text is weight 400. SN Pro and LXGW WenKai Mono are dropped, so no new fonts and no font subsetting. Colours, layout and `plates.mjs` are unchanged. Its vocabulary (Sidekick, App, Public site, Entry, Writing, Doc, About) is in `CONTEXT.md` at the repo root until Lesson 0 folds it into `07-glossary/`.
 - **Workflow:** `wayfinder`, then `grill-with-docs`, then `to-spec`, as for [[02-prd/03-features/01-synergy/map|the Synergy map]]. Grilling tickets consult the `grilling` and `domain-modeling` skills; research tickets use `research`. Tickets live in `tickets/` as `one-repo-NN-<slug>.md` with `type`, `blocked_by`, `status` and `assignee` in frontmatter. A session claims a ticket by setting `assignee` before any work. Once the PRD and spec absorb the outcome, this map and its tickets are retired.
 
 ## Decisions so far
@@ -52,6 +52,7 @@ Resolved tickets:
 - [Milestone Tiles From the Phases Folder](tickets/one-repo-06-milestone-tiles.md): one tile per phase, from each `04-phases/NN-name/00-plan.md`: order and label from `NN`, title from `title`, status from `status` (`completed` done, `deferred` deferred, the first other phase up next). Sub-plans get no tile and appear indented in the "All phases" list. Today: 3 of 13 complete, Synergy up next.
 - [RSS on the New Site](tickets/one-repo-07-rss.md): `/rss.xml` stays and carries Writings only, newest first by `created`, with the summary as the description; no docs feed. Today's mixed feed held 50 docs and none of the four writings.
 - [Where the App Lives](tickets/one-repo-08-where-the-app-lives.md): `app.ossidekick.com` (DNS-only CNAME to Vercel), attached at the cutover; until then the App stays at `sidekick-six-bay.vercel.app`. The public site shows no App link until Open House, because the App is single-user; Pratik turns off Supabase sign-up.
+- [A Home for the Site Vocabulary](tickets/one-repo-09-site-vocabulary-home.md): `CONTEXT.md` folds into seven `07-glossary/` pages (with their _Avoid_ lines) in Lesson 0's PR 1 and is deleted; the agent guide tells skills that ask for `CONTEXT.md` to write the glossary page instead.
 
 ## Not yet specified
 
