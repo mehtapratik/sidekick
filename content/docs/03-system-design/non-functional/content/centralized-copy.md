@@ -3,15 +3,18 @@ publish: true
 id: system-design.non-functional.content.centralized-copy
 title: Centralized Copy
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-05
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - content
 ---
 
 **D36** `decision` #copy: All user-visible strings live in `packages/copy`; source files never hardcode them.
+
+> [!note] Being replaced
+> [[03-system-design/non-functional/content/internationalization|Internationalization]] (D243) supersedes this decision: strings move into ICU catalogs colocated with each package, with shared words in `@sidekick/i18n`, and `packages/copy` is deleted in lesson I1. Until I1 lands, this page describes the code.
 
 All user-visible strings such as labels, error messages, button text, and page titles live in `packages/copy`. Source files never contain hardcoded strings.
 
@@ -40,3 +43,4 @@ import { copy } from '@sidekick/copy'
 ## Decision History
 
 - 2026-09-19 · accepted · Centralized Copy
+- 2026-11-05 · superseded · by [[03-system-design/non-functional/content/internationalization|Internationalization]] (D243), effective when lesson I1 lands
