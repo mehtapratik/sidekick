@@ -3,7 +3,7 @@ publish: true
 id: plan.phase-3.lesson-1-layer-folders
 title: "Synergy Lesson 1: Layer Folders and Lint"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-05
 kind: plan
 version: 1.0.0
 tags:
@@ -15,7 +15,7 @@ tags:
 status: planned
 ---
 
-> **Lesson 1 of 13 in Phase 3a.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief|Phase 2 close-out]]. Next: [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief|lesson 2]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
+> **Lesson 1 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|lesson 0]]. Next: [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief|lesson 2]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
 
 **What gets built:** every layer gets its own folder. `core`, `ui` and `copy` move into `packages/foundation/`, an empty `packages/platform/synergy` (`@sidekick/synergy`) appears, and lint fails on a package that sits in no layer.
 

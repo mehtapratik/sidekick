@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3-graph-store-metadata-service
 title: Synergy
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-05
 kind: plan
-version: 2.1.0
+version: 2.2.0
 tags:
    - plan
    - living-plan
@@ -31,12 +31,15 @@ The design is settled: [[02-prd/03-features/01-synergy/spec|the Synergy PRD and 
 
 Phase 3 has two parts. **3a** builds the store, its rules and its API. **3b** resolves and renders links. Only 3a is planned in lessons now: what 3b needs depends on how 3a gets built, so [[04-phases/03-synergy/01-checkpoint-3a/00-brief|Checkpoint 3a]] plans 3b (Pratik, 2026-11-01).
 
+Two more pieces of work run inside Phase 3, from the [[02-prd/03-features/01-synergy/09.prd.features.synergy.one-repo|One Repo]] PRD. **Lesson 0** moves Arkive into the Sidekick repo before lesson 1, so Synergy is built and recorded in one repo. The **site lessons** S1 to S7 rebuild the public site and move it to ossidekick.com, between Checkpoint 3a and 3b (Pratik, 2026-11-05).
+
 ## Lessons (3a: the store and its API)
 
 Lessons run one at a time, in this order, each in its own thread, on Pratik's Mac through Remote Control. A lesson starts only after the previous lesson's PRs merge. Each one ends at a check Pratik can run, and depends only on the lessons above it.
 
 | Lesson | Brief                                                                                                           | What Pratik learns                                                                           | Status |
 | ------ | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------ |
+| 0      | [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief\|One repo]]                                         | rewriting and merging history, one workspace lockfile, Turbo inputs, a Worker with static assets |        |
 | 1      | [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief\|Layer folders and lint]]                     | monorepo layers, `git mv`, ESLint boundaries policies                                        |        |
 | 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database            |        |
 | 3      | [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief\|Entity index and version log]]                | RLS without the tombstone filter, restore-aware triggers, advisory locks, stale-write checks |        |
@@ -89,6 +92,22 @@ From [[02-prd/03-features/01-synergy/08.prd.features.synergy.scope-and-phases|sc
 
 Checkpoint 3a re-proves the 3a rows on `main`. The phase closes with a close-out lesson at the end of 3b, like [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief|Phase 2's lesson 8]].
 
+## Site lessons (the redesign)
+
+After Checkpoint 3a and before 3b (Pratik, 2026-11-05), the public site is rebuilt from the design handover and moves to ossidekick.com, as the [[02-prd/03-features/01-synergy/09.prd.features.synergy.one-repo|One Repo]] PRD and the [[02-prd/03-features/01-synergy/spec#One Repo|spec's One Repo section]] describe. Until then arkive.blog keeps the current design, served from Sidekick since Lesson 0. Each lesson gets a brief before it starts, written from what the previous one built, and each keeps the sitemap diff empty.
+
+| Lesson | What gets built | What Pratik learns | Status |
+| ------ | --------------- | ------------------ | ------ |
+| S1 | Tokens and chrome: `tokens.css` in `@sidekick/ui`, the new stylesheet, header, footer and Menu, the cycling theme button with its pre-paint script, the one `58rem` breakpoint, and the site's house rules rewritten | custom properties and theming, `dialog` and `popover`, a theme with no flash | |
+| S2 | Generated docs: the `/docs/` index, folder listings with `_index.md` descriptions, breadcrumbs, the sidebar tree and the Contents view, `/writings/`, `/docs/` and `/tags/` as real pages | `getStaticPaths`, building a tree once and rendering it recursively | |
+| S3 | Entry pages: Writing and Doc layouts, the meta table, pagers, tag pages, the Writings index, the code figure with the monochrome Shiki theme and Copy | rehype transforms, Shiki themes, progressive enhancement | |
+| S4 | Plates: `plates.mjs` at build time, the motif map, the bands and the home hero | seeded randomness, generating SVG at build time | |
+| S5 | Home: the hero, the milestone tiles from the phase plans, the latest Writings and Docs, the Writings-only feed | data from frontmatter, `auto-fit` grids, RSS | |
+| S6 | Search: the build-time index and the dialog, `/` and `Esc`, and the new site script | client-side search with a static index, a JS budget | |
+| S7 | Cutover: the host PR, the moved-site notice, arkive.blog's redirect rules, `www` to the apex, `app.ossidekick.com`, the redirect check script | DNS, 301 rules and canonical hosts, a move with no downtime | |
+
+The `sidekick:<name>` components plugin is built in whichever lesson first has an entry that needs one, not before.
+
 ## 3b: resolving and rendering links (planned at Checkpoint 3a)
 
 Candidates from the planning handover, to be merged, split or reordered at the checkpoint. None has a brief yet.
@@ -115,6 +134,8 @@ Settled with Pratik on 2026-10-31 and 2026-11-01. Each can be revisited in its l
 - **Delete models are chosen, not drifted into** (Pratik, 2026-11-01). Lesson 3 revises [[03-system-design/non-functional/security/row-level-security|row-level security]] and [[03-system-design/non-functional/database/soft-delete-support|soft-delete support]] into explicit variants, with a guide for choosing among hard delete, soft delete with tombstones hidden (the default) and soft delete with tombstones visible. The guide lists every table and its model; each Drizzle schema file and each new migration names its model. Applied migrations are not edited.
 - **Cloudflare builds arkive on Node 24.** `undici` 8 (through Astro's `unifont`) needs Node 22.19 or later, and Pages built on 22.12. Cloudflare reads the version from the repo's `.node-version` (was `22`, now `24`), not from a dashboard setting; arkive's `engines` asks for `>=22.19.0`.
 - **`violates` and `exception-to` are in Phase 3** (Pratik, 2026-11-01). Dogfooding Synergy on Arkive found two gaps in the vocabulary: no directed violation and no exception. Both types are seeded in lesson 6. A violation has no status: unlinking resolves it, retyping it to `exception-to` waives it, and that retype takes a fresh snapshot. The graph-wide list of links by type (every open violation, from any module) is a 3b candidate; issue tracking is post-MVP ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]).
+- **Lesson 0 runs before lesson 1** (Pratik, 2026-11-03). Lesson 1's `git mv` work and the live recordings happen in the merged repo, and lessons 1 to 13 keep their numbers.
+- **The site lessons come after Checkpoint 3a** (Pratik, 2026-11-05). After Lesson 0 the current site keeps working, so Synergy starts at once; the checkpoint is a natural break, and 3b is planned from what 3a built while the site is rebuilt.
 - **Deferred to Checkpoint 3a:** whether the shared editor moves ahead of Taxila's passages (Phase 4) or the passages move to Phase 5, and which lessons retire the sandbox providers. Both shape Phase 4, not 3a; mock note bodies are minimal Tiptap JSON either way.
 
 ## Handover from system design

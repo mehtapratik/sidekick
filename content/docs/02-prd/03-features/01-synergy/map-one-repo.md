@@ -4,8 +4,8 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.10.0
-status: draft
+version: 0.11.0
+status: deprecated
 updated: 2026-11-05
 tags:
    - prd
@@ -13,6 +13,8 @@ tags:
    - one-repo
    - wayfinder
 ---
+
+> **Retired 2026-11-05.** The outcome lives in the [[02-prd/03-features/01-synergy/09.prd.features.synergy.one-repo|One Repo PRD]] and the [[02-prd/03-features/01-synergy/spec#One Repo|spec's One Repo section]], and the steps in [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|Lesson 0]] and the Synergy plan's site lessons. The items under "Not yet specified" were settled while writing them: the content licence, Renovate and the redesign's split into seven site lessons after Checkpoint 3a. This page stays as the record of how it was decided.
 
 ## Destination
 

@@ -6,7 +6,7 @@ created: 2026-11-03
 kind: plan
 type: research
 blocked_by: []
-status: closed
+status: deprecated
 assignee: claude
 tags:
    - prd
@@ -14,6 +14,8 @@ tags:
    - one-repo
    - wayfinder
 ---
+
+> **Retired 2026-11-05.** The outcome lives in the [[02-prd/03-features/01-synergy/09.prd.features.synergy.one-repo|One Repo PRD]] and the [[02-prd/03-features/01-synergy/spec#One Repo|spec's One Repo section]]. This page stays as the record of how it was decided.
 
 ## Question
 

@@ -3,9 +3,9 @@ publish: true
 id: decisions.log
 title: Decisions Log
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-05
 kind: log
-version: 1.0.0
+version: 1.1.0
 tags:
    - decision
 ---
@@ -14,6 +14,7 @@ Every decision Sidekick has made, newest first. A decision is a claim about how 
 
 | Date       | Decision                                                                                                                     | Status   | Summary                                                                                                                                                                |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-05 | [[02-prd/03-features/01-synergy/09.prd.features.synergy.one-repo\|One Repo]] | accepted | Docs, writings and the site move into `mehtapratik/sidekick` with Arkive's history; the site runs on a Cloudflare Worker and moves to ossidekick.com, the App to app.ossidekick.com (D213 to D227). |
 | 2026-11-01 | [[03-system-design/functional-design/04-synergy/violations-and-exceptions\|Violations and Exceptions]]                       | accepted | `violates` (association) and `exception-to` (reference) join Synergy's starter vocabulary; unlinking resolves a violation and retyping it to `exception-to` waives it. |
 | 2026-10-31 | [[03-system-design/functional-design/04-synergy/tombstone-visibility\|Tombstone Visibility]]                                 | accepted | Synergy's soft-deleted rows (tombstones) stay visible to Synergy's own queries, and restoring one is allowed.                                                          |
 | 2026-10-31 | [[03-system-design/non-functional/monorepo/dependency-flow\|React as Peer Dependency]]                                       | accepted | Every workspace package that uses React (@sidekick/ui, the /react entry of @sidekick/synergy, feature packages later) lists react (and react-dom, if it impor…         |

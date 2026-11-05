@@ -4,8 +4,8 @@ title: "Synergy - Feature Specifications"
 created: 2026-10-28
 kind: prd
 audience: everyone
-updated: 2026-11-01
-version: 1.3.0
+updated: 2026-11-05
+version: 1.4.0
 status: accepted
 tags:
    - prd
@@ -13,10 +13,11 @@ tags:
    - synergy
 applies_to:
    - "[[04-phases/03-synergy/00-plan]]"
+   - "[[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief]]"
 publish: true
 ---
 
-The build-facing spec for Synergy's Phase 3. The why, and the full detail of each rule, live in the PRD starting at [[00.prd.features.synergy.overview|Overview of Synergy]]. Decisions trace to the tickets on the [[02-prd/03-features/01-synergy/map|map]].
+The build-facing spec for Synergy's Phase 3. The why, and the full detail of each rule, live in the PRD starting at [[00.prd.features.synergy.overview|Overview of Synergy]]. Decisions trace to the tickets on the [[02-prd/03-features/01-synergy/map|map]]. [[#One Repo|One Repo]], at the end, specifies the move into one repo and the new public site.
 
 ## Problem Statement
 
@@ -283,3 +284,83 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
 - Settled in system design ([[03-system-design/functional-design/04-synergy/00-overview|Synergy]]): how word and sentence anchors survive edits (operation-based anchors are the bar to beat), how the referenced-passage check stays proportional to the change, how the cycle check scales, whether search uses a provider model, and which tool tests modules and components in isolation.
 - A throwaway prototype of the display types and states is linked from [[02-prd/03-features/01-synergy/tickets/08-sneak-peek-link-draft|ticket 08]].
 - Watch whether metadata on micronotes outweighs their content, and study how other tools handle it.
+
+## One Repo
+
+The build-facing spec for [[09.prd.features.synergy.one-repo|One Repo]]: Arkive's docs, writings and site move into `mehtapratik/sidekick`, and the site is rebuilt as the Sidekick public site at ossidekick.com. It is built in [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|Lesson 0]] and the site lessons of the [[04-phases/03-synergy/00-plan#Site lessons (the redesign)|Synergy plan]]. Decisions trace to the tickets on the retired [[02-prd/03-features/01-synergy/map-one-repo|one-repo map]].
+
+### Problem Statement
+
+Code and docs live in two repos. A change and the docs it makes false take two PRs that can land out of step, and Sidekick's install clones Arkive through a script and a `docs` symlink. The site is on arkive.blog under a retired name, carries its own npm lockfile and Node version, and is configured in a Cloudflare dashboard nobody reviews.
+
+### Solution
+
+One repo with `content/` beside the code and the site as a workspace app, `@sidekick/www`, deployed as a Cloudflare Worker from Sidekick's `main`. The site is then redesigned from the handover and moves, with the App, to ossidekick.com in one cutover with no downtime. No published URL changes at any step.
+
+### User Stories
+
+A story with no prefix is the owner's. [Reader] is anyone reading the public site.
+
+95. **D228** `requirement` #one-repo #git: `git log --follow` on any doc or writing shows its Arkive commits. derived-from [[D213]]
+96. **D229** `requirement` #one-repo #monorepo: One PR can change code and the docs that describe it. derived-from [[D214]]
+97. **D230** `requirement` #one-repo #monorepo: `pnpm install` from a fresh clone installs everything, with no clone script, no symlink to set up and one lockfile. derived-from [[D214]]
+98. **D231** `requirement` #one-repo #ci: CI runs the site's build with its privacy and datum gates, and its type check, on every PR. derived-from [[D214]]
+99. **D232** `requirement` #one-repo #deployment: A commit that touches only `content/` builds the site and skips the App. derived-from [[D215]]
+100. **D233** `requirement` #one-repo #deployment: Every branch that touches the site gets a public preview URL. derived-from [[D220]]
+101. **D234** `requirement` #one-repo #urls: [Reader] Every URL that worked on arkive.blog still works, on arkive.blog after Lesson 0 and through a 301 to ossidekick.com after the cutover, with its path, query and fragment kept. derived-from [[D221]] derived-from [[D222]]
+102. **D235** `requirement` #one-repo #domain: [Reader] A visitor who arrives through the arkive.blog redirect sees one line saying the site moved, once. derived-from [[D222]]
+103. **D236** `requirement` #one-repo #site: [Reader] The home page shows how many phases are complete and which is up next, from the phase plans. derived-from [[D224]]
+104. **D237** `requirement` #one-repo #site: [Reader] The feed brings each new Writing once, and an edit to an old one does not bring it back. derived-from [[D225]]
+105. **D238** `requirement` #one-repo #content: An entry can show a component by naming it in a fenced block, and a wrong name or wrong props fail the build. derived-from [[D227]]
+106. **D239** `requirement` #one-repo #site: [Reader] On a phone the header holds the wordmark, Search and Menu, and the docs tree opens from a Contents button. derived-from [[D223]]
+
+### Implementation Decisions
+
+**Layout and packages**
+
+- Root: `apps/www` (`@sidekick/www`), `apps/app` (`@sidekick/app`, was `apps/web` named `web`), `content/` (`@sidekick/content`, with `content/docs/`, `content/writings/` and `content/LICENSE`), `packages/…` unchanged. The root package stays `sidekick`.
+- `apps/www` is a workspace package through the existing `apps/*` glob; `pnpm-workspace.yaml` adds `content`. The site declares `"@sidekick/content": "workspace:*"`, so Turbo hashes content into the site's build. Until that lands (Lesson 0 PR 3), `turbo.json` gives `@sidekick/www#build` `inputs: ["$TURBO_DEFAULT$", "../../content/**"]`.
+- `src/lib/vault.mjs` resolves `content/docs` and `content/writings` from the repo root. New code that scans content goes through `vault.mjs`'s helpers, so the `.md` extension stays in one place.
+- The site inherits the root `.gitignore` and `.prettierrc` (plus `prettier-plugin-astro`); `.prettierignore` lists `content/` and the files the site ships as given. One format commit is listed in `.git-blame-ignore-revs`.
+- Node 24 (`engines` `24.x`, `.node-version` 24) and pnpm from `packageManager`, as for every package. The site's dependency ranges become `^major.minor.patch`. Renovate needs no new rules: its recommended config groups `astro` with `@astrojs/*` and gives every major a reviewed PR. `@astrojs/check` accepts TypeScript 5 or 6, so a TypeScript 7 bump waits on it.
+- Agent notes: `apps/www/AGENTS.md` (was the site's `CLAUDE.md`); the root `AGENTS.md` symlink points at `content/docs/08-ai-coding-harness/agent-guide.md`. No `CONTEXT.md` anywhere; its seven terms are glossary pages (D226).
+- A small `actions/labeler` workflow adds the `content` label when every file in a PR is under `content/`. Content PRs use `docs(<area>):` titles.
+
+**Hosting**
+
+- Worker `sidekick-www`, `apps/www/wrangler.jsonc`: `compatibility_date`, `assets.directory: "./dist"`, `assets.not_found_handling: "404-page"`, a `previews` block; no script, no binding. Wrangler 4.135 or later is a dev dependency of `apps/www`.
+- Workers Builds: root directory the repo root; build `pnpm turbo run build --filter=@sidekick/www`; deploy `pnpm -C apps/www exec wrangler deploy`; preview `pnpm -C apps/www exec wrangler preview`; watch paths `apps/www/*`, `content/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`. No `NODE_VERSION` or `PNPM_VERSION`.
+- `_redirects` and `_headers` carry over unchanged. `/foo` redirects to `/foo/` with a 307.
+- The App's Vercel project uses Root Directory `apps/app` with Skip deployment on.
+
+**The new site**
+
+- The handover's routes, chrome, pages, plates and tokens, with the overrides listed in the [[09.prd.features.synergy.one-repo#The new site|PRD]]. `/writings/`, `/docs/` and `/tags/<tag>/` become real pages (their redirects to `/` go); `/index/` still redirects to `/`. The only shortcuts are `/` for search and `Esc` to close.
+- Breakpoint: one `@media (width < 58rem)` block holds every chrome swap. The value is the docs row's flex bases, gap and gutters (920px) rounded up to a whole rem; if those change, it moves with them. The house rule in `apps/www/AGENTS.md` changes in the site lesson that builds the chrome.
+- Milestones: one per `04-phases/NN-name/00-plan.md` with `publish: true`, one level down. Label `NN` as a number; title from `title`; status `completed` done, `deferred` deferred, first other up next, rest planned. Hidden label "Phase {n}, {title}: {status}". Sentence "{done} of {total} milestones complete. Up next: {title}", deferred phases counted in the total. "All phases" lists sub-plans indented under their phase.
+- Feed: `/rss.xml`, listed Writings only, newest first by `created`, at most 50; `pubDate` is `created`; the description is the summary; `guid` is the entry `id` with `isPermaLink="false"` from the cutover on.
+- Components: a fenced block with info string `sidekick:<name>` and a YAML body. A remark plugin in `apps/www` loads the component, validates the props against its schema, renders it with `renderToStaticMarkup` and replaces the block. Components ship no JS. They live in `apps/www`, or in `@sidekick/ui` (with `react` as a peer) when domain-free. `tokens.css` lives in `@sidekick/ui` and the site imports it.
+- JS budget: the theme pre-paint snippet and button, search, Copy, the Menu and Contents where `popover` cannot do it alone, and, for the year after the cutover, the moved-site notice.
+
+**The cutover**
+
+- In order: ossidekick.com added as a second Custom Domain on the Worker; the host PR (`site: "https://ossidekick.com"`, the notice, the feed `guid`); ossidekick.com checked; arkive.blog removed from the Worker and replaced by proxied placeholder records (`AAAA 100::`) for `arkive.blog` and `www.arkive.blog` and two Single Redirect rules; `www.ossidekick.com` redirected to the apex; `app.ossidekick.com` attached; the GitHub homepage set to `https://ossidekick.com` and the old `arkive` Pages project deleted.
+- arkive.blog rules, both 301 with preserve query string off: no query, `concat("https://ossidekick.com", http.request.uri.path, "?from=arkive.blog")`; with a query, `concat("https://ossidekick.com", http.request.uri.path, "?", http.request.uri.query, "&from=arkive.blog")`. The tag goes in the query because a fragment in `Location` would replace the visitor's own.
+- Notice: one hidden line in the layout, shown by the site script only when the URL has `from=arkive.blog`, which it then removes with `history.replaceState`. The canonical link is always the clean URL. The rules, the notice and its script are removed together when arkive.blog lapses, one year after the cutover.
+- App on the same day: DNS-only `app` CNAME to Vercel, the domain on the Vercel project, `NEXT_PUBLIC_APP_URL=https://app.ossidekick.com`, Supabase Site URL `https://app.ossidekick.com` with the `vercel.app` URL, localhost and the preview pattern kept in the Redirect URLs.
+
+### Testing Decisions
+
+- **The sitemap diff is the URL test.** The paths in a new build's `sitemap.xml`, diffed against the live site's, print nothing. It runs at the end of Lesson 0 PR 1, on the Worker's `workers.dev` URL before arkive.blog moves, after each site lesson, and on ossidekick.com before arkive.blog becomes a redirect.
+- **History:** `git log --follow` on a doc shows its Arkive commits.
+- **CI:** Prettier, lint, typecheck (`astro check` for the site), build with the gates, tests, all green on every Lesson 0 PR.
+- **Skips:** a throwaway content-only PR gets the `content` label and Vercel skips the App.
+- **404:** a made-up path shows the site's 404 page, on `workers.dev` and on each domain.
+- **Redirect check after the cutover:** a script reads the old sitemap and, for every path, expects a 301 from arkive.blog to the same path on ossidekick.com with `from=arkive.blog`, then a 200. It also checks a URL with a query, `www.arkive.blog`, `www.ossidekick.com` and `app.ossidekick.com`.
+- **The new site:** the handover's acceptance checklist, with "3 of 13 milestones complete. Up next: Synergy" from today's plans, and Lighthouse accessibility 100 on Home, Writing, Doc and Folder pages in both themes.
+
+### Out of Scope
+
+- App features, and any change to the App beyond `apps/app` and its address.
+- A docs feed, MDX, interactive islands in content, and Mantine on the site.
+- `ossidekick.com/app` as a route.
