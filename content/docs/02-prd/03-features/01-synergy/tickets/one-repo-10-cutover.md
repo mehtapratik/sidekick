@@ -8,7 +8,6 @@ type: grilling
 blocked_by:
    - one-repo-01-cloudflare-pages-for-a-monorepo
    - one-repo-08-where-the-app-lives
-   - one-repo-11-pages-or-workers
 status: open
 assignee:
 tags:

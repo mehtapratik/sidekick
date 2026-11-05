@@ -22,7 +22,7 @@ What exactly does Lesson 0 do, in what order, and what does Pratik learn from ea
 
 ## Resolution
 
-Grilled with Pratik on 2026-11-04 and 2026-11-05. Lesson 0 is four PRs and a hosting step. Pratik types every change; the coach explains each step and writes the lesson's docs PR at the end, as for any lesson.
+Grilled with Pratik on 2026-11-04 and 2026-11-05. Lesson 0 is five PRs and a hosting step (PR 5 and the hosting step added on 2026-11-05 by [Pages or Workers for the Site](one-repo-11-pages-or-workers.md)). Pratik types every change; the coach explains each step and writes the lesson's docs PR at the end, as for any lesson.
 
 ### Before the first PR: freeze Arkive
 
@@ -45,7 +45,7 @@ History plus only what CI needs to go green. Merged as a merge commit (merge com
 
 ### PR 2: rename `apps/web` to `apps/app` (squash)
 
-`git mv`, the Turbo package name, about 10 references in code, ESLint config and README, the 56 vault pages that name `apps/web`, and Vercel's Root Directory. **Done when:** CI is green, `pnpm dev` opens the App, and Vercel's preview builds from `apps/app`.
+`git mv`, the package and Turbo name (plain `web` becomes `@sidekick/app`, so every app has the `@sidekick/` scope), about 10 references in code, ESLint config and README, the 56 vault pages that name `apps/web`, and Vercel's Root Directory. **Done when:** CI is green, `pnpm dev` opens the App, and Vercel's preview builds from `apps/app`.
 
 ### PR 3: content-only commits (squash)
 
@@ -55,11 +55,18 @@ History plus only what CI needs to go green. Merged as a merge commit (merge com
 
 Add `@astrojs/check` and `@types/node` as dev dependencies and a `typecheck: astro check` script, so `pnpm typecheck` covers the site. On 2026-11-05 `astro check` reported only two errors, both `node:fs` and `node:path` types in `src/pages/vault-assets/[...path].ts`, which `@types/node` fixes. `@astrojs/check` accepts TypeScript 5 or 6 only, so a TypeScript 7 bump waits on it. **Done when:** CI's typecheck step runs `astro check` green.
 
+### PR 5: deploy the site on Workers (squash)
+
+The site runs on a Worker with static assets, not Pages ([Pages or Workers for the Site](one-repo-11-pages-or-workers.md)). Add `apps/www/wrangler.jsonc` (`name: "sidekick-www"`, `assets.directory: "./dist"`, `not_found_handling: "404-page"`, a `previews` block) and Wrangler 4.135 or later as a dev dependency, delete `scripts/cf-build.sh`, and name the new build and deploy commands in the site's `AGENTS.md`. *Learns:* what a Worker with static assets is, and keeping hosting config in the repo instead of a dashboard. **Done when:** CI is green.
+
 ### Hosting step: arkive.blog builds from Sidekick
 
-Waits on [Pages or Workers for the Site](one-repo-11-pages-or-workers.md). Create the new Cloudflare project building `apps/www` from Sidekick's `main` (Node 24, watch paths per [Cloudflare Pages for a Monorepo](one-repo-01-cloudflare-pages-for-a-monorepo.md)), check its preview URL, then move arkive.blog's custom domain to it. On the old `arkive` Pages project, detach the domain and pause automatic deployments, but keep it as a one-minute rollback until the ossidekick.com cutover deletes it ([The Cutover to ossidekick.com](one-repo-10-cutover.md)). ossidekick.com still waits for the redesign, which is later Phase 3 lessons.
+1. In the Cloudflare dashboard, **Workers → Import a repository** on `mehtapratik/sidekick`: root directory the repo root; build `pnpm turbo run build --filter=@sidekick/www`; deploy `pnpm -C apps/www exec wrangler deploy`; preview `pnpm -C apps/www exec wrangler preview`, with preview builds on; watch paths `apps/www/*`, `content/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`. No `NODE_VERSION` or `PNPM_VERSION`: the image defaults to Node 24 and reads pnpm from `packageManager`. The first build deploys `main` to `sidekick-www.<subdomain>.workers.dev`.
+2. Check that URL: the sitemap paths diff empty against arkive.blog's, and a made-up path shows the 404 page.
+3. Move the domain: remove arkive.blog from the old `arkive` Pages project and delete its CNAME, then add arkive.blog as a Custom Domain on the Worker. Expect a few minutes of downtime.
+4. Pause the old project's automatic deployments, but keep it as a rollback (re-add the domain) until the ossidekick.com cutover deletes it ([The Cutover to ossidekick.com](one-repo-10-cutover.md)). ossidekick.com still waits for the redesign, which is later Phase 3 lessons.
 
-**Lesson 0 is done when** arkive.blog serves from the new project built from Sidekick's `main`, and the sitemap diff against the old site is still empty.
+**Lesson 0 is done when** arkive.blog serves from the `sidekick-www` Worker built from Sidekick's `main`, and the sitemap diff against the old site is still empty.
 
 ### After the lesson
 
