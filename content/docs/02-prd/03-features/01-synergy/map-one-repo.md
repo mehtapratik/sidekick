@@ -4,7 +4,7 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.5.0
+version: 0.6.0
 status: draft
 updated: 2026-11-05
 tags:
@@ -50,10 +50,11 @@ Resolved tickets:
 - [Pages or Workers for the Site](tickets/one-repo-11-pages-or-workers.md): a Worker with static assets (`sidekick-www`), built by Workers Builds from the repo root, with branch previews from day one; its `wrangler.jsonc` lives in `apps/www`. Every app takes the `@sidekick/` scope (`@sidekick/app` after the rename). A later `/app` route can be a script on the same Worker.
 - [The Phone Breakpoint](tickets/one-repo-05-phone-breakpoint.md): the house rule allows one width breakpoint, `@media (width < 58rem)`, only to swap chrome (header nav and theme into the Menu, the docs tree into a full-viewport Contents view, the `/` hint hidden). The docs sidebar stops fitting beside the article at 920px (57.5rem), rounded up; the handover's 40rem would stack the tree above the article on tablets. The theme control becomes one cycling button. The rule changes in the redesign lesson that builds the chrome.
 - [Milestone Tiles From the Phases Folder](tickets/one-repo-06-milestone-tiles.md): one tile per phase, from each `04-phases/NN-name/00-plan.md`: order and label from `NN`, title from `title`, status from `status` (`completed` done, `deferred` deferred, the first other phase up next). Sub-plans get no tile and appear indented in the "All phases" list. Today: 3 of 13 complete, Synergy up next.
+- [RSS on the New Site](tickets/one-repo-07-rss.md): `/rss.xml` stays and carries Writings only, newest first by `created`, with the summary as the description; no docs feed. Today's mixed feed held 50 docs and none of the four writings.
 
 ## Not yet specified
 
-- How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. Clears once the RSS ticket is settled.
+- How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. The tickets it waited on (phone breakpoint, milestone tiles, RSS) are settled, so the split can be planned now.
 - The repo's licence story for content (MIT code, CC BY-NC 4.0 writings and docs) in one tree.
 - Updating the GitHub homepage field. (Archiving the arkive repo, the old Pages project, lesson-start prompts, project memory and the Obsidian vault path are settled in Lesson 0.)
 - Whether Renovate needs rules for the site's dependencies (Astro majors) beyond the defaults.
