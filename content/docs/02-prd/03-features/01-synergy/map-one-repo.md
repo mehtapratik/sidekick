@@ -4,8 +4,9 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.1.0
+version: 0.2.0
 status: draft
+updated: 2026-11-05
 tags:
    - prd
    - synergy
@@ -33,9 +34,9 @@ Settled while charting (Pratik, 2026-11-03):
 - **History onto `main`:** the import PR merges as a one-off merge commit, because a squash would flatten Arkive's history. Merge commits are switched on for that PR only.
 - **Layout:** `content/docs/` (the vault), `content/writings/`, and the site at `apps/www/`. `AGENTS.md` points into `content/docs/`. Site URLs do not change.
 - **App folders** (2026-11-04): the public site is `apps/www` and the App's `apps/web` is renamed `apps/app`, so each folder is named for the address it serves (ossidekick.com and app.ossidekick.com). `apps/` and `packages/` stay as the parent folders.
-- **One import PR:** the import commits and Pratik's root config commits (lockfile, `.prettierignore`, the symlink, removing `setup-docs`) share one branch, because the import alone breaks Sidekick's CI.
+- **One import PR:** the import commits and Pratik's root config commits (lockfile, `.prettierignore`, the symlink, removing `setup-docs`) share one branch, because the import alone breaks Sidekick's CI. The rename to `apps/app`, `content/` as a package and `astro check` follow as their own squash PRs.
 - **When:** Lesson 0 runs at the start of 3a, before lesson 1, so lesson 1's `git mv` work and the live recordings happen in the merged repo. Lessons 1 to 13 keep their numbers.
-- **Domain:** ossidekick.com (registered on Cloudflare) serves the public site at the apex. Lesson 0 ends with the current site building from Sidekick on a Cloudflare preview URL; arkive.blog moves to ossidekick.com once, after the redesign ships, with every path kept.
+- **Domain:** ossidekick.com (registered on Cloudflare) serves the public site at the apex. Lesson 0 ends with arkive.blog serving the current site from a new Cloudflare project built from Sidekick (revised 2026-11-04, so the site never goes stale); arkive.blog moves to ossidekick.com once, after the redesign ships, with every path kept.
 - **Name:** Arkive is retired. The site is the Sidekick public site from the design handover.
 - **Formatting:** `content/` stays out of Prettier (142 of 288 vault files fail Sidekick's config today); `apps/www/` keeps its own Prettier config.
 - **Local work first:** the work on Pratik's Mac landed in arkive #37 (principles subfolders with redirects, three value propositions, `CONTEXT.md`); the local CSS edits were discarded.
@@ -45,12 +46,13 @@ Resolved tickets:
 - [Cloudflare Pages for a Monorepo](tickets/one-repo-01-cloudflare-pages-for-a-monorepo.md): a new Cloudflare project is needed (no repo switch); Node must move to 24; Cloudflare now steers new projects to Workers, which opened a ticket.
 - [The App Under the Same Domain](tickets/one-repo-02-app-under-the-same-domain.md): `app.ossidekick.com` is simplest and what Vercel recommends; `/app` works through a Cloudflare Worker proxy at the cost of Vercel's CDN features and careful redirect handling.
 - [Vercel Skips Content-Only Commits](tickets/one-repo-03-vercel-skips-content-commits.md): Vercel's built-in skip, with `content/` as a workspace package; `turbo query affected` as the fallback.
+- [Lesson 0: the Import](tickets/one-repo-04-lesson-0-import.md): four PRs (the import as the one merge commit, the `apps/app` rename, `content/` as a package with a `content` PR label, `astro check`) and a hosting step that moves arkive.blog to a new Cloudflare project; Arkive is archived before the rewrite; done when the sitemap matches the old site's. Its hosting step waits on Pages or Workers.
 
 ## Not yet specified
 
 - How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. Clears once the phone breakpoint, milestone tiles and RSS tickets are settled.
 - The repo's licence story for content (MIT code, CC BY-NC 4.0 writings and docs) in one tree.
-- Retiring the old Cloudflare Pages project, archiving the arkive repo, and updating the GitHub homepage field, lesson-start prompts, project memory and the Obsidian vault path.
+- Updating the GitHub homepage field. (Archiving the arkive repo, the old Pages project, lesson-start prompts, project memory and the Obsidian vault path are settled in Lesson 0.)
 - Whether Renovate needs rules for the site's dependencies (Astro majors) beyond the defaults.
 
 ## Out of scope
