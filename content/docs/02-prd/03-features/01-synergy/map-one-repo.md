@@ -4,7 +4,7 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.9.0
+version: 0.10.0
 status: draft
 updated: 2026-11-05
 tags:
@@ -54,13 +54,13 @@ Resolved tickets:
 - [Where the App Lives](tickets/one-repo-08-where-the-app-lives.md): `app.ossidekick.com` (DNS-only CNAME to Vercel), attached at the cutover; until then the App stays at `sidekick-six-bay.vercel.app`. The public site shows no App link until Open House, because the App is single-user; Pratik turns off Supabase sign-up.
 - [A Home for the Site Vocabulary](tickets/one-repo-09-site-vocabulary-home.md): `CONTEXT.md` folds into seven `07-glossary/` pages (with their _Avoid_ lines) in Lesson 0's PR 1 and is deleted; the agent guide tells skills that ask for `CONTEXT.md` to write the glossary page instead.
 - [The Cutover to ossidekick.com](tickets/one-repo-10-cutover.md): ossidekick.com is added beside arkive.blog on the Worker, `site` switches, then arkive.blog becomes two zone Redirect Rules (301, path and query kept, plus `from=arkive.blog`) and `www.ossidekick.com` redirects to the apex. A one-line banner shows only to visitors who arrive through the redirect. arkive.blog redirects for one year, then lapses. The feed's `guid` becomes the entry `id`.
+- [Components in Content](tickets/one-repo-12-components-in-content.md): static React components from a `sidekick:<name>` fenced block with YAML props in plain `.md`, rendered at build time; no MDX for now (adding it later costs the same). Plain React with CSS modules and `tokens.css` (one token source, in `@sidekick/ui`), no Mantine. Components live in `apps/www` unless they are design-system candidates for `@sidekick/ui`. Built in the redesign lessons.
 
 ## Not yet specified
 
 - How the redesign's pieces (chrome, generated folder pages, search, theme, plates, fonts) split into lessons, and what Pratik learns in each. The tickets it waited on (phone breakpoint, milestone tiles, RSS) are settled, so the split can be planned now.
 - The repo's licence story for content (MIT code, CC BY-NC 4.0 writings and docs) in one tree.
 - Whether Renovate needs rules for the site's dependencies (Astro majors) beyond the defaults.
-- **Components in content** (Pratik, 2026-11-05): MDX or a similar means, so an Entry can render React components from the design system in `packages/foundation/ui` where Markdown falls short. Not part of Lesson 0; grilled after the open tickets. Open questions: MDX (opt-in per file, which Obsidian does not preview) or a fenced block or directive in plain `.md`; static HTML only or interactive islands (the JS budget); one token source for the site and the App, which uses Mantine.
 
 ## Out of scope
 
