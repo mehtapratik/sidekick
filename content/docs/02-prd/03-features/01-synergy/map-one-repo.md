@@ -4,7 +4,7 @@ id: prd.synergy.one-repo.map
 title: "One Repo: Wayfinder Map"
 created: 2026-11-03
 kind: plan
-version: 0.6.0
+version: 0.7.0
 status: draft
 updated: 2026-11-05
 tags:
@@ -51,6 +51,7 @@ Resolved tickets:
 - [The Phone Breakpoint](tickets/one-repo-05-phone-breakpoint.md): the house rule allows one width breakpoint, `@media (width < 58rem)`, only to swap chrome (header nav and theme into the Menu, the docs tree into a full-viewport Contents view, the `/` hint hidden). The docs sidebar stops fitting beside the article at 920px (57.5rem), rounded up; the handover's 40rem would stack the tree above the article on tablets. The theme control becomes one cycling button. The rule changes in the redesign lesson that builds the chrome.
 - [Milestone Tiles From the Phases Folder](tickets/one-repo-06-milestone-tiles.md): one tile per phase, from each `04-phases/NN-name/00-plan.md`: order and label from `NN`, title from `title`, status from `status` (`completed` done, `deferred` deferred, the first other phase up next). Sub-plans get no tile and appear indented in the "All phases" list. Today: 3 of 13 complete, Synergy up next.
 - [RSS on the New Site](tickets/one-repo-07-rss.md): `/rss.xml` stays and carries Writings only, newest first by `created`, with the summary as the description; no docs feed. Today's mixed feed held 50 docs and none of the four writings.
+- [Where the App Lives](tickets/one-repo-08-where-the-app-lives.md): `app.ossidekick.com` (DNS-only CNAME to Vercel), attached at the cutover; until then the App stays at `sidekick-six-bay.vercel.app`. The public site shows no App link until Open House, because the App is single-user; Pratik turns off Supabase sign-up.
 
 ## Not yet specified
 
