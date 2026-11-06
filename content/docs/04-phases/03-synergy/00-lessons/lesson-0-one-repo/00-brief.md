@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-3.lesson-0-one-repo
 title: "Synergy Lesson 0: One Repo"
 created: 2026-11-05
+updated: 2026-11-06
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -42,7 +43,7 @@ History plus only what CI needs to go green. Merged as a merge commit: Pratik sw
 6. **One format commit.** `pnpm format` on `apps/www` only (the root config switches the site to single quotes), and that commit's hash goes into `.git-blame-ignore-revs`. _Learns:_ keeping a bulk reformat out of `git blame`.
 7. **Agent notes and vocabulary.** `apps/www/CLAUDE.md` becomes `apps/www/AGENTS.md`, updated for pnpm and `content/` paths. Delete `apps/www/.claude/launch.json`. Repoint the root `AGENTS.md` symlink at `content/docs/08-ai-coding-harness/agent-guide.md`. Remove the `docs` symlink, `scripts/setup-docs.mjs` and the `docs:setup` and `postinstall` scripts. Fold `apps/www/CONTEXT.md` into seven glossary pages (`sidekick.md`, `app.md`, `public-site.md`, `entry.md`, `writing.md`, `doc.md`, `about.md` in `content/docs/07-glossary/`, each `kind: glossary`, `id: glossary.<slug>`, tags `glossary` and `site`, ending with its _Avoid_ line), delete `CONTEXT.md`, and add D226's line to the agent guide.
 8. **Licence.** Add `content/LICENSE` with the CC BY-NC 4.0 legal code, and a Licence section to the README: code under MIT (the root `LICENSE`), writings and docs under CC BY-NC 4.0 (`content/LICENSE`), fonts under their own licences beside the files. The footer line stays as it is.
-9. **Fix the live docs the import makes false:** Sidekick's README, the agent guide's `docs/…` paths, "one arkive PR" and `npm run build` in the Synergy plan and the lesson 1 brief, and `docs/02-prd/` in the Taxila, Zinsser, Alter Ego and War Room plans. Add a post note to the Front Door hardening walkthrough saying `setup-docs` was removed in Lesson 0. Past walkthroughs and notes keep their historical text.
+9. **Fix the live docs the import makes false:** Sidekick's README, the agent guide's `docs/…` paths, "one arkive PR" and `npm run build` in the Synergy plan and the lesson 1 brief, and `docs/02-prd/` in the Taxila, Zinsser, Alter Ego and War Room plans, and the arkive repo's `CLAUDE.md` and `src/lib/datums.mjs` in [[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]] (now `apps/www/AGENTS.md` and `apps/www/src/lib/datums.mjs`). Add a post note to the Front Door hardening walkthrough saying `setup-docs` was removed in Lesson 0. Past walkthroughs and notes keep their historical text.
 
 **Done when:** CI is green (Prettier, lint, typecheck, build with the site's gates, tests); `git log --follow` on a doc shows its Arkive commits; and the paths in the new build's `sitemap.xml` match arkive.blog's live sitemap exactly (`diff` prints nothing).
 
@@ -52,7 +53,7 @@ History plus only what CI needs to go green. Merged as a merge commit: Pratik sw
 
 ## PR 3: content-only commits (squash)
 
-`content/` becomes a workspace package (`@sidekick/content`, `pnpm-workspace.yaml` lists `content`), and Vercel's Skip deployment setting is checked on the App's project. The site declares `"@sidekick/content": "workspace:*"`, which replaces PR 1's Turbo `inputs` line with a real dependency. A small `actions/labeler` workflow adds a `content` label to any PR whose files are all under `content/`. _Learns:_ folder input versus declared dependency in Turbo, and a workflow that needs `pull-requests: write` (CI today is read-only). **Done when:** a throwaway content-only PR gets the label and Vercel skips it.
+`content/` becomes a workspace package (`@sidekick/content`, `pnpm-workspace.yaml` lists `content`), and Vercel's Skip deployment setting is checked on the App's project. The site declares `"@sidekick/content": "workspace:*"`, which replaces PR 1's Turbo `inputs` line with a real dependency. A small `actions/labeler` workflow adds a `content` label to any PR whose files are all under `content/`. `content/package.json` gets no `main`, `exports` or `types`, and `scripts/check-content.mjs` (`pnpm check:content`) fails on a file outside the allowlist or an extra `package.json` key; CI runs it as a step and husky's pre-commit runs it too ([[D259]]). _Learns:_ folder input versus declared dependency in Turbo, a workflow that needs `pull-requests: write` (CI today is read-only), and a structural guard where lint can't reach. **Done when:** a throwaway content-only PR gets the label and Vercel skips it, and a throwaway `content/index.ts` fails `check:content`.
 
 ## PR 4: type-check the site (squash)
 

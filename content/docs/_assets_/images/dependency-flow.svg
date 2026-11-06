@@ -66,7 +66,7 @@
   <polyline points="920,124 920,682 670,682" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <text x="500.0" y="77.0" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1971c2" text-anchor="middle">
     <tspan x="500.0" dy="0">Apps: apps/*</tspan>
-    <tspan x="500.0" dy="20">(web; later cli)</tspan>
+    <tspan x="500.0" dy="20">(app, www; later cli)</tspan>
   </text>
   <text x="500.0" y="221.0" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#7048e8" text-anchor="middle">
     <tspan x="500.0" dy="0">Registry: packages/features-registry</tspan>
@@ -82,7 +82,7 @@
   </text>
   <text x="500.0" y="653.0" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e8590c" text-anchor="middle">
     <tspan x="500.0" dy="0">Foundation: packages/foundation/*</tspan>
-    <tspan x="500.0" dy="20">(core, ui, copy)</tspan>
+    <tspan x="500.0" dy="20">(core, ui, i18n)</tspan>
   </text>
   <text x="900.0" y="67.0" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
     <tspan x="900.0" dy="0">Ops: packages/ops</tspan>

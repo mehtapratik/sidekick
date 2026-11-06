@@ -6,6 +6,9 @@ keeps the rules that still bind and what is not obvious from the code.
 
 ## House rules
 
+- **This site is temporary** (D256, Pratik, 2026-11-06): it is rewritten or retired once the MVP ships, so
+  favour speed over long-term structure. No CSS modules, no i18n catalogs, no App-grade strictness. What
+  still binds: the privacy and datum gates, `publish: true`, no URL changes, Prettier and green CI.
 - No CSS framework, no UI framework, no third-party requests. Fonts and icons are self-hosted.
 - Native behaviour first: popover, `details`, radios and links do the work; styling never changes
   semantics or accessibility.

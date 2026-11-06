@@ -54,8 +54,7 @@
   <rect x="40" y="792" width="320" height="108" rx="8" ry="8" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1" />
   <rect x="420" y="792" width="320" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
   <rect x="800" y="792" width="180" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
-  <rect x="1040" y="792" width="200" height="108" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
-  <rect x="420" y="980" width="320" height="108" rx="8" ry="8" fill="#ffd8a8" stroke="#e8590c" stroke-width="2" opacity="1" />
+    <rect x="420" y="980" width="320" height="108" rx="8" ry="8" fill="#ffd8a8" stroke="#e8590c" stroke-width="2" opacity="1" />
   <polyline points="545,148 377.5,228" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <polyline points="545,148 890,604" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <polyline points="377.5,336 220,416" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
@@ -66,10 +65,9 @@
   <polyline points="890,712 200,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <polyline points="377.5,712 580,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <polyline points="890,712 890,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
-  <polyline points="890,712 1140,792" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <polyline points="580,900 580,980" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
   <text x="545" y="90" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1971c2" text-anchor="middle">
-    <tspan x="545" dy="0">Apps: apps/web</tspan>
+    <tspan x="545" dy="0">Apps: apps/app</tspan>
     <tspan x="545" dy="20">(API routes, playground)</tspan>
   </text>
   <text x="377.5" y="278" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#7048e8" text-anchor="middle">
@@ -77,7 +75,7 @@
     <tspan x="377.5" dy="20">(assembles registrations)</tspan>
   </text>
   <text x="220" y="466" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle">
-    <tspan x="220" dy="0">packages/ops</tspan>
+    <tspan x="220" dy="0">packages/features/_sandbox/*</tspan>
     <tspan x="220" dy="20">(mock notes and tasks)</tspan>
   </text>
   <text x="567.5" y="466" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle">
@@ -103,10 +101,6 @@
   <text x="890" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
     <tspan x="890" dy="0">Foundation: ui</tspan>
     <tspan x="890" dy="20">(primitives)</tspan>
-  </text>
-  <text x="1140" y="842" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e03131" text-anchor="middle">
-    <tspan x="1140" dy="0">Foundation: copy</tspan>
-    <tspan x="1140" dy="20">(every label)</tspan>
   </text>
   <text x="580" y="1030" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e8590c" text-anchor="middle">
     <tspan x="580" dy="0">Postgres</tspan>

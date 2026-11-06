@@ -3,8 +3,10 @@ publish: true
 id: system-design.handover.phase-3-additions
 title: "Phase 3 Additions: System Design Handover"
 created: 2026-11-05
+updated: 2026-11-06
 kind: plan
 version: 1.0.0
+status: deprecated
 tags:
    - system-design
    - handover
@@ -12,6 +14,8 @@ tags:
    - i18n
    - synergy
 ---
+
+> **Retired 2026-11-06.** The pass settled all twelve questions with Pratik and wrote the answers into the live pages (D249 to D260): [[03-system-design/functional-design/05-public-site/00-overview|Public site]], [[03-system-design/non-functional/hosting-and-domains|Hosting and domains]], [[03-system-design/non-functional/css/design-tokens|Design tokens]], [[03-system-design/non-functional/css/native-ui|Native UI]], [[03-system-design/non-functional/content/internationalization|Internationalization]], the [[03-system-design/functional-design/04-synergy/00-overview|Synergy overview]], [[03-system-design/non-functional/runtime-validations|Runtime validations]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]]. Two answers changed the scope: the public site is temporary (D256), and Mantine leaves the App in a new lesson M1 (D255). This page stays as the record of the questions.
 
 The system design was last written for Synergy alone: [[03-system-design/functional-design/04-synergy/00-overview|Synergy]] 1.3.0, from arkive #25, with the violations work (#33, #34) folded in since. Phase 3 has grown after that. Lesson 0 merges Arkive into Sidekick, the site lessons S1 to S7 rebuild the public site and move it to ossidekick.com, and the i18n lessons I1 and I2 replace `@sidekick/copy` (arkive #38 to #50). Those decisions live in PRD, spec and plan pages, and the system design pages they touch still describe the old shape.
 

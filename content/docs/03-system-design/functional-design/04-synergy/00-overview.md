@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: System Design"
 created: 2026-10-30
-updated: 2026-11-01
+updated: 2026-11-06
 kind: spec
-version: 1.3.0
+version: 1.4.0
 tags:
    - system-design
    - synergy
@@ -24,7 +24,7 @@ Synergy is a graph _pattern_, not a graph _database_. At this scale, plain Postg
 
 ![[synergy-packages.svg|700]]
 
-An arrow means "imports". The features registry and the type packages register their linkable types with `synergy/server`; `apps/web` renders links with `synergy/react`. Only `foundation/core` talks to Postgres.
+An arrow means "imports". The features registry and the type packages register their linkable types with `synergy/server`; `apps/app` renders links with `synergy/react`. Only `foundation/core` talks to Postgres.
 
 | Package                                    | Holds                                                                                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -33,7 +33,7 @@ An arrow means "imports". The features registry and the type packages register t
 | `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                               |
 | Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                         |
 | `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                          |
-| `apps/web`                                 | Guarded API routes and the playground.                                                                                                                                    |
+| `apps/app`                                 | Guarded API routes and the playground; fetches and translates links for the Sneak Peek Link.                                                                              |
 
 **D199** `decision` #synergy #monorepo: Synergy ships three entry points, `/server`, `/react` and `/contracts`, so a browser bundle can never pull in database code. derived-from [[D57]] derived-from [[D17]]
 
@@ -57,6 +57,12 @@ interface LinkableTypeServer {
    provider: string; // the registering package, e.g. 'sandbox-notes', 'taxila'
    type: string; // e.g. 'note', 'datum', 'tweet'
    entitlement: string; // feature key whose entitlement gates it, e.g. 'sandbox-notes'
+   // the words Synergy draws itself, as keys in the provider's own catalog (D250)
+   messages: {
+      label: MessageRef;
+      count?: MessageRef;
+      description?: MessageRef;
+   };
    // batched: one call per provider per page; returns JSON only, so it can be cached and sent to any consumer
    resolve(
       tx: Tx,
@@ -69,22 +75,44 @@ interface LinkableTypeServer {
 // React half, imported from '@sidekick/synergy/react'
 interface LinkableTypeReact {
    type: string;
-   render(data: RenderData, display: "card" | "preview"): ReactNode; // pure: no fetching, no hooks, no browser APIs
+   // pure: no fetching, no hooks, no browser APIs; `word` looks a MessageRef up in the host's `words` (D251)
+   render(
+      data: RenderData,
+      display: "card" | "preview",
+      word: (ref: MessageRef) => string,
+   ): ReactNode;
 }
 ```
 
-`resolve` fetches and always runs on the server; `render` only turns the fetched data into React, so it runs wherever the component runs. Sidekick renders in both places: in a server component for a page's first paint, and in the browser when the editor inserts or changes a link, where the component fetches the new link's data through `POST /links/resolve` and renders it on the spot. A third party (Notion, Slack, a bot) uses the same JSON and renders it its own way. The registry or the app builds both maps and passes them to Synergy, so neither `core` nor Synergy imports a provider ([[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]], option A). Feature flags are separate and come later.
+`resolve` fetches and always runs on the server; `render` only turns the fetched data into React, so it runs wherever the component runs. Sidekick renders in both places: in a server component for a page's first paint, and in the browser when the editor inserts or changes a link, where the App's client wrapper fetches the new link's data through `POST /links/resolve` and the component renders it on the spot ([[D251]]). A third party (Notion, Slack, a bot) uses the same JSON and renders it its own way. The registry or the app builds both maps and passes them to Synergy, so neither `core` nor Synergy imports a provider ([[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]], option A). Feature flags are separate and come later.
 
 ## Keys, never copy
 
-**D201** `decision` #synergy #copy: Synergy stores and returns keys only (types, statuses, states, error codes); every label comes from `packages/copy`, and only user content is stored as written. derived-from [[D36]]
+**D201** `decision` #synergy #copy: Synergy stores and returns keys only (types, statuses, states, error codes, message references); every word comes from a catalog, the provider's for its words and Synergy's for its own, and only user content is stored as written. derived-from [[D243]]
 
-Synergy holds no user-visible text ([[03-system-design/non-functional/content/centralized-copy|Centralized copy]]; Pratik, 2026-10-31). Everything it stores or returns is a stable key, and every label comes from `packages/copy`, so a term can be renamed or translated without a migration or an API change:
+Synergy holds no user-visible text (Pratik, 2026-10-31; catalogs since [[03-system-design/non-functional/content/internationalization|Internationalization]], 2026-11-06). Everything it stores or returns is a stable key, so a term can be renamed or translated without a migration or an API change:
 
-- `provider` and `type` on registrations and index rows (`sandbox-notes`, `note`): the type's label ("Note") is a copy key such as `synergy.type.sandbox-notes.note`.
-- Relation types store a `source_key` and a `target_key`, named by the end that reads them (`explained-by` at the source, `explains` at the target); "explained by" on screen comes from copy. User-defined types (post-MVP) are the exception, because their names are the user's own content.
+- `provider` and `type` on registrations and index rows (`sandbox-notes`, `note`). The type's label ("Note") lives in the **provider's** catalog, and the registration names its key ([[D250]]); deleting a provider deletes its words.
+- Relation types store a `source_key` and a `target_key`, named by the end that reads them (`explained-by` at the source, `explains` at the target); "explained by" on screen comes from Synergy's own catalog, as do link states and marks. Synergy may build keys only in its own `synergy` namespace. User-defined types (post-MVP) are the exception, because their names are the user's own content.
 - Statuses, states, marks and display types are enums (`deprecated`, `no_longer_linked`, `passage_removed`), and error codes carry no message; the client looks up the message by code.
-- The resolved link and every API response carry keys only. Sidekick's UI and the Sneak Peek Link map them through copy; a third party maps them its own way.
+- The resolved link and every API response carry keys only. The host turns them into words ([[D251]]); a third party maps them its own way, with Synergy's exported catalog and the providers'.
+
+**D250** `decision` #synergy #i18n: Every word a provider hands to Synergy is a message reference, `{ key, values? }`, with a fully qualified key the provider names: in its registration for the words Synergy draws itself, and anywhere in its render data for the rest; Synergy never builds, parses or stores a provider's key. derived-from [[D201]] derived-from [[D243]]
+
+```ts
+// /contracts
+type MessageRef = { key: string; values?: Record<string, string | number> };
+```
+
+A naming convention (`<provider>.type.<type>`) only covers words Synergy can predict (Pratik, 2026-11-06). With references:
+
+- **Synergy keeps no provider words** and **assumes no provider keys**: the provider names each key.
+- **Any word can travel**: a status, a field label, a plural count. `values` fills the ICU message's blanks (`{count}`, `{folder}`), never translations; a reference holds no words in any language.
+- **The registration's `messages` slots** cover what Synergy draws without calling the resolver (inline and minimal mentions, search rows): `label`, `count`, `description`. More slots are added when Synergy needs them; nothing else changes.
+- **TypeScript checks the keys**: a provider types its refs against its own `en.json` with use-intl's `MessageKeys`, and a registry test checks every registration ref against the merged catalogs, as Atlassian Forge and Shopify check manifest keys at deploy time.
+- Precedent: hosts that draw a plugin's words have the manifest name the key (VS Code's `%key%`, Chrome's `__MSG_key__`, Forge, Shopify). Research: the project's `i18n-ui/provider-copy-options.md`.
+- Keep a provider's word as a standalone label: dropping a noun into one of Synergy's sentences breaks [[D244]] in languages where nouns change form.
+- The same shape carries validation errors ([[D252]]).
 
 User content (titles, display names, labels, change notes, tag names) is stored as written.
 
@@ -106,7 +134,7 @@ An arrow points from a table to the tables that hang off it. `relationships.from
    - `type` is NOT NULL so the FK can't be skipped (Postgres ignores a composite FK when any column is null). An untyped link uses the seeded system type `untyped`, kind reference, which displays no type name.
    - Positions are fractional text keys (lexorank) with a unique index on `(parent_id, position)`, so moving one member writes one row.
    - `deletion_batch_id` groups the tombstones written by one delete, so a restore brings back exactly that batch.
-- **`relation_types`**: `source_key` (the type's identity, which `relationships.type` references), `target_key`, kind (reference or association; `untyped` and `superseded-by` are system rows of kind reference, not extra kinds), status, system flag; seeded with the starter vocabulary plus `untyped`, including `violates` (association) and `exception-to` (reference) ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]). Labels live in copy.
+- **`relation_types`**: `source_key` (the type's identity, which `relationships.type` references), `target_key`, kind (reference or association; `untyped` and `superseded-by` are system rows of kind reference, not extra kinds), status, system flag; seeded with the starter vocabulary plus `untyped`, including `violates` (association) and `exception-to` (reference) ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]). Labels live in Synergy's own catalog.
 - **`tags`** and **`tag_applications`**: as in the spec, with the format check constraint.
 - **`outbox`**: event type, subject, actor, payload, time, and `xact_id` (`pg_current_xact_id()`), which lets a reader process events in commit order. A long transaction can commit a lower `bigserial` id after a reader has moved past it; the transaction id can't be rebuilt later, so it is stored from the first row. Event types: entity created, content saved, version bumped, status changed, entity deleted, restored or erased; relationship created, updated (label or type), cited, uncited, deleted or restored; snapshot moved (the referencer confirmed the link still holds); passage removed; tag created, renamed, merged or deprecated; tag applied or removed. Read by a dedicated read-only role outside RLS, since readers work across users. 90-day retention after every reader has processed it.
 - **`idempotency_keys`** for creates.
@@ -225,7 +253,22 @@ A page someone is viewing or editing can learn that the entity changed elsewhere
 
 ## Sneak Peek Link
 
-Lives in Synergy (`/react`) and builds on `ui` primitives. It renders on the server and in the browser. It takes the mentions to show and a **transport**, `resolveLinks(requests) => Promise<ResolvedLink[]>`, so the host decides how the request travels: a Sidekick server component calls the same handler as `POST /links/resolve`, Sidekick's browser code (the editor inserting a link) calls the route with the session cookie, and a third party calls it with its own credentials. It owns the frame and every state, and calls the registered renderers with the resolved render data. The display type belongs to each mention.
+**D251** `decision` #synergy #react: The Sneak Peek Link takes plain data only, the resolved link and a `words` dictionary; the host fetches the link and translates its references, so no function and no i18n provider crosses into the component. derived-from [[D186]] derived-from [[D249]] derived-from [[D250]]
+
+Lives in Synergy (`/react`) and builds on `ui` primitives. It renders on the server and in the browser, owns the frame and every state, and calls the registered renderers with the resolved render data. The display type belongs to each mention.
+
+```tsx
+// a server component in apps/app
+const t = await getTranslations();
+const link = await synergy.resolve(request); // MessageRefs, keys only
+<SneakPeekLink link={link} words={translateRefs(link, t)} />;
+// words: { "sandbox-notes.type.note": "Note", "synergy.state.no_longer_linked": "No longer linked", … }
+```
+
+- **`translateRefs(link, t)`** (Synergy, `/react`) walks the link, collects every `MessageRef` (the provider's and Synergy's own state and relation words) and returns plain key-to-text pairs. When one key appears with different `values`, the dictionary key includes the values.
+- **Plain data only.** A server component can't pass a function to a client component, so the earlier transport prop (`resolveLinks(requests) => Promise<ResolvedLink[]>`) is gone (Pratik, 2026-11-06). The host makes the request: Sidekick's server component calls the resolve handler directly for first paint; when the editor inserts a link, a client wrapper in the App, whose fetch code lives in a client module, calls `POST /links/resolve` with the session cookie and translates with next-intl's client `useTranslations`; a third party calls the API with its own credentials and translates with Synergy's exported catalog and the providers'.
+- **Overrides the PRD and spec** ([[D186]]): the component stays host-agnostic with no app-wide context; only the transport moves out of it, into the host.
+- **No i18n library inside the component**, the same rule as `ui` ([[D249]]). It works in any host, and it is "data in, HTML out", the easiest thing to test.
 
 ## Content helpers
 
@@ -254,3 +297,7 @@ Each decision lives in its own page here; the [[06-decisions/log|decisions log]]
 - [[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]]
 - [[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]
 - [[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]
+
+## Decision History
+
+- 2026-11-06 · accepted · Words from catalogs ([[D201]] revised), message references ([[D250]]), the Sneak Peek Link takes plain data ([[D251]]); `apps/web` is now `apps/app`

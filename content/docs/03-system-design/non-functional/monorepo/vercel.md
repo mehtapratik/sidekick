@@ -3,9 +3,10 @@ publish: true
 id: system-design.non-functional.monorepo.vercel
 title: Vercel
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-06
 kind: spec
 version: 1.1.0
+status: deprecated
 tags:
    - system-design
    - monorepo
@@ -14,7 +15,7 @@ tags:
    - vercel
 ---
 
-**D54** `decision` #deployment: Vercel hosts Sidekick, with `apps/web` as its root directory.
+> **Retired 2026-11-06.** The App's hosting, and the site's, now live in [[03-system-design/non-functional/hosting-and-domains|Hosting and domains]], which holds D54. This page stays as the record of the first setup.
 
 Vercel to be host provider of Sidekick.
 

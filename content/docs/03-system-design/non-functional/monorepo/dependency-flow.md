@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.monorepo.dependency-flow
 title: Dependency Flow
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-06
 kind: spec
-version: 1.6.0
+version: 1.7.0
 tags:
    - system-design
    - monorepo
@@ -22,11 +22,11 @@ An arrow means "may import". Packages in the same layer never import each other.
 
 Foundation says _how_, platform says _what_, features say _which_.
 
-| Layer      | Holds                                                                                                                                             | Packages                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Foundation | Domain-free machinery: DB client and RLS, auth, the API guard, logging, design-system primitives, copy. Knows nothing about entities or features. | `packages/foundation/*`: `core`, `ui`, `copy`              |
-| Platform   | A shared domain concept, with its data and rules, that more than one feature uses. Owns its own tables and migrations.                            | `packages/platform/*` (first: `synergy`)                   |
-| Feature    | One product area.                                                                                                                                 | `packages/features/*` (from Phase 3, the sandbox features) |
+| Layer      | Holds                                                                                                                                                        | Packages                                                               |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Foundation | Domain-free machinery: DB client and RLS, auth, the API guard, logging, design-system primitives and tokens, i18n. Knows nothing about entities or features. | `packages/foundation/*`: `core`, `ui`, `i18n` (`copy` until lesson I1) |
+| Platform   | A shared domain concept, with its data and rules, that more than one feature uses. Owns its own tables and migrations.                                       | `packages/platform/*` (first: `synergy`)                               |
+| Feature    | One product area.                                                                                                                                            | `packages/features/*` (from Phase 3, the sandbox features)             |
 
 To place a new package, ask in order:
 
@@ -36,11 +36,14 @@ To place a new package, ask in order:
 
 Every layer has its own folder, so the path tells you the layer: `packages/foundation/*`, `packages/platform/*`, `packages/features/*`. `core`, `ui` and `copy` move into `packages/foundation/` in Phase 3a (Pratik, 2026-10-31); their package names (`@sidekick/core` and so on) don't change, so no import changes. The registry, tooling (`packages/eslint-plugin-sidekick`) and ops (`packages/ops`) are singletons and stay at the root of `packages/`.
 
-A design system (tokens, theme, primitives such as buttons and inputs) is domain-free, so it is foundation and lives in `packages/foundation/ui`. A component that knows a platform concept, such as the Sneak Peek Link (resolved links, states, dots), lives in that platform package and builds on `ui`.
+Lesson 1 moves `copy` into `packages/foundation/` with the others, and lesson I1 deletes it a few weeks later for `packages/foundation/i18n` ([[03-system-design/non-functional/content/internationalization|Internationalization]]). The short-lived move is expected: lesson 1 moves every foundation package so the boundaries config can drop its catch-all, and skipping `copy` would need a temporary pattern for it.
+
+A design system (token names, primitives such as buttons and inputs, and Sidekick's default theme as an opt-in file) is domain-free, so it is foundation and lives in `packages/foundation/ui` ([[03-system-design/non-functional/css/design-tokens|Design tokens]]). `ui` holds no words: every word is a prop ([[D249]]). A component that knows a platform concept, such as the Sneak Peek Link (resolved links, states, dots), lives in that platform package and builds on `ui`.
 
 ## Who may import whom
 
-- **Apps** (`apps/web`, `apps/cli`) may import the registry, feature, platform and foundation packages.
+- **Apps** (`apps/app`, and `apps/cli` later) may import the registry, feature, platform and foundation packages.
+- **The public site** (`apps/www`) may import only foundation packages, and nothing imports it ([[D258]]).
 - **`packages/features-registry`** is the catalog of every feature. It may import feature, platform and foundation packages.
 - **Feature packages** may import platform and foundation packages. They never import each other or the registry.
 - **Platform packages** may import only foundation packages. They never import each other, a feature or the registry; loosen that deliberately, with a new rule, when a real need appears. They take feature keys and entity types as data.
@@ -48,6 +51,20 @@ A design system (tokens, theme, primitives such as buttons and inputs) is domain
 - **Foundation packages** stay feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and never import the registry, a feature, a platform package or each other. If `core` imported the registry, it would depend on every feature, and every feature already depends on `core`: a cycle with no valid build order.
 
 `eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above. Each layer and singleton has an explicit element pattern (`packages/foundation/*`, `packages/platform/*`, `packages/features/*`, and one per singleton), with no `packages/*` catch-all, and a package that matches no pattern fails lint. Without that, a package created in the wrong place would silently count as foundation. `pnpm-workspace.yaml` globs each layer folder. All of this lands in Phase 3a with the first platform package. See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]].
+
+## The site and content
+
+**D258** `decision` #monorepo #site: `apps/www` is its own boundaries element type, `site`, that may import only foundation packages and that nothing imports, so the public site can never reach `core`'s database client, the registry or a feature. derived-from [[D48]]
+
+The public site is a static build on a public Worker. If it imported `core`, a build with a database URL set could bake private data into public HTML, and review would be the only guard. As its own element it can use `ui`'s tokens and primitives and nothing that knows a person's data (Pratik, 2026-11-06). The site reads `content/` by path at build time, which is not user data, so it is not a consumer of the API under [[D48]]; that changes when datums move into the database at Taxila beta, and then its datum index reads through the API like any other consumer.
+
+**D259** `rule` #monorepo #content: `content/` holds content only: its `package.json` has only `name`, `private`, `version` and `license`, no code, exports or scripts, and a check script fails CI and the pre-commit hook on anything else. derived-from [[D215]]
+
+`@sidekick/content` is a workspace package for two reasons only ([[D215]]): Turbo hashes a dependency's files into the site's cache key, so a content edit rebuilds the site, and Vercel's Skip deployment reads the dependency graph, so a content-only commit leaves the App unbuilt. It is not an ESLint element, because ESLint never reads Markdown. The guard is structural (Pratik, 2026-11-05):
+
+- **No `main`, `exports` or `types`,** so any `import "@sidekick/content"` fails to resolve and `pnpm typecheck` fails.
+- **`scripts/check-content.mjs`** (root, `pnpm check:content`) walks `content/`, skips `.obsidian/`, and fails on a file outside the allowlist (`.md`, images such as `.svg` and `.png`, `LICENSE`, `package.json`) or a `package.json` key outside the four above. CI runs it as a step, which is the guarantee; husky's pre-commit runs it too, for fast feedback. Built in [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|Lesson 0]], PR 3.
+- If content ever needs code, the code belongs in `apps/www`.
 
 The questions this note used to leave open are settled: features live in `packages/features/*`, platform packages in `packages/platform/*`, the registry in `packages/features-registry`, and the boundaries rule enforces the layers instead of folder depth.
 
@@ -91,11 +108,11 @@ Foundation says _how_, platform says _what_, features say _which_. **Each layer 
 
 ## React as Peer Dependency
 
-**D58** `decision` #react #dependencies: Packages that use React list it as a peer dependency, and `apps/web` owns the installed version.
+**D58** `decision` #react #dependencies: Packages that use React list it as a peer dependency, and each app that renders React (`apps/app`, and `apps/www` for its content components) installs it from the pnpm catalog.
 
 ### What
 
-Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `@sidekick/synergy`, feature packages later) lists `react` (and `react-dom`, if it imports it) as a **peer dependency**. The app, `apps/web`, owns the installed version (Pratik, 2026-10-31).
+Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `@sidekick/synergy`, feature packages later) lists `react` (and `react-dom`, if it imports it) as a **peer dependency**. The apps own the installed version (Pratik, 2026-10-31): `apps/app`, and `apps/www`, which renders content components with `renderToStaticMarkup` ([[D227]]). Both take it from the catalog, so they can't drift apart (revised 2026-11-06).
 
 - **One version string for the repo**, in a pnpm catalog in `pnpm-workspace.yaml`:
 
@@ -105,7 +122,7 @@ Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `
       react-dom: 19.3.1
    ```
 
-   `apps/web` depends on `react: "catalog:"`. Each package that uses React has `peerDependencies: { react: "catalog:" }`, plus the same entry in `devDependencies` so its own typecheck and component tests can run. Renovate bumps the catalog once, and every package moves together.
+   `apps/app` and `apps/www` depend on `react: "catalog:"`. Each package that uses React has `peerDependencies: { react: "catalog:" }`, plus the same entry in `devDependencies` so its own typecheck and component tests can run. Renovate bumps the catalog once, and every package moves together.
 
 - The same goes for `@types/react` in the catalog, so types and runtime can't drift apart.
 
@@ -124,3 +141,4 @@ Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `
 
 - 2026-10-30 · accepted · Platform Layer
 - 2026-10-31 · accepted · React as Peer Dependency
+- 2026-11-06 · accepted · The site and content: `site` element ([[D258]]), `content/` holds content only ([[D259]]); `i18n` replaces `copy` in the foundation; React from the catalog in both apps

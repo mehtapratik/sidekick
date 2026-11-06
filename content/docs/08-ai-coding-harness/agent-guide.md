@@ -3,9 +3,9 @@ publish: true
 id: harness.agent-guide
 title: Agent Guide
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-06
 kind: guidance
-version: 1.3.1
+version: 1.4.0
 tags:
    - ai-coding
    - agent
@@ -36,7 +36,7 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
    6. AI, RAG and the Vercel AI SDK
    7. hosting
 - **Pratik writes it** when Pratik calls a piece core functionality, an important concept or something new to them. Teach instead of writing it: explain, let Pratik design and write it, then review. When Pratik is stuck, give the smallest hint first (a question, then a pointer, then a fragment), and the full answer only when asked.
-- **You code it** only when Pratik asks, for work with no learning payoff, such as a presentational React component with Mantine and CSS Modules. Say briefly what changed.
+- **You code it** only when Pratik asks, for work with no learning payoff, such as a presentational React component with CSS Modules. Say briefly what changed. Standing choice (Pratik, 2026-11-06): **you write the `@sidekick/ui` components** and Pratik reviews them ([[03-system-design/non-functional/css/native-ui|Native UI]]).
 - **Never:** large unexplained changes, several pieces at once, or code landing in the repo before Pratik has agreed to it. Pratik picks the mode for each piece and can switch at any time. Plans may suggest which steps are worth writing yourself.
 
 ## Where things stand
@@ -71,7 +71,9 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 - Mutations stay in the API layer. Every App Router route handler is wrapped in `withApiGuard` (lint rule `require-api-guard`); Server Actions, the Pages Router and custom `pageExtensions` are banned.
 - User-data queries go through `withRLS`, the only public database entry point. Raw Drizzle and admin Supabase clients are server-only and lint-restricted to the wrappers that need them. The one privileged path is `packages/ops`'s `withPrivilegedDb` (`DATABASE_DIRECT_URL`, bypasses RLS), for dev seeds, provisioning and break-glass scripts only.
 - Syncable entities use client-generated IDs and soft deletes; APIs are idempotent.
-- User-visible copy belongs in `packages/copy`.
+- User-visible copy belongs in `packages/copy` until lesson I1, then in each package's catalog ([[03-system-design/non-functional/content/internationalization|Internationalization]]). `@sidekick/ui` holds no words: labels are props.
+- **`apps/www` is temporary** ([[03-system-design/functional-design/05-public-site/00-overview|Public site]], D256): favour speed there. No CSS modules, no i18n, no extra strictness, and don't propose App-grade structure or tests for it. What still binds: the privacy and datum gates, `publish: true`, no URL changes, the `site` boundaries element, Prettier and green CI. Its replacement follows every rule.
+- **UI is native first** (D255): use the platform (`dialog`, `popover`, `details`, native inputs and validation) before any library; Mantine leaves the App in lesson M1, so add no new Mantine component.
 - Prefer Server Components; use Client Components only for necessary interactivity.
 
 ## How changes land

@@ -3,16 +3,16 @@ publish: true
 id: system-design.non-functional.code-quality-checks.typescript.shared-tsconfig
 title: Shared tsconfig
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-06
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - code-quality-check
    - typescript
 ---
 
-**D50** `decision` #typescript: A single `tsconfig.base.json` at the repo root is extended by every package.
+**D50** `decision` #typescript: A single `tsconfig.base.json` at the repo root is extended by every package except the temporary public site, which extends `astro/tsconfigs/strict`.
 
 **What we chose:** A single `tsconfig.base.json` at the repo root that all packages extend.
 
@@ -21,8 +21,11 @@ tags:
 Each package's `tsconfig.json` only declares what's unique to it:
 
 - `packages/*` and `apps/cli` — just `outDir` and `include`
-- `apps/web` — Next.js-specific options (`noEmit`, `jsx`, `plugins`, `paths`, etc.)
+- `apps/app` — Next.js-specific options (`noEmit`, `jsx`, `plugins`, `paths`, etc.)
+
+**The one exception:** `apps/www` keeps `astro/tsconfigs/strict` as Astro ships it, with no extra base options, and is type-checked with `astro check`. It is temporary and not held to the App's standards ([[D256]], Pratik, 2026-11-06); its successor extends the base.
 
 ## Decision History
 
 - 2026-09-19 · accepted · Shared tsconfig
+- 2026-11-06 · accepted · `apps/www` is the one exception
