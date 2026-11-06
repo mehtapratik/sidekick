@@ -28,7 +28,7 @@ depends_on:
 
 | #    | Task                                                                                             | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------------------------------ | ---------- | -------- |
-| 9.1  | Create `api_keys` table in `packages/core` (see §8.3 canonical schema)                           | 🟡         | 🗄️ 🔐    |
+| 9.1  | Create `api_keys` table in `packages/core` (see the canonical schema in [[03-system-design/non-functional/security/authentication\|Authentication]])                           | 🟡         | 🗄️ 🔐    |
 | 9.2  | Migration + RLS for `api_keys`                                                                   | 🟡         | 🗄️ 🔐    |
 | 9.3  | Implement API key generation — secure random bytes → raw key returned once → SHA-256 hash stored | 🔴         | 🔐       |
 | 9.4  | Wire Bearer API key lookup into `resolveApiCaller()` in `packages/core`                          | 🔴         | 🔐       |

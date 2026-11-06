@@ -21,7 +21,7 @@ Use frontmatter tags to find the smallest authoritative set of notes for a task.
 
 - **Domain:** `api`, `database`, `security`, `authentication`, `monorepo`, `nextjs`, `ai`, `rag`, `observability`, `cli`, `pwa`, `testing`.
 - **Technology:** `supabase`, `drizzle`, `postgresql`, `typescript`, `eslint`, `prettier`, `pnpm`, `turborepo`, `vercel`, `mantine`, `vitest`.
-- **Cross-cutting constraint:** `rls`, `api-guard`, `soft-delete`, `idempotency`, `repository-pattern`, `embeddings`, `graph`.
+- **Cross-cutting constraint:** `rls`, `api-guard`, `soft-delete`, `idempotency`, `repository-pattern`, `embedding`, `graph`.
 - **Product module:** `taxila`, `zinsser`, `core-drive`, `alter-ego`, `war-room`, `factory`, `parrot`.
 - **Document role:** `prd`, `plan`, `architecture-decision`, `guidance`, `glossary`, `opportunity`, `moc`.
 

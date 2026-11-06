@@ -14,7 +14,7 @@ tags:
 
 **D43** `decision` #nextjs: The layout of every route group that touches Supabase cookies exports `dynamic = 'force-dynamic'`.
 
-Sudekick to add `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase.
+Sidekick to add `export const dynamic = 'force-dynamic'` to the layout of every route group that touches Supabase.
 
 **Why:** Next.js attempts to statically pre-render layouts at build time unless told otherwise. Layouts that call Supabase (for session reads, user data, etc.) read cookies — a request-time operation that doesn't exist at build time. Without `force-dynamic`, the build will either fail or produce a stale static layout.
 

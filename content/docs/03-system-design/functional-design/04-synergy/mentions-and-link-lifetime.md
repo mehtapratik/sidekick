@@ -16,7 +16,7 @@ status: accepted
 
 ## What
 
-**Terms** (Pratik, 2026-10-30) are defined in the [[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships#Terms]].
+**Terms** (Pratik, 2026-10-30) are defined in the [[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships#Terms: link and mention]].
 
 **Rules:**
 

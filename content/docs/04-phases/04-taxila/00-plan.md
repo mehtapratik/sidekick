@@ -36,7 +36,7 @@ depends_on:
 | 4.6  | Register `taxila` feature + its entity types (`note`, `knowledge_source`) in `ALL_FEATURES`                                                                                      | 🟢         | 📦       |
 | 4.7  | Implement `TaxilaRepository` — `list()`, `getById()`, `create()`, `update()`, `softDelete()` for both entities                                                                   | 🔴         | 🗄️       |
 | 4.8  | API routes `/api/taxila/notes` and `/api/taxila/sources` (CRUD, soft-delete only) using `withApiGuard` + `taxila:read`/`taxila:write` scopes                                     | 🔴         | 🧩 🔐    |
-| 4.9  | Wire metadata enrichment: tag notes/sources and link related concepts via the Phase 3 graph service                                                                              | 🟡         | 🗄️ 🧩    |
+| 4.9  | Wire metadata enrichment: tag notes/sources and link related concepts via Synergy (Phase 3)                                                                              | 🟡         | 🗄️ 🧩    |
 | 4.10 | Build the **command-palette shell** — a single centered command box (Cmd+P style) for navigation and actions; replaces the placeholder sidebar dashboard as the primary surface  | 🔴         | 🧩 🎨    |
 | 4.11 | Build Taxila list + detail/edit pages, reachable via the palette                                                                                                                 | 🟡         | 🧩 🎨    |
 | 4.12 | "New note" / "new source" flows with client-generated UUIDs; soft-delete with confirmation                                                                                       | 🟡         | 🧩 🎨    |

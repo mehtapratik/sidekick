@@ -127,7 +127,7 @@ Resetting the database would not have saved the work: the same migrations are ne
 ## CI and version pinning (Pre-2.6, 2.12)
 
 - **Workflow → job → step; actions are reusable steps.** GitHub reports a status check per job, named after the job (`checks`) — the name the `main` ruleset requires.
-- **Pin every version** ([[pin-versions]]): exact through a lockfile or hash where one exists (npm dependencies, pnpm), **major only** for runtimes without a lockfile (Node 22, PostgreSQL 17), matching production. Minor and patch releases are fixes that production applies itself. Third-party actions pin a commit SHA, because tags can move.
+- **Pin every version** ([[pin-versions]]): exact through a lockfile or hash where one exists (npm dependencies, pnpm), **major only** for runtimes without a lockfile (Node 24, PostgreSQL 17), matching production. Minor and patch releases are fixes that production applies itself. Third-party actions pin a commit SHA, because tags can move.
 - **Fail loudly on a mismatch.** `.nvmrc` feeds nvm and CI; `engines` + `engineStrict` make pnpm refuse other majors; the test script refuses another PostgreSQL major.
 - **The pre-commit hook is a convenience; CI is the guarantee.** `lint-staged` formats only staged files and re-stages them — formatting the whole repo would leave the commit unformatted. `--no-verify` skips the hook; CI cannot be skipped.
 - **Peer-dependency warnings are worth reading:** one hid an `@eslint/js` 10 / `eslint` 9 mismatch nobody chose. Change dependencies through `pnpm add` so the lockfile stays in sync.

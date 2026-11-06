@@ -39,7 +39,7 @@ depends_on:
 | Pre-2.9  | Require `withApiGuard` on route handlers (ESLint); ban other entry points; verify built endpoints from Next.js manifests.                          | 🟡         | ✅     |
 | Pre-2.10 | Choose a portable vault distribution strategy before cloud agents or CI require the external docs symlink.                                         | 🟡         | ✅     |
 | Pre-2.11 | Handle signup without a session by displaying the pending-confirmation state.                                                                      | 🟢         | ✅     |
-| Pre-2.12 | Pre-commit [[prettier-at-repo-level\|Prettier]] on staged files (`husky` + `lint-staged`); `prettier:check` in CI; pin Node 22 locally (`.nvmrc`). | 🟢         | ✅     |
+| Pre-2.12 | Pre-commit [[prettier-at-repo-level\|Prettier]] on staged files (`husky` + `lint-staged`); `prettier:check` in CI; pin Node locally (`.nvmrc`; 22 at first, moved to 24 before the phase closed). | 🟢         | ✅     |
 | Pre-2.13 | Protect `main` with a ruleset: changes arrive via branch + PR; the CI `checks` job must pass to merge.                                             | 🟢         | ✅     |
 
 **Pre-2 Exit Criteria:** ✅ All met.
@@ -61,5 +61,5 @@ depends_on:
 - **Pre-2.5/2.6 pin PostgreSQL 17** (Supabase's major) in tests and CI; `tests/with-test-db.sh` fails loudly on any other major. Principle recorded in [[pin-versions]].
 - **Pre-2.9 grew beyond one lint rule:** Server Actions, the Pages Router and `pageExtensions` are banned, and `apps/web`'s build verifies Next.js's endpoint manifests ([[server-actions]], [[with-api-guard]]).
 - **Pre-2.10 deleted a dead workflow** (`trigger-arkive-deploy.yml`) and runs `scripts/setup-docs.mjs` on `pnpm install`.
-- **Added beyond the original list:** an ESLint best-practice rule set with `verbatimModuleSyntax` ([[03-system-design/non-functional/code-quality-checks/eslint/best-practice-rules]]), Vitest as the monorepo test framework ([[03-system-design/non-functional/testing/testing-layers]]), and Node 22 pinned through `.nvmrc` + `engineStrict`.
+- **Added beyond the original list:** an ESLint best-practice rule set with `verbatimModuleSyntax` ([[03-system-design/non-functional/code-quality-checks/eslint/best-practice-rules]]), Vitest as the monorepo test framework ([[03-system-design/non-functional/testing/testing-layers]]), and Node pinned through `.nvmrc` + `engineStrict` (22, then 24).
 - **GitHub Pages** for the Sidekick repo was publishing `docs/` and failing since `docs/` became a symlink; it should stay disabled.

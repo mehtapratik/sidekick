@@ -7,8 +7,8 @@ kind: prd
 audience: everyone
 tags:
   - prd
-  - "#mvp"
-  - "#specification"
+  - mvp
+  - specification
   - core-drive
   - taxila
   - war-room

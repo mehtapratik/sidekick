@@ -16,7 +16,7 @@ tags:
    - rls
    - postgresql
    - testing
-status: complete
+status: completed
 ---
 
 > **Lesson 3 of 8.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-2-resolve-api-caller/00-brief|lesson 2]]. Next: [[04-phases/02-gatekeeper/lessons/lesson-4-with-api-guard/00-brief|lesson 4]]. The coach follows [[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]. The target design is [[04-phases/02-gatekeeper/01-contracts#Entitlements|Entitlements]].

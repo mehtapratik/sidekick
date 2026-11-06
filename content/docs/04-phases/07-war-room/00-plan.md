@@ -23,9 +23,9 @@ depends_on:
 **War Room** is Phase 7: planning and push-button execution. Scope: War Room's tasks and plans, and the first version of Factory, where one configured button creates a task without typing. The rest of Factory comes after the MVP.
 
 > **Milestone:** Planning and push-button execution. Tasks exist; one click on a configured button (e.g., "School+Car") creates tomorrow's pickup task without typing a word.
-> **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through the graph service.
+> **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through Synergy.
 > **Prerequisites:** War Room and Factory PRDs in `docs/02-prd/`.
-> **Context note:** War Room and Factory own **Tier 2 situational state** (current projects, priorities, goals, calendar, daily briefs — architecture §5.2.1). Once their entities exist, wire them into the Context Assembler as structured-query sources (task 7A.5). Boundary rule: they store state, never values — values live in Core Drive.
+> **Context note:** War Room and Factory own **Tier 2 situational state** (current projects, priorities, goals, calendar, daily briefs — [[03-system-design/functional-design/01-core-drive/00-tiered-context-model|tiered context model]]). Once their entities exist, wire them into the Context Assembler as structured-query sources (task 7A.5). Boundary rule: they store state, never values — values live in Core Drive.
 
 ### 7A — War Room
 

@@ -14,7 +14,7 @@ tags:
    - api
    - nextjs
    - testing
-status: complete
+status: completed
 ---
 
 > **Lesson 6 of 8.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-5-logging/00-brief|lesson 5]]. Next: [[04-phases/02-gatekeeper/lessons/lesson-7-ops/00-brief|lesson 7]]. The coach follows [[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]. The target design is [[04-phases/02-gatekeeper/01-contracts#Guard|Guard]].

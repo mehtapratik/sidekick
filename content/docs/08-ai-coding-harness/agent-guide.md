@@ -42,7 +42,7 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
 ## Where things stand
 
 - **Complete:** Phases 0, 1 and 1.1, [[04-phases/01-front-door/02-hardening/00-plan|Front Door]] (walkthrough in [[04-phases/01-front-door/02-hardening/01-walkthrough]]) and [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper]] (walkthrough in [[04-phases/02-gatekeeper/02-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
-- **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), starting with [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. Part 3b is planned at Checkpoint 3a. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
+- **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), starting with [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|lesson 0]] (one repo), then [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. Part 3b is planned at Checkpoint 3a. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
 - **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI.
 - **Feature packages:** none exist yet. They go in `packages/features/*`; add that glob to `pnpm-workspace.yaml` with the first one.
 
@@ -67,7 +67,7 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 ## Always true
 
 - Do not invent product scope. Read the relevant PRD and phase note first.
-- Preserve dependency direction ([[03-system-design/non-functional/monorepo/dependency-flow|dependency flow]]): apps, the registry, features, platform and foundation, top to bottom; a layer may import any layer below it, never one above it or a sibling in its own layer, and packages never import apps. `packages/ops` (privileged scripts) may import the registry and foundation, and nothing may import it. `pnpm lint` enforces it.
+- Preserve dependency direction ([[03-system-design/non-functional/monorepo/dependency-flow|dependency flow]]): apps, the registry, features, platform and foundation, top to bottom; a layer may import any layer below it, never one above it or a sibling in its own layer, and packages never import apps. `packages/ops` (privileged scripts) may import the registry, platform and foundation, and nothing may import it. `pnpm lint` enforces it.
 - Mutations stay in the API layer. Every App Router route handler is wrapped in `withApiGuard` (lint rule `require-api-guard`); Server Actions, the Pages Router and custom `pageExtensions` are banned.
 - User-data queries go through `withRLS`, the only public database entry point. Raw Drizzle and admin Supabase clients are server-only and lint-restricted to the wrappers that need them. The one privileged path is `packages/ops`'s `withPrivilegedDb` (`DATABASE_DIRECT_URL`, bypasses RLS), for dev seeds, provisioning and break-glass scripts only.
 - Syncable entities use client-generated IDs and soft deletes; APIs are idempotent.

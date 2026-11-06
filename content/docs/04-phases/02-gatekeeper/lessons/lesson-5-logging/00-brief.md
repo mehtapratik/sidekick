@@ -13,7 +13,7 @@ tags:
    - api-guard
    - observability
    - eslint
-status: complete
+status: completed
 ---
 
 > **Lesson 5 of 8.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-4-with-api-guard/00-brief|lesson 4]]. Next: [[04-phases/02-gatekeeper/lessons/lesson-6-health/00-brief|lesson 6]]. The coach follows [[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]. The target design is [[04-phases/02-gatekeeper/01-contracts#Logging|Logging]].

@@ -63,7 +63,7 @@ These items are known, intentional gaps — deferred, not forgotten.
 
 **What:** Voice dictation with gesture support for punctuation and formatting — accent-friendly, replacing $100+/yr subscription services.
 
-**Why deferred:** Explicitly out of MVP scope per the PRD. Tracked as PM.9 in [[#B9 — Post-MVP]].
+**Why deferred:** Explicitly out of MVP scope per the PRD. Tracked as PM.9 in [[#B9 — Post-MVP: Factory extensions, bots and agents|B9 — Post-MVP]].
 
 ### B5 — Feature rollout gating
 

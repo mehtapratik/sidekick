@@ -27,11 +27,11 @@ depends_on:
 
 | #     | Task                                                                                     | Complexity | Learning |
 | ----- | ---------------------------------------------------------------------------------------- | ---------- | -------- |
-| 10.1  | Add structured request logging to `withApiGuard` — method, path, userId, latency, status | 🟡         | 🧩       |
-| 10.2  | Add auth failure logging — track 401/403 patterns                                        | 🟡         | 🔐       |
+| 10.1  | Add structured request logging to `withApiGuard` — method, path, userId, latency, status (shipped in Phase 2, task 2.4) | 🟡         | 🧩       |
+| 10.2  | Add auth failure logging — track 401/403 patterns (shipped in Phase 2, task 2.5)                                        | 🟡         | 🔐       |
 | 10.3  | Add failed embedding logging with enough context to retry                                | 🟡         | 🤖       |
 | 10.4  | Add Next.js error boundaries to all main UI sections                                     | 🟡         | 🧩       |
-| 10.5  | Add global API error response normalization — consistent `{ error, code }` shape         | 🟡         | 🧩       |
+| 10.5  | Add global API error response normalization — consistent `{ error, code }` shape (the guard's own errors already use it; handler errors remain) | 🟡         | 🧩       |
 | 10.6  | Review and audit all API routes — confirm every route uses `withApiGuard`                | 🟢         | 🔐       |
 | 10.7  | Audit all queries — confirm `where(isNull(table.deletedAt))` on syncable tables          | 🟢         | 🗄️       |
 | 10.8  | Add basic rate limiting on auth routes and AI chat endpoint                              | 🟡         | 🔐       |

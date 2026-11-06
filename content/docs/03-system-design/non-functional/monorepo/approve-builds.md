@@ -3,8 +3,9 @@ publish: true
 id: system-design.non-functional.monorepo.approve-builds
 title: Approve Builds
 created: 2026-09-19
+updated: 2026-11-05
 kind: spec
-version: 1.0.0
+version: 1.1.0
 tags:
    - system-design
    - monorepo
@@ -12,8 +13,15 @@ tags:
    - pnpm
 ---
 
-Sidekick to maintain `onlyBuiltDependencies` attribute in root `package.json` to prevent any package to run a rogue script during/after installation.
+Sidekick to maintain the `allowBuilds` map in `pnpm-workspace.yaml` to prevent any package from running a rogue script during or after installation.
 
-As of this writing, we have two packages that genuinely need script execution post install: `urn-resolver` and `sharp`. Both are legitimate, widely-used packages. Approving them is safe.
+As of this writing, three packages genuinely need script execution post install: `esbuild`, `sharp` and `unrs-resolver`. All are legitimate, widely used packages. Approving them is safe.
 
-Including `onlyBuildDependencies` in root `package.json` is not enough. Because has `apps/web` with its own install context (i.e. own `node_modules` folder) setup by Next.js. Root approval will not automatically propagate to `apps/web`. Therefore, run `pnpm approve-builds` inside `apps/web` to fix this.
+```yaml
+allowBuilds:
+   esbuild: true
+   sharp: true
+   unrs-resolver: true
+```
+
+pnpm 11 and later no longer read the `pnpm.onlyBuiltDependencies` field in `package.json`, so it must not be used (removed in sidekick#14). The workspace file covers every package, `apps/web` included, so no per-app `pnpm approve-builds` run is needed.

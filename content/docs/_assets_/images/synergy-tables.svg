@@ -70,7 +70,7 @@
   </text>
   <text x="500" y="92" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="middle">
     <tspan x="500" dy="0">provider table</tspan>
-    <tspan x="500" dy="20">(e.g. ops.notes)</tspan>
+    <tspan x="500" dy="20">(e.g. a notes table)</tspan>
     <tspan x="500" dy="20">content JSON</tspan>
   </text>
   <text x="500" y="304" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#e8590c" text-anchor="middle">

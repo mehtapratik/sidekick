@@ -13,7 +13,7 @@ tags:
    - feature-system
    - typescript
    - monorepo
-status: complete
+status: completed
 ---
 
 > **Lesson 1 of 8.** Before this: nothing. Next: [[04-phases/02-gatekeeper/lessons/lesson-2-resolve-api-caller/00-brief|lesson 2]]. The coach follows [[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]. The target design is [[04-phases/02-gatekeeper/01-contracts#Feature manifest|Feature manifest]].

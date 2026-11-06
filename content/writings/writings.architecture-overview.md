@@ -415,7 +415,7 @@ This package-level scoping eliminates schema drift, inconsistent environments, a
 
 ## 16. Background jobs
 
-**For the MVP**, Sidekick will use lightweight async background execution using `waitUntil()`, Vercel background execution, and retry wrappers. Later, this will evolve into Inggest, queues, cron workflows, and distributed workers without changing API contracts.
+**For the MVP**, Sidekick will use lightweight async background execution using `waitUntil()`, Vercel background execution, and retry wrappers. Later, this will evolve into Inngest, queues, cron workflows, and distributed workers without changing API contracts.
 
 ---
 

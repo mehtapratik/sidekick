@@ -113,7 +113,8 @@ This makes the MVP of the Sidekick keyboard heavy. And if you don’t know what 
 - Phase 0 \- Done \- Foundation and tooling
 - Phase 1 \- Done \- Supabase and Auth setup
 - Phase 1.1 \- Done (Improvisation of Phase 1 to make bypassing of conventions harder)
-- Phase 2 \- API Guards and Feature Gate System \[Next\]
+- Phase 2 \- Done \- API Guards and Feature Gate System
+- Phase 3 \- Synergy \[Next\]
 
 ---
 
@@ -123,7 +124,7 @@ Other than my itch to build something based on my own vision, my personal motiva
 
 1. Build a social profile, establish professional reputation in the tech industry, share content and teach others.
 
-2. Learn full stack application development with the help of Agent. I am not going to vibecode Sidekick – that’s not fulfilling to me. I am going to ask Claude to give the instructions to write the code to me and teach me along the way. You’ll have access to the same instructions to follow along with me in the “Builds” section of this site.
+2. Learn full stack application development with the help of Agent. I am not going to vibecode Sidekick – that’s not fulfilling to me. I am going to ask Claude to give the instructions to write the code to me and teach me along the way. You’ll have access to the same instructions to follow along with me in the “Docs” section of this site.
 
 3. Use the tools and technologies I don’t get to use at work, such as Supabase, Turborepo, pnpm, setting up build and deployment pipelines, Next.js, Drizzle, PostgresSQL, oAuth, etc.
 

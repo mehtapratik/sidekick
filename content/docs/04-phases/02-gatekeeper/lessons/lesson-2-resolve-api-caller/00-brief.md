@@ -14,7 +14,7 @@ tags:
    - authentication
    - supabase
    - nextjs
-status: complete
+status: completed
 ---
 
 > **Lesson 2 of 8.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-1-feature-registry/00-brief|lesson 1]]. Next: [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief|lesson 3]]. The coach follows [[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]. The target design is [[04-phases/02-gatekeeper/01-contracts#Caller|Caller]].
@@ -40,7 +40,7 @@ By default the coach hands over each step's code as one small piece, with an exp
 ## Check understanding
 
 - Why does a Bearer header beat a valid cookie, instead of falling back to it?
-- What would go wrong if `resolveApiCaller` returned `{ userId: undefined }` instead of `null`?
+- What would go wrong if `resolveApiCaller` returned `{ userId: undefined }` instead of a bare `undefined` for "no caller"?
 - What does `vi.mock` replace, and when does that happen?
 
 **Done when:** Pratik's PR is green, and they can answer the questions above.
