@@ -4,8 +4,8 @@ title: Architectural Overview
 description: Sidekick's architectural overview — an API-first platform tuned for solo developers
 kind: document
 created: 2026-07-09
-updated: 2026-11-01
-version: 2.2.0
+updated: 2026-11-06
+version: 2.2.1
 tags:
    - sidekick
    - project
@@ -210,13 +210,13 @@ Requirements will keep evolving as clarity grows. To keep both this document and
 | Language     | TypeScript Strict                                    |
 | DB           | Supabase PostgreSQL                                  |
 | ORM          | Drizzle ORM                                          |
-| Styling      | Mantine                                              |
+| Styling      | CSS modules and `ui` on native HTML (Mantine until lesson M1) |
 | Editor       | Tiptap                                               |
 | AI SDK       | Vercel AI SDK                                        |
 | LLM          | Provider-agnostic router (default: Anthropic Claude) |
 | Embeddings   | OpenAI text-embedding-3-small                        |
 | Monorepo     | Turborepo + pnpm                                     |
-| Hosting      | Vercel                                               |
+| Hosting      | Vercel (App), Cloudflare Workers (public site)       |
 | Native Shell | Capacitor                                            |
 
 ---
@@ -462,6 +462,8 @@ At minimum, the MVP will support request logging, failed job logging, API latenc
 
 ### 19.3 Mantine setup requirements
 
+> Mantine leaves the App in lesson M1, replaced by native `ui` primitives (D255). These notes apply until then.
+
 To prevent hydration errors with Mantine's theme injection, we must add `suppressHydrationWarning` to the `<html>` element. `defaultColorScheme="auto"` must be set on both `ColorSchemeScript` and `MantineProvider`.
 
 > [!question]
@@ -469,11 +471,11 @@ To prevent hydration errors with Mantine's theme injection, we must add `suppres
 
 ### 19.4 Styling through CSS Modules
 
-All styling uses CSS modules without exception. Pure Mantine style props that set visual styles inline are banned and enforced via the `no-mantine-style-props` ESLint rule. Behavioral props are an acceptable compromise.
+All styling in the App and its packages uses CSS modules without exception. The public site (`apps/www`) is the one exemption (D47 revised). Pure Mantine style props that set visual styles inline are banned and enforced via the `no-mantine-style-props` ESLint rule. Behavioral props are an acceptable compromise.
 
 ### 19.5 Centralized copy
 
-To ensure consistency across the application, all user-visible strings must live in `packages/copy`. Never hardcode strings directly in source files.
+To ensure consistency across the application, all user-visible strings must live in `packages/copy`. Never hardcode strings directly in source files. This is superseded by D243: from lesson I1, strings live in catalogs colocated with each package and `packages/copy` is deleted.
 
 ### 19.6 Runtime patterns
 
