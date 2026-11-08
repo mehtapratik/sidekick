@@ -4,3 +4,6 @@
 
 # chore: format with 3-space indentation (#25)
 18f99c9c017948ff2e2adc9855208b4c7ae0ff01
+
+# style(www): format the site with the root Prettier config
+41337efdb2f3a5a2108ae641c63512c0cb79c627
