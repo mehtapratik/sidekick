@@ -214,3 +214,9 @@ See `.env.example` for all required variables and which phase they are needed in
 - Set the build command to `next build` in Vercel (bypasses the `dotenv -e` prefix in `package.json`, which is only needed locally)
 - `DATABASE_DIRECT_URL` is NOT needed in Vercel — migrations run locally, never on the Vercel build server
 - `NEXT_PUBLIC_*` variables are baked into the browser bundle at build time — they must be set in Vercel before building, not after
+
+## Licence
+
+- **Code** is under the MIT licence: [`LICENSE`](LICENSE).
+- **Writings and docs**, everything in [`content/`](content/), are under Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0): [`content/LICENSE`](content/LICENSE).
+- **Fonts** in `apps/www/public/fonts/` keep their own licences, in the files beside them.
