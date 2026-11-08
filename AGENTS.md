@@ -1,1 +1,1 @@
-docs/08-ai-coding-harness/agent-guide.md
+content/docs/08-ai-coding-harness/agent-guide.md

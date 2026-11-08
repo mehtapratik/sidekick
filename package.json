@@ -21,8 +21,6 @@
       "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
       "test": "turbo test",
       "test:integration": "turbo test:integration",
-      "docs:setup": "node scripts/setup-docs.mjs",
-      "postinstall": "node scripts/setup-docs.mjs",
       "prepare": "husky"
    },
    "devDependencies": {
@@ -38,6 +36,7 @@
       "husky": "^9.1.7",
       "lint-staged": "^17.6.0",
       "prettier": "^3.9.10",
+      "prettier-plugin-astro": "^0.14.1",
       "stylelint": "^17.16.0",
       "turbo": "^2.11.10",
       "typescript": "^6.0.3",
