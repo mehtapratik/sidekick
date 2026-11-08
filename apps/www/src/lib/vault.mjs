@@ -2,22 +2,19 @@
 // and scripts/check-privacy.mjs. Plain .mjs so all three can import it.
 //
 // It reads the authoring folders directly. There is no ingest or copy step.
+import { load as loadYaml } from "js-yaml";
 import fs from "node:fs";
 import path from "node:path";
-import { load as loadYaml } from "js-yaml";
 
-const cwd = process.cwd();
-export const WRITINGS_DIR = path.join(cwd, "sources/writings");
-export const DOCS_DIR = path.join(cwd, "sources/docs");
+// pnpm, Turbo and Workers Builds run the site's scripts from apps/www, so the repo root is two levels up.
+const REPO_ROOT = path.resolve(process.cwd(), "../..");
+export const WRITINGS_DIR = path.join(REPO_ROOT, "content/writings");
+export const DOCS_DIR = path.join(REPO_ROOT, "content/docs");
 export const ASSETS_DIR = path.join(DOCS_DIR, "_assets_");
 
 /** Never built, whatever their frontmatter says (SPEC 3.1). */
 export const WRITINGS_EXCLUDE = ["_archive/**"];
-export const DOCS_EXCLUDE = [
-   "_assets_/**",
-   ".obsidian/**",
-   "**/*.canvas",
-];
+export const DOCS_EXCLUDE = ["_assets_/**", ".obsidian/**", "**/*.canvas"];
 
 /** Vault folder -> URL slug and Index label. Array order is the Index order. */
 export const SECTIONS = [
@@ -101,7 +98,7 @@ const slugSegment = (s) =>
       .replace(/[^a-z0-9.\-]/g, "") // "?", ",", quotes: dropped, as in "get-the-interface-schema-…"
       .replace(/^\d+-/, "");
 
-/** `sources/writings/00-margins.md` keeps its prefix: `00-margins`. */
+/** `content/writings/00-margins.md` keeps its prefix: `00-margins`. */
 export const writingSlug = (rel) => rel.replace(/\.md$/, "");
 
 /** `02-prd/features/00-core-drive/index.md`-style path -> `prd/features/core-drive/...`. */

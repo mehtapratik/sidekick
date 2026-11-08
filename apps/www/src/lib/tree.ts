@@ -1,6 +1,6 @@
 // The folder tree for the Index (SPEC 5.3). A port of the handover's tree.py: match its output.
-import { SECTIONS } from "./vault.mjs";
 import type { Entry } from "./entries";
+import { SECTIONS } from "./vault.mjs";
 
 export interface Leaf {
    entry: Entry;
@@ -55,7 +55,10 @@ const byName = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
 /** Path segments under the section folder, as named on disk (`04-phases/03-synergy/00-plan.md` -> `03-synergy/00-plan`). */
 function diskSegments(e: Entry): string[] | undefined {
    if (e.collection !== "docs") return undefined;
-   const rel = e.source.filePath?.replace(/^sources\/docs\/[^/]+\//, "");
+   const rel = e.source.filePath?.replace(
+      /^\.\.\/\.\.\/content\/docs\/[^/]+\//,
+      "",
+   );
    return rel?.replace(/\.md$/, "").split("/");
 }
 
