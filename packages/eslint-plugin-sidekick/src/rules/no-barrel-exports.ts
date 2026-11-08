@@ -15,7 +15,7 @@ import type * as ESTree from 'estree';
  *
  * Package-level index files are intentional API surfaces and are exempted
  * via ESLint file-scoping in eslint.config.js — this rule is only wired up
- * for apps/web/.
+ * for apps/app/.
  */
 export const noBarrelExports: Rule.RuleModule = {
    meta: {
