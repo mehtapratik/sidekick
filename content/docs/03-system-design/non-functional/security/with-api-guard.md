@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.security.with-api-guard
 title: With API Guard
 created: 2026-09-19
-updated: 2026-10-24
+updated: 2026-11-08
 kind: spec
-version: 2.0.0
+version: 2.0.1
 tags:
    - system-design
    - security
@@ -82,7 +82,7 @@ Every event carries `method`, `path` (no query string) and `userId` (`null` with
 
 ## Enforcement
 
-**Public API handlers must be protected by this wrapper.** Enforced in two layers, both in CI: the `sidekick/require-api-guard` ESLint rule on every `app/**/route.*` file in every app, and `apps/web/scripts/verify-endpoints.mjs`, which reads Next.js's build manifests and fails the build if anything is served that is not a lint-checked route handler (Server Actions, Pages Router entries, code-generated metadata routes). `next build` no longer runs ESLint (Next.js 16), so a local build serves an unguarded route: CI's `lint` step is the gate.
+**Public API handlers must be protected by this wrapper.** Enforced in two layers, both in CI: the `sidekick/require-api-guard` ESLint rule on every `app/**/route.*` file in every app, and `apps/app/scripts/verify-endpoints.mjs`, which reads Next.js's build manifests and fails the build if anything is served that is not a lint-checked route handler (Server Actions, Pages Router entries, code-generated metadata routes). `next build` no longer runs ESLint (Next.js 16), so a local build serves an unguarded route: CI's `lint` step is the gate.
 
 ## Usage
 

@@ -5,7 +5,7 @@ title: Synergy
 created: 2026-09-19
 updated: 2026-11-08
 kind: plan
-version: 2.4.1
+version: 2.4.2
 tags:
    - plan
    - living-plan
@@ -133,21 +133,21 @@ The `sidekick:<name>` components plugin and its map ([[D260]]) are built in whic
 
 Candidates from the planning handover, to be merged, split or reordered at the checkpoint. None has a brief yet.
 
-- **One React:** a pnpm catalog for `react`, `react-dom` and `@types/react`; `apps/web` uses `catalog:`; `@sidekick/ui` and `@sidekick/synergy` list React as a peer ([[03-system-design/non-functional/monorepo/dependency-flow|decision]]). Check: `pnpm why react` resolves to one version.
+- **One React:** a pnpm catalog for `react`, `react-dom` and `@types/react`; `apps/app` uses `catalog:`; `@sidekick/ui` and `@sidekick/synergy` list React as a peer ([[03-system-design/non-functional/monorepo/dependency-flow|decision]]). Check: `pnpm why react` resolves to one version.
 - **Resolve and the React registry:** `resolve` on `LinkableTypeServer` (batched per provider), `LinkableTypeReact`, the registry assembling both maps, `POST /api/synergy/links/resolve`, the resolved-link zod schema frozen in `/contracts`.
 - **Sandbox renderers:** `resolve` and `render` for the sandbox notes and tasks.
 - **Sneak Peek Link:** the `/react` component with pure `render`, plain `link` and `words` props, `translateRefs`, the App's client wrapper for the editor, and words from the providers' catalogs and the `synergy` catalog through message references (D250, D251), tested in Vitest browser mode with Testing Library and MSW.
 - **Render cache and backlinks:** cache keyed by (entity, `content_seq`, display type); backlinks list live links only.
 - **Links by type across the graph:** `GET /api/synergy/links?type=`, cursor-paged, with a `(user_id, type)` index, so one list shows every open violation from any module ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|decision]]).
 - **Search:** `simple` full-text plus `pg_trgm` on display names, `btree_gin` indexes leading with `user_id`, `GET /api/synergy/search`, and the test pinning spec story 71 (trigram `word_similarity`).
-- **Playground and the RLS uuid fix:** a playground page in `apps/web` behind the sandbox entitlements, built on the public API; Sidekick migrations 0002 and 0007 compare uuids directly instead of casting to text.
+- **Playground and the RLS uuid fix:** a playground page in `apps/app` behind the sandbox entitlements, built on the public API; Sidekick migrations 0002 and 0007 compare uuids directly instead of casting to text.
 - **A test that no API response carries label text** (keys, never copy), once the resolved link exists.
 
 ## Decisions made while planning
 
 Settled with Pratik on 2026-10-31 and 2026-11-01. Each can be revisited in its lesson.
 
-- **The mock providers are feature packages, not `ops`.** Nothing may import `packages/ops`, which holds the privileged `postgres` client, so neither `apps/web` nor the registry could use mocks there. They live in `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`: the underscore marks them dev-only, and retiring them deletes one folder. Two packages, not one, because a single provider and entitlement can't prove that disabling a module locks its links: revoking it would hide the note too. Provider and feature keys are `sandbox-notes` and `sandbox-tasks`. This overrides the PRD and spec (provider `ops`, entitlement `sandbox`).
+- **The mock providers are feature packages, not `ops`.** Nothing may import `packages/ops`, which holds the privileged `postgres` client, so neither `apps/app` nor the registry could use mocks there. They live in `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`: the underscore marks them dev-only, and retiring them deletes one folder. Two packages, not one, because a single provider and entitlement can't prove that disabling a module locks its links: revoking it would hide the note too. Provider and feature keys are `sandbox-notes` and `sandbox-tasks`. This overrides the PRD and spec (provider `ops`, entitlement `sandbox`).
 - **Routes in every lesson,** not one API lesson at the end. Each lesson adds the routes for what it builds, and its tests go through them. Lesson 3 is the exception: entities are created through provider routes, which arrive in lesson 4, so lesson 3 tests the repository directly.
 - **Lesson size.** The handover's 10 candidates for 3a became 13 lessons: relationships split into links, staleness, and lists with supersede; the save call split into mentions and anchors; the API lesson spread over the others; the outbox moved up so each later lesson writes its own events.
 - **The server half of the registry lands in 3a** (lesson 6), because `POST /links` refuses `locked` and only a type's registration names its entitlement. `addAnchor` joins it in lesson 10; `resolve` and the React half are 3b.

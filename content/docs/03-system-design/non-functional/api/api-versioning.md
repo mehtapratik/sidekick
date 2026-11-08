@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.api.api-versioning
 title: API Versioning
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-08
 kind: spec
-version: 1.1.0
+version: 1.1.1
 tags:
    - system-design
    - api
@@ -30,7 +30,7 @@ Add API versioning when:
 
 ### How to add when the time comes
 
-Create a versioned route group at `apps/web/src/app/api/v1/`. Move route handlers into the versioned group. No architectural rework is needed — Next.js route groups handle the URL structure, and `withApiGuard` works identically regardless of the URL prefix. Old unversioned routes can be aliased or left in place during a migration period.
+Create a versioned route group at `apps/app/src/app/api/v1/`. Move route handlers into the versioned group. No architectural rework is needed — Next.js route groups handle the URL structure, and `withApiGuard` works identically regardless of the URL prefix. Old unversioned routes can be aliased or left in place during a migration period.
 
 ## Decision History
 

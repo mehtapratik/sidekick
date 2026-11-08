@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-8-pwa-ios-shell
 title: Pocket
 created: 2026-09-19
+updated: 2026-11-08
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -27,12 +28,12 @@ depends_on:
 
 | #    | Task                                                                     | Complexity | Learning |
 | ---- | ------------------------------------------------------------------------ | ---------- | -------- |
-| 8.1  | Install and configure `Serwist` for service worker support in `apps/web` | 🟡         | 📱       |
+| 8.1  | Install and configure `Serwist` for service worker support in `apps/app` | 🟡         | 📱       |
 | 8.2  | Create `manifest.json` — app name, icons, display mode, theme color      | 🟢         | 📱       |
 | 8.3  | Configure offline asset caching strategy in the service worker           | 🟡         | 📱       |
 | 8.4  | Test PWA install flow in Chrome DevTools and on iPhone via Safari        | 🟢         | 📱       |
 | 8.5  | Audit mobile UI — touch targets, viewport, safe areas, keyboard behavior | 🟡         | 📱 🎨    |
-| 8.6  | Initialize Capacitor in `apps/web`                                       | 🟡         | 📱       |
+| 8.6  | Initialize Capacitor in `apps/app`                                       | 🟡         | 📱       |
 | 8.7  | Configure Capacitor to point at the hosted Vercel Next.js URL            | 🟡         | 📱       |
 | 8.8  | Build and side-load the iOS app onto your iPhone using Xcode             | 🟡         | 📱       |
 | 8.9  | Test core flows (login, palette, Taxila, Alter Ego chat) on device       | 🟢         |          |

@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.testing.testing-layers
 title: Testing Layers
 created: 2026-10-30
-updated: 2026-11-01
+updated: 2026-11-08
 kind: spec
-version: 1.2.0
+version: 1.2.1
 tags:
    - system-design
    - testing
@@ -61,7 +61,7 @@ A playground page (such as Synergy's, behind the sandbox entitlements) is for lo
 
 **D59** `decision` #testing: Vitest is the single unit and integration test framework for the whole monorepo.
 
-**What we chose:** Vitest is the single unit and integration test framework for the whole monorepo — every package, `apps/web`, and `apps/cli`, client and server code alike. One API to learn, and one `test` task that Turborepo runs per package, the same way it runs `lint` and `typecheck`.
+**What we chose:** Vitest is the single unit and integration test framework for the whole monorepo — every package, `apps/app`, and `apps/cli`, client and server code alike. One API to learn, and one `test` task that Turborepo runs per package, the same way it runs `lint` and `typecheck`.
 
 **Why:**
 
