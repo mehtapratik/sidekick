@@ -14,6 +14,11 @@ out/
 # turborepo
 .turbo/
 
+# astro, obsidian and local agent settings
+.astro/
+.obsidian/
+.claude/settings.local.json
+
 # logs
 npm-debug.log*
 yarn-debug.log*

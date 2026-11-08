@@ -19,9 +19,5 @@
       "rehype-katex": "^1.2.0",
       "remark-math": "^3.0.1",
       "unist-util-visit": "5.1.0"
-   },
-   "devDependencies": {
-      "prettier": "3.9.4",
-      "prettier-plugin-astro": "0.14.1"
    }
 }

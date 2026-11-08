@@ -301,13 +301,6 @@ importers:
       unist-util-visit:
         specifier: 5.1.0
         version: 5.1.0
-    devDependencies:
-      prettier:
-        specifier: 3.9.4
-        version: 3.9.4
-      prettier-plugin-astro:
-        specifier: 0.14.1
-        version: 0.14.1
 
   packages/copy: {}
 

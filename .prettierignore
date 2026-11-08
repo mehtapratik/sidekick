@@ -2,3 +2,13 @@
 apps/web/next-env.d.ts
 packages/core/src/db/migrations/meta/
 pnpm-lock.yaml
+
+# Obsidian writes the vault (D216)
+content/
+
+# The site ships these as given
+apps/www/public/arkive.css
+apps/www/public/arkive.js
+apps/www/public/fonts/
+apps/www/public/icons/
+apps/www/src/shiki-themes.mjs
