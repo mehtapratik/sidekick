@@ -12,8 +12,8 @@ import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 // ── Request entry points ────────────────────────────────────────────────────
 // Every request must enter through an App Router route handler wrapped in
 // withApiGuard (sidekick/require-api-guard). These bans close the other ways
-// Next.js can serve a request. apps/web's build also verifies the built
-// endpoint list (apps/web/scripts/verify-endpoints.mjs).
+// Next.js can serve a request. apps/app's build also verifies the built
+// endpoint list (apps/app/scripts/verify-endpoints.mjs).
 // Composed per block: flat config replaces no-restricted-syntax per block.
 const serverActionBan = {
    selector: 'ExpressionStatement[directive="use server"]',
@@ -368,12 +368,12 @@ export default defineConfig(
    {
       // Rules of Hooks, exhaustive deps, and the React Compiler's checks
       ...reactHooks.configs.flat.recommended,
-      files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+      files: ['apps/app/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
    },
    {
-      files: ['apps/web/**/*.{ts,tsx,js,jsx}'],
+      files: ['apps/app/**/*.{ts,tsx,js,jsx}'],
       plugins: { '@next/next': nextPlugin },
-      settings: { next: { rootDir: 'apps/web' } },
+      settings: { next: { rootDir: 'apps/app' } },
       rules: {
          ...nextPlugin.configs.recommended.rules,
          ...nextPlugin.configs['core-web-vitals'].rules,

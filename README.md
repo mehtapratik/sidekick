@@ -72,7 +72,7 @@ Docs and writings live in `content/` (the vault is `content/docs/`), and `AGENTS
 pnpm dev
 ```
 
-Opens `apps/web` at `http://localhost:3000`.
+Opens `apps/app` at `http://localhost:3000`.
 
 ### Build
 
@@ -116,7 +116,7 @@ After a toolchain upgrade, verify with Turbo's cache bypassed (`pnpm turbo build
 
 ```
 apps/
-  web/                  # Next.js 16 App Router — main web application
+  app/                  # Next.js 16 App Router — main web application
   www/                  # Astro public site (arkive.blog), deployed as a Cloudflare Worker
   cli/                  # CLI tool — placeholder until Phase 9 (API keys + CLI)
 
@@ -175,7 +175,7 @@ Create it under `packages/features/your-feature/` instead (add `packages/feature
 1. Define your schema in `schema.ts`
 2. Add a Drizzle config in `drizzle.config.ts`
 3. Register the feature in `packages/features-registry`
-4. Add API routes in `apps/web/src/app/api/your-feature/`
+4. Add API routes in `apps/app/src/app/api/your-feature/`
 5. All routes must use `withApiGuard()` (the `require-api-guard` lint rule fails otherwise; Server Actions are banned)
 
 ---
@@ -207,7 +207,7 @@ cp .env.example .env.local
 
 See `.env.example` for all required variables and which phase they are needed in.
 
-`.env.local` lives at the **repo root**, not inside `apps/web`. Scripts that need it (e.g. `db:generate`, `db:migrate`) prefix with `dotenv -e ../../.env.local --`. Never create a separate `.env.local` inside `apps/web`.
+`.env.local` lives at the **repo root**, not inside `apps/app`. Scripts that need it (e.g. `db:generate`, `db:migrate`) prefix with `dotenv -e ../../.env.local --`. Never create a separate `.env.local` inside `apps/app`.
 
 ### Deploying to Vercel
 

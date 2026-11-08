@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.content.centralized-copy
 title: Centralized Copy
 created: 2026-09-19
-updated: 2026-11-05
+updated: 2026-11-08
 kind: spec
-version: 1.2.0
+version: 1.2.1
 tags:
    - system-design
    - content
@@ -28,7 +28,7 @@ import { copy } from '@sidekick/copy'
 
 ## Why
 
-\> **Consistency across apps.** `apps/web` and `apps/cli` both display messages to users. Without a shared source of truth, the same concept gets worded differently in each app and drifts over time.
+\> **Consistency across apps.** `apps/app` and `apps/cli` both display messages to users. Without a shared source of truth, the same concept gets worded differently in each app and drifts over time.
 
 \> **One-place copy changes.** Fixing a typo, rewording a label, or updating a call-to-action means editing one file. Without `packages/copy`, you would need to grep across the entire codebase and hope you found every instance.
 

@@ -4,8 +4,8 @@ id: harness.best-practices
 title: Best Practices
 created: 2026-09-19
 kind: guidance
-version: 1.1.0
-updated: 2026-11-01
+version: 1.1.1
+updated: 2026-11-08
 tags:
    - ai-coding-harness
    - agent-guidance
@@ -45,7 +45,7 @@ tags:
 24.   **D27** `rule` #monorepo #env: List every environment variable in the `env` array of the `build` task in `turbo.json`, not in the Vercel dashboard. [[03-system-design/non-functional/monorepo/env-vars-in-turbo-json|Why?]] derived-from [[D39]]
 25.   **D28** `rule` #css: Style with CSS modules only. No Mantine style props, no Tailwind, no utility classes; Mantine's behavioural props are fine. [[03-system-design/non-functional/css/css—modules|Why?]] derived-from [[D47]]
 26.   **D29** `rule` #testing: Test at four layers and prove a behaviour at the cheapest layer that can observe it; integration tests through the guarded API are the main seam. Mock only at boundaries. [[03-system-design/non-functional/testing/testing-layers|Why?]] derived-from [[D60]]
-27.   **D30** `rule` #react #dependencies: Packages that use React list `react` (and `react-dom`) as peer dependencies; `apps/web` owns the installed version. [[03-system-design/non-functional/monorepo/dependency-flow|Why?]] derived-from [[D58]]
+27.   **D30** `rule` #react #dependencies: Packages that use React list `react` (and `react-dom`) as peer dependencies; `apps/app` owns the installed version. [[03-system-design/non-functional/monorepo/dependency-flow|Why?]] derived-from [[D58]]
 28.   **D31** `rule` #supabase #edge: In `proxy.ts` (Edge runtime) use `createProxyClient`, never `createServerClient`, and use `createProxyClient` nowhere else. [[03-system-design/non-functional/security/edge-runtime|Why?]] derived-from [[D38]]
 29.   **D32** `rule` #api: Build REST route handlers that return JSON. No GraphQL and no `/api/v1` prefix until the deferred decisions change. derived-from [[D44]] derived-from [[D46]]
 30.   **D33** `rule` #product #metadata: Every metadata field a user or bot fills in is optional; Sidekick's own bookkeeping (ids, counters, timestamps) stays out of the user's way. [[principle.individual-first|Individual First]] derived-from [[D1]]

@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.nextjs.server-actions
 title: Server Actions
 created: 2026-09-19
-updated: 2026-10-16
+updated: 2026-11-08
 kind: spec
-version: 2.0.0
+version: 2.0.1
 tags:
    - system-design
    - nextjs
@@ -21,6 +21,6 @@ Server Actions are not allowed. Every read and write goes through the public API
 **Enforcement:**
 
 - Lint: `no-restricted-syntax` reports any `'use server'` directive in the monorepo.
-- Build: `apps/web/scripts/verify-endpoints.mjs` fails the build if Next.js's server-reference manifest contains any Server Action, regardless of how it was written.
+- Build: `apps/app/scripts/verify-endpoints.mjs` fails the build if Next.js's server-reference manifest contains any Server Action, regardless of how it was written.
 
 **Changing this decision:** design a guarded pattern first — the same caller resolution, feature entitlement, scope, and RLS steps as `withApiGuard` — then lift the lint ban and the build check together, deliberately.

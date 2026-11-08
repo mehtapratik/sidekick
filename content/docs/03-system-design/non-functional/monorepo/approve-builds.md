@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.monorepo.approve-builds
 title: Approve Builds
 created: 2026-09-19
-updated: 2026-11-05
+updated: 2026-11-08
 kind: spec
-version: 1.1.0
+version: 1.1.1
 tags:
    - system-design
    - monorepo
@@ -24,4 +24,4 @@ allowBuilds:
    unrs-resolver: true
 ```
 
-pnpm 11 and later no longer read the `pnpm.onlyBuiltDependencies` field in `package.json`, so it must not be used (removed in sidekick#14). The workspace file covers every package, `apps/web` included, so no per-app `pnpm approve-builds` run is needed.
+pnpm 11 and later no longer read the `pnpm.onlyBuiltDependencies` field in `package.json`, so it must not be used (removed in sidekick#14). The workspace file covers every package, `apps/app` included, so no per-app `pnpm approve-builds` run is needed.

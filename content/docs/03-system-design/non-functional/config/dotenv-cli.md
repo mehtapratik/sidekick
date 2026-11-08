@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.config.dotenv-cli
 title: dotenv CLI
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-08
 kind: spec
-version: 1.1.0
+version: 1.1.1
 tags:
    - system-design
    - config
@@ -21,7 +21,7 @@ Node.js blocks the `--env-file` flag when it is passed via `NODE_OPTIONS`. Scrip
 
 `dotenv-cli` sidesteps this entirely. It loads the `.env.local` file into the process environment before the command runs, without touching `NODE_OPTIONS`.
 
-**Single source of truth:** `.env.local` lives at the repo root only. Never create a `.env.local` inside `apps/web` or any package.
+**Single source of truth:** `.env.local` lives at the repo root only. Never create a `.env.local` inside `apps/app` or any package.
 
 ## Decision History
 
