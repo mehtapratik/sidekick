@@ -1,0 +1,113 @@
+---
+publish: true
+id: plan.phase-2-core-infrastructure-api-guard-feature-system-complete
+title: Gatekeeper
+created: 2026-09-19
+updated: 2026-10-24
+kind: plan
+version: 3.0.0
+tags:
+   - plan
+   - living-plan
+   - phase-2
+   - api-guard
+   - rls
+   - api
+   - authentication
+   - feature-system
+status: completed
+depends_on:
+   - "[[04-phases/01-front-door/01-row-level-security/00-plan]]"
+   - "[[04-phases/01-front-door/02-hardening/00-plan]]"
+---
+
+**Gatekeeper** is Phase 2: the single checkpoint every request passes. Scope: `resolveApiCaller` (who is asking), `withApiGuard` (scope, feature and RLS transaction), the feature registry, per-user entitlements, structured logging, `/api/health` and the `ops` scripts.
+
+> **Milestone:** The architectural backbone is live. `withApiGuard` is implemented and tested. The feature registry exists. You could add any feature safely from here.
+>
+> **Learning payoff:** Middleware patterns, centralized auth, feature flags, the "why" behind the architecture.
+>
+> **Completed:** October 2026 — walkthrough in [[04-phases/02-gatekeeper/02-walkthrough]]
+
+> **Gate:** ✅ Met — [[04-phases/01-front-door/02-hardening/00-plan]] was required before beginning the original Phase 2 tasks.
+
+| #    | Task                                                                                                                              | Complexity | Learning | Status |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- | ------ |
+| 2.1  | Implement `resolveApiCaller(req)` in `packages/core/src/api/auth.ts` — cookie sessions; Bearer API keys fail closed until Phase 9 | 🔴         | 🔐 🧩    | ✅     |
+| 2.2  | Implement `withApiGuard(handler, opts)` in `packages/core/src/api/guard.ts` (see [[with-api-guard]] and [[04-phases/02-gatekeeper/01-contracts]])            | 🔴         | 🔐 🧩    | ✅     |
+| 2.3  | Wire `withRLS` inside `withApiGuard`                                                                                              | 🔴         | 🔐 🗄️    | ✅     |
+| 2.4  | Add basic request logging inside `withApiGuard` (method, path, userId, latency)                                                   | 🟡         | 🧩       | ✅     |
+| 2.5  | Add auth failure logging inside `withApiGuard`                                                                                    | 🟡         | 🧩       | ✅     |
+| 2.6  | Define `FeatureManifest` type in `packages/features-registry`                                                                     | 🟡         | 📦       | ✅     |
+| 2.7  | Implement `ALL_FEATURES` array in `packages/features-registry/src/index.ts` — start with an empty array                           | 🟡         | 📦       | ✅     |
+| 2.8  | Create `user_feature_entitlements` table in `packages/core` with `userId`, `featureKey`, RLS policy                               | 🔴         | 🗄️ 🔐    | ✅     |
+| 2.9  | Implement `getEnabledFeatures(tx)` in `packages/core` — reads from entitlements table under RLS                                   | 🟡         | 🗄️       | ✅     |
+| 2.10 | Write a seed script to enable all features for your own user account during development (shipped as `packages/ops`, below)        | 🟢         | 🗄️       | ✅     |
+| 2.11 | Create a test API route `/api/health` using `withApiGuard` to verify the full guard chain works                                   | 🟡         | 🧩 🔐    | ✅     |
+| 2.12 | Verify 401 is returned when unauthenticated; 403 when a feature is disabled                                                       | 🟢         |          | ✅     |
+
+**Phase 2 Exit Criteria:** ✅ All met, re-proven on `main` in lesson 8. `withApiGuard` is implemented and the `/api/health` route correctly returns 401/403 in the right conditions. The feature system can enable/disable features per user.
+
+- `withApiGuard` is implemented and tested: 14 unit tests and 5 integration tests in `packages/core`.
+- `/api/health` returns 401 without a session and 200 with one, checked with `curl -i` and a signed-in browser.
+- The 403 for a disabled feature is pinned by `packages/core/tests/integration/guard.test.ts` (`responds 403 to a user who is not entitled to the feature`). `/api/health` belongs to no feature, so it can't return 403 by design.
+- `pnpm ops:entitlements:grant --email <you> --all` enables features per user. Disabling is a `DELETE` with the privileged role. `ALL_FEATURES` is still empty, so nothing is granted until Phase 4 registers Taxila.
+
+## Lessons
+
+Phase 2 is built piece by piece, with Pratik learning as it goes ([[04-phases/02-gatekeeper/01-contracts#How we build|how we build]]). By default the coach hands over one small, explained piece at a time, and the two discuss it before it's final. Pratik writes the steps they call core themselves, and can ask the coach to code work with no learning payoff. Lessons run one at a time, in this order, each in its own thread. A lesson starts only after the previous lesson's PR is merged. The order starts with the smallest, self-contained work and builds up to the guard.
+
+| Lesson | Brief                  | Tasks      | What Pratik learns                                          |
+| ------ | ---------------------- | ---------- | ----------------------------------------------------------- |
+| 1 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-1-feature-registry/00-brief]]     | 2.6, 2.7   | TypeScript types, package exports, Vitest, branch → PR      |
+| 2 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-2-resolve-api-caller/00-brief]]           | 2.1        | sessions vs. Bearer tokens, discriminated unions, mocking   |
+| 3 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-3-entitlements/00-brief]]     | 2.8, 2.9   | schema, migrations, RLS policies, grants, integration tests |
+| 4 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-4-with-api-guard/00-brief]]     | 2.2, 2.3   | higher-order functions, generics, transactions              |
+| 5 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-5-logging/00-brief]]     | 2.4, 2.5   | structured logging, ESLint overrides                        |
+| 6 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-6-health/00-brief]]   | 2.11, 2.12 | route handlers, testing HTTP by hand                        |
+| 7 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-7-ops/00-brief]]          | 2.10       | scripts, database roles, idempotent writes                  |
+| 8 ✅   | [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief]] | none       | writing it up                                               |
+
+**To start a lesson,** open a new thread and paste this, changing the lesson number:
+
+```
+Coach me through Phase 2 lesson 1, piece by piece as contracts.md describes:
+hand me one explained piece at a time, and I'll say which ones I write myself. Read AGENTS.md,
+docs/04-phases/02-gatekeeper/01-contracts.md
+and that lesson's brief (the plan's Lessons table links each one) before we start.
+```
+
+Every brief has the same parts: what gets built, the concepts, what the coach reads first, numbered steps, which steps are good to write yourself, questions to check understanding, and when the lesson is done. The coach builds from the target design in [[04-phases/02-gatekeeper/01-contracts]], which changes when Pratik's own design wins.
+
+**Close-out (lesson 8):** the coach wrote [[04-phases/02-gatekeeper/02-walkthrough]], marked this plan complete the way Pre-2 was closed, replaced the sketch in [[with-api-guard]] with the shipped behaviour, updated "Where things stand" in the agent guide, and recorded the phase's learnings in `03-notes.md` (`publish: false`). The brief is [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief]].
+
+**Design decisions made while planning** (details in [[04-phases/02-gatekeeper/01-contracts]]; each can be revisited in its lesson):
+
+- Bearer API keys resolve to no caller (401) until Phase 9 adds `api_keys`.
+- `getEnabledFeatures` takes the guard's RLS transaction and returns feature keys, so `packages/core` stays feature-agnostic.
+- Users can read their own entitlements but can't write any. Only the privileged role writes them.
+- The guard checks scope before opening the transaction and checks the feature inside it.
+- Lesson 1: features are identified by `key` (not `slug`), object shapes are `interface`s, and rollout gating stays out of the registry (post-MVP, [[backlogged-unplanned#B5 — Feature rollout gating|B5]]).
+- Lesson 2: the caller variants are named interfaces with `kind: 'key'`, and any `Authorization` header resolves to no caller, even alongside a valid session.
+- Lesson 3: entitlements use a composite primary key `(user_id, feature_key)` with no surrogate `id`, `user_id` references `profiles`, and `app_runtime` can only `SELECT` them.
+- After lesson 3: `resolveApiCaller` returns `undefined`, not `null`, for no caller (coding standard: prefer `undefined`).
+- Lesson 4: handlers read `caller.userId` (no separate `userId`), `feature` stays optional and skips the entitlements query when unset, and the shared test helpers live in `packages/core/tests/helpers/`.
+- Lesson 5: one place logs (`withApiGuard`); the checks live in `authorizeAndHandle`, which returns a response or a denial. `api.denied` logs the client's `code`, every event carries `userId` (`null` without a caller), and error logs drop Drizzle's query parameters.
+- `/api/health` requires a session but no feature. The 403 path is proven by lesson 4's integration test.
+- Lesson 6: `/api/health` returns `{ status: 'ok' }`, and the database client is created on first use (`getUnsafeDb()`), because `next build` imports every route module and CI's build has no `DATABASE_URL`.
+- Lesson 7: the seed is `entitlements grant` in a dedicated `packages/ops` package for privileged scripts, which nothing may import. It runs under `tsx` with `dotenv-cli`, writes only with `--apply`, and `--apply` is one `INSERT … ON CONFLICT DO NOTHING RETURNING`.
+
+**Implementation notes:**
+
+- **Task 2.10 shipped as a package, not a registry script.** `packages/ops` holds privileged scripts (dev seeds, provisioning, break-glass), runs them as the `postgres` role through `withPrivilegedDb`, and nothing may import it. The dependency direction gained a side branch, `ops → registry, foundation` ([[04-phases/02-gatekeeper/01-contracts#Ops|contracts]]).
+- **The guard's order changed from the planning sketch.** The scope check runs before the transaction and the feature check inside it, so a rejected key never takes a pooled connection and entitlements are read under RLS. [[with-api-guard]] now describes the shipped order.
+- **Tasks 2.4 and 2.5 already cover Phase 10's 10.1 and 10.2** (request and auth-failure logging inside `withApiGuard`), and the guard's errors already use 10.5's `{ error, code }` shape. Phase 10 still owns the shape for handler errors.
+- **Late fixes landed as post notes in earlier walkthroughs:** the Data API roles (Phase 1.1 and Pre-2, [sidekick#17](https://github.com/mehtapratik/sidekick/pull/17)), the lazy database client (Pre-2, [sidekick#21](https://github.com/mehtapratik/sidekick/pull/21)), the `ops` boundaries element (Pre-2, [sidekick#23](https://github.com/mehtapratik/sidekick/pull/23)) and pnpm build approvals (Phase 0, [sidekick#14](https://github.com/mehtapratik/sidekick/pull/14)). [[04-phases/02-gatekeeper/02-walkthrough#Post notes in earlier walkthroughs|The walkthrough]] lists them.
+- **Added beyond the original list:** a startup check for required variables (`apps/web/src/instrumentation.ts`, [sidekick#22](https://github.com/mehtapratik/sidekick/pull/22)), shared test helpers in `packages/core/tests/helpers/` ([sidekick#18](https://github.com/mehtapratik/sidekick/pull/18)), and the `interface` lint rule ([sidekick#10](https://github.com/mehtapratik/sidekick/pull/10)).
+
+**Carried forward, not built in Phase 2:**
+
+- `ops` follow-ups: a `revoke` command, a `pnpm ops <noun> <verb>` dispatcher with the second command, and a `--target` check once a second environment exists ([[backlogged-unplanned#B6 — Ops command follow-ups|B6]]).
+- CLI design belongs to Phase 9's `apps/cli`, which calls the API with a key. `ops` logic moves into admin endpoints when a command is retired; only its interface carries over ([[04-phases/09-terminal/00-plan]]).
+- A public liveness probe would be a recorded exception to `require-api-guard`, decided by Pratik ([[backlogged-unplanned#B7 — Public liveness probe|B7]]).
+- `getClaims()` instead of `getUser()` is the known latency lever, at the cost of revoked sessions working until their token expires ([[backlogged-unplanned#B8 — Faster session checks|B8]]).

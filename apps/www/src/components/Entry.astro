@@ -1,0 +1,69 @@
+---
+import { render } from "astro:content";
+import { tagUrl, type Entry } from "../lib/entries";
+
+interface Props {
+   entry: Entry;
+}
+const { entry: e } = Astro.props;
+const { Content } = await render(e.source);
+
+const kind = e.audience ? `${e.kind}, for ${e.audience}` : e.kind;
+const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "words"}, about ${e.minutes} min`;
+---
+
+<article>
+   {
+      e.retired && (
+         <aside class="callout" data-kind="warning">
+            <p class="callout-title">Retired</p>
+            <p>
+               This note is no longer relevant. It stays here as a record of
+               what I thought at the time, last updated {e.asOf}.
+            </p>
+         </aside>
+      )
+   }
+   <h1>{e.title}</h1>
+   {e.deck && <p class="deck">{e.deck}</p>}
+   <table class="meta">
+      <tbody>
+         <tr
+            ><th scope="row">As of</th><td
+               ><time datetime={e.asOf}>{e.asOf}</time></td
+            ></tr
+         >
+         {
+            e.version && (
+               <tr>
+                  <>
+                     <th scope="row">Version</th>
+                     <td>{e.version}</td>
+                  </>
+               </tr>
+            )
+         }
+         <tr><th scope="row">Kind</th><td>{kind}</td></tr>
+         <tr><th scope="row">Length</th><td>{length}</td></tr>
+         {
+            e.tags.length > 0 && (
+               <tr>
+                  <th scope="row">Tags</th>
+                  <td>
+                     <span class="chips">
+                        {e.tags.map((t) => (
+                           <a href={tagUrl(t)} data-tag={t}>
+                              {t}
+                           </a>
+                        ))}
+                     </span>
+                  </td>
+               </tr>
+            )
+         }
+      </tbody>
+   </table>
+   <div class="prose">
+      <Content />
+   </div>
+</article>

@@ -1,0 +1,63 @@
+---
+import { tagUrl, type Entry } from "../lib/entries";
+
+interface Props {
+   entries: Entry[];
+   current?: string;
+}
+const { entries, current } = Astro.props;
+const search = (e: Entry) =>
+   [e.title, e.deck, e.kind, e.retired ? "retired" : "", e.tags.join(" ")]
+      .join(" ")
+      .toLowerCase();
+---
+
+<table class="entries">
+   <thead
+      ><tr
+         ><th scope="col">As of</th><th scope="col">Title</th><th scope="col"
+            >Kind</th
+         ></tr
+      ></thead
+   >
+   <tbody>
+      {
+         entries.map((e) => (
+            <tr
+               data-url={e.url}
+               data-status={e.retired ? "retired" : undefined}
+               data-title={e.title}
+               data-tags={e.tags.join(" ")}
+               data-search={search(e)}
+            >
+               <td>{e.asOf}</td>
+               <td>
+                  <a
+                     class="title"
+                     href={e.url}
+                     aria-current={e.url === current ? "page" : undefined}
+                  >
+                     {e.title}
+                  </a>
+                  {e.retired && <span class="retired">Retired</span>}
+                  {e.url === current && <span class="reading">Reading</span>}
+                  {e.deck && <span class="deck-line">{e.deck}</span>}
+                  {e.tags.length > 0 && (
+                     <span class="tag-line">
+                        {e.tags.map((t, i) => (
+                           <>
+                              {i > 0 && " "}
+                              <a href={tagUrl(t)} data-tag={t}>
+                                 {t}
+                              </a>
+                           </>
+                        ))}
+                     </span>
+                  )}
+               </td>
+               <td>{e.kind}</td>
+            </tr>
+         ))
+      }
+   </tbody>
+</table>
