@@ -3,9 +3,9 @@ publish: true
 id: harness.agent-guide
 title: Agent Guide
 created: 2026-09-19
-updated: 2026-11-06
+updated: 2026-11-08
 kind: guidance
-version: 1.4.0
+version: 1.5.0
 tags:
    - ai-coding
    - agent
@@ -72,6 +72,7 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 - User-data queries go through `withRLS`, the only public database entry point. Raw Drizzle and admin Supabase clients are server-only and lint-restricted to the wrappers that need them. The one privileged path is `packages/ops`'s `withPrivilegedDb` (`DATABASE_DIRECT_URL`, bypasses RLS), for dev seeds, provisioning and break-glass scripts only.
 - Syncable entities use client-generated IDs and soft deletes; APIs are idempotent.
 - User-visible copy belongs in `packages/copy` until lesson I1, then in each package's catalog ([[03-system-design/non-functional/content/internationalization|Internationalization]]). `@sidekick/ui` holds no words: labels are props.
+- Project vocabulary lives in `content/docs/07-glossary/`, one page per term (D226). When a skill asks for `CONTEXT.md`, write or update the glossary page instead; never create a `CONTEXT.md`.
 - **`apps/www` is temporary** ([[03-system-design/functional-design/05-public-site/00-overview|Public site]], D256): favour speed there. No CSS modules, no i18n, no extra strictness, and don't propose App-grade structure or tests for it. What still binds: the privacy and datum gates, `publish: true`, no URL changes, the `site` boundaries element, Prettier and green CI. Its replacement follows every rule.
 - **UI is native first** (D255): use the platform (`dialog`, `popover`, `details`, native inputs and validation) before any library; Mantine leaves the App in lesson M1, so add no new Mantine component.
 - Prefer Server Components; use Client Components only for necessary interactivity.
