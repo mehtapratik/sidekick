@@ -1,6 +1,6 @@
 ---
-import { render } from "astro:content";
-import { tagUrl, type Entry } from "../lib/entries";
+import { render } from 'astro:content';
+import { tagUrl, type Entry } from '../lib/entries';
 
 interface Props {
    entry: Entry;
@@ -9,7 +9,7 @@ const { entry: e } = Astro.props;
 const { Content } = await render(e.source);
 
 const kind = e.audience ? `${e.kind}, for ${e.audience}` : e.kind;
-const length = `${e.words.toLocaleString("en-US")} ${e.words === 1 ? "word" : "words"}, about ${e.minutes} min`;
+const length = `${e.words.toLocaleString('en-US')} ${e.words === 1 ? 'word' : 'words'}, about ${e.minutes} min`;
 ---
 
 <article>

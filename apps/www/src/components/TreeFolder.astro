@@ -1,5 +1,5 @@
 ---
-import { countLeaves, containsUrl, folderRows, type Folder } from "../lib/tree";
+import { countLeaves, containsUrl, folderRows, type Folder } from '../lib/tree';
 
 interface Props {
    folder: Folder;
@@ -19,19 +19,19 @@ const total = countLeaves(folder);
       <ul>
          {
             folderRows(folder).map((row) =>
-               "folder" in row ? (
+               'folder' in row ? (
                   <Astro.self folder={row.folder} current={current} />
                ) : (
                   <li
                      data-url={row.leaf.entry.url}
                      data-status={
-                        row.leaf.entry.retired ? "retired" : undefined
+                        row.leaf.entry.retired ? 'retired' : undefined
                      }
                   >
                      <a
                         href={row.leaf.entry.url}
                         aria-current={
-                           row.leaf.entry.url === current ? "page" : undefined
+                           row.leaf.entry.url === current ? 'page' : undefined
                         }
                      >
                         {row.leaf.entry.title}

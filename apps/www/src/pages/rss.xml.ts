@@ -1,7 +1,7 @@
-import rss from "@astrojs/rss";
-import type { APIContext } from "astro";
-import { getListedEntries } from "../lib/entries";
-import { BLURB, SITE_TITLE } from "../lib/site";
+import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
+import { getListedEntries } from '../lib/entries';
+import { BLURB, SITE_TITLE } from '../lib/site';
 
 export async function GET(context: APIContext) {
    const entries = (await getListedEntries()).slice(0, 50);

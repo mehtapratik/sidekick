@@ -1,6 +1,6 @@
 // The folder tree for the Index (SPEC 5.3). A port of the handover's tree.py: match its output.
-import type { Entry } from "./entries";
-import { SECTIONS } from "./vault.mjs";
+import type { Entry } from './entries';
+import { SECTIONS } from './vault.mjs';
 
 export interface Leaf {
    entry: Entry;
@@ -19,47 +19,47 @@ export interface Folder {
 }
 
 const WORDS: Record<string, string> = {
-   ai: "AI",
-   api: "API",
-   cli: "CLI",
-   pwa: "PWA",
-   rag: "RAG",
-   css: "CSS",
-   ux: "UX",
-   nextjs: "Next.js",
-   typescript: "TypeScript",
-   eslint: "ESLint",
+   ai: 'AI',
+   api: 'API',
+   cli: 'CLI',
+   pwa: 'PWA',
+   rag: 'RAG',
+   css: 'CSS',
+   ux: 'UX',
+   nextjs: 'Next.js',
+   typescript: 'TypeScript',
+   eslint: 'ESLint',
 };
 
 function human(slug: string): string {
-   if (slug === "non-functional") return "Non-functional";
-   if (slug.startsWith("phase-")) {
-      const parts = slug.split("-");
+   if (slug === 'non-functional') return 'Non-functional';
+   if (slug.startsWith('phase-')) {
+      const parts = slug.split('-');
       return parts.length > 2
-         ? `Phase ${parts[1]}: ${human(parts.slice(2).join("-"))}`
+         ? `Phase ${parts[1]}: ${human(parts.slice(2).join('-'))}`
          : `Phase ${parts[1]}`;
    }
-   const words = slug.split("-").map((w) => WORDS[w] ?? w);
+   const words = slug.split('-').map((w) => WORDS[w] ?? w);
    if (words[0] === words[0].toLowerCase())
       words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
-   return words.join(" ");
+   return words.join(' ');
 }
 
 const TOP: [string, string][] = [
-   ["writings", "Writings"],
+   ['writings', 'Writings'],
    ...SECTIONS.map((s): [string, string] => [`docs/${s.slug}`, s.label]),
 ];
 
-const byName = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+const byName = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 /** Path segments under the section folder, as named on disk (`04-phases/03-synergy/00-plan.md` -> `03-synergy/00-plan`). */
 function diskSegments(e: Entry): string[] | undefined {
-   if (e.collection !== "docs") return undefined;
+   if (e.collection !== 'docs') return undefined;
    const rel = e.source.filePath?.replace(
       /^\.\.\/\.\.\/content\/docs\/[^/]+\//,
-      "",
+      '',
    );
-   return rel?.replace(/\.md$/, "").split("/");
+   return rel?.replace(/\.md$/, '').split('/');
 }
 
 /** `entries` must already be in the global order (newest first). Within a folder, pages and sub-folders follow their file names, so a numeric prefix (`00-plan`) sets the order; writings stay newest first. */
@@ -72,7 +72,7 @@ export function buildTree(entries: Entry[]): Folder[] {
       if (!folders.has(path)) {
          folders.set(path, {
             path,
-            label: label ?? human(path.split("/").pop()!),
+            label: label ?? human(path.split('/').pop()!),
             key,
             children: [],
             entries: [],
@@ -84,16 +84,16 @@ export function buildTree(entries: Entry[]): Folder[] {
 
    for (const entry of entries) {
       const id = pathOf(entry);
-      const top = TOP.find(([p]) => id === p || id.startsWith(p + "/"))?.[0];
+      const top = TOP.find(([p]) => id === p || id.startsWith(p + '/'))?.[0];
       if (!top) continue;
-      const rest = id.slice(top.length + 1).split("/");
-      const own = ids.some((j) => j.startsWith(id + "/"));
+      const rest = id.slice(top.length + 1).split('/');
+      const own = ids.some((j) => j.startsWith(id + '/'));
       const parts = own ? rest : rest.slice(0, -1);
       let cur = folders.get(top)!;
       let path = top;
       const disk = diskSegments(entry);
       for (const [i, seg] of parts.filter(Boolean).entries()) {
-         path += "/" + seg;
+         path += '/' + seg;
          const f = folder(path, undefined, disk?.[i]);
          if (!cur.children.includes(f)) cur.children.push(f);
          cur = f;

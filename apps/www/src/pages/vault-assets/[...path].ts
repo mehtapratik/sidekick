@@ -1,14 +1,14 @@
-import fs from "node:fs";
-import path from "node:path";
-import { ASSETS_DIR } from "../../lib/vault.mjs";
+import fs from 'node:fs';
+import path from 'node:path';
+import { ASSETS_DIR } from '../../lib/vault.mjs';
 
 const TYPES: Record<string, string> = {
-   ".svg": "image/svg+xml",
-   ".png": "image/png",
-   ".jpg": "image/jpeg",
-   ".jpeg": "image/jpeg",
-   ".gif": "image/gif",
-   ".webp": "image/webp",
+   '.svg': 'image/svg+xml',
+   '.png': 'image/png',
+   '.jpg': 'image/jpeg',
+   '.jpeg': 'image/jpeg',
+   '.gif': 'image/gif',
+   '.webp': 'image/webp',
 };
 
 function files(dir: string, out: string[] = []): string[] {
@@ -24,7 +24,7 @@ function files(dir: string, out: string[] = []): string[] {
 /** Images embedded with `![[name.png]]`; they live in the vault's `_assets_/` folder. */
 export function getStaticPaths() {
    return files(ASSETS_DIR).map((f) => ({
-      params: { path: path.relative(ASSETS_DIR, f).split(path.sep).join("/") },
+      params: { path: path.relative(ASSETS_DIR, f).split(path.sep).join('/') },
       props: { file: f },
    }));
 }
@@ -32,7 +32,7 @@ export function getStaticPaths() {
 export function GET({ props }: { props: { file: string } }) {
    return new Response(fs.readFileSync(props.file), {
       headers: {
-         "Content-Type": TYPES[path.extname(props.file).toLowerCase()],
+         'Content-Type': TYPES[path.extname(props.file).toLowerCase()],
       },
    });
 }

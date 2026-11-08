@@ -1,5 +1,5 @@
 ---
-import type { Entry } from "../lib/entries";
+import type { Entry } from '../lib/entries';
 
 interface Props {
    prev?: Entry;
@@ -46,7 +46,7 @@ const { prev, next, total } = Astro.props;
    </div>
    <p class="scope">
       <span data-scope
-         >Previous and next follow all {total.toLocaleString("en-US")} entries, by
+         >Previous and next follow all {total.toLocaleString('en-US')} entries, by
          as-of date.</span
       >
       <button type="button" data-clear hidden>Clear filter</button>

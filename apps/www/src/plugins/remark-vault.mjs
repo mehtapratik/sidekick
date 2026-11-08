@@ -1,7 +1,7 @@
 // Obsidian syntax -> mdast (SPEC 6): wikilinks, embeds, callouts, and the duplicated leading H1.
-import fs from "node:fs";
-import path from "node:path";
-import { visit, SKIP } from "unist-util-visit";
+import fs from 'node:fs';
+import path from 'node:path';
+import { visit, SKIP } from 'unist-util-visit';
 import {
    ASSETS_DIR,
    DOCS_DIR,
@@ -9,20 +9,20 @@ import {
    headingSlug,
    resolveWikilink,
    scanVault,
-} from "../lib/vault.mjs";
-import { scanDatums } from "../lib/datums.mjs";
+} from '../lib/vault.mjs';
+import { scanDatums } from '../lib/datums.mjs';
 
 const WIKI = /(!?)\[\[([^\]\n]+)\]\]/g;
-const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 const textOf = (node) =>
-   node.value ?? (node.children ?? []).map(textOf).join("");
+   node.value ?? (node.children ?? []).map(textOf).join('');
 
 /** Natural size of an embedded image, or null when the format is not recognised. */
 function imageSize(file) {
    const buf = fs.readFileSync(file);
    const ext = path.extname(file).toLowerCase();
-   if (ext === ".svg") {
-      const s = buf.toString("utf8");
+   if (ext === '.svg') {
+      const s = buf.toString('utf8');
       const w = s.match(/<svg[^>]*\swidth="([\d.]+)(?:px)?"/);
       const h = s.match(/<svg[^>]*\sheight="([\d.]+)(?:px)?"/);
       if (w && h) return { width: +w[1], height: +h[1] };
@@ -31,11 +31,11 @@ function imageSize(file) {
       );
       return vb ? { width: +vb[1], height: +vb[2] } : null;
    }
-   if (ext === ".png")
+   if (ext === '.png')
       return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-   if (ext === ".gif")
+   if (ext === '.gif')
       return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
-   if (ext === ".jpg" || ext === ".jpeg") {
+   if (ext === '.jpg' || ext === '.jpeg') {
       for (let i = 2; i < buf.length;) {
          if (buf[i] !== 0xff) return null;
          const marker = buf[i + 1];
@@ -66,12 +66,12 @@ function findAsset(name) {
 }
 
 function embed(raw) {
-   const [target, option] = raw.split("|").map((s) => s.trim());
+   const [target, option] = raw.split('|').map((s) => s.trim());
    const file = findAsset(target);
-   if (!file) return { type: "text", value: "" };
+   if (!file) return { type: 'text', value: '' };
    const size = imageSize(file);
    const asNumber = option && /^\d+$/.test(option) ? +option : null;
-   const props = { loading: "lazy" };
+   const props = { loading: 'lazy' };
    if (size) {
       props.width = asNumber ?? size.width;
       props.height = asNumber
@@ -79,10 +79,10 @@ function embed(raw) {
          : size.height;
    }
    return {
-      type: "image",
+      type: 'image',
       url:
-         "/vault-assets/" +
-         path.relative(ASSETS_DIR, file).split(path.sep).join("/"),
+         '/vault-assets/' +
+         path.relative(ASSETS_DIR, file).split(path.sep).join('/'),
       alt:
          option && !asNumber
             ? option
@@ -99,37 +99,37 @@ function datumById() {
 
 /** Resolve `target#heading` to a published URL, or null (unpublished, private or missing). */
 function resolveTarget(targetAndHeading, fromRel, fromCollection) {
-   const [target, ...h] = targetAndHeading.split("#");
+   const [target, ...h] = targetAndHeading.split('#');
    if (/^D\d+$/.test(target.trim())) {
       const d = datumById().get(target.trim());
       return d?.published
-         ? { url: `${d.url}#${d.id}`, title: d.id, heading: "" }
+         ? { url: `${d.url}#${d.id}`, title: d.id, heading: '' }
          : null;
    }
-   const heading = h.join("#").trim();
-   const anchor = heading ? "#" + headingSlug(heading) : "";
-   if (!target.trim()) return { url: anchor, title: heading, heading: "" };
+   const heading = h.join('#').trim();
+   const anchor = heading ? '#' + headingSlug(heading) : '';
+   if (!target.trim()) return { url: anchor, title: heading, heading: '' };
    const hit = resolveWikilink(target, fromRel, fromCollection);
    if (!hit?.published) return null;
    return { url: hit.url + anchor, title: hit.title, heading };
 }
 
 function wikilink(raw, fromRel, fromCollection) {
-   const [targetAndHeading, ...rest] = raw.split("|");
-   const label = rest.join("|").trim();
+   const [targetAndHeading, ...rest] = raw.split('|');
+   const label = rest.join('|').trim();
    const typed =
-      targetAndHeading.split("#")[0].trim().split("/").pop() ||
-      targetAndHeading.split("#")[1];
+      targetAndHeading.split('#')[0].trim().split('/').pop() ||
+      targetAndHeading.split('#')[1];
    const hit = resolveTarget(targetAndHeading, fromRel, fromCollection);
    // Unpublished, private or missing: plain text, never a dead link.
    // A private note's own title is never used as the text.
-   if (!hit) return { type: "text", value: label || typed };
+   if (!hit) return { type: 'text', value: label || typed };
    return {
-      type: "link",
+      type: 'link',
       url: hit.url,
       children: [
          {
-            type: "text",
+            type: 'text',
             value:
                label ||
                (hit.heading ? `${hit.title} > ${hit.heading}` : hit.title),
@@ -146,57 +146,57 @@ function spanningWikilinks(parent, fromRel, fromCollection) {
    const kids = parent.children;
    for (let i = 0; i < kids.length; i++) {
       const first = kids[i];
-      if (first.type !== "text") continue;
-      const open = first.value.lastIndexOf("[[");
-      if (open < 0 || first.value.indexOf("]]", open) >= 0) continue;
+      if (first.type !== 'text') continue;
+      const open = first.value.lastIndexOf('[[');
+      if (open < 0 || first.value.indexOf(']]', open) >= 0) continue;
       let j = i + 1;
       while (
          j < kids.length &&
-         !(kids[j].type === "text" && kids[j].value.includes("]]"))
+         !(kids[j].type === 'text' && kids[j].value.includes(']]'))
       )
          j++;
       if (j >= kids.length) continue;
       const inner1 = first.value.slice(open + 2);
-      const bar = inner1.indexOf("|");
+      const bar = inner1.indexOf('|');
       if (bar < 0) continue;
-      const close = kids[j].value.indexOf("]]");
+      const close = kids[j].value.indexOf(']]');
       const label = [
-         { type: "text", value: inner1.slice(bar + 1) },
+         { type: 'text', value: inner1.slice(bar + 1) },
          ...kids.slice(i + 1, j),
-         { type: "text", value: kids[j].value.slice(0, close) },
-      ].filter((n) => n.type !== "text" || n.value);
+         { type: 'text', value: kids[j].value.slice(0, close) },
+      ].filter((n) => n.type !== 'text' || n.value);
       const hit = resolveTarget(inner1.slice(0, bar), fromRel, fromCollection);
       const replacement = [
-         { type: "text", value: first.value.slice(0, open) },
-         ...(hit ? [{ type: "link", url: hit.url, children: label }] : label),
-         { type: "text", value: kids[j].value.slice(close + 2) },
-      ].filter((n) => n.type !== "text" || n.value);
+         { type: 'text', value: first.value.slice(0, open) },
+         ...(hit ? [{ type: 'link', url: hit.url, children: label }] : label),
+         { type: 'text', value: kids[j].value.slice(close + 2) },
+      ].filter((n) => n.type !== 'text' || n.value);
       kids.splice(i, j - i + 1, ...replacement);
    }
 }
 
 /** A datum line starts `**D12** `kind``: give its id to the bold id, so `page/#D12` lands on it. */
 function datumAnchors(tree) {
-   visit(tree, "paragraph", (p) => {
+   visit(tree, 'paragraph', (p) => {
       const [a, b, c] = p.children;
       if (
-         a?.type === "strong" &&
+         a?.type === 'strong' &&
          a.children.length === 1 &&
-         /^D\d+$/.test(a.children[0].value ?? "") &&
-         b?.type === "text" &&
-         b.value.trim() === "" &&
-         c?.type === "inlineCode"
+         /^D\d+$/.test(a.children[0].value ?? '') &&
+         b?.type === 'text' &&
+         b.value.trim() === '' &&
+         c?.type === 'inlineCode'
       )
-         a.data = { hName: "strong", hProperties: { id: a.children[0].value } };
+         a.data = { hName: 'strong', hProperties: { id: a.children[0].value } };
    });
 }
 
 function callouts(tree) {
-   visit(tree, "blockquote", (node) => {
+   visit(tree, 'blockquote', (node) => {
       const p = node.children[0];
-      const t = p?.type === "paragraph" ? p.children[0] : null;
+      const t = p?.type === 'paragraph' ? p.children[0] : null;
       const m =
-         t?.type === "text" &&
+         t?.type === 'text' &&
          t.value.match(/^\[!([\w-]+)\][+-]?[ \t]*([^\n]*)(?:\n|$)/);
       if (!m) return;
       const title = m[2].trim() || m[1][0].toUpperCase() + m[1].slice(1);
@@ -204,15 +204,15 @@ function callouts(tree) {
       if (!t.value) p.children.shift();
       if (!p.children.length) node.children.shift();
       node.children.unshift({
-         type: "paragraph",
-         data: { hProperties: { className: ["callout-title"] } },
-         children: [{ type: "text", value: title }],
+         type: 'paragraph',
+         data: { hProperties: { className: ['callout-title'] } },
+         children: [{ type: 'text', value: title }],
       });
       node.data = {
-         hName: "aside",
+         hName: 'aside',
          hProperties: {
-            className: ["callout"],
-            "data-kind": m[1].toLowerCase(),
+            'className': ['callout'],
+            'data-kind': m[1].toLowerCase(),
          },
       };
    });
@@ -224,24 +224,24 @@ function callouts(tree) {
  * one. Anything that fails it goes back to the exact text the author wrote.
  */
 function obsidianInlineMath(tree, source) {
-   visit(tree, "inlineMath", (node, index, parent) => {
+   visit(tree, 'inlineMath', (node, index, parent) => {
       const { start, end } = node.position ?? {};
       if (!start || !parent) return;
       const raw = source.slice(start.offset, end.offset);
-      if (!raw.startsWith("$") || raw.startsWith("$$")) return;
+      if (!raw.startsWith('$') || raw.startsWith('$$')) return;
       const inner = raw.slice(1, -1);
-      if (/^\s|\s$/.test(inner) || /\d/.test(source[end.offset] ?? "")) {
-         parent.children[index] = { type: "text", value: raw };
+      if (/^\s|\s$/.test(inner) || /\d/.test(source[end.offset] ?? '')) {
+         parent.children[index] = { type: 'text', value: raw };
       }
    });
 }
 
 export function remarkVault() {
    return (tree, file) => {
-      const abs = file.path ?? "";
-      const collection = abs.startsWith(WRITINGS_DIR) ? "writings" : "docs";
-      const root = collection === "writings" ? WRITINGS_DIR : DOCS_DIR;
-      const rel = path.relative(root, abs).split(path.sep).join("/");
+      const abs = file.path ?? '';
+      const collection = abs.startsWith(WRITINGS_DIR) ? 'writings' : 'docs';
+      const root = collection === 'writings' ? WRITINGS_DIR : DOCS_DIR;
+      const rel = path.relative(root, abs).split(path.sep).join('/');
       const record = scanVault().find(
          (f) => f.collection === collection && f.rel === rel,
       );
@@ -249,14 +249,14 @@ export function remarkVault() {
       // The page template renders the h1. Drop a leading "# Title" that repeats it.
       // A vault note's own H1 is a duplicate even when worded differently; in an essay it may be a heading.
       const first = tree.children[0];
-      if (first?.type === "heading" && first.depth === 1) {
+      if (first?.type === 'heading' && first.depth === 1) {
          if (
-            collection === "docs" ||
-            norm(textOf(first)) === norm(record?.title ?? "")
+            collection === 'docs' ||
+            norm(textOf(first)) === norm(record?.title ?? '')
          )
             tree.children.shift();
       }
-      visit(tree, "heading", (h) => {
+      visit(tree, 'heading', (h) => {
          if (h.depth === 1) h.depth = 2;
       });
 
@@ -266,26 +266,26 @@ export function remarkVault() {
 
       visit(
          tree,
-         (n) => Array.isArray(n.children) && n.type !== "link",
+         (n) => Array.isArray(n.children) && n.type !== 'link',
          (n) => spanningWikilinks(n, rel, collection),
       );
 
-      visit(tree, "text", (node, index, parent) => {
-         if (!parent || parent.type === "link" || !node.value.includes("[["))
+      visit(tree, 'text', (node, index, parent) => {
+         if (!parent || parent.type === 'link' || !node.value.includes('[['))
             return;
          const out = [];
          let last = 0;
          for (const m of node.value.matchAll(WIKI)) {
             if (m.index > last)
                out.push({
-                  type: "text",
+                  type: 'text',
                   value: node.value.slice(last, m.index),
                });
             out.push(m[1] ? embed(m[2]) : wikilink(m[2], rel, collection));
             last = m.index + m[0].length;
          }
          if (last < node.value.length)
-            out.push({ type: "text", value: node.value.slice(last) });
+            out.push({ type: 'text', value: node.value.slice(last) });
          parent.children.splice(index, 1, ...out);
          return [SKIP, index + out.length];
       });

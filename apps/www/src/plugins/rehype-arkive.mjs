@@ -1,52 +1,52 @@
 // hast tweaks (SPEC 6): wide-table wrapper, the code figure with its Copy button, and wide display math.
-import { visit, SKIP } from "unist-util-visit";
+import { visit, SKIP } from 'unist-util-visit';
 
 const LABELS = {
-   ts: "TypeScript",
-   typescript: "TypeScript",
-   tsx: "TSX",
-   js: "JavaScript",
-   javascript: "JavaScript",
-   jsx: "JSX",
-   json: "JSON",
-   jsonc: "JSON",
-   bash: "Shell",
-   sh: "Shell",
-   shell: "Shell",
-   shellscript: "Shell",
-   zsh: "Shell",
-   sql: "SQL",
-   yaml: "YAML",
-   yml: "YAML",
-   md: "Markdown",
-   markdown: "Markdown",
-   css: "CSS",
-   html: "HTML",
-   plaintext: "Code",
-   text: "Code",
-   txt: "Code",
-   "": "Code",
+   'ts': 'TypeScript',
+   'typescript': 'TypeScript',
+   'tsx': 'TSX',
+   'js': 'JavaScript',
+   'javascript': 'JavaScript',
+   'jsx': 'JSX',
+   'json': 'JSON',
+   'jsonc': 'JSON',
+   'bash': 'Shell',
+   'sh': 'Shell',
+   'shell': 'Shell',
+   'shellscript': 'Shell',
+   'zsh': 'Shell',
+   'sql': 'SQL',
+   'yaml': 'YAML',
+   'yml': 'YAML',
+   'md': 'Markdown',
+   'markdown': 'Markdown',
+   'css': 'CSS',
+   'html': 'HTML',
+   'plaintext': 'Code',
+   'text': 'Code',
+   'txt': 'Code',
+   '': 'Code',
 };
 const label = (lang) =>
-   LABELS[lang] ?? (lang ? lang[0].toUpperCase() + lang.slice(1) : "Code");
+   LABELS[lang] ?? (lang ? lang[0].toUpperCase() + lang.slice(1) : 'Code');
 
 const isLine = (n) =>
-   n.type === "element" &&
-   n.tagName === "span" &&
+   n.type === 'element' &&
+   n.tagName === 'span' &&
    []
       .concat(n.properties?.class ?? n.properties?.className ?? [])
-      .join(" ")
-      .split(" ")
-      .includes("line");
+      .join(' ')
+      .split(' ')
+      .includes('line');
 
 /**
  * Shiki transformer: the <pre> carries only `data-language` (the page's own text colour and
  * borders come from arkive.css), and per-line wrapper spans are flattened away.
  */
 export const shikiArkive = {
-   name: "arkive",
+   name: 'arkive',
    pre(node) {
-      node.properties = { "data-language": this.options.lang ?? "" };
+      node.properties = { 'data-language': this.options.lang ?? '' };
    },
    code(node) {
       node.children = node.children.flatMap((c) =>
@@ -57,27 +57,27 @@ export const shikiArkive = {
 
 export function rehypeArkive() {
    return (tree) => {
-      visit(tree, "element", (node, index, parent) => {
+      visit(tree, 'element', (node, index, parent) => {
          if (!parent || index == null) return;
 
          // Display math is MathML, which cannot scroll by itself. Give it the same
          // "may leave the column, then scroll" wrapper as a wide table; arkive.css already has it.
          const isDisplayMath =
-            node.tagName === "span" &&
-            [].concat(node.properties?.className ?? []).includes("katex") &&
+            node.tagName === 'span' &&
+            [].concat(node.properties?.className ?? []).includes('katex') &&
             node.children.some(
-               (c) => c.tagName === "math" && c.properties?.display === "block",
+               (c) => c.tagName === 'math' && c.properties?.display === 'block',
             );
 
-         if (node.tagName === "table" || isDisplayMath) {
+         if (node.tagName === 'table' || isDisplayMath) {
             parent.children[index] = {
-               type: "element",
-               tagName: "div",
+               type: 'element',
+               tagName: 'div',
                properties: {
                   className:
-                     node.tagName === "table"
-                        ? ["wide", "wide-table"]
-                        : ["wide"],
+                     node.tagName === 'table'
+                        ? ['wide', 'wide-table']
+                        : ['wide'],
                },
                children: [node],
             };
@@ -85,35 +85,35 @@ export function rehypeArkive() {
          }
 
          const lang =
-            node.properties?.["data-language"] ?? node.properties?.dataLanguage;
-         if (node.tagName === "pre" && lang !== undefined) {
+            node.properties?.['data-language'] ?? node.properties?.dataLanguage;
+         if (node.tagName === 'pre' && lang !== undefined) {
             parent.children[index] = {
-               type: "element",
-               tagName: "figure",
-               properties: { className: ["code"] },
+               type: 'element',
+               tagName: 'figure',
+               properties: { className: ['code'] },
                children: [
                   {
-                     type: "element",
-                     tagName: "div",
-                     properties: { className: ["code-head"] },
+                     type: 'element',
+                     tagName: 'div',
+                     properties: { className: ['code-head'] },
                      children: [
                         {
-                           type: "element",
-                           tagName: "span",
-                           properties: { className: ["muted"] },
+                           type: 'element',
+                           tagName: 'span',
+                           properties: { className: ['muted'] },
                            children: [
-                              { type: "text", value: label(String(lang)) },
+                              { type: 'text', value: label(String(lang)) },
                            ],
                         },
                         {
-                           type: "element",
-                           tagName: "button",
+                           type: 'element',
+                           tagName: 'button',
                            properties: {
-                              type: "button",
-                              "data-copy": "",
-                              hidden: true,
+                              'type': 'button',
+                              'data-copy': '',
+                              'hidden': true,
                            },
-                           children: [{ type: "text", value: "Copy" }],
+                           children: [{ type: 'text', value: 'Copy' }],
                         },
                      ],
                   },

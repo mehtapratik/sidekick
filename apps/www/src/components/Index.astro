@@ -1,10 +1,10 @@
 ---
-import { BLURB } from "../lib/site";
-import { plural, tagCounts, tagUrl, type Entry } from "../lib/entries";
-import { buildTree } from "../lib/tree";
-import Header from "./Header.astro";
-import EntriesTable from "./EntriesTable.astro";
-import TreeFolder from "./TreeFolder.astro";
+import { BLURB } from '../lib/site';
+import { plural, tagCounts, tagUrl, type Entry } from '../lib/entries';
+import { buildTree } from '../lib/tree';
+import Header from './Header.astro';
+import EntriesTable from './EntriesTable.astro';
+import TreeFolder from './TreeFolder.astro';
 
 interface Props {
    entries: Entry[];
@@ -72,7 +72,7 @@ const tree = buildTree(entries);
          >
       </p>
       <p class="count" data-count>
-         {plural(entries.length, "entry", "entries")}.
+         {plural(entries.length, 'entry', 'entries')}.
       </p>
       <div class="by-folder">
          <ul class="tree">

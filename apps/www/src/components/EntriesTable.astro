@@ -1,5 +1,5 @@
 ---
-import { tagUrl, type Entry } from "../lib/entries";
+import { tagUrl, type Entry } from '../lib/entries';
 
 interface Props {
    entries: Entry[];
@@ -7,8 +7,8 @@ interface Props {
 }
 const { entries, current } = Astro.props;
 const search = (e: Entry) =>
-   [e.title, e.deck, e.kind, e.retired ? "retired" : "", e.tags.join(" ")]
-      .join(" ")
+   [e.title, e.deck, e.kind, e.retired ? 'retired' : '', e.tags.join(' ')]
+      .join(' ')
       .toLowerCase();
 ---
 
@@ -25,9 +25,9 @@ const search = (e: Entry) =>
          entries.map((e) => (
             <tr
                data-url={e.url}
-               data-status={e.retired ? "retired" : undefined}
+               data-status={e.retired ? 'retired' : undefined}
                data-title={e.title}
-               data-tags={e.tags.join(" ")}
+               data-tags={e.tags.join(' ')}
                data-search={search(e)}
             >
                <td>{e.asOf}</td>
@@ -35,7 +35,7 @@ const search = (e: Entry) =>
                   <a
                      class="title"
                      href={e.url}
-                     aria-current={e.url === current ? "page" : undefined}
+                     aria-current={e.url === current ? 'page' : undefined}
                   >
                      {e.title}
                   </a>
@@ -46,7 +46,7 @@ const search = (e: Entry) =>
                      <span class="tag-line">
                         {e.tags.map((t, i) => (
                            <>
-                              {i > 0 && " "}
+                              {i > 0 && ' '}
                               <a href={tagUrl(t)} data-tag={t}>
                                  {t}
                               </a>

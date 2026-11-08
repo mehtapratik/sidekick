@@ -2,90 +2,90 @@
 // and scripts/check-privacy.mjs. Plain .mjs so all three can import it.
 //
 // It reads the authoring folders directly. There is no ingest or copy step.
-import { load as loadYaml } from "js-yaml";
-import fs from "node:fs";
-import path from "node:path";
+import { load as loadYaml } from 'js-yaml';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // pnpm, Turbo and Workers Builds run the site's scripts from apps/www, so the repo root is two levels up.
-const REPO_ROOT = path.resolve(process.cwd(), "../..");
-export const WRITINGS_DIR = path.join(REPO_ROOT, "content/writings");
-export const DOCS_DIR = path.join(REPO_ROOT, "content/docs");
-export const ASSETS_DIR = path.join(DOCS_DIR, "_assets_");
+const REPO_ROOT = path.resolve(process.cwd(), '../..');
+export const WRITINGS_DIR = path.join(REPO_ROOT, 'content/writings');
+export const DOCS_DIR = path.join(REPO_ROOT, 'content/docs');
+export const ASSETS_DIR = path.join(DOCS_DIR, '_assets_');
 
 /** Never built, whatever their frontmatter says (SPEC 3.1). */
-export const WRITINGS_EXCLUDE = ["_archive/**"];
-export const DOCS_EXCLUDE = ["_assets_/**", ".obsidian/**", "**/*.canvas"];
+export const WRITINGS_EXCLUDE = ['_archive/**'];
+export const DOCS_EXCLUDE = ['_assets_/**', '.obsidian/**', '**/*.canvas'];
 
 /** Vault folder -> URL slug and Index label. Array order is the Index order. */
 export const SECTIONS = [
-   { dir: "00-principles", slug: "principles", label: "Principles" },
-   { dir: "01-motivations", slug: "motivations", label: "Motivations" },
-   { dir: "02-prd", slug: "prd", label: "Product requirements" },
-   { dir: "03-system-design", slug: "system-design", label: "System design" },
-   { dir: "04-phases", slug: "phases", label: "Phases" },
-   { dir: "06-decisions", slug: "decisions", label: "Decisions" },
-   { dir: "07-glossary", slug: "glossary", label: "Glossary" },
-   { dir: "08-ai-coding-harness", slug: "harness", label: "AI coding harness" },
+   { dir: '00-principles', slug: 'principles', label: 'Principles' },
+   { dir: '01-motivations', slug: 'motivations', label: 'Motivations' },
+   { dir: '02-prd', slug: 'prd', label: 'Product requirements' },
+   { dir: '03-system-design', slug: 'system-design', label: 'System design' },
+   { dir: '04-phases', slug: 'phases', label: 'Phases' },
+   { dir: '06-decisions', slug: 'decisions', label: 'Decisions' },
+   { dir: '07-glossary', slug: 'glossary', label: 'Glossary' },
+   { dir: '08-ai-coding-harness', slug: 'harness', label: 'AI coding harness' },
 ];
 
 /** Acronyms and proper nouns for titles derived from file names (whole words, any case). */
 const TITLE_DICTIONARY = [
-   "API",
-   "PRD",
-   "RLS",
-   "AI",
-   "UX",
-   "UI",
-   "CLI",
-   "DB",
-   "PWA",
-   "RAG",
-   "SQL",
-   "JSON",
-   "YAML",
-   "HTTP",
-   "URL",
-   "ID",
-   "OG",
-   "RSS",
-   "SEO",
-   "CSS",
-   "HTML",
-   "JS",
-   "TS",
-   "ESLint",
-   "GraphQL",
-   "Relay",
-   "TypeScript",
-   "Turborepo",
-   "Vercel",
-   "Supabase",
-   "Postgres",
-   "Next.js",
-   "pnpm",
-   "tsup",
-   "dotenv",
-   "Drizzle",
-   "Capacitor",
-   "Tiptap",
-   "Taxila",
-   "Zinsser",
-   "Parrot",
-   "SaaS",
-   "iOS",
+   'API',
+   'PRD',
+   'RLS',
+   'AI',
+   'UX',
+   'UI',
+   'CLI',
+   'DB',
+   'PWA',
+   'RAG',
+   'SQL',
+   'JSON',
+   'YAML',
+   'HTTP',
+   'URL',
+   'ID',
+   'OG',
+   'RSS',
+   'SEO',
+   'CSS',
+   'HTML',
+   'JS',
+   'TS',
+   'ESLint',
+   'GraphQL',
+   'Relay',
+   'TypeScript',
+   'Turborepo',
+   'Vercel',
+   'Supabase',
+   'Postgres',
+   'Next.js',
+   'pnpm',
+   'tsup',
+   'dotenv',
+   'Drizzle',
+   'Capacitor',
+   'Tiptap',
+   'Taxila',
+   'Zinsser',
+   'Parrot',
+   'SaaS',
+   'iOS',
 ];
 const dictionary = new Map(
-   TITLE_DICTIONARY.map((w) => [w.toLowerCase().replace(".", " "), w]),
+   TITLE_DICTIONARY.map((w) => [w.toLowerCase().replace('.', ' '), w]),
 );
 
 /** Does a path relative to a collection's root match one of its exclude globs? */
 export function isExcluded(rel, patterns) {
    return patterns.some((p) => {
-      if (p.endsWith("/**")) {
+      if (p.endsWith('/**')) {
          const dir = p.slice(0, -3);
-         return rel === dir || rel.startsWith(dir + "/");
+         return rel === dir || rel.startsWith(dir + '/');
       }
-      if (p.startsWith("**/*.")) return rel.endsWith(p.slice(4));
+      if (p.startsWith('**/*.')) return rel.endsWith(p.slice(4));
       return rel === p;
    });
 }
@@ -94,37 +94,37 @@ export function isExcluded(rel, patterns) {
 const slugSegment = (s) =>
    s
       .toLowerCase()
-      .replace(/[\s_—–]+/g, "-")
-      .replace(/[^a-z0-9.\-]/g, "") // "?", ",", quotes: dropped, as in "get-the-interface-schema-…"
-      .replace(/^\d+-/, "");
+      .replace(/[\s_—–]+/g, '-')
+      .replace(/[^a-z0-9.\-]/g, '') // "?", ",", quotes: dropped, as in "get-the-interface-schema-…"
+      .replace(/^\d+-/, '');
 
 /** `content/writings/00-margins.md` keeps its prefix: `00-margins`. */
-export const writingSlug = (rel) => rel.replace(/\.md$/, "");
+export const writingSlug = (rel) => rel.replace(/\.md$/, '');
 
 /** `02-prd/features/00-core-drive/index.md`-style path -> `prd/features/core-drive/...`. */
 export function docSlug(rel) {
-   const segments = rel.replace(/\.md$/, "").split("/");
+   const segments = rel.replace(/\.md$/, '').split('/');
    const section = SECTIONS.find((s) => s.dir === segments[0]);
    if (!section) throw new Error(`Doc outside a configured section: ${rel}`);
-   return [section.slug, ...segments.slice(1).map(slugSegment)].join("/");
+   return [section.slug, ...segments.slice(1).map(slugSegment)].join('/');
 }
 
 /** Sentence-cased title from a file name; used when frontmatter has no `title`. */
 export function deriveTitle(file) {
    let s = path
       .basename(file)
-      .replace(/\.md$/, "")
-      .replace(/^\d+[-_]/, "")
-      .replace(/^_/, "")
-      .replace(/[-_—]+/g, " ")
+      .replace(/\.md$/, '')
+      .replace(/^\d+[-_]/, '')
+      .replace(/^_/, '')
+      .replace(/[-_—]+/g, ' ')
       .trim();
    s = s.charAt(0).toUpperCase() + s.slice(1);
-   s = s.replace(/(\d) (?=\d)/g, "$1."); // "task 1 1" -> "task 1.1"
+   s = s.replace(/(\d) (?=\d)/g, '$1.'); // "task 1 1" -> "task 1.1"
    return s
-      .split(" ")
+      .split(' ')
       .map((w) => dictionary.get(w.toLowerCase()) ?? w)
-      .join(" ")
-      .replace(/\bNext js\b/i, "Next.js");
+      .join(' ')
+      .replace(/\bNext js\b/i, 'Next.js');
 }
 
 /** GitHub-style heading slug, for `[[Note#Heading]]`. */
@@ -132,8 +132,8 @@ export const headingSlug = (text) =>
    text
       .trim()
       .toLowerCase()
-      .replace(/[^\p{L}\p{N}\s_-]/gu, "")
-      .replace(/\s/g, "-");
+      .replace(/[^\p{L}\p{N}\s_-]/gu, '')
+      .replace(/\s/g, '-');
 
 export function parseFrontmatter(source) {
    const m = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -150,7 +150,7 @@ function walk(dir, out = []) {
    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) walk(p, out);
-      else if (e.name.endsWith(".md")) out.push(p);
+      else if (e.name.endsWith('.md')) out.push(p);
    }
    return out;
 }
@@ -165,17 +165,17 @@ export function scanVault() {
    if (cache) return cache;
    const files = [];
    const roots = [
-      { collection: "writings", root: WRITINGS_DIR, exclude: WRITINGS_EXCLUDE },
-      { collection: "docs", root: DOCS_DIR, exclude: DOCS_EXCLUDE },
+      { collection: 'writings', root: WRITINGS_DIR, exclude: WRITINGS_EXCLUDE },
+      { collection: 'docs', root: DOCS_DIR, exclude: DOCS_EXCLUDE },
    ];
    for (const { collection, root, exclude } of roots) {
       for (const abs of walk(root)) {
-         const rel = path.relative(root, abs).split(path.sep).join("/");
+         const rel = path.relative(root, abs).split(path.sep).join('/');
          const excluded = isExcluded(rel, exclude);
-         const fm = parseFrontmatter(fs.readFileSync(abs, "utf8"));
+         const fm = parseFrontmatter(fs.readFileSync(abs, 'utf8'));
          const slug = excluded
             ? null
-            : collection === "docs"
+            : collection === 'docs'
               ? docSlug(rel)
               : writingSlug(rel);
          files.push({
@@ -186,12 +186,12 @@ export function scanVault() {
             slug,
             url:
                slug &&
-               (collection === "docs"
+               (collection === 'docs'
                   ? `/docs/${slug}/`
                   : `/writings/${slug}/`),
             published: !excluded && fm.publish === true,
             title: fm.title ? String(fm.title) : deriveTitle(rel),
-            stem: rel.replace(/\.md$/, ""),
+            stem: rel.replace(/\.md$/, ''),
          });
       }
    }
@@ -214,20 +214,20 @@ export function scanVault() {
  * Returns the scanned file or null.
  */
 export function resolveWikilink(target, fromRel, fromCollection) {
-   const files = scanVault().filter((f) => f.collection === "docs");
-   const clean = target.trim().replace(/\.md$/, "").toLowerCase();
+   const files = scanVault().filter((f) => f.collection === 'docs');
+   const clean = target.trim().replace(/\.md$/, '').toLowerCase();
    if (!clean) return null;
    const byStem = new Map(files.map((f) => [f.stem.toLowerCase(), f]));
-   if (fromCollection === "docs") {
+   if (fromCollection === 'docs') {
       const here = path.posix.normalize(
          path.posix.join(path.posix.dirname(fromRel), clean),
       );
       if (byStem.has(here)) return byStem.get(here);
    }
    if (byStem.has(clean)) return byStem.get(clean);
-   const base = clean.split("/").pop();
+   const base = clean.split('/').pop();
    const hits = files.filter(
-      (f) => f.stem.toLowerCase().split("/").pop() === base,
+      (f) => f.stem.toLowerCase().split('/').pop() === base,
    );
    return hits.length === 1 ? hits[0] : null;
 }

@@ -1,6 +1,6 @@
-import { defineCollection } from "astro:content";
-import { glob } from "astro/loaders";
-import { z } from "astro/zod";
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 import {
    DOCS_DIR,
    DOCS_EXCLUDE,
@@ -8,7 +8,7 @@ import {
    WRITINGS_EXCLUDE,
    docSlug,
    writingSlug,
-} from "./lib/vault.mjs";
+} from './lib/vault.mjs';
 
 const text = z.union([z.string(), z.number()]).transform(String);
 
@@ -26,7 +26,7 @@ const schema = z.object({
    id: text.optional(),
    version: text.optional(),
    // Kept in frontmatter, never shown on the site.
-   status: text.default("active"),
+   status: text.default('active'),
    // Defaults to the site licence (DEFAULT_LICENSE in lib/entries.ts).
    license: text.optional(),
    kind: text.optional(),
@@ -38,7 +38,7 @@ const schema = z.object({
 });
 
 const patterns = (exclude: string[]) => [
-   "**/*.md",
+   '**/*.md',
    ...exclude.map((p) => `!${p}`),
 ];
 

@@ -1,7 +1,7 @@
 ---
-import { getListedEntries, plural, tagCounts } from "../../lib/entries";
-import EntriesTable from "../../components/EntriesTable.astro";
-import Layout from "../../layouts/Layout.astro";
+import { getListedEntries, plural, tagCounts } from '../../lib/entries';
+import EntriesTable from '../../components/EntriesTable.astro';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
    const entries = await getListedEntries();
@@ -15,6 +15,6 @@ const { tag, entries } = Astro.props;
 
 <Layout title={`Tagged “${tag}”`}>
    <h1>Tagged “{tag}”</h1>
-   <p>{plural(entries.length, "entry", "entries")}, newest first.</p>
+   <p>{plural(entries.length, 'entry', 'entries')}, newest first.</p>
    <EntriesTable entries={entries} />
 </Layout>

@@ -1,14 +1,14 @@
-import { getCollection, type CollectionEntry } from "astro:content";
-import { deriveTitle } from "./vault.mjs";
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { deriveTitle } from './vault.mjs';
 
 /** Applies to every entry whose frontmatter has no `license:`. */
-export const DEFAULT_LICENSE = "CC BY-NC 4.0";
+export const DEFAULT_LICENSE = 'CC BY-NC 4.0';
 
 /** Statuses that mark an entry as no longer relevant. It stays published, but says so. */
-const RETIRED_STATUSES = ["deprecated", "retired"];
+const RETIRED_STATUSES = ['deprecated', 'retired'];
 
 export interface Entry {
-   collection: "writings" | "docs";
+   collection: 'writings' | 'docs';
    /** Permanent URL, with leading and trailing slash. */
    url: string;
    title: string;
@@ -28,34 +28,34 @@ export interface Entry {
    tags: string[];
    words: number;
    minutes: number;
-   source: CollectionEntry<"writings" | "docs">;
+   source: CollectionEntry<'writings' | 'docs'>;
 }
 
 const day = (d: Date) => d.toISOString().slice(0, 10);
 
 /** Lower-cased, trimmed, no leading `#`. Near-duplicates are an authoring fix, not merged. */
 export const normaliseTag = (t: string) =>
-   t.trim().replace(/^#+/, "").toLowerCase();
+   t.trim().replace(/^#+/, '').toLowerCase();
 
 function firstParagraph(html: string): string {
    const m = html.match(/<p>([\s\S]*?)<\/p>/);
-   return m ? textOf(m[1]).trim() : "";
+   return m ? textOf(m[1]).trim() : '';
 }
 
 function textOf(html: string): string {
    // Block-level tags separate words; inline tags (<strong>, <a>, token <span>s) do not.
    return html
-      .replace(/<annotation\b[\s\S]*?<\/annotation>/g, "") // MathML keeps its TeX source here
+      .replace(/<annotation\b[\s\S]*?<\/annotation>/g, '') // MathML keeps its TeX source here
       .replace(
          /<\/?(?:p|li|ul|ol|h[1-6]|tr|td|th|div|table|thead|tbody|br|figure|pre|aside|blockquote|hr)\b[^>]*>/g,
-         " ",
+         ' ',
       )
-      .replace(/<[^>]+>/g, "")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
+      .replace(/<[^>]+>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#x27;|&#39;/g, "'")
-      .replace(/&amp;/g, "&");
+      .replace(/&amp;/g, '&');
 }
 
 /** The one comparator: as-of descending, then created descending, then title (case-insensitive). */
@@ -68,27 +68,27 @@ export function compare(a: Entry, b: Entry): number {
 }
 
 function toEntry(
-   collection: Entry["collection"],
-   e: CollectionEntry<"writings" | "docs">,
+   collection: Entry['collection'],
+   e: CollectionEntry<'writings' | 'docs'>,
 ): Entry {
    const d = e.data;
-   const html = e.rendered?.html ?? "";
+   const html = e.rendered?.html ?? '';
    const words = textOf(html).split(/\s+/).filter(Boolean).length;
-   const deck = d.deck ?? d.description ?? "";
+   const deck = d.deck ?? d.description ?? '';
    return {
       collection,
-      url: collection === "docs" ? `/docs/${e.id}/` : `/writings/${e.id}/`,
+      url: collection === 'docs' ? `/docs/${e.id}/` : `/writings/${e.id}/`,
       title: d.title ?? deriveTitle(e.filePath ?? e.id),
       deck,
       summary: deck || firstParagraph(html),
       asOf: day(d.updated ?? d.created),
       created: day(d.created),
-      version: d.version ?? "",
+      version: d.version ?? '',
       status: d.status,
       retired: RETIRED_STATUSES.includes(d.status.trim().toLowerCase()),
       license: d.license ?? DEFAULT_LICENSE,
-      kind: d.kind ?? (collection === "writings" ? "essay" : "doc"),
-      audience: d.audience ?? "",
+      kind: d.kind ?? (collection === 'writings' ? 'essay' : 'doc'),
+      audience: d.audience ?? '',
       tags: [...new Set(d.tags.map(normaliseTag).filter(Boolean))],
       words,
       minutes: Math.max(1, Math.round(words / 230)),
@@ -102,16 +102,16 @@ let cache: Promise<Entry[]> | undefined;
 export function getEntries(): Promise<Entry[]> {
    cache ??= (async () => {
       const [writings, docs] = await Promise.all([
-         getCollection("writings"),
-         getCollection("docs"),
+         getCollection('writings'),
+         getCollection('docs'),
       ]);
       return [
          ...writings
             .filter((e) => e.data.publish === true)
-            .map((e) => toEntry("writings", e)),
+            .map((e) => toEntry('writings', e)),
          ...docs
             .filter((e) => e.data.publish === true)
-            .map((e) => toEntry("docs", e)),
+            .map((e) => toEntry('docs', e)),
       ].sort(compare);
    })();
    return cache;
@@ -142,4 +142,4 @@ export function tagCounts(entries: Entry[]): [string, number][] {
 }
 
 export const plural = (n: number, one: string, many = `${one}s`) =>
-   `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
+   `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
