@@ -21,8 +21,6 @@
       "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
       "test": "turbo test",
       "test:integration": "turbo test:integration",
-      "docs:setup": "node scripts/setup-docs.mjs",
-      "postinstall": "node scripts/setup-docs.mjs",
       "prepare": "husky"
    },
    "devDependencies": {

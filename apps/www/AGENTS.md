@@ -1,7 +1,7 @@
-# Arkive: repository notes
+# Public site (apps/www): package notes
 
 The design handover (SPEC, house rules, reference pages) was removed from the tree; it lives in git
-history (`git show c91121d:design/SPEC.md`, likewise `design/AGENTS.md`, `design/reference/`). This file
+history (`git show 28ec684:apps/www/design/SPEC.md`, likewise `apps/www/design/AGENTS.md`, `apps/www/design/reference/`). This file
 keeps the rules that still bind and what is not obvious from the code.
 
 ## House rules
@@ -25,19 +25,18 @@ keeps the rules that still bind and what is not obvious from the code.
 
 ## Commands
 
-| Task                 | Command           |
-| -------------------- | ----------------- |
-| Dev server           | `npm run dev`     |
-| Build + privacy gate | `npm run build`   |
-| Serve the build      | `npm run preview` |
+| Task            | Command                                       |
+| --------------- | --------------------------------------------- |
+| Dev server      | `pnpm --filter @sidekick/www dev`             |
+| Build + gates   | `pnpm turbo run build --filter=@sidekick/www` |
+| Serve the build | `pnpm --filter @sidekick/www preview`         |
 
-Node >= 22.19. Format with Prettier (`.prettierrc`, 3 spaces) **except** `public/arkive.css`,
-`public/arkive.js`, `public/fonts/`, `public/icons/`, `src/shiki-themes.mjs`: those ship as given.
+Node 24 (the root `.nvmrc`). Formatted by the root Prettier config except `public/arkive.css`, `public/arkive.js`, `public/fonts/`, `public/icons/` and `src/shiki-themes.mjs`, which ship as given and are listed in the root `.prettierignore`.
 
 ## Layout
 
 ```
-sources/writings, sources/docs   authored Markdown (the Obsidian vault is sources/docs)
+content/writings, content/docs   authored Markdown at the repo root (the Obsidian vault is content/docs)
 public/arkive.css, arkive.js     the handover's stylesheet and script, unmodified
 public/fonts/, public/icons/     self-hosted typefaces and line icons, ship as given
 src/shiki-themes.mjs             the handover's two code themes, unmodified
@@ -47,7 +46,7 @@ src/lib/tree.ts                  folder tree for the Index (port of the handover
 src/plugins/                     remark (wikilinks, embeds, callouts, leading H1) and rehype (tables, code figure)
 src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/, /datums.json
 src/lib/datums.mjs               datum scan, relation parsing, id checks
-scripts/check-privacy.mjs        post-build gate, run by `npm run build`
+scripts/check-privacy.mjs        post-build gate, run by the site's build
 scripts/check-datums.mjs         post-build datum gate; `--next` prints the next free id
 ```
 
@@ -75,7 +74,7 @@ outcome. Plans, walkthroughs, lessons and notes stay prose and cite datums. A da
   `contradicts`, `cites`, ...) plus `violates` and `exception-to`. `[[D12]]` links to a datum; the page
   gets `#D12` on the bold id. Direction runs from the dependent to what it relies on.
 - A markdown list item may hold a datum (`1. **D4** ...`). A datum is never written inside a code fence.
-- `npm run build` fails on a duplicate id, an unknown kind or a relation that does not resolve, and prints every
+- The site's build fails on a duplicate id, an unknown kind or a relation that does not resolve, and prints every
   `violates` link. `/datums.json` is the index of datums in published pages.
 
 ## Where this repo departs from the handover SPEC
