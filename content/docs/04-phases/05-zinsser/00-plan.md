@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-5-zinsser-v1-writing-editor-first
 title: Zinsser
 created: 2026-09-19
+updated: 2026-11-08
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -24,7 +25,7 @@ depends_on:
 
 > **Milestone:** A proper writing experience with Tiptap. Taxila and Zinsser share the editor component. This is where the app starts feeling real.
 > **Learning payoff:** Tiptap configuration, rich text as JSON storage, markdown export, editor extensions.
-> **Prerequisite:** Write the Zinsser PRD in `docs/02-prd/` before starting.
+> **Prerequisite:** Write the Zinsser PRD in `content/docs/02-prd/` before starting.
 > **Scope note:** This phase is the editor only. Zinsser's AI-coach layer (style profile trained on your writing, point-by-point feedback, repeated-mistake tracking) depends on the AI layer and is sequenced after Phase 6 — see Backlogged item B2.
 
 | #    | Task                                                                                        | Complexity | Learning |

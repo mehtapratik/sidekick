@@ -25,7 +25,7 @@ What exists today:
 - **CI and branch protection:** `main` accepts changes only through pull requests whose CI `checks` job passes.
 - **Current toolchain:** Node 24, TypeScript 6.0, ESLint 10, kept up to date by Renovate.
 
-Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry and entitlements on top of them. The plan lives in `docs/04-phases/`.
+Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry and entitlements on top of them. The plan lives in `content/docs/04-phases/`.
 
 ---
 
@@ -64,9 +64,7 @@ Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry 
 pnpm install
 ```
 
-`pnpm install` also sets up `docs/`. Sidekick's documentation lives in the public [Arkive](https://github.com/mehtapratik/arkive) repo; `docs/` (and `AGENTS.md`, which links into it) is a symlink to `../arkive/sources/docs`. If that sibling checkout is missing, the install clones Arkive next to this repo, downloading only `sources/docs` (`scripts/setup-docs.mjs`). It is skipped in CI and on Vercel, or when `SIDEKICK_SKIP_DOCS=1`. Run it again any time with `pnpm docs:setup`.
-
-Cloud and remote agent environments must run `pnpm install` before the agent starts; otherwise `AGENTS.md` does not resolve.
+Docs and writings live in `content/` (the vault is `content/docs/`), and `AGENTS.md` links into it, so a fresh clone needs no extra setup.
 
 ### Development
 
@@ -119,6 +117,7 @@ After a toolchain upgrade, verify with Turbo's cache bypassed (`pnpm turbo build
 ```
 apps/
   web/                  # Next.js 16 App Router — main web application
+  www/                  # Astro public site (arkive.blog), deployed as a Cloudflare Worker
   cli/                  # CLI tool — placeholder until Phase 9 (API keys + CLI)
 
 packages/
@@ -130,15 +129,17 @@ packages/
   features-registry/    # Master feature manifest list (ALL_FEATURES), built out in Phase 2
   features/             # Feature packages (none yet; the first arrives after Phase 2)
 
-docs/                    # Symlink to ../arkive/sources/docs — Sidekick's canonical documentation
-  00-principles/         # Working principles
-  01-motivations/        # Why Sidekick exists
-  02-prd/                # Product requirements
-  03-system-design/      # System design (functional and non-functional)
-  04-phases/             # One folder per phase: plan, lessons, walkthroughs and private learnings
-  06-decisions/          # Architecture and technical decisions
-  07-glossary/           # Shared vocabulary
-  08-ai-coding-harness/  # Task-specific implementation guidance (agent-guide.md is AGENTS.md)
+content/                 # Docs and writings, under CC BY-NC 4.0 (content/LICENSE)
+  docs/                  # The vault: Sidekick's canonical documentation
+    00-principles/       # Working principles
+    01-motivations/      # Why Sidekick exists
+    02-prd/              # Product requirements
+    03-system-design/    # System design (functional and non-functional)
+    04-phases/           # One folder per phase: plan, lessons, walkthroughs and private learnings
+    06-decisions/        # Architecture and technical decisions
+    07-glossary/         # Shared vocabulary
+    08-ai-coding-harness/  # Task-specific implementation guidance (agent-guide.md is AGENTS.md)
+  writings/              # Essays published under Writings
 ```
 
 ---

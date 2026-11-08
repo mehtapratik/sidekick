@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.04-synergy.violations-and-exceptions
 title: Violations and Exceptions
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-08
 kind: spec
-version: 1.0.0
+version: 1.0.1
 tags:
    - system-design
    - synergy
@@ -40,7 +40,7 @@ A violation has no status. **Open** is a live `violates` link. **Resolved** is u
 
 - Lesson 6 seeds both types and tests the retype (same id, fresh snapshot, cycle check) and the `type` filter. Lesson 7 tests that `violates` shows no dot and `exception-to` goes stale with its rule. Lesson 11 tests that `violates` never blocks the rule's delete and `exception-to` does.
 - 3b adds `GET /links?type=` and its `(user_id, type)` index, next to search and backlinks.
-- Arkive's datum markers already use both words (the arkive repo's `CLAUDE.md` and `src/lib/datums.mjs`), so the product and the docs that describe it share one vocabulary.
+- Arkive's datum markers already use both words (`apps/www/AGENTS.md` and `apps/www/src/lib/datums.mjs`), so the product and the docs that describe it share one vocabulary.
 
 ## Decision History
 

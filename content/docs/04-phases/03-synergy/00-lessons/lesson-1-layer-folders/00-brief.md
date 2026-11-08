@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-1-layer-folders
 title: "Synergy Lesson 1: Layer Folders and Lint"
 created: 2026-11-01
-updated: 2026-11-06
+updated: 2026-11-08
 kind: plan
-version: 1.1.0
+version: 1.1.1
 tags:
    - plan
    - phase-3
@@ -36,7 +36,7 @@ status: planned
    4a. **Lint the site, minimally.** `apps/www` gets a `lint` script and `eslint-plugin-astro`; one override block at the end of `eslint.config.js` turns the strictness rules off for `apps/www/**` and leaves `boundaries` and the basics on; the Pages Router ban and the Next.js rules gain `ignores: ["apps/www/**"]`. The site is temporary and not held to the App's strictness ([[D256]]).
 5. **Prove the policies.** In a scratch branch, inside a package with `pnpm lint`: one allowed import (synergy imports core), one refused import (core imports synergy), one package in no layer (a throwaway `packages/stray`) that fails, and an Astro page that imports `@sidekick/core`, which fails. Remove the scratch changes.
 6. **Prove the move.** `pnpm turbo run build lint typecheck test --force`, `pnpm test:integration` and `pnpm db:migrate` against dev, all green.
-7. **Docs (coach, in the arkive PR).** Update the live docs that name the old paths: the Synergy overview, testing layers, Lexicon highlighting, centralized copy, ESLint best-practice rules, shared tsconfig, TypeScript hoisting and the agent guide (dependency direction). Add a post note to the Phase 2 walkthrough. Moving `copy` is expected even though I1 deletes it later: skipping it would need a temporary pattern for it. Finished walkthroughs keep their old paths.
+7. **Docs (coach, in the docs PR).** Update the live docs that name the old paths: the Synergy overview, testing layers, Lexicon highlighting, centralized copy, ESLint best-practice rules, shared tsconfig, TypeScript hoisting and the agent guide (dependency direction). Add a post note to the Phase 2 walkthrough. Moving `copy` is expected even though I1 deletes it later: skipping it would need a temporary pattern for it. Finished walkthroughs keep their old paths.
 
 **Exit check:** step 5's three lint results, and step 6 green.
 

@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-7-war-room-factory-v1
 title: War Room
 created: 2026-09-19
+updated: 2026-11-08
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -24,7 +25,7 @@ depends_on:
 
 > **Milestone:** Planning and push-button execution. Tasks exist; one click on a configured button (e.g., "School+Car") creates tomorrow's pickup task without typing a word.
 > **Learning payoff:** Workflow/action modeling, form-defaults configuration, composing features through Synergy.
-> **Prerequisites:** War Room and Factory PRDs in `docs/02-prd/`.
+> **Prerequisites:** War Room and Factory PRDs in `content/docs/02-prd/`.
 > **Context note:** War Room and Factory own **Tier 2 situational state** (current projects, priorities, goals, calendar, daily briefs — [[03-system-design/functional-design/01-core-drive/00-tiered-context-model|tiered context model]]). Once their entities exist, wire them into the Context Assembler as structured-query sources (task 7A.5). Boundary rule: they store state, never values — values live in Core Drive.
 
 ### 7A — War Room

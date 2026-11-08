@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-4-taxila-v1-knowledge-management
 title: Taxila
 created: 2026-09-19
+updated: 2026-11-08
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -24,11 +25,11 @@ depends_on:
 
 > **Milestone:** The first product module, end-to-end: atomic notes and knowledge sources you can create, enrich with metadata, link, and browse — reached through the command-palette shell. Every future module follows this pattern.
 > **Learning payoff:** The complete feature loop: PRD → schema → migration → API → repository → UI. Polymorphic content design. Command-palette UX.
-> **Prerequisite:** Write the Taxila PRD in `docs/02-prd/` before starting (new convention).
+> **Prerequisite:** Write the Taxila PRD in `content/docs/02-prd/` before starting (new convention).
 
 | #    | Task                                                                                                                                                                             | Complexity | Learning |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| 4.1  | Write Taxila PRD in `docs/02-prd/` — source types, note anatomy, metadata model, MVP cut                                                                                         | 🟡         |          |
+| 4.1  | Write Taxila PRD in `content/docs/02-prd/` — source types, note anatomy, metadata model, MVP cut                                                                                         | 🟡         |          |
 | 4.2  | Create `packages/features/taxila` with its own `package.json`, tsconfig, and Drizzle config                                                                                      | 🟡         | 📦 🗄️    |
 | 4.3  | Define `notes` table schema — `id` (client UUID), `userId`, `title`, `content`, `createdAt`, `updatedAt`, `deletedAt`, `embeddingStatus`                                         | 🔴         | 🗄️       |
 | 4.4  | Define `knowledge_sources` table — `sourceType: 'link' \| 'captured' \| 'markdown'`, `url`, `content`, same syncable + `embeddingStatus` columns (a bookmark is a `link` source) | 🔴         | 🗄️       |

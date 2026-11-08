@@ -3,8 +3,9 @@ publish: true
 id: plan.phase-6-core-drive-ai-layer-alter-ego
 title: Alter Ego
 created: 2026-09-19
+updated: 2026-11-08
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - living-plan
@@ -26,7 +27,7 @@ depends_on:
 
 > **Milestone:** Sidekick gets its mind. Core Drive holds your principles, values, and mental models; your content is semantically searchable; and Alter Ego — grounded in Core Drive + Taxila — answers as the version of you who sees clearly.
 > **Learning payoff:** pgvector, HNSW indexes, semantic chunking, provider-agnostic AI routing, streaming structured responses, RAG pipeline design.
-> **Prerequisites:** Write the Core Drive and Alter Ego PRDs in `docs/02-prd/`. The Alter Ego PRD must specify the source-attribution contract (internal vs. web source classes, color coding, footnotes — see [[02-prd/02-ai/prd.ai.source-attribution|Source Attribution]] and [[03-system-design/functional-design/03-ai/structured-response-attribution|Structured Response Attribution]]).
+> **Prerequisites:** Write the Core Drive and Alter Ego PRDs in `content/docs/02-prd/`. The Alter Ego PRD must specify the source-attribution contract (internal vs. web source classes, color coding, footnotes — see [[02-prd/02-ai/prd.ai.source-attribution|Source Attribution]] and [[03-system-design/functional-design/03-ai/structured-response-attribution|Structured Response Attribution]]).
 
 ### 6A — Core Drive (context layer)
 

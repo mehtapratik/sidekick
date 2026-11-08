@@ -3,9 +3,9 @@ publish: true
 id: build.pre-2
 title: "Front Door: Hardening Walkthrough"
 created: 2026-10-16
-updated: 2026-10-24
+updated: 2026-11-08
 kind: guidance
-version: 1.4.0
+version: 1.5.0
 tags:
    - build
    - walkthrough
@@ -1840,3 +1840,7 @@ Without the element, `packages/ops` would match `packages/*` as `foundation`, wh
 # Privileged connection — used only by drizzle-kit (pnpm db:generate / db:migrate)
 # and the ops scripts (packages/ops, pnpm ops:…).
 ```
+
+## Post note — `setup-docs` Removed in Synergy Lesson 0 (added 2026-11-08)
+
+Synergy [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|Lesson 0]] moved the vault into this repo as `content/docs/`. Task Pre-2.10's `docs` symlink, `scripts/setup-docs.mjs` and the `docs:setup` and `postinstall` scripts are gone, and `AGENTS.md` links to `content/docs/08-ai-coding-harness/agent-guide.md`. Skip Task Pre-2.10.

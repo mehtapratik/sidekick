@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3-graph-store-metadata-service
 title: Synergy
 created: 2026-09-19
-updated: 2026-11-06
+updated: 2026-11-08
 kind: plan
-version: 2.4.0
+version: 2.4.1
 tags:
    - plan
    - living-plan
@@ -71,8 +71,8 @@ Phase 3 follows Phase 2's [[04-phases/02-gatekeeper/01-contracts#How we build|ho
 - **Explain backend mechanisms from first principles:** the concept, then the problem as a practical story, then the fix, then ask to agree.
 - **One piece at a time.** Nothing lands in the repo until Pratik agrees to it. Pratik commits, pushes and opens the PR unless they ask otherwise.
 - **Tests go through the guarded API** wherever a route exists ([[03-system-design/non-functional/testing/testing-layers|testing layers]]). Whether a pure function also gets a unit test is Pratik's call in each lesson; the briefs point out the candidates.
-- **The design can change.** When Pratik's design wins in a lesson, the coach updates the Synergy overview (or the decision it touches) and bumps its version in the lesson's arkive PR, so later lessons build on what was built.
-- **Every lesson ends with one arkive PR:** a walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md`, a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `npm run build` (Astro and the privacy gate).
+- **The design can change.** When Pratik's design wins in a lesson, the coach updates the Synergy overview (or the decision it touches) and bumps its version in the lesson's docs PR, so later lessons build on what was built.
+- **Every lesson ends with one docs PR:** a walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md`, a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `pnpm turbo run build --filter=@sidekick/www` (Astro and both gates).
 
 ## Exit criteria
 
@@ -111,7 +111,7 @@ After Checkpoint 3a and before S1 (Pratik, 2026-11-05), Sidekick becomes i18n-re
 | I1     | Messages and formats: `@sidekick/i18n` (locale config with `ar` as a mock, named formats, `AppConfig` types, `mergeCatalogs`, the `common` catalog), next-intl in the App with the locale read in `i18n/request.ts`, today's copy rewritten as whole ICU sentences in `apps/app/messages`, `@sidekick/copy` deleted, `lang` and `dir` on `<html>`, the `tz` cookie and an explicit `timeZone` ([[D253]]), zod's `customError` and the `common.validation` messages ([[D252]]), and `/dev/i18n` showing English and Arabic side by side | ICU messages, plurals and selects, `Intl` number, currency, date, relative-time and list formats, time zones, typed message keys, collecting catalogs like a registry |        |
 | I2     | Guard rails: `no-literal-string` in `jsx-only` mode, the i18n import ban in `ui` ([[D249]]), `stylelint-use-logical`, the `sidekick/catalog-namespace` rule on JSON, the catalog check script in Turbo, and any physical CSS properties left in the App made logical; the site is exempt ([[D256]])                                                                                                                                                                                                                                    | ESLint rules over JSON with `@eslint/json`, cross-file checks, logical properties and right-to-left layout, the same catalogs in Astro with no client JS              |        |
 
-I1's arkive PR also points the docs that name `packages/copy` at the new home: the [[03-system-design/functional-design/04-synergy/00-overview|Synergy overview]] (D201), the [[02-prd/03-features/01-synergy/spec|spec]]'s relation-type labels, the agent guide, best practices (D23), the harness notes, the architecture invariants and lesson 1's move list (if lesson 1 has run, its walkthrough gets a post note). It retires [[03-system-design/non-functional/content/centralized-copy|Centralized Copy]] (`status: deprecated`) and adds a post note to the Front Door walkthrough's Task 1.17.
+I1's docs PR also points the docs that name `packages/copy` at the new home: the [[03-system-design/functional-design/04-synergy/00-overview|Synergy overview]] (D201), the [[02-prd/03-features/01-synergy/spec|spec]]'s relation-type labels, the agent guide, best practices (D23), the harness notes, the architecture invariants and lesson 1's move list (if lesson 1 has run, its walkthrough gets a post note). It retires [[03-system-design/non-functional/content/centralized-copy|Centralized Copy]] (`status: deprecated`) and adds a post note to the Front Door walkthrough's Task 1.17.
 
 ## Site lessons (the redesign)
 

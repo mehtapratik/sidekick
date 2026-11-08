@@ -21,7 +21,7 @@ tags:
 
 # Sidekick coding guide
 
-`docs/` is a symlink to Arkive's canonical Sidekick vault. Edit documentation in the Arkive repository, never through a copied local source. Start with a narrow note for the task; do not load the entire vault.
+The vault is `content/docs/`, in this repo. A change and the docs it makes false land in the same PR. Start with a narrow note for the task; do not load the entire vault.
 
 ## Working with Pratik
 
@@ -97,13 +97,13 @@ Everything about a phase lives in its folder under `04-phases/`, named by number
 
 | Task                                   | Read first                                                                                                                                                                                                                             |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Product scope / feature work           | [[04-phases/living-plan\|docs/04-phases/living-plan.md]]                                                                                                                                                                               |
-| API, database, or security             | [[08-ai-coding-harness/database-and-security\|docs/08-ai-coding-harness/database-and-security.md]]                                                                                                                                     |
-| Tooling or package layout              | [[08-ai-coding-harness/architecture-invariants\|docs/08-ai-coding-harness/architecture-invariants.md]]                                                                                                                                 |
-| Environment or commands                | [[08-ai-coding-harness/commands-and-environment\|docs/08-ai-coding-harness/commands-and-environment.md]]                                                                                                                               |
-| Why a rule exists, or what was decided | [[06-decisions/log\|docs/06-decisions/log.md]]                                                                                                                                                                                         |
+| Product scope / feature work           | [[04-phases/living-plan\|content/docs/04-phases/living-plan.md]]                                                                                                                                                                               |
+| API, database, or security             | [[08-ai-coding-harness/database-and-security\|content/docs/08-ai-coding-harness/database-and-security.md]]                                                                                                                                     |
+| Tooling or package layout              | [[08-ai-coding-harness/architecture-invariants\|content/docs/08-ai-coding-harness/architecture-invariants.md]]                                                                                                                                 |
+| Environment or commands                | [[08-ai-coding-harness/commands-and-environment\|content/docs/08-ai-coding-harness/commands-and-environment.md]]                                                                                                                               |
+| Why a rule exists, or what was decided | [[06-decisions/log\|content/docs/06-decisions/log.md]]                                                                                                                                                                                         |
 | AI, context, or RAG                    | [[03-system-design/functional-design/03-ai/context-assembler\|Context Assembler]] → [[03-system-design/functional-design/01-core-drive/00-tiered-context-model\|tiered context]] → [[03-system-design/non-functional/rag/00-rag\|RAG]] |
 
 For an unfamiliar cross-cutting task, use the [[tag-taxonomy|tag taxonomy]] to select notes before reading broadly.
 
-When a document disagrees with code, identify and resolve the discrepancy before expanding the implementation. Update the canonical Arkive vault note with a changed `version` when its contract changes.
+When a document disagrees with code, identify and resolve the discrepancy before expanding the implementation. Update the vault note with a changed `version` when its contract changes.
