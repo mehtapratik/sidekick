@@ -3,8 +3,9 @@ publish: true
 id: harness.notes
 title: Notes
 created: 2026-09-19
+updated: 2026-11-09
 kind: guidance
-version: 1.0.0
+version: 1.0.1
 tags:
    - ai-coding-harness
    - agent-guidance
@@ -24,7 +25,7 @@ Three packages in Sidekick need script execution during install:
 
 All three are legitimate, widely-used packages. Approving them is safe.
 
-They are approved in the `allowBuilds` map in `pnpm-workspace.yaml`, which covers every package, `apps/web` included. Do not run `pnpm approve-builds` per app, and do not use the `pnpm.onlyBuiltDependencies` field in `package.json` (pnpm 11 and later ignore it). See [[03-system-design/non-functional/monorepo/approve-builds|approve-builds]].
+They are approved in the `allowBuilds` map in `pnpm-workspace.yaml`, which covers every package, `apps/app` included. Do not run `pnpm approve-builds` per app, and do not use the `pnpm.onlyBuiltDependencies` field in `package.json` (pnpm 11 and later ignore it). See [[03-system-design/non-functional/monorepo/approve-builds|approve-builds]].
 
 ## Copies
 
