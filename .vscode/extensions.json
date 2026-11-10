@@ -1,0 +1,17 @@
+{
+   "recommendations": [
+      "steoates.autoimport",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "stylelint.vscode-stylelint",
+      "astro-build.astro-vscode",
+      "antfu.icons-carbon",
+      "catppuccin.catppuccin-vsc-icons",
+      "mikestead.dotenv",
+      "usernamehw.errorlens",
+      "wix.vscode-import-cost",
+      "kuscamara.remove-unused-imports",
+      "amatiasq.sort-imports",
+      "raunofreiberg.vesper"
+   ]
+}
