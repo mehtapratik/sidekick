@@ -12,5 +12,6 @@
    "workbench.startupEditor": "none",
    "workbench.editor.editorActionsLocation": "titleBar",
    "workbench.productIconTheme": "icons-carbon",
-   "workbench.activityBar.orientation": "vertical"
+   "workbench.activityBar.orientation": "vertical",
+   "json.schemaDownload.enable": true
 }

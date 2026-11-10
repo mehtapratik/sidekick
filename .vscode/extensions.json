@@ -12,6 +12,7 @@
       "wix.vscode-import-cost",
       "kuscamara.remove-unused-imports",
       "amatiasq.sort-imports",
-      "raunofreiberg.vesper"
+      "raunofreiberg.vesper",
+      "unional.vscode-sort-package-json"
    ]
 }
