@@ -1,0 +1,4 @@
+# A PR whose every changed file is under content/ is a content-only PR (D215)
+content:
+   - changed-files:
+        - all-globs-to-all-files: 'content/**'
