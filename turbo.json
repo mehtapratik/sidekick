@@ -17,11 +17,6 @@
             "NEXT_PUBLIC_APP_URL"
          ]
       },
-      "@sidekick/www#build": {
-         "dependsOn": ["^build"],
-         "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/content/**"],
-         "outputs": ["dist/**"]
-      },
       "dev": {
          "cache": false,
          "persistent": true
