@@ -1,0 +1,16 @@
+{
+   "workbench.colorTheme": "Vesper",
+   "workbench.iconTheme": "catppuccin-mocha",
+   "editor.fontFamily": "\"LXGW WenKai Mono TC\", Menlo, Monaco, 'Courier New', monospace",
+   "editor.fontSize": 16,
+   "screencastMode.keyboardOverlayTimeout": 1500,
+   "editor.stickyScroll.enabled": false,
+   "editor.cursorSmoothCaretAnimation": "on",
+   "editor.renderLineHighlight": "all",
+   "editor.cursorStyle": "block",
+   "editor.cursorBlinking": "solid",
+   "workbench.startupEditor": "none",
+   "workbench.editor.editorActionsLocation": "titleBar",
+   "workbench.productIconTheme": "icons-carbon",
+   "workbench.activityBar.orientation": "vertical"
+}
