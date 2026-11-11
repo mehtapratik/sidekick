@@ -44,7 +44,7 @@ Live since 2026-11-11 (Lesson 0): `arkive.blog` and `www.arkive.blog` are custom
 
 ## Node version files
 
-Sidekick's CI and Workers Builds both read the root `.nvmrc` (24): Workers Builds runs from the repo root. The site's old `.node-version` was a leftover from Pages and was deleted in #47. Renovate never bumps Node, so it changes by hand.
+Sidekick's CI and Workers Builds both read the root `.nvmrc` (24): Workers Builds runs from the repo root. The site's old `.node-version` was a leftover from Pages and was deleted in #47; the Workers build log confirms the root file is read (`nodejs@24.22.2`, where the image default is 24.22.1). Renovate never bumps Node, so it changes by hand.
 
 ## The cutover
 

@@ -543,4 +543,4 @@ The diff prints nothing, every sitemap path returns 200, the made-up path return
 ## After the lesson
 
 - Point Obsidian at `~/Projects/sidekick/content/docs`, then delete `~/Projects/arkive` (after moving its untracked `design/` handover to the project's shared files if it isn't there) and `~/Projects/arkive-rewrite`.
-- Follow-ups are in [[04-phases/backlogged-unplanned|the backlog]] (B10, B12). Three more were cleared right after the lesson in [#47](https://github.com/mehtapratik/sidekick/pull/47): `.npmrc` deleted, the General Sans and Sentient licences added, `apps/www/.node-version` deleted.
+- Follow-ups are in [[04-phases/backlogged-unplanned|the backlog]] (B10, B12). Three more were cleared right after the lesson in [#47](https://github.com/mehtapratik/sidekick/pull/47): `.npmrc` deleted (pnpm 12 never read it), the General Sans and Sentient licences added next to the fonts (ITF Free Font License from each Fontshare download), and `apps/www/.node-version` deleted (the Workers build log shows `nodejs@24.22.2` from the root `.nvmrc`, where the image default is 24.22.1).
