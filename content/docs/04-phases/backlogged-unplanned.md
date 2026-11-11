@@ -3,9 +3,9 @@ publish: true
 id: plan.backlogged-unplanned
 title: Backlogged / Unplanned
 created: 2026-09-19
-updated: 2026-10-24
+updated: 2026-11-11
 kind: plan
-version: 1.2.0
+version: 1.3.0
 status: deferred
 tags:
    - plan
@@ -120,3 +120,19 @@ These items are known, intentional gaps — deferred, not forgotten.
 | PM.7 | Inbox management automations (email/message triage) per the Factory PRD                          | 🔴         | 🧩       |
 | PM.8 | IoT integrations (blinds, garage door) per the Factory PRD                                       | 🔴         | 🧩       |
 | PM.9 | **Parrot** — voice dictation with gesture support for punctuation/formatting (own PRD first)     | 🔴         | 📱       |
+
+### B10 — CI runs only what a PR affects
+
+**What:** CI's `checks` job runs `turbo run … --affected`, so Turbo compares the PR with `main` and runs only the tasks of changed packages and their dependents. A content-only PR then builds just the site (with its gates) and runs `check:content`; a code PR runs what it touched. `checks` stays the one required job.
+
+**Why deferred:** Found in Synergy lesson 0 (2026-11-11). CI has no Turbo cache, so every PR lints, type-checks, tests and builds everything. Splitting CI into a content pipeline and a code pipeline, or banning mixed PRs, was rejected: two required checks would block each other's PRs, and D229 wants code and its docs in one PR.
+
+**When to implement:** When CI time on content PRs becomes annoying, or with the first feature package, whichever comes first.
+
+### B12 — Too many `app`s in `apps/app/src/app`
+
+**What:** Revisit the App's folder names. Next.js fixes the routes folder's name (`app`, at the package root or in `src/`), so the options are dropping `src/` (no fewer `app`s), renaming the package folder (against D214), or living with it.
+
+**Why deferred:** Pratik, 2026-11-08, during the rename to `apps/app`: worth a decision, not in lesson 0.
+
+**When to implement:** A future lesson that touches the App's structure, at the latest before Open House.

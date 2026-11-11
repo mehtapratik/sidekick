@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-1-layer-folders
 title: "Synergy Lesson 1: Layer Folders and Lint"
 created: 2026-11-01
-updated: 2026-11-08
+updated: 2026-11-11
 kind: plan
-version: 1.1.1
+version: 1.1.2
 tags:
    - plan
    - phase-3
@@ -24,6 +24,16 @@ status: planned
 **Learning payoff:** what foundation, platform and feature mean and why the folder is the layer; moving files without losing history (`git mv`); how pnpm workspace globs, TypeScript project references and the boundaries plugin each find a package; policies that default to "disallow".
 
 **Coach reads first:** the three decision notes above, `eslint.config.js`, `pnpm-workspace.yaml`, every `tsconfig.json` under `packages/`, `packages/core/package.json` and `.prettierignore` in the Sidekick repo.
+
+## Handover from lesson 0
+
+Lesson 0 ([[04-phases/03-synergy/00-lessons/lesson-0-one-repo/01-walkthrough|walkthrough]]) left the repo like this:
+
+- **New workspace packages:** `apps/www` (`@sidekick/www`, the Astro site, no `lint` script yet), `apps/app` (`@sidekick/app`, was `apps/web`) and `content` (`@sidekick/content`, Markdown only, guarded by `pnpm check:content` in CI and pre-commit). The boundaries `app` element (`apps/*`) currently matches `apps/www` too; step 4's `site` element must come before it.
+- **Root config:** `prettier-plugin-astro` is a root dev dependency with an `*.astro` override, and `content/` is in `.prettierignore`. Lint-staged and Prettier load plugins from the root.
+- **pnpm:** settings live in `pnpm-workspace.yaml` (`allowBuilds` now includes `workerd`); the old `.npmrc` was never read and is gone (#47). When you reinstall after `git mv`, the lockfile keys packages by folder.
+- **History:** `main` has one merge commit (`8825103`, the import). Everything else stays squash-only. `.git-blame-ignore-revs` lists two format commits.
+- **Hosting:** Vercel builds `apps/app` and skips content-only commits; the Worker `sidekick-www` builds the site from `main` (watch paths `apps/www/*`, `content/*` and the root files). Lesson 1's reinstall changes `pnpm-lock.yaml`, a watch path, so its PR also gets a site preview; adding the site's `lint` script changes `apps/www/`, so expect a site build there too.
 
 ## Steps
 

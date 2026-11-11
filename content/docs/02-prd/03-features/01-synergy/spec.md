@@ -4,8 +4,8 @@ title: "Synergy - Feature Specifications"
 created: 2026-10-28
 kind: prd
 audience: everyone
-updated: 2026-11-05
-version: 1.4.0
+updated: 2026-11-11
+version: 1.4.1
 status: accepted
 tags:
    - prd
@@ -319,7 +319,7 @@ A story with no prefix is the owner's. [Reader] is anyone reading the public sit
 **Layout and packages**
 
 - Root: `apps/www` (`@sidekick/www`), `apps/app` (`@sidekick/app`, was `apps/web` named `web`), `content/` (`@sidekick/content`, with `content/docs/`, `content/writings/` and `content/LICENSE`), `packages/…` unchanged. The root package stays `sidekick`.
-- `apps/www` is a workspace package through the existing `apps/*` glob; `pnpm-workspace.yaml` adds `content`. The site declares `"@sidekick/content": "workspace:*"`, so Turbo hashes content into the site's build. Until that lands (Lesson 0 PR 3), `turbo.json` gives `@sidekick/www#build` `inputs: ["$TURBO_DEFAULT$", "../../content/**"]`.
+- `apps/www` is a workspace package through the existing `apps/*` glob; `pnpm-workspace.yaml` adds `content`. The site declares `"@sidekick/content": "workspace:*"`, so Turbo hashes content into the site's build. Before that landed (Lesson 0 PR 3), `turbo.json` gave `@sidekick/www#build` `inputs: ["$TURBO_DEFAULT$", "$TURBO_ROOT$/content/**"]`.
 - `src/lib/vault.mjs` resolves `content/docs` and `content/writings` from the repo root. New code that scans content goes through `vault.mjs`'s helpers, so the `.md` extension stays in one place.
 - The site inherits the root `.gitignore` and `.prettierrc` (plus `prettier-plugin-astro`); `.prettierignore` lists `content/` and the files the site ships as given. One format commit is listed in `.git-blame-ignore-revs`.
 - Node 24 (`engines` `24.x`, `.node-version` 24) and pnpm from `packageManager`, as for every package. The site's dependency ranges become `^major.minor.patch`. Renovate needs no new rules: its recommended config groups `astro` with `@astrojs/*` and gives every major a reviewed PR. `@astrojs/check` accepts TypeScript 5 or 6, so a TypeScript 7 bump waits on it.

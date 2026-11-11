@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-0-one-repo
 title: "Synergy Lesson 0: One Repo"
 created: 2026-11-05
-updated: 2026-11-06
+updated: 2026-11-11
 kind: plan
-version: 1.1.0
+version: 1.2.0
 tags:
    - plan
    - phase-3
@@ -14,8 +14,10 @@ tags:
    - one-repo
    - git
    - cloudflare
-status: planned
+status: completed
 ---
+
+> **Completed 2026-11-11** ([[04-phases/03-synergy/00-lessons/lesson-0-one-repo/01-walkthrough|walkthrough]], [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/02-notes|notes]]): sidekick#34, #35, #38, #39, #43, #44 and #45; arkive.blog and `www.arkive.blog` are served by `sidekick-www`. Two plans below changed in the doing: PR 1's Turbo input is `$TURBO_ROOT$/content/**`, and PR 4's two type errors didn't appear in Sidekick (Node's types reached the site through Vite; see the notes).
 
 > **Lesson 0 of Phase 3a, before lesson 1.** Before this: [[04-phases/02-gatekeeper/lessons/lesson-8-close-out/00-brief|Phase 2 close-out]]. Next: [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
 

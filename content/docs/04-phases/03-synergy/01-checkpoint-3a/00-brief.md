@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.checkpoint-3a
 title: "Synergy Checkpoint 3a: Prove the Store, Plan 3b"
 created: 2026-11-01
-updated: 2026-11-05
+updated: 2026-11-11
 kind: plan
-version: 1.2.0
+version: 1.2.1
 tags:
    - plan
    - phase-3
@@ -35,4 +35,4 @@ One document or decision at a time: the coach drafts or recommends, Pratik edits
 5. **Brief i18n lesson I1** from the plan's i18n lessons table and [[03-system-design/non-functional/content/internationalization|Internationalization]], since it runs next; I2 and the site lessons are briefed as each one starts.
 6. **Update the project memory** with I1 and 3b's first lesson, so a new thread can begin without asking.
 
-**Done when:** one arkive PR carries the filled exit-criteria table, the answers to the deferred questions, the 3b Lessons table and briefs, and Pratik has approved it. `npm run build` passes.
+**Done when:** one docs PR carries the filled exit-criteria table, the answers to the deferred questions, the 3b Lessons table and briefs, and Pratik has approved it. `pnpm turbo run build --filter=@sidekick/www` passes.
