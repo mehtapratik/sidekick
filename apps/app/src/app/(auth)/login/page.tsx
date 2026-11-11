@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+
 import { signInCopies } from '@sidekick/copy/auth';
 import {
    buttonCopies,
@@ -22,6 +23,7 @@ import {
    validationCopies,
 } from '@sidekick/copy/form';
 import { createBrowserClient } from '@sidekick/core/supabase/browser';
+
 import styles from '../auth.module.css';
 
 export default function LoginPage(): React.ReactElement {

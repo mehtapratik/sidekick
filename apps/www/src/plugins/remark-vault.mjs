@@ -1,7 +1,9 @@
 // Obsidian syntax -> mdast (SPEC 6): wikilinks, embeds, callouts, and the duplicated leading H1.
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { SKIP, visit } from 'unist-util-visit';
+
 import { scanDatums } from '../lib/datums.mjs';
 import {
    ASSETS_DIR,

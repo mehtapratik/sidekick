@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+
 import { eq } from 'drizzle-orm';
 import {
    afterAll,
@@ -9,6 +10,7 @@ import {
    it,
    vi,
 } from 'vitest';
+
 import { withApiGuard } from '../../src/api';
 import { resolveApiCaller } from '../../src/api/auth';
 import { profiles } from '../../src/db/schema';

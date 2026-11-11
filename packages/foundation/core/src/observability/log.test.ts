@@ -1,5 +1,6 @@
 import { DrizzleQueryError } from 'drizzle-orm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import {
    logEvent,
    toLoggedError,

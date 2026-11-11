@@ -1,5 +1,6 @@
 import { RuleTester } from 'eslint';
 import { afterAll, describe, it } from 'vitest';
+
 import { requireApiGuard } from './require-api-guard';
 
 RuleTester.afterAll = afterAll;

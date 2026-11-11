@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
+
 import { getListedEntries } from '../lib/entries';
 import { BLURB, SITE_TITLE } from '../lib/site';
 

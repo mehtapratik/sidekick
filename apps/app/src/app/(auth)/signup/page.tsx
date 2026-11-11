@@ -14,6 +14,8 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { useState } from 'react';
+
 import { signUpCopies } from '@sidekick/copy/auth';
 import { genericErrorCopy } from '@sidekick/copy/errors';
 import {
@@ -23,7 +25,7 @@ import {
    validationCopies,
 } from '@sidekick/copy/form';
 import { createBrowserClient } from '@sidekick/core/supabase/browser';
-import { useState } from 'react';
+
 import styles from '../auth.module.css';
 
 function SignupView({

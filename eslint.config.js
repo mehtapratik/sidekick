@@ -1,6 +1,5 @@
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
-import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import astro from 'eslint-plugin-astro';
 import boundaries from 'eslint-plugin-boundaries';
@@ -8,6 +7,8 @@ import importX from 'eslint-plugin-import-x';
 import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
+
+import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
 
 // ── Request entry points ────────────────────────────────────────────────────
 // Every request must enter through an App Router route handler wrapped in

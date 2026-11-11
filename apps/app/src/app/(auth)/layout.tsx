@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import styles from './layout.module.css';
 
 export const dynamic = 'force-dynamic';

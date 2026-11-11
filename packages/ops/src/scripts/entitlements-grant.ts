@@ -1,7 +1,10 @@
 import { parseArgs } from 'node:util';
+
+import { and, eq, inArray } from 'drizzle-orm';
+
 import { profiles, userFeatureEntitlements } from '@sidekick/core/db/schema';
 import { ALL_FEATURES } from '@sidekick/features-registry';
-import { and, eq, inArray } from 'drizzle-orm';
+
 import { withPrivilegedDb } from '../lib/db';
 
 // Gives one account features: all of them (--all) or the ones named (--feature, repeatable).
