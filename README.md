@@ -122,13 +122,17 @@ apps/
   cli/                  # CLI tool — placeholder until Phase 9 (API keys + CLI)
 
 packages/
-  core/                 # Shared server infrastructure: Supabase, Drizzle, withRLS, migrations, tests
-  ui/                   # Shared React components (Mantine-based)
-  copy/                 # Centralized copy (text strings) shared across all apps
+  foundation/           # Domain-free building blocks; import no other workspace package
+    core/               # Shared server infrastructure: Supabase, Drizzle, withRLS, migrations, tests
+    ui/                 # Shared React components (Mantine-based)
+    copy/               # Centralized copy (text strings) shared across all apps
+  platform/             # Cross-feature services; import only foundation
+    synergy/            # Links between entities (Phase 3; empty until lesson 4)
+  features/             # Feature packages (none yet)
+  features-registry/    # Master feature manifest list (ALL_FEATURES), built out in Phase 2
   eslint-plugin-sidekick/  # Custom ESLint rules: require-api-guard, no-mantine-style-props,
                         #   no-inline-styles, no-default-export, no-barrel-exports
-  features-registry/    # Master feature manifest list (ALL_FEATURES), built out in Phase 2
-  features/             # Feature packages (none yet; the first arrives after Phase 2)
+  ops/                  # Privileged scripts (dev seeds, provisioning, break-glass)
 
 content/                 # Docs and writings, under CC BY-NC 4.0 (content/LICENSE)
   docs/                  # The vault: Sidekick's canonical documentation
@@ -154,24 +158,24 @@ The most important rule in this codebase:
 The only allowed dependency direction is:
 
 ```
-apps/*  →  packages/features-registry  →  packages/features/*  →  foundation (core, ui, copy)
+apps/*  →  packages/features-registry  →  packages/features/*  →  packages/platform/*  →  packages/foundation/*
 ```
 
-An app may import any layer below it. Foundation packages import no other workspace package. Everything else is disallowed by default and fails `pnpm lint` (`eslint-plugin-boundaries`, configured in `eslint.config.js`).
+An app may import any layer below it. Platform packages import only foundation, and not each other. Foundation packages (`core`, `ui`, `copy`) import no other workspace package. The public site (`apps/www`) may import foundation except `core`, and nothing imports it. Everything else is disallowed by default and fails `pnpm lint` (`eslint-plugin-boundaries`, configured in `eslint.config.js`).
 
 ---
 
 ## Adding a New Package
 
-1. Create a folder under `packages/your-package-name/`
+1. Create a folder in the layer it belongs to: `packages/foundation/your-package-name/` or `packages/platform/your-package-name/` (a package in no layer fails `pnpm lint`)
 2. Add `package.json` with name `@sidekick/your-package-name`
-3. Add `tsconfig.json` extending `../../tsconfig.base.json`
+3. Add `tsconfig.json` extending `../../../tsconfig.base.json`
 4. Add `src/index.ts`
 5. Run `pnpm install` from the repo root to register it in the workspace
 
 ## Adding a New Feature Package
 
-Create it under `packages/features/your-feature/` instead (add `packages/features/*` to `pnpm-workspace.yaml` with the first one), then:
+Create it under `packages/features/your-feature/` instead, then:
 
 1. Define your schema in `schema.ts`
 2. Add a Drizzle config in `drizzle.config.ts`

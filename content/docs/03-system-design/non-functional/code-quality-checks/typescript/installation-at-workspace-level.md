@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.code-quality-checks.typescript.installation-at-workspace-level
 title: Installation at Workspace Level
 created: 2026-09-19
-updated: 2026-11-08
+updated: 2026-11-11
 kind: spec
-version: 1.1.1
+version: 1.1.2
 tags:
    - system-design
    - code-quality-check
@@ -17,7 +17,7 @@ tags:
 
 **What we chose:** TypeScript in root `devDependencies` (`pnpm add -D -w typescript`), hoisted to all packages.
 
-**Why:** The Next.js scaffolder installs TypeScript as a local dependency of `apps/app`. Without TypeScript at the root, all other packages (`packages/core`, `packages/ui`, etc.) fall back to whatever `tsc` binary is on the system PATH — which could be an old version that doesn't support `ES2022` target or `moduleResolution: "bundler"` (both require TypeScript 5+).
+**Why:** The Next.js scaffolder installs TypeScript as a local dependency of `apps/app`. Without TypeScript at the root, all other packages (`packages/foundation/core`, `packages/foundation/ui`, etc.) fall back to whatever `tsc` binary is on the system PATH — which could be an old version that doesn't support `ES2022` target or `moduleResolution: "bundler"` (both require TypeScript 5+).
 
 Installing TypeScript at the root ensures every package in the monorepo uses the same TypeScript version, hoisted from root `node_modules`.
 

@@ -3,9 +3,9 @@ publish: true
 id: build.phase-2
 title: Gatekeeper Walkthrough
 created: 2026-10-24
-updated: 2026-10-24
+updated: 2026-11-11
 kind: guidance
-version: 1.0.0
+version: 1.0.1
 tags:
    - build
    - walkthrough
@@ -22,6 +22,8 @@ applies_to:
 # Phase 2 Walkthrough — API Guard and Feature System
 
 Phase 2 is reproduced lesson by lesson: each lesson's walkthrough has the steps and the code. This page adds only what no single lesson shows: the order to follow them in, how the finished pieces work together on one request, and where to re-prove the phase's exit criteria. It assumes Pre-2 is complete ([[04-phases/01-front-door/02-hardening/01-walkthrough]]), including the post notes listed [below](#post-notes-in-earlier-walkthroughs).
+
+> **Post note (2026-11-11):** Synergy lesson 1 moved `core`, `ui` and `copy` into `packages/foundation/` ([sidekick#48](https://github.com/mehtapratik/sidekick/pull/48)). Package names didn't change, so every import here still works; read a path such as `packages/core/tests/integration/guard.test.ts` as `packages/foundation/core/tests/integration/guard.test.ts`. The steps keep the paths they were written with.
 
 The design is recorded in [[04-phases/02-gatekeeper/01-contracts]] (version 2.8.1), the plan in [[04-phases/02-gatekeeper/00-plan|the completed Phase 2 plan]].
 

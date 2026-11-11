@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: System Design"
 created: 2026-10-30
-updated: 2026-11-06
+updated: 2026-11-11
 kind: spec
-version: 1.4.0
+version: 1.4.1
 tags:
    - system-design
    - synergy
@@ -28,9 +28,9 @@ An arrow means "imports". The features registry and the type packages register t
 
 | Package                                    | Holds                                                                                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/core` (foundation)               | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                    |
-| `packages/platform/synergy` (platform)     | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Sneak Peek Link component. |
-| `packages/ui` (foundation)                 | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                               |
+| `packages/foundation/core`                 | DB client and RLS (`withRLS`), auth (`resolveApiCaller`), `withApiGuard`, entitlements, logging. Unchanged by Synergy.                                                    |
+| `packages/platform/synergy`                | Synergy's tables and migrations, its repository (the only access path), the rules, the resolver and renderer contracts, the save call, and the Sneak Peek Link component. |
+| `packages/foundation/ui`                   | Design-system primitives the component builds on; later the editor and the Lexicon matcher.                                                                               |
 | Providers (`_sandbox` now, features later) | Their own entity tables, plus one registration per linkable type.                                                                                                         |
 | `packages/features-registry` or the app    | Assembles every provider's registrations into the maps Synergy receives as data.                                                                                          |
 | `apps/app`                                 | Guarded API routes and the playground; fetches and translates links for the Sneak Peek Link.                                                                              |

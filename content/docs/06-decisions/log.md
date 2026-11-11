@@ -3,9 +3,9 @@ publish: true
 id: decisions.log
 title: Decisions Log
 created: 2026-11-01
-updated: 2026-11-06
+updated: 2026-11-11
 kind: log
-version: 1.3.0
+version: 1.3.1
 tags:
    - decision
 ---
@@ -18,7 +18,7 @@ Every decision Sidekick has made, newest first. A decision is a claim about how 
 | 2026-11-06 | [[03-system-design/non-functional/css/native-ui\|Native UI]]                                                                 | accepted | `ui` builds primitives on native HTML with no UI library; Mantine leaves the App in lesson M1, before I1 (D255).                                                                                                                                                              |
 | 2026-11-06 | [[03-system-design/non-functional/css/design-tokens\|Design Tokens]]                                                         | accepted | `ui` names the tokens; Sidekick's values ship as an opt-in theme file; a contract check fails on an unset token (D254).                                                                                                                                                       |
 | 2026-11-06 | [[03-system-design/non-functional/css/css—modules\|CSS Modules]]                                                             | accepted | CSS modules for every component in the App and packages, a named list of global files, `apps/www` exempt (D47 revised).                                                                                                                                                       |
-| 2026-11-06 | [[03-system-design/non-functional/monorepo/dependency-flow\|The Site and Content]]                                           | accepted | `apps/www` is a `site` element that may import only foundation (D258); `content/` holds content only, guarded by a check script in CI and pre-commit (D259).                                                                                                                  |
+| 2026-11-06 | [[03-system-design/non-functional/monorepo/dependency-flow\|The Site and Content]]                                           | accepted | `apps/www` is a `site` element that may import foundation except `core` (D258, wording fixed 2026-11-11); `content/` holds content only, guarded by a check script in CI and pre-commit (D259).                                                                                                                  |
 | 2026-11-06 | [[03-system-design/non-functional/content/internationalization\|Internationalization]]                                       | accepted | `ui` holds no words, labels are string props (D249); locale and time zone from the device, a `tz` cookie, no settings yet (D242 revised, D253); the temporary site leaves i18n out (D241 revised).                                                                            |
 | 2026-11-06 | [[03-system-design/functional-design/04-synergy/00-overview\|Synergy]]                                                       | accepted | Providers hand Synergy every word as a `MessageRef` whose key they name (D250, D201 revised); the Sneak Peek Link takes plain `link` and `words` props, and the host fetches and translates (D251).                                                                           |
 | 2026-11-06 | [[03-system-design/non-functional/runtime-validations\|Runtime Validations]]                                                 | accepted | Zod's `customError` makes every issue message a key; the API returns its own error shape (D252).                                                                                                                                                                              |

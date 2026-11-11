@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.monorepo.dependency-flow
 title: Dependency Flow
 created: 2026-09-19
-updated: 2026-11-06
+updated: 2026-11-11
 kind: spec
-version: 1.7.0
+version: 1.8.0
 tags:
    - system-design
    - monorepo
@@ -34,7 +34,7 @@ To place a new package, ask in order:
 2. Does it own shared domain data or rules? Then it is a platform package.
 3. Otherwise it is pure mechanism: a foundation package.
 
-Every layer has its own folder, so the path tells you the layer: `packages/foundation/*`, `packages/platform/*`, `packages/features/*`. `core`, `ui` and `copy` move into `packages/foundation/` in Phase 3a (Pratik, 2026-10-31); their package names (`@sidekick/core` and so on) don't change, so no import changes. The registry, tooling (`packages/eslint-plugin-sidekick`) and ops (`packages/ops`) are singletons and stay at the root of `packages/`.
+Every layer has its own folder, so the path tells you the layer: `packages/foundation/*`, `packages/platform/*`, `packages/features/*`. `core`, `ui` and `copy` moved into `packages/foundation/` in Phase 3a lesson 1 (decided by Pratik, 2026-10-31); their package names (`@sidekick/core` and so on) don't change, so no import changes. The registry, tooling (`packages/eslint-plugin-sidekick`) and ops (`packages/ops`) are singletons and stay at the root of `packages/`.
 
 Lesson 1 moves `copy` into `packages/foundation/` with the others, and lesson I1 deletes it a few weeks later for `packages/foundation/i18n` ([[03-system-design/non-functional/content/internationalization|Internationalization]]). The short-lived move is expected: lesson 1 moves every foundation package so the boundaries config can drop its catch-all, and skipping `copy` would need a temporary pattern for it.
 
@@ -43,20 +43,20 @@ A design system (token names, primitives such as buttons and inputs, and Sidekic
 ## Who may import whom
 
 - **Apps** (`apps/app`, and `apps/cli` later) may import the registry, feature, platform and foundation packages.
-- **The public site** (`apps/www`) may import only foundation packages, and nothing imports it ([[D258]]).
+- **The public site** (`apps/www`) may import foundation packages except `core`, and nothing imports it ([[D258]]).
 - **`packages/features-registry`** is the catalog of every feature. It may import feature, platform and foundation packages.
 - **Feature packages** may import platform and foundation packages. They never import each other or the registry.
 - **Platform packages** may import only foundation packages. They never import each other, a feature or the registry; loosen that deliberately, with a new rule, when a real need appears. They take feature keys and entity types as data.
 - **`packages/ops`** may import the registry, platform and foundation packages.
 - **Foundation packages** stay feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and never import the registry, a feature, a platform package or each other. If `core` imported the registry, it would depend on every feature, and every feature already depends on `core`: a cycle with no valid build order.
 
-`eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above. Each layer and singleton has an explicit element pattern (`packages/foundation/*`, `packages/platform/*`, `packages/features/*`, and one per singleton), with no `packages/*` catch-all, and a package that matches no pattern fails lint. Without that, a package created in the wrong place would silently count as foundation. `pnpm-workspace.yaml` globs each layer folder. All of this lands in Phase 3a with the first platform package. See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]].
+`eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above. Each layer and singleton has an explicit element pattern (`packages/foundation/*`, `packages/platform/*`, `packages/features/*`, and one per singleton), with no `packages/*` catch-all, and a package that matches no pattern fails lint. Without that, a package created in the wrong place would silently count as foundation. `pnpm-workspace.yaml` globs each layer folder and keeps `packages/*` for the singletons, so a package created outside a layer folder still joins the workspace and fails lint rather than going unchecked. Built in [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|Phase 3a lesson 1]] with the first platform package, `@sidekick/synergy`. See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]].
 
 ## The site and content
 
-**D258** `decision` #monorepo #site: `apps/www` is its own boundaries element type, `site`, that may import only foundation packages and that nothing imports, so the public site can never reach `core`'s database client, the registry or a feature. derived-from [[D48]]
+**D258** `decision` #monorepo #site: `apps/www` is its own boundaries element type, `site`, that may import foundation packages except `core` and that nothing imports, so the public site can never reach `core`'s database client, the registry or a feature. derived-from [[D48]]
 
-The public site is a static build on a public Worker. If it imported `core`, a build with a database URL set could bake private data into public HTML, and review would be the only guard. As its own element it can use `ui`'s tokens and primitives and nothing that knows a person's data (Pratik, 2026-11-06). The site reads `content/` by path at build time, which is not user data, so it is not a consumer of the API under [[D48]]; that changes when datums move into the database at Taxila beta, and then its datum index reads through the API like any other consumer.
+The public site is a static build on a public Worker. If it imported `core`, a build with a database URL set could bake private data into public HTML, and review would be the only guard. As its own element it can use `ui`'s tokens and primitives and nothing that knows a person's data (Pratik, 2026-11-06). `core` is itself a foundation package, so "foundation only" alone would let it through: the policy allows foundation and then denies `core` by name, matching the folder name boundaries captures from `packages/foundation/*` (lesson 1, 2026-11-11). The site reads `content/` by path at build time, which is not user data, so it is not a consumer of the API under [[D48]]; that changes when datums move into the database at Taxila beta, and then its datum index reads through the API like any other consumer.
 
 **D259** `rule` #monorepo #content: `content/` holds content only: its `package.json` has only `name`, `private`, `version` and `license`, no code, exports or scripts, and a check script fails CI and the pre-commit hook on anything else. derived-from [[D215]]
 
@@ -97,9 +97,9 @@ Foundation says _how_, platform says _what_, features say _which_. **Each layer 
 ### Consequences
 
 - **One package, three entry points** (2026-10-31): `@sidekick/synergy/server` (repository, save call, resolver contract; imports `server-only`), `/react` (the Sneak Peek Link component and renderer contract, which run on the server and in the browser) and `/contracts` (zod schemas, types, error codes, content helpers). Drizzle code and a React component live in one package, so the split keeps database code out of browser bundles. Type registrations come in a server half and a React half for the same reason.
-- Phase 3a moves `core`, `ui` and `copy` into `packages/foundation/` with `git mv`.
+- Phase 3a lesson 1 moved `core`, `ui` and `copy` into `packages/foundation/` with `git mv`.
 - `eslint.config.js` gets a `platform` element type (`packages/platform/*`) and a `foundation` element type (`packages/foundation/*`), loses the `packages/*` catch-all, and reports files in no element. Apps, the registry, features and ops may import platform packages, and platform packages may import only foundation packages. Platform packages may not import each other until a rule allows it.
-- `pnpm-workspace.yaml` globs `packages/foundation/*`, `packages/platform/*` and `packages/features/*`.
+- `pnpm-workspace.yaml` globs `packages/foundation/*`, `packages/platform/*` and `packages/features/*`, and keeps `packages/*` for the singletons.
 - `pnpm db:migrate` runs each package's migrations in dependency order: `core`, then platform, then features and ops.
 - **Overrides the PRD and spec:** the Sneak Peek Link component lives in `@sidekick/synergy`, not in `packages/ui`. It knows resolved links, states and dots, and `ui` (foundation) can't import Synergy's types. It builds on `ui` primitives.
 - **Overrides the PRD and spec:** "module" is renamed **provider**: the package that registered an entity type. Resolver and renderer calls are batched per provider. Each type registration names the feature whose entitlement gates it (the mock notes and tasks: providers `sandbox-notes` and `sandbox-tasks`, each gated by the feature of the same key); the mapping lives in code, not in rows. Feature flags (rollout gating) are a separate foundation package, built when something first needs one.
@@ -142,3 +142,4 @@ Every workspace package that uses React (`@sidekick/ui`, the `/react` entry of `
 - 2026-10-30 · accepted · Platform Layer
 - 2026-10-31 · accepted · React as Peer Dependency
 - 2026-11-06 · accepted · The site and content: `site` element ([[D258]]), `content/` holds content only ([[D259]]); `i18n` replaces `copy` in the foundation; React from the catalog in both apps
+- 2026-11-11 · revised · [[D258]] says what it meant: the site may import foundation packages except `core` (lesson 1 found "foundation only" let `core` through); layer folders built

@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.04-synergy.lexicon-highlighting
 title: Lexicon Highlighting
 created: 2026-10-30
-updated: 2026-11-01
+updated: 2026-11-11
 kind: spec
-version: 1.0.0
+version: 1.0.1
 tags:
    - system-design
    - synergy
@@ -20,7 +20,7 @@ status: accepted
 Lexicon highlighting (any feature's editor spots the first use of a term or alias and suggests a `defined-by` link) splits data from mechanism:
 
 - **Data in Taxila.** Taxila owns terms and serves a dictionary through its public API: each term's id, title, aliases and abbreviations.
-- **Mechanism in `packages/ui`.** A pure matcher function and a Tiptap extension that, given a dictionary and text, find the first use of each term and show it as a suggestion with ProseMirror decorations. Decorations draw over the text without changing it, so nothing is saved until the user accepts.
+- **Mechanism in `packages/foundation/ui`.** A pure matcher function and a Tiptap extension that, given a dictionary and text, find the first use of each term and show it as a suggestion with ProseMirror decorations. Decorations draw over the text without changing it, so nothing is saved until the user accepts.
 - **Accepting** calls the Synergy API: it creates the `defined-by` link and turns the word into an alias mention.
 - **The app wires them together** by fetching the dictionary and passing it to the editor. A bot can run the same matcher on the server.
 
