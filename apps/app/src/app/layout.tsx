@@ -1,9 +1,9 @@
 import './globals.css';
 
+import { ColorSchemeScript } from '@mantine/core';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import { ColorSchemeScript } from '@mantine/core';
 import { appDescriptionCopy, appNameCopy } from '@sidekick/copy/app';
 
 import { Providers } from './providers';

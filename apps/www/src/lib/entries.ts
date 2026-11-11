@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+
 import { deriveTitle } from './vault.mjs';
 
 /** Applies to every entry whose frontmatter has no `license:`. */

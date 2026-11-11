@@ -2,9 +2,10 @@
 // and scripts/check-privacy.mjs. Plain .mjs so all three can import it.
 //
 // It reads the authoring folders directly. There is no ingest or copy step.
-import { load as loadYaml } from 'js-yaml';
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { load as loadYaml } from 'js-yaml';
 
 // pnpm, Turbo and Workers Builds run the site's scripts from apps/www, so the repo root is two levels up.
 const REPO_ROOT = path.resolve(process.cwd(), '../..');

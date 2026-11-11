@@ -1,12 +1,13 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+
 import {
    DOCS_DIR,
    DOCS_EXCLUDE,
+   docSlug,
    WRITINGS_DIR,
    WRITINGS_EXCLUDE,
-   docSlug,
    writingSlug,
 } from './lib/vault.mjs';
 

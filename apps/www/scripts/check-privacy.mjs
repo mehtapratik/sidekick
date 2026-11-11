@@ -3,7 +3,8 @@
 // for words would cry wolf. It checks the opt-in rule, the old `private` tag and excluded paths.
 import fs from 'node:fs';
 import path from 'node:path';
-import { scanVault, parseFrontmatter } from '../src/lib/vault.mjs';
+
+import { parseFrontmatter, scanVault } from '../src/lib/vault.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const problems = [];

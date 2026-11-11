@@ -5,6 +5,15 @@
    "trailingComma": "all",
    "arrowParens": "always",
    "quoteProps": "consistent",
-   "plugins": ["prettier-plugin-astro"],
-   "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
+   "plugins": ["prettier-plugin-astro", "@ianvs/prettier-plugin-sort-imports"],
+   "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }],
+   "importOrder": [
+      "<BUILTIN_MODULES>",
+      "",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^@sidekick/",
+      "",
+      "^[.]"
+   ]
 }

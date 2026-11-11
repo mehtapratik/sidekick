@@ -7,6 +7,7 @@ import {
    NavLink,
    Text,
 } from '@mantine/core';
+
 import { createBrowserClient } from '@sidekick/core/supabase/browser';
 import type { User } from '@sidekick/core/supabase/types';
 

@@ -1,4 +1,5 @@
 import { Text, Title } from '@mantine/core';
+
 import { createServerClient } from '@sidekick/core/supabase/server';
 
 import styles from './page.module.css';

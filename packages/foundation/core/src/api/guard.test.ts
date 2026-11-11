@@ -8,9 +8,9 @@ import {
 } from '../../tests/helpers/mocks';
 import { withRLS } from '../db';
 import { getEnabledFeatures } from '../features/entitlements';
+import { logEvent, type LogEvent } from '../observability/log';
 import { resolveApiCaller } from './auth';
-import { type ApiHandler, withApiGuard } from './guard';
-import { type LogEvent, logEvent } from '../observability/log';
+import { withApiGuard, type ApiHandler } from './guard';
 
 vi.mock('./auth', () => ({ resolveApiCaller: vi.fn() }));
 vi.mock('../db', () => ({ withRLS: vi.fn() }));

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { ASSETS_DIR } from '../../lib/vault.mjs';
 
 const TYPES: Record<string, string> = {

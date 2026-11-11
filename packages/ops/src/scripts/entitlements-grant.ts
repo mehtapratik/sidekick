@@ -1,5 +1,6 @@
-import { and, eq, inArray } from 'drizzle-orm';
 import { parseArgs } from 'node:util';
+
+import { and, eq, inArray } from 'drizzle-orm';
 
 import { profiles, userFeatureEntitlements } from '@sidekick/core/db/schema';
 import { ALL_FEATURES } from '@sidekick/features-registry';

@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createServerClient } from '../supabase/server';
 import { createMockHttpRequest } from '../../tests/helpers/http';
 import {
+   createMockSupabaseServerClient,
    MOCK_AUTH_TOKEN,
    MOCK_SESSION_CALLER,
-   createMockSupabaseServerClient,
 } from '../../tests/helpers/mocks';
+import { createServerClient } from '../supabase/server';
 import { resolveApiCaller } from './auth';
 
 vi.mock('../supabase/server', () => ({

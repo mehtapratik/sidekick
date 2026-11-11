@@ -1,4 +1,5 @@
 import type { APIContext } from 'astro';
+
 import { getListedEntries } from '../lib/entries';
 
 export async function GET(context: APIContext) {

@@ -7,7 +7,8 @@
 // `#tags` are optional. Relations are a relation word followed by a wikilink, using Synergy's
 // vocabulary plus `violates` and `exception-to`; a wikilink to `D<n>` points at another datum.
 import fs from 'node:fs';
-import { scanVault, resolveWikilink } from './vault.mjs';
+
+import { resolveWikilink, scanVault } from './vault.mjs';
 
 export const DATUM_KINDS = [
    'principle',

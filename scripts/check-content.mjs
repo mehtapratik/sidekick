@@ -1,8 +1,8 @@
 // `content/` holds content only (D259): Markdown and images under `docs/` and
 // `writings/`, plus `LICENSE` and a `package.json` with no code keys. It reads git's
 // index, so the pre-commit hook checks exactly what is about to be committed.
-import console from 'node:console';
 import { execFileSync } from 'node:child_process';
+import console from 'node:console';
 import process from 'node:process';
 
 const ROOT_FILES = new Set(['content/LICENSE', 'content/package.json']);

@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import { useNavigation } from '@/hooks/useNavigation';
 import { isValidEmail, isValidPassword } from '@/utils/validation';
 import {
@@ -16,6 +14,8 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { useState } from 'react';
+
 import { signUpCopies } from '@sidekick/copy/auth';
 import { genericErrorCopy } from '@sidekick/copy/errors';
 import {

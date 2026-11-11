@@ -2,10 +2,10 @@ import { DrizzleQueryError } from 'drizzle-orm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
-   type LogEvent,
    logEvent,
-   type RequestLogContext,
    toLoggedError,
+   type LogEvent,
+   type RequestLogContext,
 } from './log';
 
 const MOCK_LOG_CONTEXT: RequestLogContext = {
