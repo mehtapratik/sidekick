@@ -1,27 +1,27 @@
 {
    "name": "sidekick",
+   "version": "0.0.0",
    "private": true,
    "license": "MIT",
-   "version": "0.0.0",
    "type": "module",
-   "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
-   "engines": {
-      "node": "24.x"
-   },
    "scripts": {
       "build": "turbo build",
-      "dev": "turbo dev",
-      "lint": "turbo lint",
-      "typecheck": "turbo typecheck",
-      "format": "prettier --write .",
-      "prettier:check": "prettier --check .",
-      "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
+      "check:content": "node scripts/check-content.mjs",
       "db:generate": "turbo db:generate",
       "db:migrate": "turbo db:migrate",
+      "dev": "turbo dev",
+      "format": "prettier --write .",
+      "lint": "turbo lint",
+      "lint:styles": "stylelint \"apps/**/*.module.css\" \"packages/**/*.module.css\"",
       "ops:entitlements:grant": "pnpm -C packages/ops entitlements:grant",
+      "prepare": "husky",
+      "prettier:check": "prettier --check .",
       "test": "turbo test",
       "test:integration": "turbo test:integration",
-      "prepare": "husky"
+      "typecheck": "turbo typecheck"
+   },
+   "lint-staged": {
+      "*": "prettier --write --ignore-unknown"
    },
    "devDependencies": {
       "@eslint/js": "^10.0.1",
@@ -42,7 +42,8 @@
       "typescript": "^6.0.3",
       "typescript-eslint": "^8.72.1"
    },
-   "lint-staged": {
-      "*": "prettier --write --ignore-unknown"
+   "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
+   "engines": {
+      "node": "24.x"
    }
 }
