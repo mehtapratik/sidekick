@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.testing.testing-layers
 title: Testing Layers
 created: 2026-10-30
-updated: 2026-11-08
+updated: 2026-11-11
 kind: spec
-version: 1.2.1
+version: 1.2.2
 tags:
    - system-design
    - testing
@@ -49,7 +49,7 @@ The whole app driven like a user: Playwright opens a browser, signs in for real,
 
 A screenshot per component state, compared with a committed baseline, so upgrades to the design system, global styles or dependencies can't make components drift unnoticed.
 
-- **Starts with the design system** (`packages/ui`). Phase 3's UI is deliberately unstyled, so screenshots there would only track plain text.
+- **Starts with the design system** (`packages/foundation/ui`). Phase 3's UI is deliberately unstyled, so screenshots there would only track plain text.
 - Baselines are captured and compared in one pinned environment (the CI Linux container), because fonts render differently on each machine.
 - Component level with Vitest browser mode's screenshot assertion; page level with Playwright's `toHaveScreenshot` where an end-to-end journey already exists.
 

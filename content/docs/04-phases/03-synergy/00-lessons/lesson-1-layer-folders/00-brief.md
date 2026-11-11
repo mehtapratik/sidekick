@@ -5,15 +5,17 @@ title: "Synergy Lesson 1: Layer Folders and Lint"
 created: 2026-11-01
 updated: 2026-11-11
 kind: plan
-version: 1.1.2
+version: 1.2.0
 tags:
    - plan
    - phase-3
    - task
    - monorepo
    - eslint
-status: planned
+status: completed
 ---
+
+> **Complete** ([sidekick#48](https://github.com/mehtapratik/sidekick/pull/48)). Steps as built, and where they differ from the plan below, are in [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/01-walkthrough|the walkthrough]].
 
 > **Lesson 1 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|lesson 0]]. Next: [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief|lesson 2]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
 

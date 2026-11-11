@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.code-quality-checks.typescript.shared-tsconfig
 title: Shared tsconfig
 created: 2026-09-19
-updated: 2026-11-06
+updated: 2026-11-11
 kind: spec
-version: 1.2.0
+version: 1.2.1
 tags:
    - system-design
    - code-quality-check
@@ -20,7 +20,7 @@ tags:
 
 Each package's `tsconfig.json` only declares what's unique to it:
 
-- `packages/*` and `apps/cli` — just `outDir` and `include`
+- the packages and `apps/cli` — just `outDir` and `include` (a platform package with no build, such as `@sidekick/synergy`, needs only `include`). The `extends` path follows the folder depth: `../../tsconfig.base.json` from `apps/*` and the singletons in `packages/*`, `../../../tsconfig.base.json` from a layer folder such as `packages/foundation/*` or `packages/platform/*`
 - `apps/app` — Next.js-specific options (`noEmit`, `jsx`, `plugins`, `paths`, etc.)
 
 **The one exception:** `apps/www` keeps `astro/tsconfigs/strict` as Astro ships it, with no extra base options, and is type-checked with `astro check`. It is temporary and not held to the App's standards ([[D256]], Pratik, 2026-11-06); its successor extends the base.
