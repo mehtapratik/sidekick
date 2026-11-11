@@ -3,9 +3,9 @@ publish: true
 id: plan.backlogged-unplanned
 title: Backlogged / Unplanned
 created: 2026-09-19
-updated: 2026-10-24
+updated: 2026-11-11
 kind: plan
-version: 1.2.0
+version: 1.3.0
 status: deferred
 tags:
    - plan
@@ -120,3 +120,44 @@ These items are known, intentional gaps — deferred, not forgotten.
 | PM.7 | Inbox management automations (email/message triage) per the Factory PRD                          | 🔴         | 🧩       |
 | PM.8 | IoT integrations (blinds, garage door) per the Factory PRD                                       | 🔴         | 🧩       |
 | PM.9 | **Parrot** — voice dictation with gesture support for punctuation/formatting (own PRD first)     | 🔴         | 📱       |
+
+### B10 — CI runs only what a PR affects
+
+**What:** CI's `checks` job runs `turbo run … --affected`, so Turbo compares the PR with `main` and runs only the tasks of changed packages and their dependents. A content-only PR then builds just the site (with its gates) and runs `check:content`; a code PR runs what it touched. `checks` stays the one required job.
+
+**Why deferred:** Found in Synergy lesson 0 (2026-11-11). CI has no Turbo cache, so every PR lints, type-checks, tests and builds everything. Splitting CI into a content pipeline and a code pipeline, or banning mixed PRs, was rejected: two required checks would block each other's PRs, and D229 wants code and its docs in one PR.
+
+**When to implement:** When CI time on content PRs becomes annoying, or with the first feature package, whichever comes first.
+
+### B11 — Remove the dead `.npmrc` settings
+
+**What:** `save-exact=true` and `strict-peer-dependencies=true` in `.npmrc` are not read by pnpm 12, whose settings live in `pnpm-workspace.yaml`. Delete them, and move `strictPeerDependencies` into `pnpm-workspace.yaml` if we still want it (check what it fails on first).
+
+**Why deferred:** Found in Synergy lesson 0 (2026-11-11): `pnpm add wrangler` wrote `^4.159.0` despite `save-exact`. Carets are the repo's convention, so the dead line did no harm.
+
+**When to implement:** Any small chore PR.
+
+### B12 — Too many `app`s in `apps/app/src/app`
+
+**What:** Revisit the App's folder names. Next.js fixes the routes folder's name (`app`, at the package root or in `src/`), so the options are dropping `src/` (no fewer `app`s), renaming the package folder (against D214), or living with it.
+
+**Why deferred:** Pratik, 2026-11-08, during the rename to `apps/app`: worth a decision, not in lesson 0.
+
+**When to implement:** A future lesson that touches the App's structure, at the latest before Open House.
+
+### B13 — Licence files for General Sans and Sentient
+
+**What:** Add the ITF Free Font License texts for General Sans and Sentient (from each family's Fontshare download) next to the fonts in `apps/www/public/fonts/`. Only IBM Plex Mono has its licence file there today, and the README says fonts keep their licences beside the files.
+
+**Why deferred:** Found in Synergy lesson 0 (2026-11-08); needs the downloads.
+
+**When to implement:** Before the site lessons, or in the first one.
+
+### B14 — Drop `apps/www/.node-version`
+
+**What:** Workers Builds runs from the repo root, where `.nvmrc` (24) sits, so `apps/www/.node-version` is no longer read by any build. Confirm the Node version in a `sidekick-www` build log, then delete the file and the "Node version files" paragraph's mention of it in [[03-system-design/non-functional/hosting-and-domains|Hosting and domains]].
+
+**Why deferred:** Found in Synergy lesson 0 (2026-11-11), after the Worker's first build.
+
+**When to implement:** Any small chore PR.
+

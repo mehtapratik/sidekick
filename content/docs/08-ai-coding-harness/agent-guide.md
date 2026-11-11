@@ -3,9 +3,9 @@ publish: true
 id: harness.agent-guide
 title: Agent Guide
 created: 2026-09-19
-updated: 2026-11-08
+updated: 2026-11-11
 kind: guidance
-version: 1.5.0
+version: 1.6.0
 tags:
    - ai-coding
    - agent
@@ -42,8 +42,8 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
 ## Where things stand
 
 - **Complete:** Phases 0, 1 and 1.1, [[04-phases/01-front-door/02-hardening/00-plan|Front Door]] (walkthrough in [[04-phases/01-front-door/02-hardening/01-walkthrough]]) and [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper]] (walkthrough in [[04-phases/02-gatekeeper/02-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
-- **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), starting with [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief|lesson 0]] (one repo), then [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. Part 3b is planned at Checkpoint 3a. Deferred follow-ups from Phase 2 are in [[backlogged-unplanned]] (B6–B8).
-- **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI.
+- **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), next [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/01-walkthrough|Lesson 0]] (one repo) is complete: the vault, the writings and the public site live in this repo, and arkive.blog is served by the Cloudflare Worker `sidekick-www`. Part 3b is planned at Checkpoint 3a. Deferred follow-ups are in [[backlogged-unplanned]] (B6–B8 from Phase 2, B10–B14 from lesson 0).
+- **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI. The public site (`apps/www`) is Astro 7, deployed with Wrangler 4 as a Cloudflare Worker.
 - **Feature packages:** none exist yet. They go in `packages/features/*`; add that glob to `pnpm-workspace.yaml` with the first one.
 
 ## Commands

@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3-graph-store-metadata-service
 title: Synergy
 created: 2026-09-19
-updated: 2026-11-08
+updated: 2026-11-11
 kind: plan
-version: 2.4.2
+version: 2.4.3
 tags:
    - plan
    - living-plan
@@ -39,7 +39,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 
 | Lesson | Brief                                                                                                           | What Pratik learns                                                                               | Status |
 | ------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------ |
-| 0      | [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief\|One repo]]                                        | rewriting and merging history, one workspace lockfile, Turbo inputs, a Worker with static assets |        |
+| 0      | [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief\|One repo]]                                        | rewriting and merging history, one workspace lockfile, Turbo inputs, a Worker with static assets | ✅     |
 | 1      | [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief\|Layer folders and lint]]                     | monorepo layers, `git mv`, ESLint boundaries policies                                            |        |
 | 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database                |        |
 | 3      | [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief\|Entity index and version log]]                | RLS without the tombstone filter, restore-aware triggers, advisory locks, stale-write checks     |        |
@@ -153,7 +153,7 @@ Settled with Pratik on 2026-10-31 and 2026-11-01. Each can be revisited in its l
 - **The server half of the registry lands in 3a** (lesson 6), because `POST /links` refuses `locked` and only a type's registration names its entitlement. `addAnchor` joins it in lesson 10; `resolve` and the React half are 3b.
 - **One Phase 3, with Checkpoint 3a.** 3b is part of Phase 3's exit criteria, not a new phase, because Phase 4 needs its renderers and a new phase would renumber Phases 4 to 12. 3b is planned at the checkpoint.
 - **Delete models are chosen, not drifted into** (Pratik, 2026-11-01). Lesson 3 revises [[03-system-design/non-functional/security/row-level-security|row-level security]] and [[03-system-design/non-functional/database/soft-delete-support|soft-delete support]] into explicit variants, with a guide for choosing among hard delete, soft delete with tombstones hidden (the default) and soft delete with tombstones visible. The guide lists every table and its model; each Drizzle schema file and each new migration names its model. Applied migrations are not edited.
-- **Cloudflare builds arkive on Node 24.** `undici` 8 (through Astro's `unifont`) needs Node 22.19 or later, and Pages built on 22.12. Cloudflare reads the version from the repo's `.node-version` (was `22`, now `24`), not from a dashboard setting; arkive's `engines` asks for `>=22.19.0`.
+- **Cloudflare builds arkive on Node 24.** `undici` 8 (through Astro's `unifont`) needs Node 22.19 or later, and Pages built on 22.12. Cloudflare reads the version from the repo's `.node-version` (was `22`, now `24`), not from a dashboard setting; arkive's `engines` asks for `>=22.19.0`. Since lesson 0 the site is the Worker `sidekick-www`, built from the repo root with the root `.nvmrc` and `engines` `24.x` ([[03-system-design/non-functional/hosting-and-domains|Hosting and domains]]).
 - **`violates` and `exception-to` are in Phase 3** (Pratik, 2026-11-01). Dogfooding Synergy on Arkive found two gaps in the vocabulary: no directed violation and no exception. Both types are seeded in lesson 6. A violation has no status: unlinking resolves it, retyping it to `exception-to` waives it, and that retype takes a fresh snapshot. The graph-wide list of links by type (every open violation, from any module) is a 3b candidate; issue tracking is post-MVP ([[03-system-design/functional-design/04-synergy/violations-and-exceptions|Violations and exceptions]]).
 - **Lesson 0 runs before lesson 1** (Pratik, 2026-11-03). Lesson 1's `git mv` work and the live recordings happen in the merged repo, and lessons 1 to 13 keep their numbers.
 - **The site lessons come after Checkpoint 3a** (Pratik, 2026-11-05). After Lesson 0 the current site keeps working, so Synergy starts at once; the checkpoint is a natural break, and 3b is planned from what 3a built while the site is rebuilt.

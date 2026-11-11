@@ -31,21 +31,22 @@ Phase 2 builds `resolveApiCaller` and `withApiGuard`, then the feature registry 
 
 ## Tech Stack
 
-| Layer    | Choice                            |
-| -------- | --------------------------------- |
-| Runtime  | Node.js 24                        |
-| Frontend | Next.js 16 App Router, React 19   |
-| Language | TypeScript 6.0 (strict)           |
-| Database | Supabase PostgreSQL 17            |
-| ORM      | Drizzle ORM                       |
-| Styling  | Mantine 9                         |
-| Editor   | Tiptap                            |
-| AI       | Vercel AI SDK + Anthropic Claude  |
-| Monorepo | Turborepo + pnpm 11               |
-| Lint     | ESLint 10 (flat config), Prettier |
-| Tests    | Vitest                            |
-| CI       | GitHub Actions                    |
-| Hosting  | Vercel                            |
+| Layer    | Choice                                  |
+| -------- | --------------------------------------- |
+| Runtime  | Node.js 24                              |
+| Frontend | Next.js 16 App Router, React 19         |
+| Site     | Astro 7 (`apps/www`)                    |
+| Language | TypeScript 6.0 (strict)                 |
+| Database | Supabase PostgreSQL 17                  |
+| ORM      | Drizzle ORM                             |
+| Styling  | Mantine 9                               |
+| Editor   | Tiptap                                  |
+| AI       | Vercel AI SDK + Anthropic Claude        |
+| Monorepo | Turborepo + pnpm 12                     |
+| Lint     | ESLint 10 (flat config), Prettier       |
+| Tests    | Vitest                                  |
+| CI       | GitHub Actions                          |
+| Hosting  | Vercel (App), Cloudflare Workers (site) |
 
 ---
 
