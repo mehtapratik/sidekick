@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-2-per-package-migrations
 title: "Synergy Lesson 2: Per-Package Migrations"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-11
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -13,7 +13,7 @@ tags:
    - database
    - drizzle
    - testing
-status: planned
+status: completed
 ---
 
 > **Lesson 2 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|lesson 1]]. Next: [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief|lesson 3]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
@@ -38,5 +38,7 @@ status: planned
 6. **Prove it.** A fresh database migrates in order (`pnpm test:integration` passes in core and in synergy, with synergy's suite checking that its trigger function exists), and `pnpm db:migrate` against dev applies only Synergy's new migration.
 
 **Exit check:** step 6, and CI green.
+
+**Done:** see the [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/01-walkthrough|walkthrough]] ([sidekick#53](https://github.com/mehtapratik/sidekick/pull/53)) for where the build differs from these steps.
 
 **Out of scope:** Synergy tables (lesson 3), the `_sandbox` packages' migrations (lesson 4).

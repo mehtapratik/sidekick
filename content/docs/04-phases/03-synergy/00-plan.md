@@ -5,7 +5,7 @@ title: Synergy
 created: 2026-09-19
 updated: 2026-11-11
 kind: plan
-version: 2.4.3
+version: 2.4.4
 tags:
    - plan
    - living-plan
@@ -41,7 +41,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 | ------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------ |
 | 0      | [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/00-brief\|One repo]]                                        | rewriting and merging history, one workspace lockfile, Turbo inputs, a Worker with static assets | ✅     |
 | 1      | [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief\|Layer folders and lint]]                     | monorepo layers, `git mv`, ESLint boundaries policies                                            | ✅     |
-| 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database                |        |
+| 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database                | ✅     |
 | 3      | [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief\|Entity index and version log]]                | RLS without the tombstone filter, restore-aware triggers, advisory locks, stale-write checks     |        |
 | 4      | [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/00-brief\|Sandbox providers and the first routes]] | feature packages, deferrable foreign keys, ETags and 304, error codes to HTTP                    |        |
 | 5      | [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief\|Outbox, status and versions]]                       | the outbox pattern, transaction ids and commit order, a read-only role                           |        |
