@@ -5,7 +5,7 @@ title: Backlogged / Unplanned
 created: 2026-09-19
 updated: 2026-11-11
 kind: plan
-version: 1.4.0
+version: 1.3.0
 status: deferred
 tags:
    - plan
@@ -136,11 +136,3 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Pratik, 2026-11-08, during the rename to `apps/app`: worth a decision, not in lesson 0.
 
 **When to implement:** A future lesson that touches the App's structure, at the latest before Open House.
-
-### B15 — Enforce import order
-
-**What:** An `import-x/order` rule (alphabetical, no blank-line groups) in `eslint.config.js`, applied on commit so nobody sorts imports by hand: lint-staged runs `eslint --fix` on staged files, or a Prettier import-sort plugin does it. Choosing between the two is part of the work. Then Pratik drops the VS Code sort extension.
-
-**Why deferred:** Found in Synergy lesson 1 (2026-11-11): Pratik's editor sorts imports on save, so lesson diffs carried unrelated re-sorts, and nothing outside that editor keeps the order. Out of scope for a pure-move PR.
-
-**When to implement:** Right after lesson 1, as its own engineering-health PR (Pratik, 2026-11-11).

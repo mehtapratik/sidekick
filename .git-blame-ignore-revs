@@ -7,3 +7,6 @@
 
 # style(www): format the site with the root Prettier config
 41337efdb2f3a5a2108ae641c63512c0cb79c627
+
+# chore: sort imports with Prettier (#49)
+60215da9a1c364e79394044e0dbbcb6cf749614b
