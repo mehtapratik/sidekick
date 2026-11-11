@@ -59,7 +59,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 
 ```
 Coach me through Phase 3 lesson 1. Read AGENTS.md, the Phase 3 plan
-(docs/04-phases/03-synergy/00-plan.md) and that lesson's
+(content/docs/04-phases/03-synergy/00-plan.md) and that lesson's
 brief (the plan's Lessons table links each one) before we start.
 ```
 
