@@ -1,0 +1,15 @@
+{
+   "$schema": "node_modules/wrangler/config-schema.json",
+   // The public site: static files only, no Worker script (D220)
+   "name": "sidekick-www",
+   "compatibility_date": "2026-11-10",
+   "assets": {
+      // What `astro build` writes; Workers Builds runs the build before deploying
+      "directory": "./dist",
+      // An unknown path gets dist/404.html with status 404
+      "not_found_handling": "404-page",
+   },
+   // Each branch's Preview takes only what this block declares;
+   // a static site needs nothing more, but the block must exist
+   "previews": {},
+}

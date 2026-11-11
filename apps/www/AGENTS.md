@@ -25,11 +25,13 @@ keeps the rules that still bind and what is not obvious from the code.
 
 ## Commands
 
-| Task            | Command                                       |
-| --------------- | --------------------------------------------- |
-| Dev server      | `pnpm --filter @sidekick/www dev`             |
-| Build + gates   | `pnpm turbo run build --filter=@sidekick/www` |
-| Serve the build | `pnpm --filter @sidekick/www preview`         |
+| Task                    | Command                                           |
+| ----------------------- | ------------------------------------------------- |
+| Dev server              | `pnpm --filter @sidekick/www dev`                 |
+| Build + gates           | `pnpm turbo run build --filter=@sidekick/www`     |
+| Serve the build         | `pnpm --filter @sidekick/www preview`             |
+| Type-check              | `pnpm --filter @sidekick/www typecheck`           |
+| Check the Worker config | `pnpm -C apps/www exec wrangler deploy --dry-run` |
 
 Node 24 (the root `.nvmrc`). Formatted by the root Prettier config except `public/arkive.css`, `public/arkive.js`, `public/fonts/`, `public/icons/` and `src/shiki-themes.mjs`, which ship as given and are listed in the root `.prettierignore`.
 
@@ -108,6 +110,7 @@ outcome. Plans, walkthroughs, lessons and notes stay prose and cite datums. A da
   Markdown renders from the old plugin.
 - Search, the By-folder tree filter and Copy buttons need `arkive.js`; the rest works without it.
 - No media queries for layout (see House rules); no client JS beyond `public/arkive.js`.
-- Cloudflare: build command `bash scripts/cf-build.sh` (a wrapper around `npm run build`; `npm run build`
-  works too), output `dist`. There is no ingest step and nothing
-  generated is committed.
+- Cloudflare: the site is the Worker `sidekick-www`, configured in `wrangler.jsonc` (static assets from
+  `dist`, `404.html` for unknown paths, an empty `previews` block). Workers Builds runs from the repo root:
+  build `pnpm turbo run build --filter=@sidekick/www`, deploy `pnpm -C apps/www exec wrangler deploy`, preview
+  `pnpm -C apps/www exec wrangler preview`. There is no ingest step and nothing generated is committed.

@@ -17,6 +17,7 @@ out/
 
 # astro, obsidian and local agent settings
 .astro/
+.wrangler/
 .obsidian/
 .claude/settings.local.json
 
