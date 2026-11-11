@@ -1,11 +1,8 @@
 import './globals.css';
-
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-
 import { ColorSchemeScript } from '@mantine/core';
 import { appDescriptionCopy, appNameCopy } from '@sidekick/copy/app';
-
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { Providers } from './providers';
 
 const geistSans = Geist({

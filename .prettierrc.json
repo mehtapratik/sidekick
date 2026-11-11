@@ -5,6 +5,6 @@
    "trailingComma": "all",
    "arrowParens": "always",
    "quoteProps": "consistent",
-   "plugins": ["prettier-plugin-astro"],
+   "plugins": ["prettier-plugin-astro", "@ianvs/prettier-plugin-sort-imports"],
    "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
 }

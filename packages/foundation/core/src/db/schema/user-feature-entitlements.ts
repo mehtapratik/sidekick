@@ -5,7 +5,6 @@ import {
    timestamp,
    uuid,
 } from 'drizzle-orm/pg-core';
-
 import { profiles } from './profiles';
 
 export const userFeatureEntitlements = pgTable(

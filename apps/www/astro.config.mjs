@@ -1,9 +1,9 @@
 import { defineConfig } from 'astro/config';
-import { arkiveLight, arkiveDark } from './src/shiki-themes.mjs';
-import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { remarkVault } from './src/plugins/remark-vault.mjs';
+import remarkMath from 'remark-math';
 import { rehypeArkive, shikiArkive } from './src/plugins/rehype-arkive.mjs';
+import { remarkVault } from './src/plugins/remark-vault.mjs';
+import { arkiveDark, arkiveLight } from './src/shiki-themes.mjs';
 
 export default defineConfig({
    site: 'https://arkive.blog',

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { ALL_FEATURES } from './index';
 
 describe('Feature manifest list', () => {

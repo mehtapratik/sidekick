@@ -1,7 +1,7 @@
 // Post-build gate for datums. Fails on a duplicate id, an unknown kind or a relation that does not
 // resolve. Prints every `violates` link, which stays visible until someone resolves it.
 // `node scripts/check-datums.mjs --next` prints the next free id and does nothing else.
-import { scanDatums, datumProblems, nextDatumId } from '../src/lib/datums.mjs';
+import { datumProblems, nextDatumId, scanDatums } from '../src/lib/datums.mjs';
 
 const datums = scanDatums();
 if (process.argv.includes('--next')) {

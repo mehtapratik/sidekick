@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import { useNavigation } from '@/hooks/useNavigation';
 import { isValidEmail, isValidPassword } from '@/utils/validation';
 import {
@@ -25,7 +23,7 @@ import {
    validationCopies,
 } from '@sidekick/copy/form';
 import { createBrowserClient } from '@sidekick/core/supabase/browser';
-
+import { useState } from 'react';
 import styles from '../auth.module.css';
 
 function SignupView({

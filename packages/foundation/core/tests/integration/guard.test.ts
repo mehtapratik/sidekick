@@ -9,7 +9,6 @@ import {
    it,
    vi,
 } from 'vitest';
-
 import { withApiGuard } from '../../src/api';
 import { resolveApiCaller } from '../../src/api/auth';
 import { profiles } from '../../src/db/schema';

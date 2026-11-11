@@ -1,13 +1,12 @@
 import 'server-only';
-
 import { withRLS, type RlsTx } from '../db';
-import { resolveApiCaller, type ApiCaller } from './auth';
 import { getEnabledFeatures } from '../features/entitlements';
 import {
-   type ApiDeniedEvent,
    logEvent,
    toLoggedError,
+   type ApiDeniedEvent,
 } from '../observability/log';
+import { resolveApiCaller, type ApiCaller } from './auth';
 
 export interface GuardOptions {
    /** Key of the feature the caller must be entitled to */

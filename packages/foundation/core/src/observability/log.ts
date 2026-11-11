@@ -1,5 +1,4 @@
 import 'server-only';
-
 import { DrizzleQueryError } from 'drizzle-orm';
 
 /** Fields every API event shares.

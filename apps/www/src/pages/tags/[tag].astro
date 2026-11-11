@@ -1,7 +1,7 @@
 ---
-import { getListedEntries, plural, tagCounts } from '../../lib/entries';
 import EntriesTable from '../../components/EntriesTable.astro';
 import Layout from '../../layouts/Layout.astro';
+import { getListedEntries, plural, tagCounts } from '../../lib/entries';
 
 export async function getStaticPaths() {
    const entries = await getListedEntries();

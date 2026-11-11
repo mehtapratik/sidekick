@@ -1,5 +1,4 @@
 import 'server-only';
-
 import type { RlsTx } from '../db';
 import { userFeatureEntitlements } from '../db/schema';
 

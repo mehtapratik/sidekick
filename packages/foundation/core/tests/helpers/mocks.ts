@@ -5,7 +5,6 @@ import {
    type User,
    type UserResponse,
 } from '@supabase/supabase-js';
-
 import type {
    KeyBasedApiCaller,
    SessionBasedApiCaller,

@@ -1,5 +1,4 @@
 import { afterAll, describe, expect, it } from 'vitest';
-
 import { createTestAdminDb } from '../helpers/db';
 
 // Proves that Supabase's Data API roles hold no privileges on our tables, now or for

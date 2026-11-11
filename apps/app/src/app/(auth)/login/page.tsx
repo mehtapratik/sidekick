@@ -22,7 +22,6 @@ import {
    validationCopies,
 } from '@sidekick/copy/form';
 import { createBrowserClient } from '@sidekick/core/supabase/browser';
-
 import styles from '../auth.module.css';
 
 export default function LoginPage(): React.ReactElement {

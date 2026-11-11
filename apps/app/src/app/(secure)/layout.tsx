@@ -1,8 +1,6 @@
+import { createServerClient } from '@sidekick/core/supabase/server';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-
-import { createServerClient } from '@sidekick/core/supabase/server';
-
 import { AppShell } from './app-shell';
 
 export const dynamic = 'force-dynamic';

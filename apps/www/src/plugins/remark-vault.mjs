@@ -1,16 +1,16 @@
 // Obsidian syntax -> mdast (SPEC 6): wikilinks, embeds, callouts, and the duplicated leading H1.
 import fs from 'node:fs';
 import path from 'node:path';
-import { visit, SKIP } from 'unist-util-visit';
+import { SKIP, visit } from 'unist-util-visit';
+import { scanDatums } from '../lib/datums.mjs';
 import {
    ASSETS_DIR,
    DOCS_DIR,
-   WRITINGS_DIR,
    headingSlug,
    resolveWikilink,
    scanVault,
+   WRITINGS_DIR,
 } from '../lib/vault.mjs';
-import { scanDatums } from '../lib/datums.mjs';
 
 const WIKI = /(!?)\[\[([^\]\n]+)\]\]/g;
 const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');

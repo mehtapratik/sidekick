@@ -1,5 +1,5 @@
 // hast tweaks (SPEC 6): wide-table wrapper, the code figure with its Copy button, and wide display math.
-import { visit, SKIP } from 'unist-util-visit';
+import { SKIP, visit } from 'unist-util-visit';
 
 const LABELS = {
    'ts': 'TypeScript',

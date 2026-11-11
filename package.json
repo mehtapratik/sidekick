@@ -25,6 +25,7 @@
    },
    "devDependencies": {
       "@eslint/js": "^10.0.1",
+      "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
       "@next/eslint-plugin-next": "16.4.3",
       "@sidekick/eslint-plugin-sidekick": "workspace:*",
       "dotenv-cli": "^11.1.0",

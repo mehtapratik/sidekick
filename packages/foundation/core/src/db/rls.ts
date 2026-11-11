@@ -1,5 +1,4 @@
 import { sql } from 'drizzle-orm';
-
 import { getUnsafeDb } from './unsafe';
 
 export type RlsTx = Parameters<
