@@ -5,7 +5,7 @@ title: Agent Guide
 created: 2026-09-19
 updated: 2026-11-11
 kind: guidance
-version: 1.7.0
+version: 1.8.0
 tags:
    - ai-coding
    - agent
@@ -44,7 +44,7 @@ Pratik builds Sidekick to learn full-stack development. The goal is to build fas
 - **Complete:** Phases 0, 1 and 1.1, [[04-phases/01-front-door/02-hardening/00-plan|Front Door]] (walkthrough in [[04-phases/01-front-door/02-hardening/01-walkthrough]]) and [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper]] (walkthrough in [[04-phases/02-gatekeeper/02-walkthrough]]). Every API route goes through `withApiGuard` (`@sidekick/core/api`); `ALL_FEATURES` is still empty, so no feature is granted yet.
 - **Next:** [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]], planned as lessons for part 3a (the store and its API), next [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief|lesson 2]]. [[04-phases/03-synergy/00-lessons/lesson-0-one-repo/01-walkthrough|Lesson 0]] (one repo) is complete: the vault, the writings and the public site live in this repo, and arkive.blog is served by the Cloudflare Worker `sidekick-www`. [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/01-walkthrough|Lesson 1]] (layer folders) is complete: `core`, `ui` and `copy` live in `packages/foundation/`, the empty `@sidekick/synergy` in `packages/platform/synergy`, and lint fails a package in no layer. Part 3b is planned at Checkpoint 3a. Deferred follow-ups are in [[backlogged-unplanned]] (B6–B8 from Phase 2, B10 and B12 from lesson 0).
 - **Toolchain:** Node 24 (`.nvmrc` `24`, `engines.node` `24.x`, `engineStrict`), pnpm 12 through Corepack, TypeScript 6.0 (held below 6.1), ESLint 10 flat config with `eslint-plugin-import-x` and `eslint-plugin-boundaries` 7, Next.js 16, Vitest, PostgreSQL 17 in tests and CI. The public site (`apps/www`) is Astro 7, deployed with Wrangler 4 as a Cloudflare Worker.
-- **Packages by layer:** foundation in `packages/foundation/*`, platform in `packages/platform/*`, features in `packages/features/*` (none exist yet; the workspace glob is already there). The registry, `eslint-plugin-sidekick` and `ops` are singletons at the root of `packages/`. A package anywhere else fails `pnpm lint`.
+- **Packages by layer:** foundation in `packages/foundation/*`, platform in `packages/platform/*`, features in `packages/features/*` (none exist yet; the workspace glob is already there). The registry, `eslint-plugin-sidekick`, `ops` and `test-utils` are singletons at the root of `packages/`. A package anywhere else fails `pnpm lint`.
 
 ## Commands
 
@@ -62,13 +62,14 @@ pnpm db:migrate
 pnpm ops:entitlements:grant --email <email> --all [--apply]
 ```
 
-`db:generate`, `db:migrate` and `ops:*` need the root `.env.local`; `ops:*` scripts print a plan and write only with `--apply`. Never commit secrets. `test:integration` runs the RLS proof on a throwaway PostgreSQL 17 and needs its tools installed locally; it is never cached.
+`db:generate`, `db:migrate` and `ops:*` need the root `.env.local`; only the root scripts load it, and Turbo passes `DATABASE_DIRECT_URL` through to the `db:*` tasks. `db:migrate` runs each package's migrations in dependency order (core first). Generate one package's migration with `pnpm db:generate --filter=<package> -- --custom --name=<name>`. `ops:*` scripts print a plan and write only with `--apply`. Never commit secrets. `test:integration` builds one throwaway PostgreSQL 17 from every package's migrations and runs each package's integration tests against it; it needs the tools installed locally and is never cached.
 
 ## Always true
 
 - Do not invent product scope. Read the relevant PRD and phase note first.
 - Preserve dependency direction ([[03-system-design/non-functional/monorepo/dependency-flow|dependency flow]]): apps, the registry, features, platform and foundation, top to bottom; a layer may import any layer below it, never one above it or a sibling in its own layer, and packages never import apps. Platform packages never import each other. `packages/ops` (privileged scripts) may import the registry, platform and foundation, and nothing may import it. The public site (`apps/www`) may import foundation except `core`, and nothing imports it (D258). `pnpm lint` enforces it.
 - Mutations stay in the API layer. Every App Router route handler is wrapped in `withApiGuard` (lint rule `require-api-guard`); Server Actions, the Pages Router and custom `pageExtensions` are banned.
+- **Shared SQL functions are public API.** Every package that owns tables has its own migrations and its own migrations table (`drizzle.__drizzle_migrations_<package>`), but a trigger or function another package binds (core's soft-delete functions) is a contract: change it only in a way every caller survives. `CREATE OR REPLACE` changes it for every package at once, with no error ([[03-system-design/non-functional/database/migration|Migration]]).
 - User-data queries go through `withRLS`, the only public database entry point. Raw Drizzle and admin Supabase clients are server-only and lint-restricted to the wrappers that need them. The one privileged path is `packages/ops`'s `withPrivilegedDb` (`DATABASE_DIRECT_URL`, bypasses RLS), for dev seeds, provisioning and break-glass scripts only.
 - Syncable entities use client-generated IDs and soft deletes; APIs are idempotent.
 - User-visible copy belongs in `packages/copy` until lesson I1, then in each package's catalog ([[03-system-design/non-functional/content/internationalization|Internationalization]]). `@sidekick/ui` holds no words: labels are props.

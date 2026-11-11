@@ -42,7 +42,7 @@ jobs:
          - run: pnpm test
          # Production (Supabase) runs PostgreSQL 17; the runner image ships 16.
          # Install 17's tools from the official PostgreSQL apt repository (PGDG).
-         # tests/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
+         # scripts/test-db/with-test-db.sh finds them in /usr/lib/postgresql/17/bin.
          - name: Install PostgreSQL 17 tools
            run: |
               sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y

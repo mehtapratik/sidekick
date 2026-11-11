@@ -11,15 +11,16 @@ import {
    vi,
 } from 'vitest';
 
+import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
+import { createMockHttpRequest } from '@sidekick/test-utils/http';
+
 import { withApiGuard } from '../../src/api';
 import { resolveApiCaller } from '../../src/api/auth';
 import { profiles } from '../../src/db/schema';
-import { createTestAdminDb, createTestAuthDb } from '../helpers/db';
-import { createMockHttpRequest } from '../helpers/http';
 
 // Proves the guard end to end on a database built from our migrations. Only the caller
 // is mocked (there is no Supabase Auth here); withRLS, the RLS policies, entitlements,
-// commit and rollback all run for real. Runs inside tests/with-test-db.sh.
+// commit and rollback all run for real. Runs inside pnpm test:integration.
 vi.mock('../../src/api/auth', () => ({ resolveApiCaller: vi.fn() }));
 
 const testAuthDb = createTestAuthDb();

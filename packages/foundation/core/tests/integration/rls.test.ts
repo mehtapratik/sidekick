@@ -2,13 +2,14 @@ import { randomUUID } from 'node:crypto';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { createTestAuthDb, createTestRuntimeDb } from '@sidekick/test-utils/db';
+
 import { withRLS } from '../../src/db';
 import { profiles } from '../../src/db/schema';
-import { createTestAuthDb, createTestRuntimeDb } from '../helpers/db';
 
 // Proves row-level security on the runtime connection. Runs inside
-// tests/with-test-db.sh, which builds a fresh database from our
-// migrations and exports these connection URLs:
+// pnpm test:integration, which builds a fresh database from every
+// package's migrations and exports these connection URLs:
 // - DATABASE_URL: app_runtime, the role the app and withRLS use
 // - TEST_AUTH_DATABASE_URL: supabase_auth_admin, which creates users the way
 //   Supabase Auth does

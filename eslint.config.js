@@ -109,6 +109,7 @@ export default defineConfig(
                capture: ['package'],
             },
             { type: 'tooling', pattern: 'packages/eslint-plugin-sidekick' },
+            { type: 'test-utils', pattern: 'packages/test-utils' },
             // Privileged scripts (dev seeds, provisioning, break-glass); nothing imports them
             { type: 'ops', pattern: 'packages/ops' },
          ],
@@ -150,8 +151,8 @@ export default defineConfig(
          // Everything not allowed here is disallowed, so nothing imports the
          // site, ops or tooling, and platform packages never import each other.
          // Imports within one package are never checked. Foundation packages
-         // (core, ui, copy) and tooling import no other workspace package;
-         // loosen deliberately with a new rule.
+         // (core, ui, copy) and tooling import no other workspace package
+         // except test-utils in tests (loosen deliberately with a new rule).
          'boundaries/dependencies': [
             'error',
             {
@@ -220,6 +221,24 @@ export default defineConfig(
                            },
                         },
                      },
+                  },
+                  // Shared test helpers (D261, Synergy lesson 2): any layer's tests may import
+                  // @sidekick/test-utils. Packages list it as a devDependency, so
+                  // import-x/no-extraneous-dependencies keeps it out of product code.
+                  // test-utils itself imports no workspace package.
+                  {
+                     from: {
+                        element: {
+                           type: [
+                              'app',
+                              'registry',
+                              'feature',
+                              'platform',
+                              'foundation',
+                           ],
+                        },
+                     },
+                     allow: { to: { element: { type: 'test-utils' } } },
                   },
                ],
             },

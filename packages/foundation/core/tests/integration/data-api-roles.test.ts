@@ -1,9 +1,9 @@
 import { afterAll, describe, expect, it } from 'vitest';
 
-import { createTestAdminDb } from '../helpers/db';
+import { createTestAdminDb } from '@sidekick/test-utils/db';
 
 // Proves that Supabase's Data API roles hold no privileges on our tables, now or for
-// tables created later. Runs inside tests/with-test-db.sh, whose Supabase stand-ins give
+// tables created later. Runs inside scripts/test-db/with-test-db.sh, whose Supabase stand-ins give
 // anon and authenticated the same default privileges as the live project.
 // - TEST_ADMIN_DATABASE_URL: postgres, the role that runs migrations and creates tables
 

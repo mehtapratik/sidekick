@@ -1,0 +1,21 @@
+{
+   "name": "@sidekick/test-utils",
+   "private": true,
+   "license": "MIT",
+   "version": "0.0.0",
+   "type": "module",
+   "exports": {
+      "./db": "./src/db.ts",
+      "./http": "./src/http.ts"
+   },
+   "scripts": {
+      "lint": "eslint .",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
+   },
+   "dependencies": {
+      "postgres": "^4.0.0"
+   },
+   "devDependencies": {
+      "@types/node": "^24.19.2"
+   }
+}
