@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-1-1
 title: "Front Door: Row-Level Security Walkthrough"
 created: 2026-09-19
-updated: 2026-10-23
+updated: 2026-11-11
 kind: guidance
-version: 1.1.0
+version: 1.2.0
 tags:
    - plan
    - phase-1.1
@@ -509,3 +509,16 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
 4. In the Supabase dashboard, turn the Data API off (**Project Settings → Data API**). Supabase Auth is a separate service, so sign-in keeps working.
 
 Every later table (Phase 2's `user_feature_entitlements` included) is covered by the default privileges, so it never gets these grants. Pre-2's integration tests prove it; see the post note there.
+
+## Post note — Functions Created After 0008 Stayed Executable (added 2026-11-11)
+
+The last default-privileges statement above doesn't do what its comment says for functions. Postgres keeps default privileges at two levels, global and per schema, and a per-schema rule (`IN SCHEMA public`) can only add to the global one, never take it back. The built-in global default lets `PUBLIC` (every role, `anon` and `authenticated` included) execute every new function, so each function created after `0008` was executable through the Data API. Tables and sequences were covered; functions weren't. Nothing showed it until Synergy lesson 2 created the first function after `0008` and the shared test database ran core's Data API test against it ([sidekick#53](https://github.com/mehtapratik/sidekick/pull/53)).
+
+The fix is core migration `0009`, a global revoke for the role that runs migrations:
+
+```sql
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres
+  REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+```
+
+If you're following along, add it as your next custom migration after this one. Functions `postgres` creates from then on, in any schema, can be executed only by their owner and by roles granted `EXECUTE` explicitly. Triggers don't check `EXECUTE`, so trigger functions keep working. `0008` itself stays unedited: applied migrations never change.

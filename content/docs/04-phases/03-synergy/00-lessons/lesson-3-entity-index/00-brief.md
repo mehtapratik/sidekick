@@ -3,7 +3,7 @@ publish: true
 id: plan.phase-3.lesson-3-entity-index
 title: "Synergy Lesson 3: Entity Index and Version Log"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-11
 kind: plan
 version: 1.0.0
 tags:
@@ -26,6 +26,20 @@ status: planned
 **Learning payoff:** why Synergy's RLS leaves `deleted_at` to the repository; a trigger that tells a restore from any other update; advisory locks and why one fixed lock order prevents deadlocks; optimistic concurrency with a counter (`UPDATE … WHERE content_seq = $base`); partial unique indexes; why an integer beats a timestamp as a concurrency token.
 
 **Coach reads first:** the decisions above, [[03-system-design/non-functional/security/row-level-security|row-level security]], [[03-system-design/non-functional/database/soft-delete-support|soft-delete support]], [[03-system-design/non-functional/database/syncable-tables|syncable tables]], [[03-system-design/non-functional/database/non-syncable-tables|non-syncable tables]], `packages/foundation/core/src/db/` (schema, `rls.ts`, migrations 0003 and 0007) in the Sidekick repo.
+
+## Handover from lesson 2
+
+Lesson 2 ([[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/01-walkthrough|walkthrough]], [sidekick#53](https://github.com/mehtapratik/sidekick/pull/53)) left the repo like this:
+
+- **Migrations:** Synergy has its own `drizzle.config.ts`, `src/db/migrations/` and table `drizzle.__drizzle_migrations_synergy`; core's is `__drizzle_migrations_core` (D262). Generate with `pnpm db:generate --filter=@sidekick/synergy -- --custom --name=<name>` from the root; only the root reads `.env.local`. `src/db/schema/index.ts` is an empty module waiting for the first tables, and `drizzle-orm` is not a Synergy dependency yet.
+- **The restore-aware function exists, unbound:** `synergy_block_update_on_deleted()` (Synergy `0000`). Bind it with `CREATE TRIGGER no_update_deleted_<table> BEFORE UPDATE ... EXECUTE FUNCTION synergy_block_update_on_deleted()`. Synergy depends on core, so core's functions (`enforce_soft_delete`) always exist first.
+- **Tests:** `pnpm test:integration` builds one database from every package's migrations and runs core's and Synergy's suites against it. Synergy's `tests/integration/restore-aware-trigger.test.ts` proves the function on a probe table. Shared helpers are `@sidekick/test-utils/db` and `/http` (D261); core's `mocks.ts` stays in core until Synergy needs it.
+- **Privileges:** core `0009` revokes `EXECUTE` from `PUBLIC` on every function `postgres` creates. If `app_runtime` must call a Synergy function directly (not as a trigger), its migration grants `EXECUTE` to `app_runtime` explicitly. Core's Data API test now covers Synergy's functions and tables.
+- **Decide in this lesson** (questions from lesson 2):
+   - **How strict the restore is.** Today a restoring `UPDATE` may also change other columns. Recommendation: a restore changes only `deleted_at` and the bookkeeping columns this lesson designs, enforced in the trigger by comparing `to_jsonb(NEW)` and `to_jsonb(OLD)` without those columns; a restore that also edits is two statements in one transaction (restore, then a normal save). Decide once the columns exist, next to the test "a deleted row can be restored but not otherwise updated".
+   - **Repeated bindings.** Recommendation: own-rows RLS policies through a small TypeScript helper with Drizzle's `pgPolicy`, so drizzle-kit generates them; `CREATE TRIGGER` lines stay written out (three lines per table read better than a dynamic-SQL helper, whose later changes wouldn't reach tables it already bound).
+   - **One core function with `TG_ARGV`** (`block_update_on_deleted('allow_restore')`) replaces Synergy's own only when a second package needs restore (Taxila's undo, Phase 4 is the likely one). Not in this lesson.
+- **Shared SQL functions are public API** (agent guide): this lesson's core migration that corrects `block_update_on_deleted`'s message uses `CREATE OR REPLACE`, so it must keep the function's behaviour exactly as it is.
 
 ## Steps
 
