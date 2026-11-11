@@ -6,6 +6,7 @@
    "scripts": {
       "build": "astro build && node scripts/check-privacy.mjs && node scripts/check-datums.mjs",
       "dev": "astro dev",
+      "lint": "eslint .",
       "preview": "astro preview",
       "typecheck": "astro check"
    },
@@ -19,13 +20,13 @@
       "remark-math": "^3.0.1",
       "unist-util-visit": "5.1.0"
    },
-   "engines": {
-      "node": "24.x"
-   },
    "devDependencies": {
       "@astrojs/check": "^0.9.12",
       "@types/node": "^24.19.2",
       "typescript": "^6.0.3",
       "wrangler": "^4.159.0"
+   },
+   "engines": {
+      "node": "24.x"
    }
 }

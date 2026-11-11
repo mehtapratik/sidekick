@@ -1,13 +1,13 @@
-import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import astro from 'eslint-plugin-astro';
 import boundaries from 'eslint-plugin-boundaries';
-import importX from 'eslint-plugin-import-x';
-import reactHooks from 'eslint-plugin-react-hooks';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import { defineConfig } from 'eslint/config';
-import tseslint from 'typescript-eslint';
-
+import importX from 'eslint-plugin-import-x';
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
+import reactHooks from 'eslint-plugin-react-hooks';
 import sidekickPlugin from '@sidekick/eslint-plugin-sidekick';
+import tseslint from 'typescript-eslint';
 
 // ── Request entry points ────────────────────────────────────────────────────
 // Every request must enter through an App Router route handler wrapped in
@@ -74,6 +74,8 @@ const tsProjects = [
    'tsconfig.base.json',
    'apps/*/tsconfig.json',
    'packages/*/tsconfig.json',
+   'packages/foundation/*/tsconfig.json',
+   'packages/platform/*/tsconfig.json',
    'packages/features/*/tsconfig.json',
 ];
 
@@ -86,21 +88,28 @@ export default defineConfig(
       },
       settings: {
          // Element patterns are matched relative to this root. `pnpm lint` runs
-         // ESLint from inside each package (cwd = packages/core, …), where the
-         // default root (cwd) makes every file "unknown" and boundaries silently
-         // enforces nothing — so the repo root is set explicitly.
+         // ESLint from inside each package (cwd = packages/foundation/core, …),
+         // where the default root (cwd) makes every file "unknown" and boundaries
+         // silently enforces nothing — so the repo root is set explicitly.
          'boundaries/root-path': import.meta.dirname,
-         // A file belongs to the first element whose pattern matches, so specific
-         // patterns come before the catch-all `packages/*`.
+         // A file belongs to the first element whose pattern matches: `site`
+         // must come before `app`, because apps/* also matches apps/www. There
+         // is no packages/* catch-all; a package in no element fails lint
+         // (boundaries/no-unknown-files).
          'boundaries/elements': [
+            { type: 'site', pattern: 'apps/www' },
             { type: 'app', pattern: 'apps/*' },
-            { type: 'feature', pattern: 'packages/features/*' },
             { type: 'registry', pattern: 'packages/features-registry' },
+            { type: 'feature', pattern: 'packages/features/*' },
+            { type: 'platform', pattern: 'packages/platform/*' },
+            {
+               type: 'foundation',
+               pattern: 'packages/foundation/*',
+               capture: ['package'],
+            },
             { type: 'tooling', pattern: 'packages/eslint-plugin-sidekick' },
             // Privileged scripts (dev seeds, provisioning, break-glass); nothing imports them
             { type: 'ops', pattern: 'packages/ops' },
-            // core, ui, copy
-            { type: 'foundation', pattern: 'packages/*' },
          ],
          // eslint-plugin-boundaries resolves imports through the `import/resolver`
          // setting; eslint-plugin-import-x uses `import-x/resolver-next`. Both
@@ -134,10 +143,14 @@ export default defineConfig(
       },
       rules: {
          'boundaries/no-unknown-dependencies': 'error',
-         // Dependency direction: apps → registry → features → foundation.
-         // Everything not allowed here is disallowed. Imports within one package
-         // are never checked. Foundation packages (core, ui, copy) and tooling
-         // import no other workspace package; loosen deliberately with a new rule.
+         'boundaries/no-unknown-files': 'error',
+         // Dependency direction: apps → registry → features → platform →
+         // foundation; the site (apps/www) may import only foundation.
+         // Everything not allowed here is disallowed, so nothing imports the
+         // site, ops or tooling, and platform packages never import each other.
+         // Imports within one package are never checked. Foundation packages
+         // (core, ui, copy) and tooling import no other workspace package;
+         // loosen deliberately with a new rule.
          'boundaries/dependencies': [
             'error',
             {
@@ -148,7 +161,12 @@ export default defineConfig(
                      allow: {
                         to: {
                            element: {
-                              type: ['feature', 'registry', 'foundation'],
+                              type: [
+                                 'registry',
+                                 'feature',
+                                 'platform',
+                                 'foundation',
+                              ],
                            },
                         },
                      },
@@ -156,23 +174,63 @@ export default defineConfig(
                   {
                      from: { element: { type: 'registry' } },
                      allow: {
-                        to: { element: { type: ['feature', 'foundation'] } },
+                        to: {
+                           element: {
+                              type: ['feature', 'platform', 'foundation'],
+                           },
+                        },
                      },
                   },
                   {
                      from: { element: { type: 'feature' } },
+                     allow: {
+                        to: { element: { type: ['platform', 'foundation'] } },
+                     },
+                  },
+                  {
+                     from: { element: { type: 'platform' } },
                      allow: { to: { element: { type: 'foundation' } } },
                   },
                   {
                      from: { element: { type: 'ops' } },
                      allow: {
-                        to: { element: { type: ['foundation', 'registry'] } },
+                        to: {
+                           element: {
+                              type: ['registry', 'platform', 'foundation'],
+                           },
+                        },
+                     },
+                  },
+                  // The public site (D258): may import only foundation; nothing imports it
+                  {
+                     from: { element: { type: 'site' } },
+                     allow: {
+                        to: { element: { type: 'foundation' } },
+                     },
+                  },
+                  // D258: the site never reaches core (database, auth, API)
+                  {
+                     from: { element: { type: 'site' } },
+                     disallow: {
+                        to: {
+                           element: {
+                              type: 'foundation',
+                              captured: { package: 'core' },
+                           },
+                        },
                      },
                   },
                ],
             },
          ],
       },
+   },
+   {
+      // Repo-level tooling (this file, stylelint.config.js, scripts/) sits in no
+      // layer. `pnpm lint` never lints it (it runs inside each package), but
+      // editors do, so it is exempt from the no-layer check.
+      files: ['*.{js,mjs,cjs,ts}', 'scripts/**'],
+      rules: { 'boundaries/no-unknown-files': 'off' },
    },
    {
       files: ['**/*.cjs'],
@@ -187,13 +245,16 @@ export default defineConfig(
       },
    },
    {
-      // Build output, and next-env.d.ts, which Next.js generates and rewrites
+      // Build output, and next-env.d.ts, which Next.js generates, rewrites,
+      // Astro's generated types (gitignored), and the site's shipped-as-is assets
       ignores: [
+         '**/.astro/**',
          '**/node_modules/**',
          '**/dist/**',
          '**/.next/**',
          '**/.turbo/**',
          '**/next-env.d.ts',
+         'apps/www/public/**',
       ],
    },
    // ── Sidekick plugin rules ────────────────────────────────────────────────
@@ -258,6 +319,8 @@ export default defineConfig(
    },
    {
       files: ['apps/*/pages/**', 'apps/*/src/pages/**'],
+      // Astro's file router, not Next.js's Pages Router
+      ignores: ['apps/www/**'],
       rules: {
          'no-restricted-syntax': ['error', serverActionBan, pagesRouterBan],
       },
@@ -352,7 +415,7 @@ export default defineConfig(
    {
       // The structured logger is the one file that writes logs with console.log:
       // every other file logs through it. warn and error stay allowed everywhere.
-      files: ['packages/core/src/observability/log.ts'],
+      files: ['packages/foundation/core/src/observability/log.ts'],
       rules: {
          'no-console': ['error', { allow: ['log', 'warn', 'error'] }],
       },
@@ -368,7 +431,7 @@ export default defineConfig(
    {
       // Rules of Hooks, exhaustive deps, and the React Compiler's checks
       ...reactHooks.configs.flat.recommended,
-      files: ['apps/app/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+      files: ['apps/app/**/*.{ts,tsx}', 'packages/foundation/ui/**/*.{ts,tsx}'],
    },
    {
       files: ['apps/app/**/*.{ts,tsx,js,jsx}'],
@@ -413,7 +476,7 @@ export default defineConfig(
    {
       // The single file allowed to import the raw database client: withRLS is
       // built on it. Every other ban still applies here.
-      files: ['packages/core/src/db/rls.ts'],
+      files: ['packages/foundation/core/src/db/rls.ts'],
       rules: {
          'no-restricted-imports': [
             'error',
@@ -454,6 +517,31 @@ export default defineConfig(
                optionalDependencies: false,
             },
          ],
+      },
+   },
+   // ── Public site (apps/www) ────────────────────────────────────────────────
+   // The site is temporary (D256): boundaries, the basics and the type-aware
+   // promise checks stay on; the App's strictness does not apply.
+   ...astro.configs.recommended,
+   {
+      files: ['apps/www/**'],
+      languageOptions: {
+         // Build scripts run in Node
+         globals: { process: 'readonly', console: 'readonly' },
+      },
+      rules: {
+         '@typescript-eslint/explicit-module-boundary-types': 'off',
+         '@typescript-eslint/consistent-type-imports': 'off',
+         '@typescript-eslint/consistent-type-definitions': 'off',
+         // `({ drop, ...rest }) => rest` omits keys on purpose
+         '@typescript-eslint/no-unused-vars': [
+            'error',
+            { ignoreRestSiblings: true },
+         ],
+         // Build scripts report through stdout
+         'no-console': 'off',
+         // Escapes inside regex character classes are clearer left in
+         'no-useless-escape': 'off',
       },
    },
 );

@@ -1,6 +1,9 @@
 packages:
    - 'apps/*'
    - 'packages/*'
+   - 'packages/foundation/*'
+   - 'packages/platform/*'
+   - 'packages/features/*'
    - 'content'
 allowBuilds:
    esbuild: true
