@@ -3,7 +3,7 @@ publish: false
 id: harness.standards-and-guidance.pin-versions
 title: Pin Versions
 created: 2026-10-15
-updated: 2026-10-18
+updated: 2026-11-11
 ---
 
 # Pin every version
@@ -16,7 +16,7 @@ How strictly to pin depends on whether something already records the exact versi
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | npm dependencies                                                | Full caret range in `package.json` (`^5.0.5`, not `^5`), raised by Renovate (`rangeStrategy: bump`); the exact version comes from the lockfile | `pnpm-lock.yaml`, installed with `--frozen-lockfile` in CI                                        |
 | Package manager                                                 | Exact version and hash                                                                                                                         | `packageManager` in `package.json` (Corepack)                                                     |
-| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float                                                                                                           | `.nvmrc` + `engines` (Node 24), CI workflow, scripts (e.g. `PG_MAJOR` in `tests/with-test-db.sh`) |
+| Runtimes and system tools without a lockfile (Node, PostgreSQL) | Major version; minor and patch float                                                                                                           | `.nvmrc` + `engines` (Node 24), CI workflow, scripts (e.g. `PG_MAJOR` in `scripts/test-db/with-test-db.sh`) |
 | CI machine image                                                | Exact image, never `-latest`                                                                                                                   | `runs-on: ubuntu-26.04`                                                                           |
 | GitHub Actions                                                  | First-party `actions/*`: major tag (`@v7`). Third-party: full commit SHA                                                                       | Workflow files                                                                                    |
 

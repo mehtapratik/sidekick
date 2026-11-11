@@ -2,17 +2,18 @@ import { randomUUID } from 'node:crypto';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { withRLS } from '../../src/db';
-import { userFeatureEntitlements } from '../../src/db/schema';
-import { getEnabledFeatures } from '../../src/features/entitlements';
 import {
    createTestAdminDb,
    createTestAuthDb,
    createTestRuntimeDb,
-} from '../helpers/db';
+} from '@sidekick/test-utils/db';
+
+import { withRLS } from '../../src/db';
+import { userFeatureEntitlements } from '../../src/db/schema';
+import { getEnabledFeatures } from '../../src/features/entitlements';
 
 // Proves the entitlements lockdown on a database built from our migrations.
-// Runs inside tests/with-test-db.sh, which exports:
+// Runs inside pnpm test:integration (scripts/test-db/with-test-db.sh), which exports:
 // - DATABASE_URL: app_runtime, the role withRLS uses for every user request
 // - TEST_AUTH_DATABASE_URL: supabase_auth_admin, which creates and deletes users
 // - TEST_ADMIN_DATABASE_URL: postgres, the privileged role that writes entitlements

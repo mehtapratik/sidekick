@@ -1,15 +1,15 @@
 import postgres, { type Sql } from 'postgres';
 
-// Connections to the throwaway database tests/with-test-db.sh builds from our migrations.
+// Connections to the throwaway database pnpm test:integration builds from every package's migrations.
 // Each factory opens a new single-connection client; the test file that creates it ends it
 // in afterAll, so every file owns its connections' lifecycle.
 
-/** Reads a connection URL tests/with-test-db.sh exports; fails loudly when run outside it */
+/** Reads a connection URL scripts/test-db/with-test-db.sh exports; fails loudly when run outside it */
 export function requireTestEnv(name: string): string {
    const value = process.env[name];
    if (!value) {
       throw new Error(
-         `${name} is not set; run this test through tests/with-test-db.sh`,
+         `${name} is not set; run integration tests with pnpm test:integration`,
       );
    }
 

@@ -19,10 +19,10 @@
       "build": "tsc -p tsconfig.build.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "lint": "eslint .",
-      "db:generate": "dotenv -e ../../../.env.local -- drizzle-kit generate",
-      "db:migrate": "dotenv -e ../../../.env.local -- drizzle-kit migrate",
+      "db:generate": "drizzle-kit generate",
+      "db:migrate": "drizzle-kit migrate",
       "test": "vitest run src",
-      "test:integration": "tests/with-test-db.sh vitest run tests/integration"
+      "test:integration": "vitest run tests/integration"
    },
    "dependencies": {
       "@supabase/ssr": "^0.12.7",
@@ -35,6 +35,7 @@
       "next": ">=16.4.3"
    },
    "devDependencies": {
+      "@sidekick/test-utils": "workspace:*",
       "@types/node": "^24.19.2",
       "drizzle-kit": "^0.31.11",
       "next": "^16.4.3",

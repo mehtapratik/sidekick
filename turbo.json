@@ -28,14 +28,22 @@
          "dependsOn": ["^typecheck"]
       },
       "db:migrate": {
-         "cache": false
+         "cache": false,
+         "dependsOn": ["^db:migrate"],
+         "passThroughEnv": ["DATABASE_DIRECT_URL"]
       },
       "db:generate": {
-         "cache": false
+         "cache": false,
+         "passThroughEnv": ["DATABASE_DIRECT_URL"]
       },
       "test": {},
       "test:integration": {
-         "cache": false
+         "cache": false,
+         "passThroughEnv": [
+            "DATABASE_URL",
+            "TEST_AUTH_DATABASE_URL",
+            "TEST_ADMIN_DATABASE_URL"
+         ]
       }
    }
 }

@@ -7,8 +7,8 @@
    "scripts": {
       "build": "turbo build",
       "check:content": "node scripts/check-content.mjs",
-      "db:generate": "turbo db:generate",
-      "db:migrate": "turbo db:migrate",
+      "db:generate": "dotenv -e .env.local -- turbo db:generate",
+      "db:migrate": "dotenv -e .env.local -- turbo db:migrate",
       "dev": "turbo dev",
       "format": "prettier --write .",
       "lint": "turbo lint",
@@ -17,7 +17,7 @@
       "prepare": "husky",
       "prettier:check": "prettier --check .",
       "test": "turbo test",
-      "test:integration": "turbo test:integration",
+      "test:integration": "scripts/test-db/with-test-db.sh turbo test:integration",
       "typecheck": "turbo typecheck"
    },
    "lint-staged": {

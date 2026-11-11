@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Runs a command against a throwaway Postgres built from our migrations:
-#   tests/with-test-db.sh <command...>
-# Starts a temporary cluster, applies the Supabase stand-ins and all
-# migrations, enables app_runtime login, exports connection URLs, runs the
-# command, then deletes the cluster — even if the command fails.
-# Requires initdb, pg_ctl and psql of the PostgreSQL major version in PG_MAJOR.
+# Runs a command against a throwaway Postgres built from every package's migrations:
+#   scripts/test-db/with-test-db.sh <command...>
+# Starts a temporary cluster, applies the Supabase stand-ins and every package's 
+# migrations in dependency order (the same path as pnpm db:migrate), enables 
+# app_runtime login, exports connection URLs, runs the command, then deletes the 
+# cluster — even if the command fails. Requires initdb, pg_ctl and psql of 
+# the PostgreSQL major version in PG_MAJOR.
 set -euo pipefail
 
 # macOS Postgres refuses to start without a locale; Linux (CI) has a usable default
@@ -36,7 +37,7 @@ fi
 
 PORT="${TEST_DB_PORT:-54329}"            # avoids a local Postgres on 5432
 HERE="$(cd "$(dirname "$0")" && pwd)"
-CORE="$(cd "$HERE/.." && pwd)"
+ROOT="$(cd "$HERE/../.." && pwd)"
 DATA="$(mktemp -d)"
 
 cleanup() {
@@ -53,8 +54,12 @@ pg_ctl -D "$DATA" -o "-p $PORT -k '' -c listen_addresses=127.0.0.1" \
   -l "$DATA/server.log" -w start >/dev/null
 
 psql "$(url admin)" -v ON_ERROR_STOP=1 -q -f "$HERE/supabase-stub.sql"
-(cd "$CORE" && DATABASE_DIRECT_URL="$(url postgres)" drizzle-kit migrate >/dev/null)
-
+# Every package's migrations, in dependency order. turbo.json passes
+# DATABASE_DIRECT_URL through to db:migrate, and no package reads .env.local,
+# so this can only reach the throwaway database.
+(cd "$ROOT" && DATABASE_DIRECT_URL="$(url postgres)" \
+  pnpm turbo run db:migrate --output-logs=errors-only)
+  
 # The out-of-band step from the app_runtime decision note
 psql "$(url admin)" -v ON_ERROR_STOP=1 -q \
   -c "ALTER ROLE app_runtime WITH LOGIN PASSWORD 'test-only'"

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createMockHttpRequest } from '../../tests/helpers/http';
+import { createMockHttpRequest } from '@sidekick/test-utils/http';
+
 import {
    MOCK_KEY_CALLER,
    MOCK_RLS_TX,

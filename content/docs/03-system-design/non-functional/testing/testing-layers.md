@@ -5,7 +5,7 @@ title: Testing Layers
 created: 2026-10-30
 updated: 2026-11-11
 kind: spec
-version: 1.2.2
+version: 1.3.0
 tags:
    - system-design
    - testing
@@ -36,7 +36,7 @@ Tests one module or component in isolation; its job is the module's own code pat
 Several real pieces working together, without the whole system: the real route handler wrapped in `withApiGuard`, a real Postgres built from the migrations, and only the signed-in caller faked. No browser and no running server.
 
 - **The main seam.** It is fast enough to cover every rule and edge case, and it exercises exactly what bots, agents and Sidekick's own screens use (One Interface). Example: deleting a referenced entity returns `delete_blocked` with the referencer count.
-- Location: `tests/integration/`, run inside `tests/with-test-db.sh`. Files use random per-file user ids so they run in parallel against one database.
+- Location: `tests/integration/` in each package. `pnpm test:integration` builds one database for every package and runs each package's suite against it. Files use random per-file user ids so they run in parallel against one database.
 
 ## 3. End-to-end
 
@@ -80,7 +80,15 @@ A playground page (such as Synergy's, behind the sandbox entitlements) is for lo
 ### Layout
 
 - `src/**/*.test.ts` — unit tests next to the code they test; no database, fast.
-- `tests/integration/` — tests that need a real database. They run inside `tests/with-test-db.sh`, which builds a throwaway Postgres from the migrations and Supabase stand-ins (`tests/supabase-stub.sql`), then deletes it.
+- `tests/integration/` — tests that need a real database. The root `pnpm test:integration` runs them inside `scripts/test-db/with-test-db.sh`, which builds a throwaway Postgres from the Supabase stand-ins (`scripts/test-db/supabase-stub.sql`) and every package's migrations, in dependency order through `turbo run db:migrate`, then deletes it. A package's own `test:integration` is plain `vitest run tests/integration`.
+- `@sidekick/test-utils` (`packages/test-utils`) — helpers more than one package's tests need: `./db` (connections to the test database) and `./http` (a test `Request`). Package-specific mocks stay in the package's `tests/helpers/`.
+
+**D261** `decision` #testing #monorepo: Test helpers that more than one package needs live in `@sidekick/test-utils`, a root singleton that test files alone may import and that imports no workspace package.
+
+- **Tests only:** packages list it as a devDependency, and `import-x/no-extraneous-dependencies` lets only test and config files import devDependencies. Its own boundaries element (`test-utils`) is importable from every layer's tests except the site's and ops'.
+- **No workspace imports:** core's tests depend on it, so an import of core would make the two depend on each other, and Turbo refuses a cyclic graph. Lint refuses the import before Turbo does.
+- **Not foundation:** foundation is product code any layer imports at runtime; test helpers never ship.
+- A helper moves here when a second package needs it; until then it stays in its package (core's `mocks.ts` is built from core's own types).
 - `tests/stubs/` — test-only stand-ins. For example, `server-only` throws outside Next.js's `react-server` condition, so `vitest.config.ts` aliases it to an empty stub.
 
 ### Beyond unit and integration tests
@@ -105,3 +113,4 @@ A playground page (such as Synergy's, behind the sandbox entitlements) is for lo
 
 - 2026-10-14 · accepted · Vitest
 - 2026-10-30 · accepted · Testing Layers
+- 2026-11-11 · accepted · Shared test helpers in `@sidekick/test-utils` (D261), Synergy lesson 2
