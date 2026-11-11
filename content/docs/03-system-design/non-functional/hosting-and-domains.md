@@ -38,7 +38,7 @@ Where each surface runs and which address it answers on. One page, so that when 
 
 Live since 2026-11-11 (Lesson 0): `arkive.blog` and `www.arkive.blog` are custom domains of `sidekick-www`; previews are `<branch>-sidekick-www.kitarpathem.workers.dev`.
 
-- **Workers Builds:** root directory `/`; build `pnpm turbo run build --filter=@sidekick/www`; deploy `pnpm -C apps/www exec wrangler deploy`; non-production branches `pnpm -C apps/www exec wrangler preview`; watch paths `apps/www/*`, `content/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; no environment variables.
+- **Workers Builds:** root directory `/`; build `pnpm turbo run build --filter=@sidekick/www`; deploy `pnpm -C apps/www exec wrangler deploy`; non-production branches `pnpm -C apps/www exec wrangler preview` (the dashboard pre-fills `npx wrangler preview`, which runs at the repo root, finds no `wrangler.jsonc` and fails with "missing a `previews` block"); watch paths `apps/www/*`, `content/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; no environment variables.
 - **Headers:** `apps/www/public/_headers` sets `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`, the two defaults Pages used to add. A Worker adds none.
 - **Rollback until the cutover:** the old `arkive` Pages project keeps its last deployment with automatic deployments disabled. Re-adding the two domains there undoes the move.
 

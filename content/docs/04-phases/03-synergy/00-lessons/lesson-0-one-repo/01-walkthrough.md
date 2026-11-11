@@ -508,7 +508,7 @@ Pages' third default, `Access-Control-Allow-Origin: *`, is left out on purpose: 
 | Root directory                | `/`                                                                                                     |
 | Build command                 | `pnpm turbo run build --filter=@sidekick/www`                                                           |
 | Deploy command                | `pnpm -C apps/www exec wrangler deploy`                                                                 |
-| Non-production branch deploys | on, with `pnpm -C apps/www exec wrangler preview`                                                       |
+| Non-production branch deploys | on, with `pnpm -C apps/www exec wrangler preview` (replace the pre-filled `npx wrangler preview`)      |
 | Build watch paths (include)   | `apps/www/*`, `content/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`        |
 | Environment variables         | none (Node comes from `.nvmrc`, pnpm from `packageManager`)                                              |
 
