@@ -50,7 +50,7 @@ Run over Remote Control from 2026-11-08 to 2026-11-11 and recorded. The coach ga
 - **Content got formatted before it was ignored.** Until `content/` was in `.prettierignore`, staging a writing let lint-staged strip its trailing blank lines (D216). The commit was amended with `--no-verify`, the one place that flag was right.
 - **An editor plugin isn't a repo rule.** Pratik's import sorter moved header comments below imports. Sidekick's ESLint has `import-x/first`, not `import-x/order`, so nothing in CI checks import order.
 - **`minimumReleaseAge`:** `pnpm add wrangler` installed 4.159.0 because 4.160.0 was 17 hours old. pnpm skips releases younger than a day by default.
-- **`.npmrc` settings are dead.** `save-exact=true` didn't stop pnpm writing `^4.159.0`. pnpm 11 and later read settings from `pnpm-workspace.yaml`; `.npmrc` is for registry and auth only (backlog B11).
+- **`.npmrc` settings are dead.** `save-exact=true` didn't stop pnpm writing `^4.159.0`. pnpm 11 and later read settings from `pnpm-workspace.yaml`; `.npmrc` is for registry and auth only. It was deleted in #47.
 - **Peers resolve from the package's own dependencies.** `@astrojs/check` needs TypeScript as a peer, so the site declares `typescript` itself. And `astro check` passed *without* `@types/node`: Astro's types pull in Vite's, Vite's `index.d.ts` says `/// <reference types="node" />`, and pnpm satisfied Vite's optional `@types/node` peer with the App's copy. The brief's "two errors" came from Arkive, where that chain didn't exist. The site declares `@types/node` anyway, because it imports `node:fs` itself.
 
 ## Turbo

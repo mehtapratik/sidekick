@@ -543,4 +543,4 @@ The diff prints nothing, every sitemap path returns 200, the made-up path return
 ## After the lesson
 
 - Point Obsidian at `~/Projects/sidekick/content/docs`, then delete `~/Projects/arkive` (after moving its untracked `design/` handover to the project's shared files if it isn't there) and `~/Projects/arkive-rewrite`.
-- Follow-ups are in [[04-phases/backlogged-unplanned|the backlog]] (B10 to B14).
+- Follow-ups are in [[04-phases/backlogged-unplanned|the backlog]] (B10, B12). Three more were cleared right after the lesson in [#47](https://github.com/mehtapratik/sidekick/pull/47): `.npmrc` deleted, the General Sans and Sentient licences added, `apps/www/.node-version` deleted.

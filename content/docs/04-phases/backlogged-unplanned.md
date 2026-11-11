@@ -129,14 +129,6 @@ These items are known, intentional gaps — deferred, not forgotten.
 
 **When to implement:** When CI time on content PRs becomes annoying, or with the first feature package, whichever comes first.
 
-### B11 — Remove the dead `.npmrc` settings
-
-**What:** `save-exact=true` and `strict-peer-dependencies=true` in `.npmrc` are not read by pnpm 12, whose settings live in `pnpm-workspace.yaml`. Delete them, and move `strictPeerDependencies` into `pnpm-workspace.yaml` if we still want it (check what it fails on first).
-
-**Why deferred:** Found in Synergy lesson 0 (2026-11-11): `pnpm add wrangler` wrote `^4.159.0` despite `save-exact`. Carets are the repo's convention, so the dead line did no harm.
-
-**When to implement:** Any small chore PR.
-
 ### B12 — Too many `app`s in `apps/app/src/app`
 
 **What:** Revisit the App's folder names. Next.js fixes the routes folder's name (`app`, at the package root or in `src/`), so the options are dropping `src/` (no fewer `app`s), renaming the package folder (against D214), or living with it.
@@ -144,20 +136,3 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Pratik, 2026-11-08, during the rename to `apps/app`: worth a decision, not in lesson 0.
 
 **When to implement:** A future lesson that touches the App's structure, at the latest before Open House.
-
-### B13 — Licence files for General Sans and Sentient
-
-**What:** Add the ITF Free Font License texts for General Sans and Sentient (from each family's Fontshare download) next to the fonts in `apps/www/public/fonts/`. Only IBM Plex Mono has its licence file there today, and the README says fonts keep their licences beside the files.
-
-**Why deferred:** Found in Synergy lesson 0 (2026-11-08); needs the downloads.
-
-**When to implement:** Before the site lessons, or in the first one.
-
-### B14 — Drop `apps/www/.node-version`
-
-**What:** Workers Builds runs from the repo root, where `.nvmrc` (24) sits, so `apps/www/.node-version` is no longer read by any build. Confirm the Node version in a `sidekick-www` build log, then delete the file and the "Node version files" paragraph's mention of it in [[03-system-design/non-functional/hosting-and-domains|Hosting and domains]].
-
-**Why deferred:** Found in Synergy lesson 0 (2026-11-11), after the Worker's first build.
-
-**When to implement:** Any small chore PR.
-

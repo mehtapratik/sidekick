@@ -31,7 +31,7 @@ Lesson 0 ([[04-phases/03-synergy/00-lessons/lesson-0-one-repo/01-walkthrough|wal
 
 - **New workspace packages:** `apps/www` (`@sidekick/www`, the Astro site, no `lint` script yet), `apps/app` (`@sidekick/app`, was `apps/web`) and `content` (`@sidekick/content`, Markdown only, guarded by `pnpm check:content` in CI and pre-commit). The boundaries `app` element (`apps/*`) currently matches `apps/www` too; step 4's `site` element must come before it.
 - **Root config:** `prettier-plugin-astro` is a root dev dependency with an `*.astro` override, and `content/` is in `.prettierignore`. Lint-staged and Prettier load plugins from the root.
-- **pnpm:** settings live in `pnpm-workspace.yaml` (`allowBuilds` now includes `workerd`); `.npmrc`'s `save-exact` and `strict-peer-dependencies` are not read (B11). When you reinstall after `git mv`, the lockfile keys packages by folder.
+- **pnpm:** settings live in `pnpm-workspace.yaml` (`allowBuilds` now includes `workerd`); the old `.npmrc` was never read and is gone (#47). When you reinstall after `git mv`, the lockfile keys packages by folder.
 - **History:** `main` has one merge commit (`8825103`, the import). Everything else stays squash-only. `.git-blame-ignore-revs` lists two format commits.
 - **Hosting:** Vercel builds `apps/app` and skips content-only commits; the Worker `sidekick-www` builds the site from `main` (watch paths `apps/www/*`, `content/*` and the root files). Lesson 1's reinstall changes `pnpm-lock.yaml`, a watch path, so its PR also gets a site preview; adding the site's `lint` script changes `apps/www/`, so expect a site build there too.
 
