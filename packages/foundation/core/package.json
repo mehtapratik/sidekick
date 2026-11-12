@@ -1,8 +1,8 @@
 {
    "name": "@sidekick/core",
+   "version": "0.0.0",
    "private": true,
    "license": "MIT",
-   "version": "0.0.0",
    "type": "module",
    "exports": {
       ".": "./src/index.ts",
@@ -17,12 +17,12 @@
    },
    "scripts": {
       "build": "tsc -p tsconfig.build.json",
-      "typecheck": "tsc -p tsconfig.json --noEmit",
-      "lint": "eslint .",
       "db:generate": "drizzle-kit generate",
       "db:migrate": "drizzle-kit migrate",
+      "lint": "eslint .",
       "test": "vitest run src",
-      "test:integration": "vitest run tests/integration"
+      "test:integration": "vitest run tests/integration",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "dependencies": {
       "@supabase/ssr": "^0.12.7",
@@ -31,14 +31,14 @@
       "postgres": "^4.0.0",
       "server-only": "^0.0.1"
    },
-   "peerDependencies": {
-      "next": ">=16.4.3"
-   },
    "devDependencies": {
       "@sidekick/test-utils": "workspace:*",
       "@types/node": "^24.19.2",
       "drizzle-kit": "^0.31.11",
       "next": "^16.4.3",
       "vitest": "^5.0.5"
+   },
+   "peerDependencies": {
+      "next": ">=16.4.3"
    }
 }

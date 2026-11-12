@@ -4,10 +4,10 @@
    "private": true,
    "license": "MIT",
    "scripts": {
-      "dev": "dotenv -e ../../.env.local -- next dev",
       "build": "dotenv -e ../../.env.local -- next build && node scripts/verify-endpoints.mjs",
-      "start": "next start",
+      "dev": "dotenv -e ../../.env.local -- next dev",
       "lint": "eslint .",
+      "start": "next start",
       "typecheck": "tsc --noEmit"
    },
    "dependencies": {

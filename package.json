@@ -39,6 +39,7 @@
       "lint-staged": "^17.6.0",
       "prettier": "^3.9.10",
       "prettier-plugin-astro": "^0.14.1",
+      "prettier-plugin-packagejson": "^3.1.0",
       "stylelint": "^17.16.0",
       "turbo": "^2.11.10",
       "typescript": "^6.0.3",

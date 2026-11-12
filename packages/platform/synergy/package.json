@@ -1,19 +1,19 @@
 {
    "name": "@sidekick/synergy",
+   "version": "0.0.0",
    "private": true,
    "license": "MIT",
-   "version": "0.0.0",
    "type": "module",
    "exports": {
       ".": "./src/index.ts"
    },
    "scripts": {
-      "typecheck": "tsc -p tsconfig.json --noEmit",
-      "lint": "eslint .",
-      "test": "vitest run src --passWithNoTests",
       "db:generate": "drizzle-kit generate",
       "db:migrate": "drizzle-kit migrate",
-      "test:integration": "vitest run tests/integration"
+      "lint": "eslint .",
+      "test": "vitest run src --passWithNoTests",
+      "test:integration": "vitest run tests/integration",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "dependencies": {
       "@sidekick/core": "workspace:*"

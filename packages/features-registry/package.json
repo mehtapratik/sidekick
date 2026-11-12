@@ -1,17 +1,17 @@
 {
    "name": "@sidekick/features-registry",
+   "version": "0.0.0",
    "private": true,
    "license": "MIT",
-   "version": "0.0.0",
    "type": "module",
    "exports": {
       ".": "./src/index.ts"
    },
    "scripts": {
       "build": "tsc -p tsconfig.build.json",
-      "typecheck": "tsc -p tsconfig.json --noEmit",
       "lint": "eslint .",
-      "test": "vitest run src"
+      "test": "vitest run src",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "devDependencies": {
       "vitest": "^5.0.5"
