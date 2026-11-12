@@ -1,13 +1,13 @@
 {
    "name": "@sidekick/ops",
+   "version": "0.0.0",
    "private": true,
    "license": "MIT",
-   "version": "0.0.0",
    "type": "module",
    "scripts": {
+      "entitlements:grant": "dotenv -e ../../.env.local -- tsx src/scripts/entitlements-grant.ts",
       "lint": "eslint .",
-      "typecheck": "tsc -p tsconfig.json --noEmit",
-      "entitlements:grant": "dotenv -e ../../.env.local -- tsx src/scripts/entitlements-grant.ts"
+      "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "dependencies": {
       "@sidekick/core": "workspace:*",
