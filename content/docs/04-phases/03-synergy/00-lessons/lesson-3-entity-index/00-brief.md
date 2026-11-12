@@ -5,7 +5,7 @@ title: "Synergy Lesson 3: Entity Index and Version Log"
 created: 2026-11-01
 updated: 2026-11-11
 kind: plan
-version: 1.0.0
+version: 1.0.1
 tags:
    - plan
    - phase-3
@@ -35,6 +35,7 @@ Lesson 2 ([[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/01-w
 - **The restore-aware function exists, unbound:** `synergy_block_update_on_deleted()` (Synergy `0000`). Bind it with `CREATE TRIGGER no_update_deleted_<table> BEFORE UPDATE ... EXECUTE FUNCTION synergy_block_update_on_deleted()`. Synergy depends on core, so core's functions (`enforce_soft_delete`) always exist first.
 - **Tests:** `pnpm test:integration` builds one database from every package's migrations and runs core's and Synergy's suites against it. Synergy's `tests/integration/restore-aware-trigger.test.ts` proves the function on a probe table. Shared helpers are `@sidekick/test-utils/db` and `/http` (D261); core's `mocks.ts` stays in core until Synergy needs it.
 - **Privileges:** core `0009` revokes `EXECUTE` from `PUBLIC` on every function `postgres` creates. If `app_runtime` must call a Synergy function directly (not as a trigger), its migration grants `EXECUTE` to `app_runtime` explicitly. Core's Data API test now covers Synergy's functions and tables.
+- **Walkthrough: include the `package.json` sort.** Between lessons 2 and 3, Pratik added `prettier-plugin-packagejson` ([sidekick#55](https://github.com/mehtapratik/sidekick/pull/55)), unplanned: an editor's sort-on-save kept reordering core's `package.json`. This lesson's walkthrough records it as a step (`pnpm add -D -w prettier-plugin-packagejson@^3.1.0`, list it last in `.prettierrc.json`'s `plugins`, `pnpm format`), so the walkthrough stays true to what was done.
 - **Decide in this lesson** (questions from lesson 2):
    - **How strict the restore is.** Today a restoring `UPDATE` may also change other columns. Recommendation: a restore changes only `deleted_at` and the bookkeeping columns this lesson designs, enforced in the trigger by comparing `to_jsonb(NEW)` and `to_jsonb(OLD)` without those columns; a restore that also edits is two statements in one transaction (restore, then a normal save). Decide once the columns exist, next to the test "a deleted row can be restored but not otherwise updated".
    - **Repeated bindings.** Recommendation: own-rows RLS policies through a small TypeScript helper with Drizzle's `pgPolicy`, so drizzle-kit generates them; `CREATE TRIGGER` lines stay written out (three lines per table read better than a dynamic-SQL helper, whose later changes wouldn't reach tables it already bound).
