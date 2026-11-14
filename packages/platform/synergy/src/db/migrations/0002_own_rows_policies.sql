@@ -1,0 +1,4 @@
+ALTER TABLE "entity_index" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "version_log" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+CREATE POLICY "entity_index_own_rows" ON "entity_index" AS PERMISSIVE FOR ALL TO public USING ("entity_index"."user_id" = nullif(current_setting('app.current_user_id', true), '')::uuid) WITH CHECK ("entity_index"."user_id" = nullif(current_setting('app.current_user_id', true), '')::uuid);--> statement-breakpoint
+CREATE POLICY "version_log_own_rows" ON "version_log" AS PERMISSIVE FOR ALL TO public USING ("version_log"."user_id" = nullif(current_setting('app.current_user_id', true), '')::uuid) WITH CHECK ("version_log"."user_id" = nullif(current_setting('app.current_user_id', true), '')::uuid);

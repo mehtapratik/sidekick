@@ -16,7 +16,8 @@
       "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "dependencies": {
-      "@sidekick/core": "workspace:*"
+      "@sidekick/core": "workspace:*",
+      "drizzle-orm": "^0.45.4"
    },
    "devDependencies": {
       "@sidekick/test-utils": "workspace:*",

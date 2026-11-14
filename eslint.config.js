@@ -295,6 +295,17 @@ export default defineConfig(
       },
    },
    {
+      // Lets an inferred type be named as an interface (EntityIndexRow extends
+      // InferSelectModel<...>), so editors show its name instead of every field.
+      files: ['**/*.ts', '**/*.tsx'],
+      rules: {
+         '@typescript-eslint/no-empty-object-type': [
+            'error',
+            { allowInterfaces: 'with-single-extends' },
+         ],
+      },
+   },
+   {
       // Next.js convention files and TS config files require default exports — exempt them
       files: [
          '**/page.tsx',
@@ -329,6 +340,15 @@ export default defineConfig(
       plugins: { sidekick: sidekickPlugin },
       rules: {
          'sidekick/require-api-guard': 'error',
+      },
+   },
+   {
+      // Every Synergy write takes the per-user lock first (D202): each insert,
+      // update or delete in the repository must sit inside withUserLock(...).
+      files: ['packages/platform/synergy/src/repository/**/*.ts'],
+      plugins: { sidekick: sidekickPlugin },
+      rules: {
+         'sidekick/require-user-lock': 'error',
       },
    },
    {

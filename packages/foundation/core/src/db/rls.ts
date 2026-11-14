@@ -2,9 +2,10 @@ import { sql } from 'drizzle-orm';
 
 import { getUnsafeDb } from './unsafe';
 
-export type RlsTx = Parameters<
+type UnsafeDbTx = Parameters<
    Parameters<ReturnType<typeof getUnsafeDb>['transaction']>[0]
 >[0];
+export interface RlsTx extends UnsafeDbTx {}
 
 export type RlsTxHandler<T> = (tx: RlsTx) => Promise<T>;
 

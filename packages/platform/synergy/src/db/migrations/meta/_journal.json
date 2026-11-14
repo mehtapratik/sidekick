@@ -8,6 +8,41 @@
       "when": 1794427677914,
       "tag": "0000_restore_aware_update_trigger_fn",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794539975180,
+      "tag": "0001_entity_index_and_version_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794541333006,
+      "tag": "0002_own_rows_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794541378299,
+      "tag": "0003_force_rls_and_soft_delete_triggers",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794549293495,
+      "tag": "0004_actor_kind_human",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794627092530,
+      "tag": "0005_strict_restore",
+      "breakpoints": true
     }
   ]
 }
