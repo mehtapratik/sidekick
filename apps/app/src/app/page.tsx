@@ -2,10 +2,13 @@ import { redirect } from 'next/navigation';
 
 import { createServerClient } from '@sidekick/core/supabase/server';
 
+/** Render on every request, never statically: the redirect depends on the session */
 export const dynamic = 'force-dynamic';
 
-// Root route has no UI — proxy handles unauthenticated redirects but authenticated
-// users landing on "/" are bounced here to the dashboard.
+/**
+ * Root route has no UI — proxy handles unauthenticated redirects but authenticated
+ * users landing on "/" are bounced here to the dashboard.
+ */
 export default async function RootPage(): Promise<never> {
    const supabase = await createServerClient();
    const {

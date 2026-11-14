@@ -9,12 +9,16 @@ import { load as loadYaml } from 'js-yaml';
 
 // pnpm, Turbo and Workers Builds run the site's scripts from apps/www, so the repo root is two levels up.
 const REPO_ROOT = path.resolve(process.cwd(), '../..');
+/** Absolute path of the Writings folder */
 export const WRITINGS_DIR = path.join(REPO_ROOT, 'content/writings');
+/** Absolute path of the docs vault */
 export const DOCS_DIR = path.join(REPO_ROOT, 'content/docs');
+/** Absolute path of the vault's images and attachments */
 export const ASSETS_DIR = path.join(DOCS_DIR, '_assets_');
 
-/** Never built, whatever their frontmatter says (SPEC 3.1). */
+/** Writings never built, whatever their frontmatter says (SPEC 3.1). */
 export const WRITINGS_EXCLUDE = ['_archive/**'];
+/** Docs never built, whatever their frontmatter says (SPEC 3.1). */
 export const DOCS_EXCLUDE = ['_assets_/**', '.obsidian/**', '**/*.canvas'];
 
 /** Vault folder -> URL slug and Index label. Array order is the Index order. */
@@ -136,6 +140,7 @@ export const headingSlug = (text) =>
       .replace(/[^\p{L}\p{N}\s_-]/gu, '')
       .replace(/\s/g, '-');
 
+/** The YAML frontmatter of a Markdown file as an object; `{}` when missing or invalid */
 export function parseFrontmatter(source) {
    const m = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
    if (!m) return {};

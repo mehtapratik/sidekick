@@ -4,6 +4,7 @@ import { createServerClient } from '@sidekick/core/supabase/server';
 
 import styles from './page.module.css';
 
+/** The dashboard, the first page after sign-in */
 export default async function DashboardPage(): Promise<React.ReactElement> {
    const supabase = await createServerClient();
    const {

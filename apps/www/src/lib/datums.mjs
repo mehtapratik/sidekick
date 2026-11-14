@@ -10,6 +10,7 @@ import fs from 'node:fs';
 
 import { resolveWikilink, scanVault } from './vault.mjs';
 
+/** The kinds a datum may have */
 export const DATUM_KINDS = [
    'principle',
    'decision',

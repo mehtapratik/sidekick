@@ -6,6 +6,7 @@ import '@mantine/notifications/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 
+/** Client-side providers every page needs: Mantine's theme and notifications */
 export function Providers({
    children,
 }: {

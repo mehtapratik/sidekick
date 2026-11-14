@@ -5,8 +5,10 @@ import { createServerClient } from '@sidekick/core/supabase/server';
 
 import { AppShell } from './app-shell';
 
+/** Render on every request, never statically: the layout reads the signed-in user */
 export const dynamic = 'force-dynamic';
 
+/** Layout for every signed-in page: sends signed-out visitors to /login and wraps the page in AppShell */
 export default async function AppLayout({
    children,
 }: {

@@ -2,6 +2,7 @@ import type { APIContext } from 'astro';
 
 import { getListedEntries } from '../lib/entries';
 
+/** The sitemap of every listed entry */
 export async function GET(context: APIContext) {
    const entries = await getListedEntries();
    const urls = ['/', '/datums/', ...entries.map((e) => e.url)];

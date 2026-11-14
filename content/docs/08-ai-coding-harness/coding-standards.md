@@ -5,7 +5,7 @@ title: Coding Standards
 created: 2026-10-20
 updated: 2026-11-14
 kind: notes
-version: 1.3.0
+version: 1.4.0
 tags:
    - guidance
    - typescript
@@ -20,3 +20,4 @@ tags:
 7. Variables and functions use camelCase, as CSS class names do. SCREAMING_SNAKE_CASE is only for configuration constants read from the environment or fixed at module level, such as `DATABASE_URL` or `MOCK_SESSION_CALLER` (Pratik, 2026-11-11).
 8. Name a type by its layer (Pratik, 2026-11-14). A database row is `<Table>Row` (`EntityIndexRow`, a Drizzle `InferSelectModel`); the contract that crosses a package or API boundary keeps the plain noun (`Entity`, inferred from its zod schema in `/contracts`); a component's props are `<Component>Props`. A small mapper turns a row into its contract, so a column rename never reaches the UI.
 9. Name an inferred type as an interface (`export interface EntityIndexRow extends InferSelectModel<typeof entityIndex> {}`), so editors show its name instead of every field (Pratik, 2026-11-14). Lint allows an empty interface that extends exactly one type.
+10. Give every exported member a short JSDoc comment (`/** … */`) that says what it does, so an editor shows it on hover (Pratik, 2026-11-14). One line is usually enough; add a second only for a caveat a caller must know. No `@param`, `@returns` or examples for now. When a plain `//` comment already sits above an export, turn it into the JSDoc instead of adding a second one. A re-export (`export { x } from './x'`) carries the source's comment, so it needs none. Config files a tool loads by default export (`*.config.ts`) are exempt.

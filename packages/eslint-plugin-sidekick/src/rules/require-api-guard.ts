@@ -52,6 +52,7 @@ function isImportedGuardCall(
    return false;
 }
 
+/** Reports any App Router route handler not exported as `export const METHOD = withApiGuard(...)` (see the header above) */
 export const requireApiGuard: Rule.RuleModule = {
    meta: {
       type: 'problem',

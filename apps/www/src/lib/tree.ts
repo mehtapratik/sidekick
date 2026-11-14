@@ -2,6 +2,7 @@
 import type { Entry } from './entries';
 import { SECTIONS } from './vault.mjs';
 
+/** An entry as listed in the Index tree */
 export interface Leaf {
    entry: Entry;
    /** The entry's own path is also a folder (`x.md` beside `x/`): it is listed first inside it. */
@@ -9,6 +10,7 @@ export interface Leaf {
    /** Set when the entry came up out of a one-page sub-folder: it takes that folder's place in the order. */
    key?: string;
 }
+/** A folder in the Index tree, with its sub-folders and entries */
 export interface Folder {
    path: string;
    label: string;
@@ -137,10 +139,12 @@ export function buildTree(entries: Entry[]): Folder[] {
    return roots.filter((r) => r.children.length || r.entries.length);
 }
 
+/** How many entries a folder holds, sub-folders included */
 export function countLeaves(f: Folder): number {
    return f.entries.length + f.children.reduce((n, c) => n + countLeaves(c), 0);
 }
 
+/** Whether the folder, or any sub-folder, lists the entry with this URL */
 export function containsUrl(f: Folder, url: string | undefined): boolean {
    if (!url) return false;
    return (
@@ -149,6 +153,7 @@ export function containsUrl(f: Folder, url: string | undefined): boolean {
    );
 }
 
+/** One line of a folder's listing: a sub-folder or an entry */
 export type Row = { folder: Folder } | { leaf: Leaf };
 
 /** What a folder lists, in order: its own pages first, then sub-folders and one-page sub-folders by file name. */

@@ -238,6 +238,7 @@ function obsidianInlineMath(tree, source) {
    });
 }
 
+/** Remark plugin: turns Obsidian syntax (wikilinks, embeds, callouts, datum anchors) into Markdown nodes and drops a duplicated leading H1 */
 export function remarkVault() {
    return (tree, file) => {
       const abs = file.path ?? '';

@@ -43,6 +43,7 @@ const patterns = (exclude: string[]) => [
    ...exclude.map((p) => `!${p}`),
 ];
 
+/** The site's two content collections, Writings and docs, loaded from content/ */
 export const collections = {
    writings: defineCollection({
       loader: glob({

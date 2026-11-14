@@ -1,3 +1,4 @@
+/** Text on the sign-in page */
 export const signInCopies = {
    pageTitle: 'Sign in',
    noAccount: 'No account?',
@@ -5,6 +6,7 @@ export const signInCopies = {
    error: 'Invalid email or password',
 } as const;
 
+/** Text on the sign-up and confirm-your-email pages */
 export const signUpCopies = {
    confirmAccountPageTitle: 'Confirm your email',
    pageTitle: 'Create an account',
