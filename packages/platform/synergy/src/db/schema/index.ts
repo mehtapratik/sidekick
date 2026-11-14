@@ -1,3 +1,4 @@
-// Synergy's Drizzle tables. Lesson 3 adds the first ones; until then the
-// schema is empty and every migration is custom SQL.
-export {};
+// Synergy's Drizzle tables. drizzle-kit reads this file to generate
+// migrations, so every table must be exported from here.
+export * from './entity-index';
+export * from './version-log';

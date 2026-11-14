@@ -41,7 +41,7 @@ describe('synergy_block_update_on_deleted', () => {
          `;
          await testAdminDb`
             INSERT INTO public.synergy_trigger_probe (id, title, deleted_at)
-            VALUES (1, 'live', NULL), (2, 'deleted', now())
+            VALUES (1, 'live', NULL), (2, 'deleted', now()), (3, 'deleted', now())
          `;
       });
 
@@ -61,6 +61,12 @@ describe('synergy_block_update_on_deleted', () => {
 
       it('allows restoring a deleted row', async () => {
          await testAdminDb`UPDATE public.synergy_trigger_probe SET deleted_at = NULL WHERE id = 2`;
+      });
+
+      it('refuses a restore that also changes other columns', async () => {
+         await expect(
+            testAdminDb`UPDATE public.synergy_trigger_probe SET deleted_at = NULL, title = 'edited' WHERE id = 3`,
+         ).rejects.toThrow('may change only deleted_at');
       });
    });
 });

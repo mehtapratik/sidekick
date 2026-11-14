@@ -8,6 +8,9 @@ import {
 
 import { profiles } from './profiles';
 
+// Delete model: hard delete. Revoking a feature deletes its row; only ops
+// scripts write it, and nothing restores it.
+
 export const userFeatureEntitlements = pgTable(
    'user_feature_entitlements',
    {
