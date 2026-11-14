@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { DATUM_KINDS, scanDatums } from '../lib/datums.mjs';
+import { plural } from '../lib/entries';
+import { scanVault } from '../lib/vault.mjs';
+
+// Every datum in a published page, by id, each linked to the line where it lives. Built from the same
+// scan as /datums.json on every build, so it is never edited by hand and never falls behind.
+interface VaultFile {
+   collection: string;
+   rel: string;
+   url: string;
+   title: string;
+   published: boolean;
+}
+const files: VaultFile[] = scanVault().filter(
+   (f: VaultFile) => f.collection === 'docs',
+);
+const titles = new Map(files.map((f) => [f.rel, f.title]));
+const log = files.find((f) => f.rel === '06-decisions/log.md' && f.published);
+const datums = scanDatums()
+   .filter((d) => d.published)
+   .sort((a, b) => a.n - b.n);
+
+const escape = (s: string) =>
+   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** A claim is one line of Markdown: render its code spans and bold, nothing else. */
+const inline = (s: string) =>
+   escape(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+const counts = DATUM_KINDS.map(
+   (k) => [k, datums.filter((d) => d.kind === k).length] as const,
+).filter(([, n]) => n > 0);
+---
+
+<Layout
+   title="Datum Index"
+   description="Every principle, decision, rule, requirement and outcome on this site, by id."
+>
+   <article>
+      <h1>Datum Index</h1>
+      <p class="deck">
+         Every datum on this site, by id. Each id links to the line where the
+         claim lives.
+      </p>
+      <div class="prose">
+         <p>
+            A datum is one claim that can be pointed at: a principle, decision,
+            rule, requirement, concept, learning or outcome. Its id is global
+            and never reused, so <code>D11</code> always means the same claim. This
+            page is built from the pages themselves{
+               log && (
+                  <>
+                     ; the <a href={log.url}>Decisions Log</a> records when each
+                     decision was made
+                  </>
+               )
+            }.
+         </p>
+         <p>
+            {plural(datums.length, 'datum', 'datums')}: {
+               counts.map(([k, n]) => plural(n, k)).join(', ')
+            }.
+         </p>
+         <div class="wide wide-table">
+            <table>
+               <thead>
+                  <tr>
+                     <th scope="col">ID</th>
+                     <th scope="col">Kind</th>
+                     <th scope="col">Claim</th>
+                     <th scope="col">Page</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {
+                     datums.map((d) => (
+                        <tr id={d.id}>
+                           <td>
+                              <a href={`${d.url}#${d.id}`}>{d.id}</a>
+                           </td>
+                           <td>{d.kind}</td>
+                           <td set:html={inline(d.claim)} />
+                           <td>
+                              <a href={d.url}>{titles.get(d.rel) ?? d.url}</a>
+                           </td>
+                        </tr>
+                     ))
+                  }
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </article>
+</Layout>

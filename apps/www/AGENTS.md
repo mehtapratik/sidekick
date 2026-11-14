@@ -46,7 +46,7 @@ src/lib/vault.mjs                slug rules, exclude globs, title derivation, va
 src/lib/entries.ts               published gate, asOf, the one comparator, neighbours, tags
 src/lib/tree.ts                  folder tree for the Index (port of the handover's tree.py)
 src/plugins/                     remark (wikilinks, embeds, callouts, leading H1) and rehype (tables, code figure)
-src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/, /datums.json
+src/pages/                       /, entries, /tags/<tag>/, rss, sitemap, 404, /vault-assets/, /datums/, /datums.json
 src/lib/datums.mjs               datum scan, relation parsing, id checks
 scripts/check-privacy.mjs        post-build gate, run by the site's build
 scripts/check-datums.mjs         post-build datum gate; `--next` prints the next free id
@@ -77,7 +77,8 @@ outcome. Plans, walkthroughs, lessons and notes stay prose and cite datums. A da
   gets `#D12` on the bold id. Direction runs from the dependent to what it relies on.
 - A markdown list item may hold a datum (`1. **D4** ...`). A datum is never written inside a code fence.
 - The site's build fails on a duplicate id, an unknown kind or a relation that does not resolve, and prints every
-  `violates` link. `/datums.json` is the index of datums in published pages.
+  `violates` link. `/datums.json` is the index of datums in published pages, and `/datums/`
+  lists them by id for readers. A `[[D12]]` that names no datum also fails the build.
 
 ## Where this repo departs from the handover SPEC
 

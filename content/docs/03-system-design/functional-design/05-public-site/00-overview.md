@@ -3,8 +3,9 @@ publish: true
 id: system-design.functional-design.public-site.overview
 title: "Public Site: System Design"
 created: 2026-11-06
+updated: 2026-11-14
 kind: spec
-version: 1.0.0
+version: 1.0.1
 tags:
    - system-design
    - site
@@ -41,7 +42,7 @@ The exemption covers this implementation only. A component worth keeping moves i
 - **Writings** and `/rss.xml`, Writings only, newest first by `created` ([[D225]], [[D237]]).
 - **"As of"** is `updated` else `created`, from frontmatter only, never file or build time.
 - **Retired entries** (`status: deprecated` or `retired`) keep their URL and leave the index, search, tag pages, pager, home, feed and sitemap.
-- **Datums:** each bold id gets an anchor (`#D12`), `[[D12]]` links to it, and `/datums.json` indexes the datums in published pages; the build fails on a duplicate id, an unknown kind or a relation that does not resolve.
+- **Datums:** each bold id gets an anchor (`#D12`), `[[D12]]` links to it, `/datums.json` indexes the datums in published pages and `/datums/` lists them by id for readers; the build fails on a duplicate id, an unknown kind, a relation that does not resolve or a `[[D12]]` that names no datum.
 - **Milestones:** one tile per phase from `04-phases/NN-name/00-plan.md` ([[D224]], [[D236]]).
 - **Content components:** each `sidekick:<name>` block's name and props, listed below, because they are written into entries.
 
