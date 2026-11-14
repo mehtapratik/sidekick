@@ -81,6 +81,7 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 ## How changes land
 
 - `main` accepts changes only through a branch and pull request. The CI `checks` job (`prettier:check`, `lint`, `typecheck`, `build`, `test`, `test:integration`) must pass; merges are squash-only.
+- **Branch names say what the change is** (Pratik, 2026-11-14): `<type>/<scope>/<description>`, lowercase kebab-case, with the scope left out when the change has none. The type is a [Conventional Commits](https://www.conventionalcommits.org/) type, the same word that starts the squash-merge title: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`, `build` or `perf`. The scope is the package or area (`synergy`, `core`, `www`, `vault`). For example `feat/synergy/entity-index`, `fix/core/rls-empty-setting`, `docs/synergy/lesson-3-close-out`, `chore/sql-prettier-formatting`. When a tool or session assigns the branch name, use it, and give the PR a title in the same form.
 - Husky + lint-staged run Prettier on staged files before each commit.
 - Renovate opens dependency PRs every Monday: minor and patch grouped and auto-merged on green `checks`, majors one PR each for review ([Dependency Dashboard](https://github.com/mehtapratik/sidekick/issues/6)). Do not hand-bump what `renovate.json` holds back: Node is never updated by Renovate, `@types/node` stays on 24.x, TypeScript stays below 6.1.
 
