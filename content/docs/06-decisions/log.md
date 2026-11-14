@@ -5,7 +5,7 @@ title: Decisions Log
 created: 2026-11-01
 updated: 2026-11-14
 kind: log
-version: 1.5.0
+version: 1.5.1
 tags:
    - decision
 ---
@@ -16,6 +16,7 @@ The ID column links to each decision's line in its page. Rules, requirements and
 
 | Date       | ID   | Decision                                                                                                                     | Status   | Summary                                                                                                                                                                                                                                                                       |
 | ---------- | ---- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-14 | [[D264]] | [[03-system-design/non-functional/database/delete-models\|Delete Models]] | accepted | A fourth delete model, append-only, for logs; `version_log` moves to it (D264 revised). |
 | 2026-11-14 | [[D266]] | [[03-system-design/non-functional/database/migration\|Migration]] | accepted | A column holding one of a fixed set of keys is `text` with a CHECK, not a Postgres enum (D266). |
 | 2026-11-14 | [[D265]] | [[03-system-design/functional-design/04-synergy/00-overview\|Synergy]] | accepted | Every write in Synergy's repository runs inside `withUserLock`, enforced by the lint rule `sidekick/require-user-lock` (D265). |
 | 2026-11-14 | [[D264]] | [[03-system-design/non-functional/database/delete-models\|Delete Models]] | accepted | Every table chooses hard delete, soft delete with tombstones hidden, or soft delete with tombstones visible, and names it in its schema file (D264). |

@@ -5,7 +5,7 @@ title: "Synergy Lesson 3 Notes: Entity Index and Version Log"
 created: 2026-11-14
 updated: 2026-11-14
 kind: notes
-version: 1.0.0
+version: 1.1.0
 tags:
    - phase-3
    - synergy
@@ -43,6 +43,7 @@ These notes record what lesson 3 taught: the mental models, Pratik's questions a
    The two tabs take the same two locks in opposite orders. Taking the user lock at the start of every user write transaction (`withRLS(userId, fn, { lockUser: true })`, with the lock moved to core) makes the order the same everywhere. `withUserLock` stays in Synergy, because a flag can be forgotten and taking the lock twice in a transaction is free. Handed to lesson 4, where providers first write.
 - **Optimistic concurrency with a counter.** The editor sends the `content_seq` it started from; one `UPDATE … WHERE content_seq = $base` checks and bumps together. An integer beats a timestamp (JavaScript has milliseconds, Postgres microseconds; `now()` is the transaction's start time, so two saves can share it).
 - **Three delete models** (Pratik asked why core's corrected message says rows can't be updated, when restores exist). Hard delete: gone. Soft delete with tombstones hidden, the default for syncable tables: every query hides the row (D11), core's trigger freezes it, and it exists only so offline devices learn about the deletion; nothing restores it. Soft delete with tombstones visible: for restore, undo or a Trash, with a restore-aware trigger and a repository as the only path; Synergy's tables. So `restoreEntity` (lesson 11) is Synergy's, and the old "Restore it first" message promised something model 2 forbids. See [[03-system-design/non-functional/database/delete-models|Delete models]].
+- **A log is append-only** (Pratik, after the lesson: "Log means it's a chronology … usually they are not modified"). Right: nothing ever updated or deleted a `version_log` row, and an undo would be a new row anyway. The coach had given it soft-delete columns to keep every syncable table on one rule, plus a guessed future need, which is against "code for today's needs". The follow-up made it a fourth delete model: no `updated_at` or `deleted_at`, an update-refusing trigger, and `UPDATE` and `DELETE` revoked from `app_runtime` (two walls: grants stop the App, the trigger stops everyone).
 - **A drizzle-kit migration is three files**: the `.sql`, `meta/NNNN_snapshot.json` and its `_journal.json` entry. drizzle-kit generates from the newest snapshot; the migrator reads the journal.
 
 ## Pratik's design calls

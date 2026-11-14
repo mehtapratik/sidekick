@@ -10,13 +10,15 @@ import {
 
 import { profiles } from '@sidekick/core/db/schema';
 
-import { provenance, provenanceChecks, timestamps, tombstone } from './columns';
+import { provenance, provenanceChecks, utcTimestamp } from './columns';
 import { entityIndex } from './entity-index';
 import { ownRowsPolicy } from './policies';
 
 /**
  * One row per version bump, written by saveEntityContent in the same transaction.
- * Delete model: soft delete, tombstones visible (D66), like entity_index.
+ *
+ * Delete model: append-only. A row records one version bump and is never
+ * updated; it's deleted only by erasure.
  */
 export const versionLog = pgTable(
    'version_log',
@@ -32,15 +34,14 @@ export const versionLog = pgTable(
       version: integer('version').notNull(),
       // Optional and stored as written: user content.
       changeNote: text('change_note'),
-      ...timestamps,
+      createdAt: utcTimestamp('created_at').notNull().defaultNow(),
       ...provenance,
-      ...tombstone,
    },
    (self) => [
-      // Partial: a tombstoned row never blocks logging the same version again.
-      uniqueIndex('version_log_entity_id_version_key')
-         .on(self.entityId, self.version)
-         .where(sql`${self.deletedAt} IS NULL`),
+      uniqueIndex('version_log_entity_id_version_key').on(
+         self.entityId,
+         self.version,
+      ),
       check('version_log_version_check', sql`${self.version} > 0`),
       ...provenanceChecks('version_log', self),
       ownRowsPolicy('version_log', self),

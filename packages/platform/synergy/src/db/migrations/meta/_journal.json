@@ -43,6 +43,20 @@
       "when": 1794627092530,
       "tag": "0005_strict_restore",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794634601239,
+      "tag": "0006_append_only_version_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794634768836,
+      "tag": "0007_refuse_version_log_updates",
+      "breakpoints": true
     }
   ]
 }
