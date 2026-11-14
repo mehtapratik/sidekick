@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { withRLS } from '@sidekick/core/db';
-import { createTestAuthDb } from '@sidekick/test-utils/db';
+import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
 
 import { entityIndex, versionLog } from '../../src/db/schema';
 import {
@@ -23,6 +23,7 @@ import {
 //   Supabase Auth does (core's trigger then creates their profiles)
 
 const testAuthDb = createTestAuthDb();
+const testAdminDb = createTestAdminDb();
 
 const userA = randomUUID();
 const userB = randomUUID();
@@ -39,6 +40,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
    await testAuthDb.end();
+   await testAdminDb.end();
 });
 
 // Drizzle wraps a database error ("Failed query: …"); the trigger's message is
@@ -252,5 +254,57 @@ describe('soft delete', () => {
             }),
          ),
       ).rejects.toMatchObject({ code: 'not_found' });
+   });
+});
+describe('version_log is append-only', () => {
+   // A version save writes one log row; returns that row's id
+   async function newLogRow(): Promise<string> {
+      const entityId = await newEntity();
+      await withRLS(userA, (tx) =>
+         saveEntityContent(tx, {
+            id: entityId,
+            baselineContentSeq: 0,
+            bump: 'version',
+            changeNote: 'Reworded the rule',
+            displayName: 'A note',
+            actor: actorA,
+         }),
+      );
+      const [row] = await withRLS(userA, (tx) =>
+         tx
+            .select({ id: versionLog.id })
+            .from(versionLog)
+            .where(eq(versionLog.entityId, entityId)),
+      );
+      return row.id;
+   }
+
+   it('refuses the app updating or deleting a log row', async () => {
+      const id = await newLogRow();
+
+      await expect(
+         withRLS(userA, (tx) =>
+            tx
+               .update(versionLog)
+               .set({ changeNote: 'Rewritten' })
+               .where(eq(versionLog.id, id)),
+         ),
+      ).rejects.toMatchObject(databaseError('permission denied'));
+      await expect(
+         withRLS(userA, (tx) =>
+            tx.delete(versionLog).where(eq(versionLog.id, id)),
+         ),
+      ).rejects.toMatchObject(databaseError('permission denied'));
+   });
+
+   it('refuses any role updating a log row, and deleting one outside erasure', async () => {
+      const id = await newLogRow();
+
+      await expect(
+         testAdminDb`UPDATE version_log SET change_note = 'Rewritten' WHERE id = ${id}`,
+      ).rejects.toThrow('append-only');
+      await expect(
+         testAdminDb`DELETE FROM version_log WHERE id = ${id}`,
+      ).rejects.toThrow('Hard deletes are prohibited');
    });
 });

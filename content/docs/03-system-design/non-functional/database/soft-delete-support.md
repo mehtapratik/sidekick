@@ -5,7 +5,7 @@ title: Soft-Delete Support
 created: 2026-09-19
 updated: 2026-11-14
 kind: spec
-version: 2.0.0
+version: 2.1.0
 tags:
    - system-design
    - database
@@ -70,3 +70,7 @@ A table that restores binds a restore-aware function instead. Synergy's is `syne
 3. a restore (`deleted_at` back to NULL) passes only if nothing but `deleted_at` and the provenance columns (`updated_at`, `actor_kind`, `actor_id`, `reason`) changed. The trigger compares `to_jsonb(NEW)` and `to_jsonb(OLD)` without those columns, so every column added later is protected automatically.
 
 A restore that also edits is two statements in one transaction: restore, then a normal save. Promoting this function into core with an argument (`block_update_on_deleted('allow_restore')`) waits until a second package needs restores.
+
+## Append-only: refuse every update
+
+An append-only table (a log) keeps `enforce_soft_delete` for deletes and binds an update-refusing function instead of either update trigger. Synergy's is `synergy_refuse_update` (Synergy `0007`), bound to `version_log`; the migration also revokes `UPDATE` and `DELETE` from `app_runtime`. See [[03-system-design/non-functional/database/delete-models|Delete models]].

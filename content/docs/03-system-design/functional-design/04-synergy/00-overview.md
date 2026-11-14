@@ -5,7 +5,7 @@ title: "Synergy: System Design"
 created: 2026-10-30
 updated: 2026-11-14
 kind: spec
-version: 1.5.0
+version: 1.6.0
 tags:
    - system-design
    - synergy
@@ -126,7 +126,7 @@ An arrow points from a table to the tables that hang off it. `relationships.from
 
 - **`entity_index`**: id, provider, type, display name, optional title, status (`active`, `deprecated`, `superseded`), version, revision, `content_seq`, `edited_at`, `deleted_at`. "Deleted" is shown from `deleted_at`, not stored as a status, so a restore brings back whatever status the entity had. No external-reference columns ([[03-system-design/functional-design/04-synergy/capture-external-content|Capture external content]]).
 - **`content_seq`** goes up on every write to an entity's content: revision saves, version saves, and anchors added for someone else's link. It is the token for the stale-write check, the ETag and the render cache key. `version` and `revision` keep their meaning and only drive the dots ([[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]]).
-- **`version_log`**: entity, version, optional change note, actor, time.
+- **`version_log`**: entity, version, optional change note, actor, time. Append-only: a row is never updated, and only erasure deletes one ([[03-system-design/non-functional/database/delete-models|Delete models]]).
 - **`entity_anchors`**: entity, anchor id, `removed_in_version` (empty while the passage exists). One row per passage that a link points at, written when the first link to it is made. A reference whose anchor row has `removed_in_version` set shows "passage removed".
 - **`entity_mentions`**: entity, relationship id. The direct and alias mentions in the entity's content, as last reported by its provider ([Save content](#write-path)). `relationships.mentioned` is kept true while the relationship's source has a row here.
 - **`relationships`**: from, to, `role` (`solo`, `list` or `member`), parent and position (members), optional label, type (never empty), version and revision snapshot, `to_anchor_id` and `to_anchor_quote` (empty for a whole-entity target), `cited`, `mentioned`, tombstone (actor, reason, `deletion_batch_id`).
@@ -304,5 +304,6 @@ Each decision lives in its own page here; the [[06-decisions/log|decisions log]]
 
 ## Decision History
 
+- 2026-11-14 · accepted · `version_log` is append-only (Synergy lesson 3 follow-up)
 - 2026-11-14 · accepted · Every repository write inside `withUserLock`, enforced by lint ([[D265]]); actor kind `human`; the lock keyed on the session's user (Synergy lesson 3)
 - 2026-11-06 · accepted · Words from catalogs ([[D201]] revised), message references ([[D250]]), the Sneak Peek Link takes plain data ([[D251]]); `apps/web` is now `apps/app`

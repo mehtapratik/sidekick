@@ -5,7 +5,7 @@ title: "Synergy Lesson 3 Walkthrough: Entity Index and Version Log"
 created: 2026-11-14
 updated: 2026-11-14
 kind: guidance
-version: 1.0.0
+version: 1.1.0
 tags:
    - build
    - walkthrough
@@ -781,3 +781,13 @@ pnpm db:generate --filter=@sidekick/core -- --custom --name=block_update_on_dele
 - The vault gets the [[03-system-design/non-functional/database/delete-models|delete-model guide]] ([[D264]]): hard delete, soft delete with tombstones hidden (the default), and soft delete with tombstones visible, with every table's model. [[03-system-design/non-functional/security/row-level-security|Row-level security]] and [[03-system-design/non-functional/database/soft-delete-support|soft-delete support]] become one template per model.
 
 **Exit check:** `pnpm prettier:check`, `pnpm turbo run lint typecheck build test --force`, `pnpm test:integration` (Synergy 13, core 17), CI green on [sidekick#58](https://github.com/mehtapratik/sidekick/pull/58), and `pnpm db:migrate` on dev (core `0010`, Synergy `0001` to `0005`).
+
+---
+
+## Post note — `version_log` is append-only (added 2026-11-14)
+
+After the lesson, Pratik pointed out that a log is a chronology that is never edited, so giving `version_log` soft-delete columns and the restore-aware trigger (step 1c, step 3b) was wrong. A follow-up on `refactor/synergy/append-only-version-log` made it **append-only**, a fourth [[03-system-design/non-functional/database/delete-models|delete model]]:
+
+1. **Schema** (Synergy `0006_append_only_version_log`): `version_log` keeps only `created_at` (no `updated_at`, no `deleted_at`), and `(entity_id, version)` is a plain unique index, since there are no tombstones. The actor columns now mean who made the bump.
+2. **Updates refused** (Synergy `0007_refuse_version_log_updates`, custom): drop `no_update_deleted_version_log`, add `synergy_refuse_update()` and bind it as `no_update_version_log`, and `REVOKE UPDATE, DELETE ON version_log FROM app_runtime`. `enforce_soft_delete` stays, so only erasure deletes a row; a cascade from a deleted entity still works because referential actions run as the table's owner.
+3. **Tests:** as `app_runtime`, an update and a delete get *permission denied*; as `postgres`, the update hits the trigger and the delete hits `enforce_soft_delete`. Synergy 15, core 17.
