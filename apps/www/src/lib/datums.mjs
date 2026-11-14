@@ -134,6 +134,25 @@ export function datumProblems(datums = scanDatums()) {
          }
       }
    }
+   // A `[[D12]]` anywhere in a page (the Decisions Log's ID column, prose that cites a datum) must
+   // name a datum, or it renders as plain text and the reader loses the link without anyone noticing.
+   for (const f of scanVault().filter(
+      (f) => f.collection === 'docs' && !f.excluded,
+   )) {
+      let fence = false;
+      for (const [i, line] of fs
+         .readFileSync(f.abs, 'utf8')
+         .split('\n')
+         .entries()) {
+         if (line.startsWith('```')) fence = !fence;
+         if (fence) continue;
+         for (const m of line.matchAll(/\[\[\s*(D\d+)\s*[\]|#]/g))
+            if (!byId.has(m[1]))
+               problems.push(
+                  `${f.rel}:${i + 1} links to ${m[1]}, which does not exist`,
+               );
+      }
+   }
    return problems;
 }
 
