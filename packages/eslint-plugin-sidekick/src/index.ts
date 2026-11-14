@@ -5,6 +5,7 @@ import { noMantineStyleProps } from './rules/no-mantine-style-props';
 import { requireApiGuard } from './rules/require-api-guard';
 import { requireUserLock } from './rules/require-user-lock';
 
+/** Sidekick's own ESLint rules, registered under the `sidekick/` prefix */
 export default {
    rules: {
       'no-barrel-exports': noBarrelExports,

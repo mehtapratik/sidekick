@@ -113,6 +113,7 @@ const MANTINE_STYLE_PROPS = new Set([
    'sx',
 ]);
 
+/** Disallows Mantine style props (spacing, sizing, typography, colour and layout props, and `sx`) on Mantine components; use CSS modules instead */
 export const noMantineStyleProps: Rule.RuleModule = {
    meta: {
       type: 'suggestion',

@@ -8,6 +8,7 @@ export const DEFAULT_LICENSE = 'CC BY-NC 4.0';
 /** Statuses that mark an entry as no longer relevant. It stays published, but says so. */
 const RETIRED_STATUSES = ['deprecated', 'retired'];
 
+/** A published page (writing or doc) with everything the site shows about it */
 export interface Entry {
    collection: 'writings' | 'docs';
    /** Permanent URL, with leading and trailing slash. */
@@ -132,6 +133,7 @@ export function neighbours(entries: Entry[], entry: Entry) {
    return { prev: entries[i + 1], next: entries[i - 1] };
 }
 
+/** The URL of a tag's page */
 export const tagUrl = (tag: string) => `/tags/${encodeURIComponent(tag)}/`;
 
 /** Alphabetical tag list with entry counts. */
@@ -142,5 +144,6 @@ export function tagCounts(entries: Entry[]): [string, number][] {
    return [...counts].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
+/** A count with its noun, pluralised: `1 entry`, `2 entries` */
 export const plural = (n: number, one: string, many = `${one}s`) =>
    `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;

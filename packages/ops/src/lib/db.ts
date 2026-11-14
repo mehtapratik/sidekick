@@ -3,12 +3,16 @@ import postgres from 'postgres';
 
 import * as schema from '@sidekick/core/db/schema';
 
+/** A Drizzle client on the privileged role, which bypasses RLS */
 export type PrivilegedDb = PostgresJsDatabase<typeof schema>;
 
+/** Work to run with withPrivilegedDb's client */
 export type PrivilegedDbHandler<T> = (db: PrivilegedDb) => Promise<T>;
 
-// Runs fn on a connection as the privileged role (DATABASE_DIRECT_URL: postgres,
-// bypasses RLS), then closes it. Only ops scripts use this role; the app never does.
+/**
+ * Runs fn on a connection as the privileged role (DATABASE_DIRECT_URL: postgres,
+ * bypasses RLS), then closes it. Only ops scripts use this role; the app never does.
+ */
 export async function withPrivilegedDb<T>(
    fn: PrivilegedDbHandler<T>,
 ): Promise<T> {

@@ -1,9 +1,11 @@
 import { sql } from 'drizzle-orm';
 import { pgPolicy, type AnyPgColumn, type PgPolicy } from 'drizzle-orm/pg-core';
 
-// Synergy's row-level security: a user reads and writes only their own rows.
-// It compares only user_id, never deleted_at: tombstones stay visible to the
-// repository, which filters deleted rows itself (D66).
+/**
+ * Synergy's row-level security: a user reads and writes only their own rows.
+ * It compares only user_id, never deleted_at: tombstones stay visible to the
+ * repository, which filters deleted rows itself (D66).
+ */
 export function ownRowsPolicy(
    tableName: string,
    self: { userId: AnyPgColumn },

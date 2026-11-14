@@ -14,9 +14,10 @@ import { provenance, provenanceChecks, timestamps, tombstone } from './columns';
 import { entityIndex } from './entity-index';
 import { ownRowsPolicy } from './policies';
 
-// Delete model: soft delete, tombstones visible (D66), like entity_index.
-// One row per version bump, written by saveEntityContent in the same transaction.
-
+/**
+ * One row per version bump, written by saveEntityContent in the same transaction.
+ * Delete model: soft delete, tombstones visible (D66), like entity_index.
+ */
 export const versionLog = pgTable(
    'version_log',
    {

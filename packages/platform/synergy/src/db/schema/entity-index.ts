@@ -20,11 +20,14 @@ import {
 } from './columns';
 import { ownRowsPolicy } from './policies';
 
-// Delete model: soft delete, tombstones visible (D66). RLS compares only
-// user_id; the repository filters deleted_at in each query that wants live rows.
-
+/** The lifecycle states an entity can be in */
 export const ENTITY_STATUSES = ['active', 'deprecated', 'superseded'] as const;
 
+/**
+ * One row per entity any provider owns: its identity, names, status and version counters.
+ * Delete model: soft delete, tombstones visible (D66). RLS compares only
+ * user_id; the repository filters deleted_at in each query that wants live rows.
+ */
 export const entityIndex = pgTable(
    'entity_index',
    {

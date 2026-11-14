@@ -55,6 +55,7 @@ export const shikiArkive = {
    },
 };
 
+/** Rehype plugin: wraps wide tables, builds the code figure with its Copy button, and wraps display math */
 export function rehypeArkive() {
    return (tree) => {
       visit(tree, 'element', (node, index, parent) => {

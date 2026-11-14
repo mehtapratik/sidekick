@@ -9,6 +9,7 @@ import {
 } from '../observability/log';
 import { resolveApiCaller, type ApiCaller } from './auth';
 
+/** Extra checks withApiGuard runs before the handler */
 export interface GuardOptions {
    /** Key of the feature the caller must be entitled to */
    feature?: string;
@@ -16,14 +17,19 @@ export interface GuardOptions {
    requireScope?: string;
 }
 
+/** What withApiGuard hands a route handler */
 export interface ApiHandlerArgs<Ctx> {
+   /** The RLS transaction opened for the caller */
    tx: RlsTx;
+   /** Who is calling */
    caller: ApiCaller;
+   /** The incoming request */
    req: Request;
    /** Next.js's second route-handler argument (e.g. `{ params }`), passed through untouched */
    ctx: Ctx;
 }
 
+/** A route handler that runs inside withApiGuard */
 export type ApiHandler<Ctx> = (args: ApiHandlerArgs<Ctx>) => Promise<Response>;
 
 /** The error-shape table from contracts.md: one place maps a code to its status and message */

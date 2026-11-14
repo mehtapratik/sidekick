@@ -47,6 +47,7 @@ function isLockCall(node: ESTree.Node): boolean {
    );
 }
 
+/** Reports any insert, update or delete call in Synergy's repository that isn't inside withUserLock (see the header above) */
 export const requireUserLock: Rule.RuleModule = {
    meta: {
       type: 'problem',

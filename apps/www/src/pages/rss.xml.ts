@@ -4,6 +4,7 @@ import type { APIContext } from 'astro';
 import { getListedEntries } from '../lib/entries';
 import { BLURB, SITE_TITLE } from '../lib/site';
 
+/** The RSS feed: the 50 newest listed entries */
 export async function GET(context: APIContext) {
    const entries = (await getListedEntries()).slice(0, 50);
    return rss({

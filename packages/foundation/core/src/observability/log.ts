@@ -6,6 +6,7 @@ import { DrizzleQueryError } from 'drizzle-orm';
  *
  *  Never add headers, cookies, tokens, bodies or emails. */
 export interface RequestLogContext {
+   /** The HTTP method */
    method: string;
    /** The URL pathname only: a query string can carry tokens, emails or search terms */
    path: string;
@@ -16,7 +17,9 @@ export interface RequestLogContext {
 /** One per request, at its end, whatever the outcome */
 export interface ApiRequestEvent extends RequestLogContext {
    event: 'api.request';
+   /** The HTTP status sent back */
    status: number;
+   /** How long the request took, in whole milliseconds */
    latencyMs: number;
 }
 
@@ -33,8 +36,11 @@ export interface ApiDeniedEvent extends RequestLogContext {
    scope?: string;
 }
 
+/** A thrown value reduced to what is safe to log */
 export interface LoggedError {
+   /** The error's class name, such as `PostgresError` */
    name: string;
+   /** The error's message, without query parameters */
    message: string;
    /** Stack frames only (`at …` lines): the stack's first lines repeat the message */
    stack?: string[];
@@ -46,6 +52,7 @@ export interface ApiErrorEvent extends RequestLogContext {
    error: LoggedError;
 }
 
+/** Any event logEvent can write */
 export type LogEvent = ApiRequestEvent | ApiDeniedEvent | ApiErrorEvent;
 
 type ConsoleWriterMap = Record<LogEvent['event'], (line: string) => void>;

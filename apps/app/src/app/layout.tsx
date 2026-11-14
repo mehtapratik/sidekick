@@ -18,11 +18,13 @@ const geistMono = Geist_Mono({
    subsets: ['latin'],
 });
 
+/** The default page title and description */
 export const metadata: Metadata = {
    title: appNameCopy,
    description: appDescriptionCopy,
 };
 
+/** The root HTML document: fonts, colour scheme and the app's providers */
 export default function RootLayout({
    children,
 }: Readonly<{

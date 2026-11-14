@@ -30,6 +30,7 @@ export function getStaticPaths() {
    }));
 }
 
+/** Serves one vault image with its content type */
 export function GET({ props }: { props: { file: string } }) {
    return new Response(fs.readFileSync(props.file), {
       headers: {

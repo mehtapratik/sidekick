@@ -5,6 +5,7 @@ import { createProxyClient } from '@sidekick/core/supabase/proxy';
 
 import { isApiRoute, isAuthRoute } from './utils/route';
 
+/** Runs before every matched request: refreshes the Supabase session and redirects pages by sign-in state; API routes pass through to withApiGuard */
 export async function proxy(request: NextRequest): Promise<NextResponse> {
    const supabaseResponse = NextResponse.next({ request });
 
@@ -32,6 +33,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
    return supabaseResponse;
 }
 
+/** Paths the proxy runs on: everything except Next.js static assets and the favicon */
 export const config = {
    matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

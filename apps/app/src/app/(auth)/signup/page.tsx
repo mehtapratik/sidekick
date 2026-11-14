@@ -112,6 +112,7 @@ function UnverifiedEmailView({ email }: { email: string }) {
    );
 }
 
+/** The sign-up page; after sign-up it asks the user to confirm their email when Supabase requires it */
 export default function SignupPage(): React.ReactElement {
    const [unverifiedEmail, setUnverifiedEmail] = useState<string | undefined>(
       undefined,

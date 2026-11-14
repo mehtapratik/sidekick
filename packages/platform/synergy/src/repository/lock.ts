@@ -13,12 +13,13 @@ async function lockCurrentUser(tx: RlsTx): Promise<void> {
    );
 }
 
+/** A Synergy write: takes the RLS transaction first, then its own arguments */
 export type SynergyMutation<Args extends unknown[], Result> = (
    tx: RlsTx,
    ...args: Args
 ) => Promise<Result>;
 
-// Wraps a Synergy mutation so it takes the user's lock before anything else.
+/** Wraps a Synergy mutation so it takes the user's lock before anything else */
 export function withUserLock<Args extends unknown[], Result>(
    mutation: SynergyMutation<Args, Result>,
 ): SynergyMutation<Args, Result> {

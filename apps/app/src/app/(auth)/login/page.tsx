@@ -26,6 +26,7 @@ import { createBrowserClient } from '@sidekick/core/supabase/browser';
 
 import styles from '../auth.module.css';
 
+/** The sign-in page: email and password, then on to the dashboard */
 export default function LoginPage(): React.ReactElement {
    const supabase = createBrowserClient();
    const { push } = useNavigation();

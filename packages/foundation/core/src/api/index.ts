@@ -1,5 +1,7 @@
-// Public API surface: route handlers import withApiGuard from @sidekick/core/api.
-// resolveApiCaller stays internal; only the guard calls it.
+/**
+ * Public API surface: route handlers import withApiGuard from @sidekick/core/api.
+ * resolveApiCaller stays internal; only the guard calls it.
+ */
 export {
    type ApiHandler,
    type ApiHandlerArgs,

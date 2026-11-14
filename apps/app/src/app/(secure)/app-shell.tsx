@@ -13,6 +13,7 @@ import type { User } from '@sidekick/core/supabase/types';
 
 import styles from './app-shell.module.css';
 
+/** The signed-in app's frame: header with the user's email and sign-out, and the side navigation */
 export function AppShell({
    user,
    children,

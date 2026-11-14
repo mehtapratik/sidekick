@@ -29,10 +29,12 @@ type UnsafeDb = ReturnType<typeof createUnsafeDb>;
 // route module to read its config, and the build has no DATABASE_URL.
 let unsafeDb: UnsafeDb | undefined;
 
-// UNSAFE: queries on this client run without a user context. As app_runtime
-// they fail closed (RLS returns zero rows), but nothing ties them to a caller.
-// Only for building safe wrappers such as withRLS — ESLint enforces this, and
-// the package `exports` map deliberately does not expose this file.
+/**
+ * UNSAFE: returns the shared Drizzle client, whose queries run without a user context.
+ * As app_runtime they fail closed (RLS returns zero rows), but nothing ties them to a caller.
+ * Only for building safe wrappers such as withRLS — ESLint enforces this, and
+ * the package `exports` map deliberately does not expose this file.
+ */
 export function getUnsafeDb(): UnsafeDb {
    unsafeDb ??= createUnsafeDb();
 
