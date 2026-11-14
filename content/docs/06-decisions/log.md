@@ -5,7 +5,7 @@ title: Decisions Log
 created: 2026-11-01
 updated: 2026-11-14
 kind: log
-version: 1.4.0
+version: 1.5.0
 tags:
    - decision
 ---
@@ -16,6 +16,10 @@ The ID column links to each decision's line in its page. Rules, requirements and
 
 | Date       | ID   | Decision                                                                                                                     | Status   | Summary                                                                                                                                                                                                                                                                       |
 | ---------- | ---- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-14 | [[D266]] | [[03-system-design/non-functional/database/migration\|Migration]] | accepted | A column holding one of a fixed set of keys is `text` with a CHECK, not a Postgres enum (D266). |
+| 2026-11-14 | [[D265]] | [[03-system-design/functional-design/04-synergy/00-overview\|Synergy]] | accepted | Every write in Synergy's repository runs inside `withUserLock`, enforced by the lint rule `sidekick/require-user-lock` (D265). |
+| 2026-11-14 | [[D264]] | [[03-system-design/non-functional/database/delete-models\|Delete Models]] | accepted | Every table chooses hard delete, soft delete with tombstones hidden, or soft delete with tombstones visible, and names it in its schema file (D264). |
+| 2026-11-14 | [[D263]] | [[03-system-design/functional-design/04-synergy/tombstone-visibility\|Tombstone Visibility]] | accepted | A restore changes only `deleted_at` and the provenance columns; a restore that edits is a restore, then a save (D263). |
 | 2026-11-11 | [[D262]] | [[03-system-design/non-functional/database/migration\|Migration]] | accepted | Each package that owns tables records its migrations in `drizzle.__drizzle_migrations_<package>`, and `db:migrate` runs packages in dependency order (D262). |
 | 2026-11-11 | [[D261]] | [[03-system-design/non-functional/testing/testing-layers\|Testing Layers]] | accepted | Shared test helpers live in `@sidekick/test-utils`: test files only, importing no workspace package (D261). |
 | 2026-11-06 | [[D256]], [[D257]], [[D260]] | [[03-system-design/functional-design/05-public-site/00-overview\|Public Site]]                                               | accepted | The public site is temporary: speed over maintainability, no CSS modules, i18n or extra strictness; data, URL and shared-code rules still bind, and its replacement follows every rule (D256); contracts that outlive it (D257); content component map with zod props (D260). |

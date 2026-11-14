@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-3-entity-index
 title: "Synergy Lesson 3: Entity Index and Version Log"
 created: 2026-11-01
-updated: 2026-11-11
+updated: 2026-11-14
 kind: plan
-version: 1.0.1
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -14,7 +14,7 @@ tags:
    - database
    - rls
    - postgresql
-status: planned
+status: completed
 ---
 
 > **Lesson 3 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief|lesson 2]]. Next: [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/00-brief|lesson 4]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].

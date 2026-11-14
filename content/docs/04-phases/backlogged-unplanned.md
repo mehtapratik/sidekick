@@ -3,9 +3,9 @@ publish: true
 id: plan.backlogged-unplanned
 title: Backlogged / Unplanned
 created: 2026-09-19
-updated: 2026-11-11
+updated: 2026-11-14
 kind: plan
-version: 1.3.0
+version: 1.4.0
 status: deferred
 tags:
    - plan
@@ -136,3 +136,11 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Pratik, 2026-11-08, during the rename to `apps/app`: worth a decision, not in lesson 0.
 
 **When to implement:** A future lesson that touches the App's structure, at the latest before Open House.
+
+### B13 — Shared workspaces
+
+**What:** Let several people share one Sidekick workspace (Pratik's example: attorneys at a law firm sharing knowledge). Every table gets a `workspace_id`; policies become "member of this workspace", with a membership table and a role per member (viewer, editor); one user lock per workspace would queue everyone, so writes lock the rows they touch (a delete takes its index row `FOR UPDATE`, a link its target `FOR SHARE`, in a fixed order) and the cycle check runs at `SERIALIZABLE` with retries or keeps a workspace lock for reference creates; a data migration gives each existing user a personal workspace.
+
+**Why deferred:** Pratik asked during Synergy lesson 3 (2026-11-13). No PRD has it. What already helps: one RLS policy helper (`ownRowsPolicy`), the user in two helpers (`currentUserId`, the lock), the repository as the only path, and provenance separating who acted (`actor_id`) from whose data it is (`user_id`).
+
+**When to implement:** When users ask for it; it gets its own decision and phase first.

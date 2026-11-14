@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-11-delete-and-restore
 title: "Synergy Lesson 11: Delete and Restore"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-14
 kind: plan
-version: 1.1.0
+version: 1.2.0
 tags:
    - plan
    - phase-3
@@ -24,6 +24,11 @@ status: planned
 **Learning payoff:** a delete as a guarded state change, not a row removal; grouping tombstones with a batch id; why a restore must re-check rules that held when the row was deleted (time-of-check versus time-of-use); naming every conflicting edge in an error so a client can explain it; erasure as the override.
 
 **Coach reads first:** the overview sections above, lesson 3's restore-aware trigger and tests, lesson 6's cycle check, lesson 8's supersede (a replacement can't be deleted while an old entry points at it).
+
+## Notes from lesson 3
+
+- **Restores are strict** ([[D263]]): the trigger refuses a restore that changes anything but `deleted_at` and the provenance columns. Give `restoreEntity` the signature `restoreEntity(tx, id, actor)`, with no field for edits, so the rule also holds at design time; a restore that edits is a restore, then a save, in one transaction.
+- **Erasure and cascades:** deleting a profile cascades into `entity_index` and `version_log`, and the cascade fires `enforce_soft_delete`. Erasure must set `SET LOCAL app.allow_hard_delete = 'true'` first.
 
 ## Steps
 

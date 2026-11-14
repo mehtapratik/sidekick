@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: System Design"
 created: 2026-10-30
-updated: 2026-11-11
+updated: 2026-11-14
 kind: spec
-version: 1.4.1
+version: 1.5.0
 tags:
    - system-design
    - synergy
@@ -122,7 +122,7 @@ User content (titles, display names, labels, change notes, tag names) is stored 
 
 An arrow points from a table to the tables that hang off it. `relationships.from_id` and `to_id` are `entity_index` ids (left out of the drawing to keep it readable). The outbox and idempotency keys are not synced and are hard-deleted.
 
-**Every table:** client-generated UUIDs, `user_id`, `created_at`, `updated_at`, provenance (actor kind: person, system, agent or API key; actor id; reason), and RLS comparing `user_id = nullif(current_setting('app.current_user_id', true), '')::uuid`. Syncable tables soft-delete; every unique index on them is partial (`WHERE deleted_at IS NULL`), so a tombstone never blocks re-adding the same tag or saving the same item again. How tombstones stay visible to Synergy is in [Tombstones](#tombstones).
+**Every table:** client-generated UUIDs, `user_id`, `created_at`, `updated_at`, provenance (actor kind: `human`, `system`, `agent` or `api_key`; actor id, empty only for `system`; reason), recording the row's last write, and RLS comparing `user_id = nullif(current_setting('app.current_user_id', true), '')::uuid`. Syncable tables soft-delete; every unique index on them is partial (`WHERE deleted_at IS NULL`), so a tombstone never blocks re-adding the same tag or saving the same item again. How tombstones stay visible to Synergy is in [Tombstones](#tombstones).
 
 - **`entity_index`**: id, provider, type, display name, optional title, status (`active`, `deprecated`, `superseded`), version, revision, `content_seq`, `edited_at`, `deleted_at`. "Deleted" is shown from `deleted_at`, not stored as a status, so a restore brings back whatever status the entity had. No external-reference columns ([[03-system-design/functional-design/04-synergy/capture-external-content|Capture external content]]).
 - **`content_seq`** goes up on every write to an entity's content: revision saves, version saves, and anchors added for someone else's link. It is the token for the stale-write check, the ETag and the render cache key. `version` and `revision` keep their meaning and only drive the dots ([[03-system-design/functional-design/04-synergy/content-sequence|Content sequence]]).
@@ -148,7 +148,7 @@ Each provider table has a deferrable foreign key to `entity_index(id)`, so a pro
 Synergy must see its own tombstones: a deleted target still shows its name, "No longer linked" must differ from "never existed", and undo and restore update deleted rows. Three of the existing database templates prevent that, so Synergy departs from them ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]):
 
 - **RLS compares only `user_id`.** The repository filters `deleted_at IS NULL` in each query that needs live rows. The template in [[03-system-design/non-functional/security/row-level-security|Row-level security]] also hides deleted rows in `USING`.
-- **Restore may update a deleted row.** The update trigger allows an update to a deleted row only when it restores it (`NEW.deleted_at IS NULL`). Every other update to a tombstone is still refused.
+- **Restore may update a deleted row.** The update trigger allows an update to a deleted row only when it restores it (`NEW.deleted_at IS NULL`) and changes nothing but `deleted_at` and the provenance columns ([[D263]]). Every other update to a tombstone is still refused.
 - **Hard delete only on the non-syncable tables** (outbox, idempotency keys), which carry no soft-delete triggers.
 
 ### Indexes
@@ -163,7 +163,11 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 
 **D202** `decision` #synergy #concurrency: Every Synergy write takes the per-user advisory lock before it reads anything, so the delete block and the cycle check can't race and there is one lock order. derived-from [[D117]] derived-from [[D95]]
 
-**Every Synergy write takes the per-user lock first**: `pg_advisory_xact_lock(hashtextextended(user_id::text, 0))`, before it reads or writes anything. That covers the delete block and the cycle check against each other (a delete and a new reference into the same target can't both commit), and one fixed lock order means no deadlocks between a save and a link create. For one user the contention is negligible.
+**Every Synergy write takes the per-user lock first**: `pg_advisory_xact_lock(hashtextextended(current_setting('app.current_user_id'), 0))`, keyed on the user `withRLS` set, before it reads or writes anything. That covers the delete block and the cycle check against each other (a delete and a new reference into the same target can't both commit), and one fixed lock order means no deadlocks between a save and a link create. For one user the contention is negligible.
+
+**D265** `rule` #synergy #concurrency #lint: Every write in Synergy's repository runs inside `withUserLock(...)`, which takes the user lock before the write function runs; the lint rule `sidekick/require-user-lock` fails any insert, update or delete in `src/repository/` outside it. derived-from [[D202]]
+
+The bare lock function isn't exported, so the wrapper is the only way to take it. The rule checks every write call, so a helper that writes must be wrapped too; taking the lock twice in one transaction is free. It can't see raw SQL through `tx.execute`. A provider writes its own row before calling Synergy, which in lesson 10 (`addAnchor` writing a provider row under the lock) could deadlock two tabs; lesson 4 makes provider write transactions take the user lock at their start.
 
 - **Create:** register the entity's index row (id, provider, type, display name).
 - **Save content:** the provider sends the base `content_seq`, revision or version, the optional change note, and the **current sets** it extracts from the new content with `extractRefs`: every block and anchor id, and every relationship id the content mentions. It also declares the links this save creates (below). Synergy then:
@@ -300,4 +304,5 @@ Each decision lives in its own page here; the [[06-decisions/log|decisions log]]
 
 ## Decision History
 
+- 2026-11-14 · accepted · Every repository write inside `withUserLock`, enforced by lint ([[D265]]); actor kind `human`; the lock keyed on the session's user (Synergy lesson 3)
 - 2026-11-06 · accepted · Words from catalogs ([[D201]] revised), message references ([[D250]]), the Sneak Peek Link takes plain data ([[D251]]); `apps/web` is now `apps/app`

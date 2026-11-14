@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-4-sandbox-providers
 title: "Synergy Lesson 4: Sandbox Providers and the First Routes"
 created: 2026-11-01
-updated: 2026-11-08
+updated: 2026-11-14
 kind: plan
-version: 1.0.1
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -25,6 +25,18 @@ status: planned
 **Learning payoff:** what makes a feature package (manifest, own tables, own routes, imported by the registry and the app); one transaction across two packages; deferrable foreign keys and why the provider row can be written before its index row; conditional requests (`ETag`, `If-None-Match`, 304); mapping stable error codes to HTTP statuses in one place; package entry points (`exports`) and `server-only`.
 
 **Coach reads first:** the overview, [[03-system-design/functional-design/00-feature-system/core|feature system]], `packages/features-registry/src/`, `apps/app/src/app/api/health/route.ts`, `packages/foundation/core/src/api/guard.ts`, `packages/ops/src/scripts/entitlements-grant.ts` in the Sidekick repo.
+
+## Handover from lesson 3
+
+Lesson 3 ([[04-phases/03-synergy/00-lessons/lesson-3-entity-index/01-walkthrough|walkthrough]], [sidekick#58](https://github.com/mehtapratik/sidekick/pull/58)) left the repo like this:
+
+- **Tables:** `entity_index` and `version_log` (Synergy `0001` to `0005`), soft delete with tombstones visible, RLS on `user_id` only, FORCE, `enforce_soft_delete` and a strict restore-aware trigger ([[D263]]). Keys are text with a CHECK ([[D266]]). Every table's model is in [[03-system-design/non-functional/database/delete-models|Delete models]]; add the sandbox tables to its list.
+- **Repository** (`packages/platform/synergy/src/repository/`, not exported yet; step 3's `/server` exports it): `registerEntity(tx, payload)`, `saveEntityContent(tx, payload)` (base `baselineContentSeq`, `bump: 'revision' | 'version'`, optional `changeNote`; throws `SynergyError` with `stale_content` or `not_found`), `getEntity(tx, id, { includeDeleted })` (returns `EntityIndexRow | undefined`). Writes are wrapped in `withUserLock`, and lint rule `sidekick/require-user-lock` fails any write in `src/repository/` outside it ([[D265]]). `Actor` is `{ kind: 'system' }` or `{ kind: 'human' | 'agent' | 'api_key', id }`; the user id always comes from the `withRLS` session, never a parameter.
+- **Tests:** Synergy's `vitest.config.ts` aliases `server-only` to a stub, so tests can call the repository through `withRLS`. Drizzle wraps database errors (`DrizzleQueryError`); a trigger's message is on `error.cause`. Each test registers its own rows. Deleting a test user who owns entities is refused by the soft-delete trigger through the cascade, so tests don't clean up users (the database is throwaway).
+- **Decide in this lesson: take the user lock at the start of every provider write.** A provider writes its own row before calling Synergy, so the lock isn't first in the transaction. Once Synergy writes a provider row under the lock (lesson 10's `addAnchor`), two tabs can deadlock: tab 1 holds note N's row and waits for the user lock; tab 2 holds the user lock and waits for N's row. Recommendation (Pratik's idea, 2026-11-14): move the lock function into core and give `withRLS` an option (`{ lockUser: true }`) that takes it right after setting the user, used by every provider write route; keep `withUserLock` in Synergy as the guarantee (a second lock in one transaction is free). It changes core's public `withRLS`, so it's its own step with a test.
+- **Names:** a database row type is `<Table>Row` (`EntityIndexRow`); `/contracts` keeps the plain noun (`Entity`) for its zod-inferred types, with a mapper from row to contract ([[08-ai-coding-harness/coding-standards|Coding standards]]). Inferred types are named as interfaces (`interface X extends Y {}`, allowed by lint).
+- **Every exported member gets a short JSDoc line** saying what it does (Pratik, 2026-11-14), from this lesson on.
+- **Editor gotcha:** after changing `eslint-plugin-sidekick`, rebuild it and restart the editor's ESLint server ([[08-ai-coding-harness/commands-and-environment|Commands and environment]]).
 
 ## Steps
 
