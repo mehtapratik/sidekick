@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.database.migration
 title: Migration
 created: 2026-09-19
-updated: 2026-11-11
+updated: 2026-11-14
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - database
@@ -33,9 +33,19 @@ tags:
 
 - **Ownership is independent, order is not.** A package's migrations may bind functions or reference tables of the packages below it (Synergy's triggers, core's `profiles`), the same way its code imports them. It can ship on its own as long as the packages it depends on are migrated first.
 - **Shared SQL functions are public API.** Postgres refuses `DROP FUNCTION` while a trigger uses it, but `CREATE OR REPLACE` changes a function for every package that binds it, with no error. Change a shared function only in a way every caller survives. A first definition uses plain `CREATE FUNCTION`, so a name clash with another package fails loudly; a package's own functions carry its name (`synergy_…`).
+- **Closed sets of keys are text with a CHECK, not Postgres enums** ([[D266]], below).
 - **Default privileges are global.** Core's `0009` revokes `EXECUTE` from `PUBLIC` on every function `postgres` creates, in any schema; a role that must call one directly gets an explicit `GRANT EXECUTE`. Triggers don't need it.
+
+## Keys as text with a CHECK (Synergy lesson 3)
+
+**D266** `decision` #database #drizzle: A column that holds one of a fixed set of keys (a status, an actor kind) is `text` with a CHECK constraint, not a Postgres enum. derived-from [[D262]]
+
+- An enum value can be added but never removed or renamed without rebuilding the type, and a value added with `ALTER TYPE … ADD VALUE` can't be used in the same transaction. The migrator applies every pending migration in one transaction, so "add a status and backfill it" would fail.
+- A CHECK is dropped and re-added in one migration (Synergy `0004` renamed `person` to `human` that way). Drizzle's `text(name, { enum })` gives TypeScript the same union.
+- Open sets that other packages own, like a provider's entity types, get no CHECK: the code that owns the registry validates them.
 
 ## Decision History
 
 - 2026-09-19 · accepted · Migration
 - 2026-11-11 · accepted · One migrations table per package, run in dependency order (D262), Synergy lesson 2
+- 2026-11-14 · accepted · Keys as text with a CHECK ([[D266]]), Synergy lesson 3
