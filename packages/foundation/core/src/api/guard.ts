@@ -15,6 +15,8 @@ export interface GuardOptions {
    feature?: string;
    /** Scope an API-key caller must hold; session callers skip this check */
    requireScope?: string;
+   /** Take the user's lock at the start of the transaction. Every write route sets it. */
+   lockUser?: boolean;
 }
 
 /** What withApiGuard hands a route handler */
@@ -81,23 +83,29 @@ async function authorizeAndHandle<Ctx>(
       return { code: 'SCOPE_MISSING', scope: opts.requireScope };
    }
 
-   return withRLS(caller.userId, async (tx) => {
-      if (
-         opts.feature &&
-         !(await getEnabledFeatures(tx)).includes(opts.feature)
-      ) {
-         return { code: 'FEATURE_DISABLED', feature: opts.feature };
-      }
+   return withRLS(
+      caller.userId,
+      async (tx) => {
+         if (
+            opts.feature &&
+            !(await getEnabledFeatures(tx)).includes(opts.feature)
+         ) {
+            return { code: 'FEATURE_DISABLED', feature: opts.feature };
+         }
 
-      return handler({ tx, caller, req, ctx });
-   });
+         return handler({ tx, caller, req, ctx });
+      },
+      {
+         lockUser: opts.lockUser,
+      },
+   );
 }
 
 /**
  * Wraps a route handler with authentication, scope and feature checks, and runs it
  * inside one RLS transaction for the caller. Every App Router route handler must use it.
  * @param handler Runs only for an authenticated, permitted caller
- * @param opts Feature the caller must be entitled to, and scope a key caller must hold
+ * @param opts Feature the caller must be entitled to, scope a key caller must hold, and whether to take the user's lock
  * @returns A Next.js route handler
  * @description
  * - It runs from cheapest to most expensive
