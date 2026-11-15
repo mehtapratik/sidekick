@@ -125,6 +125,7 @@ describe('withApiGuard', () => {
       expect(withRLS).toHaveBeenCalledWith(
          MOCK_SESSION_CALLER.userId,
          expect.any(Function),
+         { lockUser: undefined },
       );
       expect(mockHandler).toHaveBeenCalledWith({
          tx: MOCK_RLS_TX,
@@ -133,6 +134,19 @@ describe('withApiGuard', () => {
          ctx: mockCtx,
       });
       expect(await response.json()).toEqual({ ok: true });
+   });
+
+   it('asks withRLS for the user lock when the route sets lockUser', async () => {
+      await withApiGuard(mockHandler, { lockUser: true })(
+         createMockHttpRequest(),
+         undefined,
+      );
+
+      expect(withRLS).toHaveBeenCalledWith(
+         MOCK_SESSION_CALLER.userId,
+         expect.any(Function),
+         { lockUser: true },
+      );
    });
 
    it.each([

@@ -1,12 +1,11 @@
 import { and, eq, isNull, sql, type InferSelectModel } from 'drizzle-orm';
 
-import type { RlsTx } from '@sidekick/core/db';
+import { withUserLock, type RlsTx } from '@sidekick/core/db';
 
 import { entityIndex, versionLog } from '../db/schema';
 import type { ACTOR_KINDS } from '../db/schema/columns';
 import { increment } from '../db/utils';
 import { SynergyError } from './errors';
-import { withUserLock } from './lock';
 
 type ActorKind = (typeof ACTOR_KINDS)[number];
 
