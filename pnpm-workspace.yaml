@@ -4,6 +4,7 @@ packages:
    - 'packages/foundation/*'
    - 'packages/platform/*'
    - 'packages/features/*'
+   - 'packages/features/_sandbox/*'
    - 'content'
 allowBuilds:
    esbuild: true

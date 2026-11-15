@@ -1,0 +1,14 @@
+{
+   "name": "@sidekick/sandbox-tasks",
+   "version": "0.0.0",
+   "private": true,
+   "license": "MIT",
+   "type": "module",
+   "exports": {
+      ".": "./src/index.ts"
+   },
+   "scripts": {
+      "lint": "eslint .",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
+   }
+}

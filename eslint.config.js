@@ -78,6 +78,7 @@ const tsProjects = [
    'packages/foundation/*/tsconfig.json',
    'packages/platform/*/tsconfig.json',
    'packages/features/*/tsconfig.json',
+   'packages/features/_sandbox/*/tsconfig.json',
 ];
 
 export default defineConfig(
@@ -101,6 +102,9 @@ export default defineConfig(
             { type: 'site', pattern: 'apps/www' },
             { type: 'app', pattern: 'apps/*' },
             { type: 'registry', pattern: 'packages/features-registry' },
+            // Each sandbox provider is its own feature, so notes can't import
+            // tasks. Listed first: packages/features/* also matches _sandbox.
+            { type: 'feature', pattern: 'packages/features/_sandbox/*' },
             { type: 'feature', pattern: 'packages/features/*' },
             { type: 'platform', pattern: 'packages/platform/*' },
             {
