@@ -26,19 +26,19 @@
    },
    "dependencies": {
       "@supabase/ssr": "^0.12.7",
-      "@supabase/supabase-js": "^2.118.0",
+      "@supabase/supabase-js": "^2.119.0",
       "drizzle-orm": "^0.45.4",
-      "postgres": "^4.0.0",
+      "postgres": "^4.1.1",
       "server-only": "^0.0.1"
    },
    "devDependencies": {
       "@sidekick/test-utils": "workspace:*",
       "@types/node": "^24.19.2",
       "drizzle-kit": "^0.31.11",
-      "next": "^16.4.3",
-      "vitest": "^5.0.5"
+      "next": "^16.4.6",
+      "vitest": "^5.1.0"
    },
    "peerDependencies": {
-      "next": ">=16.4.3"
+      "next": ">=16.4.6"
    }
 }
