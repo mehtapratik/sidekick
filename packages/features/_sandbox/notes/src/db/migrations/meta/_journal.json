@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794891497838,
+      "tag": "0000_sandbox_notes",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794891683594,
+      "tag": "0001_force_rls_soft_delete_and_entity_fk",
+      "breakpoints": true
+    }
+  ]
+}
