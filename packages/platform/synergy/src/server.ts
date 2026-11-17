@@ -15,4 +15,5 @@ export {
    type RegisterEntityPayload,
    type SaveEntityContentPayload,
 } from './repository/entities';
+export { synergyErrorResponse } from './api/error-response';
 export { SynergyError } from './repository/errors';
