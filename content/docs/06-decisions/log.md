@@ -3,9 +3,9 @@ publish: true
 id: decisions.log
 title: Decisions Log
 created: 2026-11-01
-updated: 2026-11-14
+updated: 2026-11-17
 kind: log
-version: 1.5.1
+version: 1.6.0
 tags:
    - decision
 ---
@@ -16,6 +16,7 @@ The ID column links to each decision's line in its page. Rules, requirements and
 
 | Date       | ID   | Decision                                                                                                                     | Status   | Summary                                                                                                                                                                                                                                                                       |
 | ---------- | ---- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-17 | [[D267]] | [[03-system-design/non-functional/security/row-level-security\|Row-Level Security]] | deferred | Each table's policy spells out its own ownership check; a central SQL function every policy calls waits until an ownership rule must change across most tables (D267). |
 | 2026-11-14 | [[D264]] | [[03-system-design/non-functional/database/delete-models\|Delete Models]] | accepted | A fourth delete model, append-only, for logs; `version_log` moves to it (D264 revised). |
 | 2026-11-14 | [[D266]] | [[03-system-design/non-functional/database/migration\|Migration]] | accepted | A column holding one of a fixed set of keys is `text` with a CHECK, not a Postgres enum (D266). |
 | 2026-11-14 | [[D265]] | [[03-system-design/functional-design/04-synergy/00-overview\|Synergy]] | accepted | Every write in Synergy's repository runs inside `withUserLock`, enforced by the lint rule `sidekick/require-user-lock` (D265). |

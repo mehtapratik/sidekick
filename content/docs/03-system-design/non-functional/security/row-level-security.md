@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.security.row-level-security
 title: Row-Level Security
 created: 2026-09-19
-updated: 2026-11-14
+updated: 2026-11-17
 kind: spec
-version: 2.0.0
+version: 2.1.0
 tags:
    - system-design
    - security
@@ -57,6 +57,21 @@ WITH CHECK (user_id = nullif(current_setting('app.current_user_id', true), '')::
 
 `WITH CHECK` leaves out `deleted_at` so an update may set it: that update is the soft delete. Nothing can clear it again, because the row is invisible to `USING` from then on and `block_update_on_deleted` refuses any update to it. Tables in this model don't restore (see [[03-system-design/non-functional/database/delete-models|Delete models]]).
 
+## Each table writes its own ownership check
+
+**D267** `decision` #database #rls: Each table's policy spells out its own ownership check (`user_id = nullif(current_setting(…))::uuid`); a central SQL function that every policy calls is deferred until an ownership rule must change across most tables at once. related-to [[D264]]
+
+A policy could call one shared function, `USING (app_owns_row(user_id) AND deleted_at IS NULL)`, and a single `CREATE OR REPLACE` would then change ownership for every table at once. Postgres runs the function at query time, so a rebuilt database still matches production, and a one-line `LANGUAGE sql STABLE` function is inlined at no measurable cost. It is deferred anyway (Pratik, 2026-11-17, Synergy lesson 4):
+
+1. The check it would centralize has not changed since Phase 1, and nothing planned before Phase 3b changes it.
+2. The likely changes (sharing a note, workspaces, an agent acting for a user) change some tables in different ways, not every table the same way, so each would still be a per-table policy migration.
+3. Switching later costs the same as switching now: one migration per package that owns tables.
+4. A policy written out in its migration says exactly what protects the table, which matters while Pratik learns and reviews alone.
+
+A procedure that writes each table's policy from parameters was rejected outright: a migration calling it runs whatever version exists when it runs, so a database rebuilt from scratch would replay old migrations against the newest function and drift from production.
+
+**Revisit when** an ownership rule must change across most tables at once, or when the same change is about to be made to three or more tables' policies. Until then, the catalog test (lesson 4) is what catches a table that forgot its policy, FORCE or triggers.
+
 ## RLS context injection helper
 
 ```tsx
@@ -75,3 +90,7 @@ export async function withRLS<T>(
 
 1. Always use `withRLS` (`@sidekick/core/db`) to set the RLS context. Never set it inline or any other way.
 2. **Caution:** `set_config` must run inside the transaction with `is_local = true`, so the user id ends with the transaction. Without it, the user id would leak to every later request on the pooled connection.
+
+## Decision History
+
+- 2026-11-17 · deferred · A central ownership function for every policy ([[D267]]), Synergy lesson 4
