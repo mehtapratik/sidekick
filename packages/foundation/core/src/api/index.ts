@@ -9,3 +9,4 @@ export {
    withApiGuard,
 } from './guard';
 export type { ApiCaller } from './auth';
+export { errorResponse, type ApiErrorBody } from './error-response';
