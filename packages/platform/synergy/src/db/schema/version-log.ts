@@ -8,9 +8,10 @@ import {
    uuid,
 } from 'drizzle-orm/pg-core';
 
+import { utcTimestamp } from '@sidekick/core/db/columns';
 import { profiles } from '@sidekick/core/db/schema';
 
-import { provenance, provenanceChecks, utcTimestamp } from './columns';
+import { provenance, provenanceChecks } from './columns';
 import { entityIndex } from './entity-index';
 import { ownRowsPolicy } from './policies';
 

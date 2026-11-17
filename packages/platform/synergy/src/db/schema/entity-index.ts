@@ -8,16 +8,10 @@ import {
    uuid,
 } from 'drizzle-orm/pg-core';
 
+import { timestamps, tombstone, utcTimestamp } from '@sidekick/core/db/columns';
 import { profiles } from '@sidekick/core/db/schema';
 
-import {
-   provenance,
-   provenanceChecks,
-   sqlList,
-   timestamps,
-   tombstone,
-   utcTimestamp,
-} from './columns';
+import { provenance, provenanceChecks, sqlList } from './columns';
 import { ownRowsPolicy } from './policies';
 
 /** The lifecycle states an entity can be in */
