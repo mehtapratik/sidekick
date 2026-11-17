@@ -561,8 +561,13 @@ export default defineConfig(
                optionalDependencies: false,
             },
          ],
+         // Another package is imported by its name, never by a relative path
+         // into its folder: a relative path skips its package.json `exports`
+         // and its declared dependency, and breaks when a folder moves.
+         'import-x/no-relative-packages': 'error',
       },
    },
+
    // ── Public site (apps/www) ────────────────────────────────────────────────
    // The site is temporary (D256): boundaries, the basics and the type-aware
    // promise checks stay on; the App's strictness does not apply.
