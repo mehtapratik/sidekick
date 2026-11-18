@@ -50,20 +50,19 @@ const counts = DATUM_KINDS.map(
          <p>
             A datum is one claim that can be pointed at: a principle, decision,
             rule, requirement, concept, learning or outcome. Its id is global
-            and never reused, so <code>D11</code> always means the same claim. This
-            page is built from the pages themselves{
-               log && (
-                  <>
-                     ; the <a href={log.url}>Decisions Log</a> records when each
-                     decision was made
-                  </>
-               )
-            }.
+            and never reused, so <code>D11</code> always means the same claim.
+            This page is built from the pages themselves
+            {log && (
+               <>
+                  ; the <a href={log.url}>Decisions Log</a> records when each
+                  decision was made
+               </>
+            )}
+            .
          </p>
          <p>
-            {plural(datums.length, 'datum', 'datums')}: {
-               counts.map(([k, n]) => plural(n, k)).join(', ')
-            }.
+            {plural(datums.length, 'datum', 'datums')}:{' '}
+            {counts.map(([k, n]) => plural(n, k)).join(', ')}.
          </p>
          <div class="wide wide-table">
             <table>
@@ -76,20 +75,18 @@ const counts = DATUM_KINDS.map(
                   </tr>
                </thead>
                <tbody>
-                  {
-                     datums.map((d) => (
-                        <tr id={d.id}>
-                           <td>
-                              <a href={`${d.url}#${d.id}`}>{d.id}</a>
-                           </td>
-                           <td>{d.kind}</td>
-                           <td set:html={inline(d.claim)} />
-                           <td>
-                              <a href={d.url}>{titles.get(d.rel) ?? d.url}</a>
-                           </td>
-                        </tr>
-                     ))
-                  }
+                  {datums.map((d) => (
+                     <tr id={d.id}>
+                        <td>
+                           <a href={`${d.url}#${d.id}`}>{d.id}</a>
+                        </td>
+                        <td>{d.kind}</td>
+                        <td set:html={inline(d.claim)} />
+                        <td>
+                           <a href={d.url}>{titles.get(d.rel) ?? d.url}</a>
+                        </td>
+                     </tr>
+                  ))}
                </tbody>
             </table>
          </div>
