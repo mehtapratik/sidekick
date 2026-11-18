@@ -26,11 +26,9 @@ const entries = await getListedEntries();
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>{title} · {SITE_TITLE}</title>
       {description && <meta name="description" content={description} />}
-      {
-         canonical && (
-            <link rel="canonical" href={new URL(canonical, Astro.site)} />
-         )
-      }
+      {canonical && (
+         <link rel="canonical" href={new URL(canonical, Astro.site)} />
+      )}
       <link
          rel="alternate"
          type="application/rss+xml"
@@ -57,18 +55,18 @@ const entries = await getListedEntries();
    </head>
    <body data-entry={entry?.url}>
       <Header />
-      <main><slot /></main>
-      {
-         pager && (
-            <Pager prev={pager.prev} next={pager.next} total={entries.length} />
-         )
-      }
+      <main>
+         <slot />
+      </main>
+      {pager && (
+         <Pager prev={pager.prev} next={pager.next} total={entries.length} />
+      )}
       <footer>
          <p>Pratik Mehta · {entry?.license ?? DEFAULT_LICENSE}</p>
          <p>
-            <a href="/rss.xml"
-               ><span class="icon" aria-hidden="true"></span>RSS</a
-            >
+            <a href="/rss.xml">
+               <span class="icon" aria-hidden="true"></span>RSS
+            </a>
          </p>
       </footer>
       <Index entries={entries} current={entry?.url} />
