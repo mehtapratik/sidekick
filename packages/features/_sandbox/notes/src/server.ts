@@ -23,8 +23,9 @@ export const createNote: ApiHandler<unknown> = async function createNote({
    }
    const { id, title, body } = parsed.data;
 
-   // Synergy first, then the note: the guard commits whatever a handler
-   // returns, so every check that can fail runs before our own write.
+   // Order of operations, synergy's registerEntity or entity's own mutation,
+   // doesn't matter for correctness: any error response or throw rolls
+   // back both writes (D268).
    const entity = await registerEntity(tx, {
       id,
       provider: FEATURE_KEY,
