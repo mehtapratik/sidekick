@@ -2,6 +2,7 @@ import 'server-only';
 
 import { withRLS, type RlsTx } from '../db';
 import { getEnabledFeatures } from '../features/entitlements';
+import { HTTP_STATUS } from '../http/status';
 import {
    logEvent,
    toLoggedError,
@@ -36,10 +37,16 @@ export type ApiHandler<Ctx> = (args: ApiHandlerArgs<Ctx>) => Promise<Response>;
 
 /** The error-shape table from contracts.md: one place maps a code to its status and message */
 const GUARD_ERRORS = {
-   UNAUTHENTICATED: { status: 401, error: 'Unauthorized' },
-   SCOPE_MISSING: { status: 403, error: 'Forbidden' },
-   FEATURE_DISABLED: { status: 403, error: 'Feature disabled' },
-   INTERNAL: { status: 500, error: 'Internal error' },
+   UNAUTHENTICATED: { status: HTTP_STATUS.UNAUTHORIZED, error: 'Unauthorized' },
+   SCOPE_MISSING: { status: HTTP_STATUS.FORBIDDEN, error: 'Forbidden' },
+   FEATURE_DISABLED: {
+      status: HTTP_STATUS.FORBIDDEN,
+      error: 'Feature disabled',
+   },
+   INTERNAL: {
+      status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      error: 'Internal error',
+   },
 } as const;
 
 type GuardErrorCode = keyof typeof GUARD_ERRORS;

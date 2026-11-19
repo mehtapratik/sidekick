@@ -1,3 +1,5 @@
+import { HTTP_STATUS } from '@sidekick/core/http';
+
 /**
  * Synergy's error codes. Keys only (D201): the client looks up the words, and
  * the API's error map turns each code into an HTTP status.
@@ -10,6 +12,6 @@ export type SynergyErrorCode = 'not_found' | 'stale_content';
  */
 export const SYNERGY_ERROR_STATUS: Readonly<Record<SynergyErrorCode, number>> =
    {
-      not_found: 404,
-      stale_content: 409,
+      not_found: HTTP_STATUS.NOT_FOUND,
+      stale_content: HTTP_STATUS.CONFLICT,
    };
