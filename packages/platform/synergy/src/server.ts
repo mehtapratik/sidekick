@@ -17,3 +17,4 @@ export {
 } from './repository/entities';
 export { synergyErrorResponse } from './api/error-response';
 export { SynergyError } from './repository/errors';
+export { identifyActor } from './api/actor';
