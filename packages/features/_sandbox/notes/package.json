@@ -5,7 +5,9 @@
    "license": "MIT",
    "type": "module",
    "exports": {
-      ".": "./src/index.ts"
+      ".": "./src/index.ts",
+      "./contracts": "./src/contracts.ts",
+      "./server": "./src/server.ts"
    },
    "scripts": {
       "db:generate": "drizzle-kit generate",
@@ -16,7 +18,9 @@
    "dependencies": {
       "@sidekick/core": "workspace:*",
       "@sidekick/synergy": "workspace:*",
-      "drizzle-orm": "^0.45.4"
+      "drizzle-orm": "^0.45.4",
+      "server-only": "^0.0.1",
+      "zod": "^4.6.7"
    },
    "devDependencies": {
       "@types/node": "^24.19.2",
