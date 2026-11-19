@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { HTTP_STATUS } from '../http/status';
 import type { ApiErrorBody } from './error-response';
 
 // Every zod issue's message is a catalog key, never a sentence (D252). Set
@@ -66,7 +67,9 @@ function toValidationFailedBody(error: z.ZodError): ValidationFailedBody {
 
 /** Answers 400 with Sidekick's own shape for zod's issues, never zod's own format */
 function validationFailedResponse(error: z.ZodError): Response {
-   return Response.json(toValidationFailedBody(error), { status: 400 });
+   return Response.json(toValidationFailedBody(error), {
+      status: HTTP_STATUS.BAD_REQUEST,
+   });
 }
 
 /** A request body that passed its schema: the typed data */
