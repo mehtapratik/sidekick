@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.security.with-api-guard
 title: With API Guard
 created: 2026-09-19
-updated: 2026-11-08
+updated: 2026-11-19
 kind: spec
-version: 2.0.1
+version: 2.1.0
 tags:
    - system-design
    - security
@@ -54,8 +54,20 @@ Cheapest first; a request stops at the first failure.
 2. `requireScope` set and a key caller without it → 403 `SCOPE_MISSING`. Needs no database, so it runs before a transaction takes a pooled connection.
 3. `withRLS(caller.userId, …)` opens one transaction with `app.current_user_id` set.
 4. `feature` set and `getEnabledFeatures(tx)` doesn't include it → 403 `FEATURE_DISABLED`. Entitlements are RLS-protected, so they're read inside the transaction.
-5. `handler({ tx, caller, req, ctx })`. Resolving commits; throwing rolls back. A handler that writes and then returns an error response commits, so handlers validate before they write.
+5. `handler({ tx, caller, req, ctx })`. A response below 400 commits. A response of 400 or above, or a throw, rolls back everything the handler wrote ([[D268]], below), so the order of writes inside a handler doesn't matter for correctness.
 6. Anything thrown → rolled back, logged, and 500 `INTERNAL`. No details reach the client.
+
+## Error responses roll back
+
+**D268** `decision` #api #database: A handler's response of 400 or above rolls back its transaction, the same as a throw, and reaches the client unchanged; only a response below 400 commits.
+
+A client reads a response as all or nothing: an error means nothing changed. Before D268, only a throw rolled back, and a handler that wrote and then *returned* a 409 kept its write. Handlers had to run every check that could fail before their own first write ("validate before you write", and in Synergy lesson 4 "call Synergy first"), and nothing enforced the order (Pratik, 2026-11-19).
+
+1. The guard runs the handler inside `withRLS`'s transaction.
+2. If the response's status is 400 or above, the guard throws a private `ErrorResponseRollback` carrying it, so Drizzle rolls the transaction back.
+3. Outside the transaction, the guard catches it and returns the handler's response as it was. Any other error is rethrown, logged and answered 500.
+
+The guard's own 401 and 403s are decided before the handler runs and write nothing. A write that must survive an error (a failed-attempt counter behind a 429, an audit row for a denied request) needs an explicit opt-in, designed when the first one arrives. It never happens by accident.
 
 ## Errors
 
@@ -100,3 +112,7 @@ export const GET = withApiGuard(
 ```
 
 Each HTTP method is its own export with its own options. The handler's queries need no user filter: RLS limits `tx` to the caller's rows.
+
+## Decision History
+
+- 2026-11-19 · accepted · An error response rolls back ([[D268]]), Synergy lesson 4. Retires the Phase 2 rule that a handler which writes and then returns an error response commits, and with it "handlers validate before they write".

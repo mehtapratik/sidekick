@@ -3,9 +3,9 @@ publish: true
 id: harness.database-and-security
 title: Database and Security
 created: 2026-09-19
-updated: 2026-11-17
+updated: 2026-11-19
 kind: guidance
-version: 1.4.0
+version: 1.5.0
 tags:
    - ai-coding
    - database
@@ -28,6 +28,8 @@ A SQL function another package binds (core's soft-delete trigger functions) is p
 Every table has a [[03-system-design/non-functional/database/delete-models|delete model]] (hard delete, tombstones hidden or tombstones visible), named in its schema file; it decides the table's policy and triggers. Every write in Synergy's repository runs inside `withUserLock` (lint rule `sidekick/require-user-lock`, [[D265]]).
 
 Each table's policy writes out its own ownership check; a central function every policy calls is deferred ([[D267]]). Raise D267 with Pratik when a change would edit the ownership check in three or more tables' policies, or an ownership rule (sharing, workspaces, an agent acting for a user) must apply to most tables at once. Don't build it unasked.
+
+A handler's error response (status 400 or above) rolls back its whole transaction, the same as a throw ([[D268]]). Don't order a handler's writes to protect against a failing check, and don't reintroduce "validate before you write" or "call Synergy first" as rules; both are retired. A write that must survive an error needs an explicit opt-in, which doesn't exist yet: raise it with Pratik.
 
 - [[03-system-design/non-functional/database/delete-models|Delete models]]
 - [[03-system-design/non-functional/database/repository-client|Repository client]]

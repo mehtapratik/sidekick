@@ -70,6 +70,17 @@ function isMissingScope(caller: ApiCaller, scope?: string): boolean {
 type GuardDenial = Pick<ApiDeniedEvent, 'code' | 'feature' | 'scope'>;
 
 /**
+ * Carries a handler's error response out of withRLS's transaction. Throwing it
+ * rolls the transaction back; the guard then returns the response (D268).
+ */
+class ErrorResponseRollback extends Error {
+   constructor(readonly response: Response) {
+      super('Rolled back for an error response');
+      this.name = 'ErrorResponseRollback';
+   }
+}
+
+/**
  * The auth, scope and feature checks, then the handler. Decides and never logs:
  * withApiGuard logs what it returns, and what it throws.
  */
@@ -90,22 +101,37 @@ async function authorizeAndHandle<Ctx>(
       return { code: 'SCOPE_MISSING', scope: opts.requireScope };
    }
 
-   return withRLS(
-      caller.userId,
-      async (tx) => {
-         if (
-            opts.feature &&
-            !(await getEnabledFeatures(tx)).includes(opts.feature)
-         ) {
-            return { code: 'FEATURE_DISABLED', feature: opts.feature };
-         }
+   try {
+      return await withRLS(
+         caller.userId,
+         async (tx) => {
+            if (
+               opts.feature &&
+               !(await getEnabledFeatures(tx)).includes(opts.feature)
+            ) {
+               return { code: 'FEATURE_DISABLED', feature: opts.feature };
+            }
 
-         return handler({ tx, caller, req, ctx });
-      },
-      {
-         lockUser: opts.lockUser,
-      },
-   );
+            const response = await handler({ tx, caller, req, ctx });
+
+            // An error response undoes everything the handler wrote (D268),
+            // whatever order it wrote in
+            if (response.status >= HTTP_STATUS.BAD_REQUEST) {
+               throw new ErrorResponseRollback(response);
+            }
+
+            return response;
+         },
+         {
+            lockUser: opts.lockUser,
+         },
+      );
+   } catch (error) {
+      if (error instanceof ErrorResponseRollback) {
+         return error.response;
+      }
+      throw error;
+   }
 }
 
 /**
