@@ -18,3 +18,5 @@ export {
 export { synergyErrorResponse } from './api/error-response';
 export { SynergyError } from './repository/errors';
 export { identifyActor } from './api/actor';
+export { toEntity } from './api/entity';
+export { readEntity, type EntityRouteContext } from './api/read-entity';
