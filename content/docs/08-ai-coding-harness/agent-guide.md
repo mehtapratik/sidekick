@@ -3,9 +3,9 @@ publish: true
 id: harness.agent-guide
 title: Agent Guide
 created: 2026-09-19
-updated: 2026-11-14
+updated: 2026-11-20
 kind: guidance
-version: 1.9.0
+version: 1.10.0
 tags:
    - ai-coding
    - agent
@@ -68,7 +68,7 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 
 - Do not invent product scope. Read the relevant PRD and phase note first.
 - Preserve dependency direction ([[03-system-design/non-functional/monorepo/dependency-flow|dependency flow]]): apps, the registry, features, platform and foundation, top to bottom; a layer may import any layer below it, never one above it or a sibling in its own layer, and packages never import apps. Platform packages never import each other. `packages/ops` (privileged scripts) may import the registry, platform and foundation, and nothing may import it. The public site (`apps/www`) may import foundation except `core`, and nothing imports it (D258). `pnpm lint` enforces it.
-- Mutations stay in the API layer. Every App Router route handler is wrapped in `withApiGuard` (lint rule `require-api-guard`); Server Actions, the Pages Router and custom `pageExtensions` are banned.
+- Mutations stay in the API layer. Every App Router route handler is wrapped in `withApiGuard` (lint rule `require-api-guard`); Server Actions, the Pages Router and custom `pageExtensions` are banned. Outside `src/app/api/**/route.ts`, the App never imports `@sidekick/core/db`, `@sidekick/core/api` or a package's `/server` ([[D269]], lint): UI code calls the API. The API stays inside `apps/app` until Phase 9 ([[D270]]); don't propose splitting it out before then unless it must deploy or scale on its own.
 - **Shared SQL functions are public API.** Every package that owns tables has its own migrations and its own migrations table (`drizzle.__drizzle_migrations_<package>`), but a trigger or function another package binds (core's soft-delete functions) is a contract: change it only in a way every caller survives. `CREATE OR REPLACE` changes it for every package at once, with no error ([[03-system-design/non-functional/database/migration|Migration]]).
 - User-data queries go through `withRLS`, the only public database entry point. Raw Drizzle and admin Supabase clients are server-only and lint-restricted to the wrappers that need them. The one privileged path is `packages/ops`'s `withPrivilegedDb` (`DATABASE_DIRECT_URL`, bypasses RLS), for dev seeds, provisioning and break-glass scripts only.
 - Syncable entities use client-generated IDs and soft deletes; APIs are idempotent.

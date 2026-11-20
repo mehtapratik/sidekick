@@ -71,6 +71,21 @@ const unsafeDbPatternBan = {
       'The raw database client runs queries without a user context. Use withRLS from "@sidekick/core/db" instead.',
 };
 
+// D269: the App's UI reaches data only through its own API, like any other
+// client (D48). Only route handlers (src/app/api/**/route.ts) may import the
+// database, the guard or a package's server entry point.
+const uiDataMessage =
+   'UI code reaches data only through the API (D48, D269). Call the route with fetch; only src/app/api/**/route.ts may import this.';
+
+const uiDataPathBans = ['@sidekick/core/db', '@sidekick/core/api'].map(
+   (name) => ({ name, message: uiDataMessage }),
+);
+
+const uiDataPatternBan = {
+   group: ['@sidekick/core/db/*', '@sidekick/*/server'],
+   message: uiDataMessage,
+};
+
 const tsProjects = [
    'tsconfig.base.json',
    'apps/*/tsconfig.json',
@@ -527,6 +542,26 @@ export default defineConfig(
             {
                paths: [...cssInJsBans, adminClientPathBan],
                patterns: [adminClientPatternBan],
+            },
+         ],
+      },
+   },
+   {
+      // D269: in the App, only route handlers touch data. Every other file
+      // (pages, layouts, components) calls the API like any other client.
+      // Every global ban still applies here.
+      files: ['apps/app/src/**/*.{ts,tsx}'],
+      ignores: ['apps/app/src/app/api/**/route.ts'],
+      rules: {
+         'no-restricted-imports': [
+            'error',
+            {
+               paths: [...cssInJsBans, adminClientPathBan, ...uiDataPathBans],
+               patterns: [
+                  unsafeDbPatternBan,
+                  adminClientPatternBan,
+                  uiDataPatternBan,
+               ],
             },
          ],
       },
