@@ -256,6 +256,9 @@ importers:
       '@sidekick/core':
         specifier: workspace:*
         version: link:../../packages/foundation/core
+      '@sidekick/sandbox-notes':
+        specifier: workspace:*
+        version: link:../../packages/features/_sandbox/notes
       next:
         specifier: 16.4.6
         version: 16.4.6(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
