@@ -259,6 +259,9 @@ importers:
       '@sidekick/sandbox-notes':
         specifier: workspace:*
         version: link:../../packages/features/_sandbox/notes
+      '@sidekick/sandbox-tasks':
+        specifier: workspace:*
+        version: link:../../packages/features/_sandbox/tasks
       '@sidekick/synergy':
         specifier: workspace:*
         version: link:../../packages/platform/synergy
@@ -414,6 +417,12 @@ importers:
       drizzle-orm:
         specifier: ^0.45.4
         version: 0.45.4(postgres@4.1.1)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/node':
         specifier: ^24.19.2
