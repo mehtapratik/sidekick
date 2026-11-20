@@ -7,3 +7,12 @@ export const MANIFEST = {
    name: 'Sandbox tasks',
    description: 'A mock tasks provider that Synergy is proven with',
 };
+
+/**
+ * The entity types the tasks sandbox provides, by name. A type is scoped to its
+ * provider (D200): Synergy never lists them, and another provider may reuse
+ * the same word.
+ */
+export const ENTITY_TYPE = Object.freeze({
+   TASK: 'task',
+});

@@ -23,7 +23,7 @@ import {
    type Task,
 } from './contracts';
 import { sandboxTasks } from './db/schema';
-import { FEATURE_KEY } from './index';
+import { ENTITY_TYPE, FEATURE_KEY } from './index';
 
 /**
  * `POST /api/sandbox/tasks`: creates a task and registers its entity with
@@ -46,7 +46,7 @@ export const createTask: ApiHandler<unknown> = async function createTask({
    const entity = await registerEntity(tx, {
       id,
       provider: FEATURE_KEY,
-      type: 'task',
+      type: ENTITY_TYPE.TASK,
       displayName: title,
       title,
       actor: identifyActor(caller),

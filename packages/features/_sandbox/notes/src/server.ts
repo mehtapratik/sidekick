@@ -23,7 +23,7 @@ import {
    type Note,
 } from './contracts';
 import { sandboxNotes } from './db/schema';
-import { FEATURE_KEY } from './index';
+import { ENTITY_TYPE, FEATURE_KEY } from './index';
 
 /**
  * `POST /api/sandbox/notes`: creates a note and registers its entity with
@@ -46,7 +46,7 @@ export const createNote: ApiHandler<unknown> = async function createNote({
    const entity = await registerEntity(tx, {
       id,
       provider: FEATURE_KEY,
-      type: 'note',
+      type: ENTITY_TYPE.NOTE,
       displayName: title,
       title,
       actor: identifyActor(caller),
