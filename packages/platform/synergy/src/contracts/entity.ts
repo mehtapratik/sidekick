@@ -3,7 +3,7 @@ import { z } from 'zod';
 /** The lifecycle states an entity can be in */
 export const ENTITY_STATUSES = ['active', 'deprecated', 'superseded'] as const;
 
-/** The lifecycle states an entity can be in */
+/** The lifecycle states an entity can be in. One of `ENTITY_STATUSES` values.*/
 export type EntityStatus = (typeof ENTITY_STATUSES)[number];
 
 /**
