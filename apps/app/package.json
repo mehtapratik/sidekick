@@ -18,6 +18,7 @@
       "@sidekick/copy": "workspace:*",
       "@sidekick/core": "workspace:*",
       "@sidekick/sandbox-notes": "workspace:*",
+      "@sidekick/sandbox-tasks": "workspace:*",
       "@sidekick/synergy": "workspace:*",
       "next": "16.4.6",
       "postcss": "^8.5.32",

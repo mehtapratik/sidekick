@@ -29,20 +29,19 @@ export interface CreateNoteRequest extends z.infer<
 > {}
 
 /** A note as the API returns it */
-export interface Note {
-   /** The note's id, which is also its entity's id */
-   id: string;
-   /** The note's title */
-   title: string;
-   /** The note's body */
-   body: NoteBody;
-   /** The entity's content_seq: the baseline the next save sends */
-   contentSeq: number;
-   /** When the note was created, as an ISO 8601 string */
-   createdAt: string;
-   /** When the note was last saved, as an ISO 8601 string */
-   updatedAt: string;
-}
+export const noteSchema = z.object({
+   // The note's id, which is also its entity's id
+   id: z.uuid(),
+   title: z.string(),
+   body: noteBodySchema,
+   // The entity's content_seq: the baseline the next save sends
+   contentSeq: z.int(),
+   createdAt: z.iso.datetime(),
+   updatedAt: z.iso.datetime(),
+});
+
+/** A note as the API returns it */
+export interface Note extends z.infer<typeof noteSchema> {}
 
 /** What `PUT /api/sandbox/notes/:id` accepts */
 export const saveNoteRequestSchema = z.object({
