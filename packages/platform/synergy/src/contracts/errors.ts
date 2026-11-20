@@ -1,17 +1,25 @@
-import { HTTP_STATUS } from '@sidekick/core/http';
+import { HTTP_STATUS, type HttpStatus } from '@sidekick/core/http';
 
 /**
- * Synergy's error codes. Keys only (D201): the client looks up the words, and
- * the API's error map turns each code into an HTTP status.
+ * Every error Synergy can answer with, by name. Keys only (D201): the client
+ * looks up the words, and SYNERGY_ERROR_STATUS gives each one its HTTP status.
  */
-export type SynergyErrorCode = 'not_found' | 'stale_content';
+export const SYNERGY_ERROR_CODE = Object.freeze({
+   NOT_FOUND: 'not_found',
+   STALE_CONTENT: 'stale_content',
+});
+
+/** One of Synergy's error codes */
+export type SynergyErrorCode =
+   (typeof SYNERGY_ERROR_CODE)[keyof typeof SYNERGY_ERROR_CODE];
 
 /**
  * The HTTP status each code answers with (Synergy overview, API). Typed as a
  * Record, so a new code without a status fails the typecheck.
  */
-export const SYNERGY_ERROR_STATUS: Readonly<Record<SynergyErrorCode, number>> =
-   {
-      not_found: HTTP_STATUS.NOT_FOUND,
-      stale_content: HTTP_STATUS.CONFLICT,
-   };
+export const SYNERGY_ERROR_STATUS: Readonly<
+   Record<SynergyErrorCode, HttpStatus>
+> = {
+   [SYNERGY_ERROR_CODE.NOT_FOUND]: HTTP_STATUS.NOT_FOUND,
+   [SYNERGY_ERROR_CODE.STALE_CONTENT]: HTTP_STATUS.CONFLICT,
+};

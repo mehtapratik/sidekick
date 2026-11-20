@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SynergyErrorCode } from '../contracts/errors';
+import { SYNERGY_ERROR_CODE, type SynergyErrorCode } from '../contracts/errors';
 import { SynergyError } from '../repository/errors';
 import { synergyErrorResponse } from './error-response';
 
 const CASES: [SynergyErrorCode, number][] = [
-   ['not_found', 404],
-   ['stale_content', 409],
+   [SYNERGY_ERROR_CODE.NOT_FOUND, 404],
+   [SYNERGY_ERROR_CODE.STALE_CONTENT, 409],
 ];
 
 describe('synergyErrorResponse', () => {

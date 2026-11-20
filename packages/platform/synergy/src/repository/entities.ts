@@ -2,6 +2,7 @@ import { and, eq, isNull, sql, type InferSelectModel } from 'drizzle-orm';
 
 import { withUserLock, type RlsTx } from '@sidekick/core/db';
 
+import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { entityIndex, versionLog } from '../db/schema';
 import type { ACTOR_KINDS } from '../db/schema/columns';
 import { increment } from '../db/utils';
@@ -154,7 +155,11 @@ export const saveEntityContent = withUserLock(
             .from(entityIndex)
             .where(and(eq(entityIndex.id, id), isNull(entityIndex.deletedAt)));
 
-         throw new SynergyError(live ? 'stale_content' : 'not_found');
+         throw new SynergyError(
+            live
+               ? SYNERGY_ERROR_CODE.STALE_CONTENT
+               : SYNERGY_ERROR_CODE.NOT_FOUND,
+         );
       }
 
       if (bump === 'version') {
