@@ -43,3 +43,21 @@ export interface Note {
    /** When the note was last saved, as an ISO 8601 string */
    updatedAt: string;
 }
+
+/** What `PUT /api/sandbox/notes/:id` accepts */
+export const saveNoteRequestSchema = z.object({
+   title: z.string().trim().min(1).max(200),
+   body: noteBodySchema,
+   // The contentSeq the editor started from: a save based on anything older
+   // is stale and answers 409
+   baselineContentSeq: z.int().nonnegative(),
+   // The author flags a version; every other save is a revision
+   bump: z.enum(['version', 'revision']).default('revision'),
+   // An optional note logged with a version bump
+   changeNote: z.string().trim().max(500).optional(),
+});
+
+/** What `PUT /api/sandbox/notes/:id` accepts */
+export interface SaveNoteRequest extends z.infer<
+   typeof saveNoteRequestSchema
+> {}

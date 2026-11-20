@@ -14,3 +14,6 @@ export const HTTP_STATUS = Object.freeze({
    UNPROCESSABLE_CONTENT: 422,
    INTERNAL_SERVER_ERROR: 500,
 });
+
+/** One of the statuses in HTTP_STATUS */
+export type HttpStatus = (typeof HTTP_STATUS)[keyof typeof HTTP_STATUS];
