@@ -7,3 +7,9 @@ export {
    SYNERGY_ERROR_STATUS,
    type SynergyErrorCode,
 } from './errors';
+export {
+   ENTITY_STATUSES,
+   type EntityStatus,
+   entitySchema,
+   type Entity,
+} from './entity';
