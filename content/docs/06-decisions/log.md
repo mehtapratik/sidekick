@@ -3,9 +3,9 @@ publish: true
 id: decisions.log
 title: Decisions Log
 created: 2026-11-01
-updated: 2026-11-19
+updated: 2026-11-20
 kind: log
-version: 1.7.0
+version: 1.8.0
 tags:
    - decision
 ---
@@ -16,6 +16,7 @@ The ID column links to each decision's line in its page. Rules, requirements and
 
 | Date       | ID   | Decision                                                                                                                     | Status   | Summary                                                                                                                                                                                                                                                                       |
 | ---------- | ---- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-20 | [[D270]] | [[03-system-design/non-functional/api/public-api-only\|Public API Only]] | deferred | The API stays inside `apps/app`; a separate `apps/api` deployment is revisited at Phase 9 (D270). |
 | 2026-11-19 | [[D268]] | [[03-system-design/non-functional/security/with-api-guard\|With API Guard]] | accepted | A handler's response of 400 or above rolls back its transaction, the same as a throw; only a response below 400 commits (D268). |
 | 2026-11-17 | [[D267]] | [[03-system-design/non-functional/security/row-level-security\|Row-Level Security]] | deferred | Each table's policy spells out its own ownership check; a central SQL function every policy calls waits until an ownership rule must change across most tables (D267). |
 | 2026-11-14 | [[D264]] | [[03-system-design/non-functional/database/delete-models\|Delete Models]] | accepted | A fourth delete model, append-only, for logs; `version_log` moves to it (D264 revised). |
