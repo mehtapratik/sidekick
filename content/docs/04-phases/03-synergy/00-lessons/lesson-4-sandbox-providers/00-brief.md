@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-4-sandbox-providers
 title: "Synergy Lesson 4: Sandbox Providers and the First Routes"
 created: 2026-11-01
-updated: 2026-11-14
+updated: 2026-11-22
 kind: plan
-version: 1.1.1
+version: 1.2.0
 tags:
    - plan
    - phase-3
@@ -13,10 +13,10 @@ tags:
    - synergy
    - feature-system
    - api
-status: planned
+status: completed
 ---
 
-> **Lesson 4 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief|lesson 3]]. Next: [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief|lesson 5]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
+> **Lesson 4 of 13 in Phase 3a. Complete:** see [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/01-walkthrough|the walkthrough]] for what was built and where it differs from this brief. Before this: [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief|lesson 3]]. Next: [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief|lesson 5]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
 
 **What gets built:** the first two feature packages, `packages/features/_sandbox/notes` and `packages/features/_sandbox/tasks`, the mock providers Synergy is proven with. Each has its own table, migrations and feature manifest, and create and save routes that write the provider's row and call Synergy in the same transaction. Synergy gets its first route, `GET /api/synergy/entities/:id` with an ETag and 304, plus the error-to-HTTP map and its three entry points.
 

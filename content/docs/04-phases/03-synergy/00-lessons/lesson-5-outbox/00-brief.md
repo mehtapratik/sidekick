@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-5-outbox
 title: "Synergy Lesson 5: Outbox, Status and Versions"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-22
 kind: plan
-version: 1.0.0
+version: 1.1.0
 tags:
    - plan
    - phase-3
@@ -25,6 +25,21 @@ status: planned
 **Learning payoff:** the outbox pattern (why "write the row, then publish" loses events and "publish in the same transaction" doesn't); why a `bigserial` id isn't commit order and `pg_current_xact_id()` is; a non-syncable, hard-delete table with no soft-delete triggers; a read-only role outside RLS for readers that work across users; cursor paging.
 
 **Coach reads first:** the store-choices decision, the overview's event list, [[03-system-design/non-functional/database/non-syncable-tables|non-syncable tables]], lesson 3's delete-model guide, `packages/foundation/core/src/db/migrations/0001_app_runtime_grants.sql`.
+
+## Handover from lesson 4
+
+Lesson 4 ([[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/01-walkthrough|walkthrough]], [sidekick#64](https://github.com/mehtapratik/sidekick/pull/64)) left the repo like this:
+
+- **Writes take the lock first:** `withApiGuard(handler, { feature, lockUser: true })` takes the user's advisory lock right after setting the user, so it always comes before any row lock. `withUserLock` lives in `@sidekick/core/db`; Synergy's repository imports it. Read routes leave `lockUser` out.
+- **An error response rolls back (D268):** any handler response of 400 or above undoes the transaction, so a handler's write order doesn't matter for correctness. The outbox rows this lesson writes therefore disappear with a failed request, which is what an outbox needs.
+- **Route pattern:** the handler lives in its package's `/server` entry and validates with `parseRequestBody(req, schema)` (a ready 400 `validation_failed`); `apps/app` mounts it in a one-line route file. Synergy's routes go the same way: `readEntity` is in `@sidekick/synergy/server`, mounted at `GET /api/synergy/entities/[id]` with no feature gate. In `apps/app`, only route files may import `/server` entries (D269).
+- **Errors:** `errorResponse(code, status)` from `@sidekick/core/api`; statuses by name from `HTTP_STATUS` (`@sidekick/core/http`); Synergy's codes in `SYNERGY_ERROR_CODE` with `SYNERGY_ERROR_STATUS`, turned into responses by `synergyErrorResponse`. A new code goes in both, and the `Record` type fails the typecheck until it has a status.
+- **Contracts:** each response has a zod schema and an inferred type (`entitySchema` and `Entity`, with `toEntity` from a row). The versions route's page and the status route's response follow that.
+- **Decide in this lesson: the ETag must change when status changes.** Today `ETag: "<content_seq>"`, and a status change won't move `content_seq`, so after `PATCH /entities/:id/status` a client's `If-None-Match` would get 304 with a stale status. HTTP requires an ETag over the whole response; the likely fix is `"<content_seq>.<updated_at>"` (`updated_at` moves on every write), with the client deciding how loudly to say what changed (Pratik, 2026-11-20).
+- **Known gap:** creating with an id that already exists answers 500 (a duplicate key). Idempotent retries arrive with this lesson's idempotency work or later; the create handlers are where they'll plug in.
+- **Not yet consistent:** the guard's own codes are UPPER_CASE with an English `error` field (`{ error: 'Forbidden', code: 'FEATURE_DISABLED' }`), while every other error is `{ code }` in snake_case, and core's codes have no inventory like `SYNERGY_ERROR_CODE`. Decide once, when the client starts reading codes.
+- **Tests:** a package's integration tests go through the real guard with `signInAs(userId)` (a mocked `@sidekick/core/supabase/server`, see the sandbox packages' `tests/helpers.ts`). Core's catalog test lists every table with its delete model: the outbox table must be added there (hard delete) and in [[03-system-design/non-functional/database/delete-models|Delete Models]]. A throwaway table in a test must end in `_probe`. Integration tests run only through the root `pnpm test:integration`.
+- **Dev:** migrated through the sandbox tables; Pratik's account holds `sandbox-notes` and `sandbox-tasks`.
 
 ## Steps
 
