@@ -583,6 +583,8 @@ export default defineConfig(
                   '**/*.test.tsx',
                   '**/*.spec.ts',
                   '**/*.spec.tsx',
+                  // Test helpers next to the tests (signInAs and the like)
+                  '**/tests/**',
                   '**/eslint.config.*',
                   '**/stylelint.config.*',
                   '**/drizzle.config.*',
