@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: System Design"
 created: 2026-10-30
-updated: 2026-11-14
+updated: 2026-11-21
 kind: spec
-version: 1.6.0
+version: 1.7.0
 tags:
    - system-design
    - synergy
@@ -42,6 +42,8 @@ Synergy ships three entry points, so a browser bundle can never pull in database
 - `@sidekick/synergy/server`: the repository, the save call and the resolvers' contract. It imports `server-only`.
 - `@sidekick/synergy/react`: the Sneak Peek Link component and the renderers' contract. No database code, so it runs on the server and in the browser.
 - `@sidekick/synergy/contracts`: zod schemas and types shared by both, the content helpers (`extractRefs`, the quote re-matcher) and the error codes.
+
+Built in lesson 4: `/server` exports the repository, `readEntity` (the `GET` route's handler), `synergyErrorResponse`, `identifyActor` and `toEntity`; `/contracts` exports `entitySchema` and `Entity`, `ENTITY_STATUSES`, and `SYNERGY_ERROR_CODE` with `SYNERGY_ERROR_STATUS`, its code-to-status map; `/react` is empty until 3b. `withUserLock` moved to `@sidekick/core/db` so write routes can take the same lock first, and the repository imports it from there.
 
 See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/monorepo/dependency-flow|Dependency flow]].
 

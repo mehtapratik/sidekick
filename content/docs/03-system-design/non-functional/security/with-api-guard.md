@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.security.with-api-guard
 title: With API Guard
 created: 2026-09-19
-updated: 2026-11-19
+updated: 2026-11-21
 kind: spec
-version: 2.1.0
+version: 2.2.0
 tags:
    - system-design
    - security
@@ -29,6 +29,8 @@ export interface GuardOptions {
   feature?: string;
   /** Scope an API-key caller must hold; session callers skip this check */
   requireScope?: string;
+  /** Take the user's lock at the start of the transaction. Every write route sets it. */
+  lockUser?: boolean;
 }
 
 export interface ApiHandlerArgs<Ctx> {
@@ -52,7 +54,7 @@ Cheapest first; a request stops at the first failure.
 
 1. `resolveApiCaller(req)`. No caller (no session, or any `Authorization` header until Phase 9) → 401 `UNAUTHENTICATED`.
 2. `requireScope` set and a key caller without it → 403 `SCOPE_MISSING`. Needs no database, so it runs before a transaction takes a pooled connection.
-3. `withRLS(caller.userId, …)` opens one transaction with `app.current_user_id` set.
+3. `withRLS(caller.userId, …, { lockUser })` opens one transaction with `app.current_user_id` set. With `lockUser`, it then takes the user's advisory lock before anything else, so every row lock comes after it and two of the user's writes can't deadlock (Synergy lesson 4). Write routes set it; reads don't, and never wait.
 4. `feature` set and `getEnabledFeatures(tx)` doesn't include it → 403 `FEATURE_DISABLED`. Entitlements are RLS-protected, so they're read inside the transaction.
 5. `handler({ tx, caller, req, ctx })`. A response below 400 commits. A response of 400 or above, or a throw, rolls back everything the handler wrote ([[D268]], below), so the order of writes inside a handler doesn't matter for correctness.
 6. Anything thrown → rolled back, logged, and 500 `INTERNAL`. No details reach the client.
@@ -70,6 +72,8 @@ A client reads a response as all or nothing: an error means nothing changed. Bef
 The guard's own 401 and 403s are decided before the handler runs and write nothing. A write that must survive an error (a failed-attempt counter behind a 429, an audit row for a denied request) needs an explicit opt-in, designed when the first one arrives. It never happens by accident.
 
 ## Errors
+
+Handlers build their own error responses with core's helpers: `errorResponse(code, status)` sends `{ code }` and nothing else, statuses are named with `HTTP_STATUS` (`@sidekick/core/http`, safe in the browser), and `parseRequestBody(req, schema)` returns the typed body or a ready 400 `validation_failed` ([[03-system-design/non-functional/runtime-validations|Runtime validations]]). The guard's own errors below predate this and still carry an English `error` field next to the code.
 
 Every guard error is `{ error, code }` ([[error-handling]]):
 

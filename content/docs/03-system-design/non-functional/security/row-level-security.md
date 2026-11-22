@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.security.row-level-security
 title: Row-Level Security
 created: 2026-09-19
-updated: 2026-11-17
+updated: 2026-11-21
 kind: spec
-version: 2.1.0
+version: 2.2.0
 tags:
    - system-design
    - security
@@ -74,19 +74,19 @@ A procedure that writes each table's policy from parameters was rejected outrigh
 
 ## RLS context injection helper
 
-```tsx
+```ts
 export async function withRLS<T>(
    userId: string,
-   fn: (tx: RlsTx) => Promise<T>,
+   fn: RlsTxHandler<T>,
+   options: RlsOptions = {},
 ): Promise<T> {
-   return getUnsafeDb().transaction(async (tx) => {
-      await tx.execute(
-         sql`select set_config('app.current_user_id', ${userId}, true)`,
-      );
-      return fn(tx);
-   });
+   // With lockUser, the user's lock runs right after the user is set
+   const work = options.lockUser ? withUserLock(fn) : fn;
+   return withUserOnlyData(work)(userId);
 }
 ```
+
+`withUserOnlyData` (private) opens the transaction and sets the user; `withUserLock` (exported, also used by Synergy's repository) takes the user's advisory lock before its work runs. `withApiGuard` passes `lockUser` through from the route's options (Synergy lesson 4).
 
 1. Always use `withRLS` (`@sidekick/core/db`) to set the RLS context. Never set it inline or any other way.
 2. **Caution:** `set_config` must run inside the transaction with `is_local = true`, so the user id ends with the transaction. Without it, the user id would leak to every later request on the pooled connection.
