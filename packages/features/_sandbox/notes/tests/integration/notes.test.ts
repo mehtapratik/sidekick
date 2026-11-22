@@ -61,7 +61,11 @@ async function storedNote(id: string) {
          notes.title, 
          entity.provider, 
          entity.type, 
-         entity.content_seq
+         entity.content_seq,
+         entity.display_name,
+         entity.title AS entity_title,
+         entity.actor_kind,
+         entity.actor_id
       FROM 
          sandbox_notes notes JOIN entity_index entity 
       ON
@@ -113,6 +117,11 @@ describe('notes routes', () => {
          provider: FEATURE_KEY,
          type: ENTITY_TYPE.NOTE,
          content_seq: 0,
+         // Synergy shows the provider's title, and records who created it
+         display_name: 'First note',
+         entity_title: 'First note',
+         actor_kind: 'human',
+         actor_id: owner,
       });
    });
 
@@ -127,6 +136,7 @@ describe('notes routes', () => {
       expect(noteSchema.parse(await response.json()).contentSeq).toBe(1);
       expect(await storedNote(id)).toMatchObject({
          title: 'Edited',
+         display_name: 'Edited',
          content_seq: 1,
       });
    });
