@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.runtime-validations
 title: Runtime Validations
 created: 2026-09-19
-updated: 2026-11-06
+updated: 2026-11-21
 kind: spec
-version: 1.2.0
+version: 1.3.0
 tags:
    - system-design
    - typescript
@@ -72,7 +72,13 @@ z.config({
 - `z.config` changes zod for the whole process. That is safe because it sets keys, never words, so it is the same for every request and every locale.
 - Not used: zod 4's own translated messages. They are zod's wording, outside Sidekick's catalogs and the catalog check, and translated on the server.
 
-Zod integration with `withApiGuard` is planned for Phase 2+. All new API routes from Phase 2 onward must validate their inputs before processing them.
+Every API route validates its input before it uses it, with `parseRequestBody(req, schema)` from `@sidekick/core/api` (Synergy lesson 4). It reads the JSON body, returns the typed data, or a ready 400 in the shape above; a body that isn't JSON is a 400 too, never a 500. The key prefix is `common.validation.<code>`. Request and response schemas live in each package's `/contracts` entry, and each response type is inferred from its schema, so a client can parse a response instead of trusting it.
+
+```ts
+const parsed = await parseRequestBody(req, createNoteRequestSchema);
+if (!parsed.ok) return parsed.response;
+// parsed.data is typed and valid
+```
 
 ## Environment variables
 

@@ -256,6 +256,15 @@ importers:
       '@sidekick/core':
         specifier: workspace:*
         version: link:../../packages/foundation/core
+      '@sidekick/sandbox-notes':
+        specifier: workspace:*
+        version: link:../../packages/features/_sandbox/notes
+      '@sidekick/sandbox-tasks':
+        specifier: workspace:*
+        version: link:../../packages/features/_sandbox/tasks
+      '@sidekick/synergy':
+        specifier: workspace:*
+        version: link:../../packages/platform/synergy
       next:
         specifier: 16.4.6
         version: 16.4.6(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -360,7 +369,76 @@ importers:
         version: 5.1.0(@types/node@24.19.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(sugarss@5.0.2(postcss@8.5.32))(tsx@4.23.15)(yaml@2.9.1))
 
   packages/features-registry:
+    dependencies:
+      '@sidekick/sandbox-notes':
+        specifier: workspace:*
+        version: link:../features/_sandbox/notes
+      '@sidekick/sandbox-tasks':
+        specifier: workspace:*
+        version: link:../features/_sandbox/tasks
     devDependencies:
+      vitest:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@24.19.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(sugarss@5.0.2(postcss@8.5.32))(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/features/_sandbox/notes:
+    dependencies:
+      '@sidekick/core':
+        specifier: workspace:*
+        version: link:../../../foundation/core
+      '@sidekick/synergy':
+        specifier: workspace:*
+        version: link:../../../platform/synergy
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(postgres@4.1.1)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@sidekick/test-utils':
+        specifier: workspace:*
+        version: link:../../../test-utils
+      '@types/node':
+        specifier: ^24.19.2
+        version: 24.19.2
+      drizzle-kit:
+        specifier: ^0.31.11
+        version: 0.31.11
+      vitest:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@24.19.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(sugarss@5.0.2(postcss@8.5.32))(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/features/_sandbox/tasks:
+    dependencies:
+      '@sidekick/core':
+        specifier: workspace:*
+        version: link:../../../foundation/core
+      '@sidekick/synergy':
+        specifier: workspace:*
+        version: link:../../../platform/synergy
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(postgres@4.1.1)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@sidekick/test-utils':
+        specifier: workspace:*
+        version: link:../../../test-utils
+      '@types/node':
+        specifier: ^24.19.2
+        version: 24.19.2
+      drizzle-kit:
+        specifier: ^0.31.11
+        version: 0.31.11
       vitest:
         specifier: ^5.1.0
         version: 5.1.0(@types/node@24.19.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(sugarss@5.0.2(postcss@8.5.32))(tsx@4.23.15)(yaml@2.9.1))
@@ -384,6 +462,9 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@sidekick/test-utils':
         specifier: workspace:*
@@ -433,6 +514,12 @@ importers:
       drizzle-orm:
         specifier: ^0.45.4
         version: 0.45.4(postgres@4.1.1)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@sidekick/test-utils':
         specifier: workspace:*

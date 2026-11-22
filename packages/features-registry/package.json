@@ -13,6 +13,10 @@
       "test": "vitest run src",
       "typecheck": "tsc -p tsconfig.json --noEmit"
    },
+   "dependencies": {
+      "@sidekick/sandbox-notes": "workspace:*",
+      "@sidekick/sandbox-tasks": "workspace:*"
+   },
    "devDependencies": {
       "vitest": "^5.1.0"
    }

@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.monorepo.dependency-flow
 title: Dependency Flow
 created: 2026-09-19
-updated: 2026-11-11
+updated: 2026-11-21
 kind: spec
-version: 1.8.0
+version: 1.9.0
 tags:
    - system-design
    - monorepo
@@ -50,7 +50,7 @@ A design system (token names, primitives such as buttons and inputs, and Sidekic
 - **`packages/ops`** may import the registry, platform and foundation packages.
 - **Foundation packages** stay feature-agnostic ([[03-system-design/functional-design/00-feature-system/core|core]]) and never import the registry, a feature, a platform package or each other. If `core` imported the registry, it would depend on every feature, and every feature already depends on `core`: a cycle with no valid build order.
 
-`eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above. Each layer and singleton has an explicit element pattern (`packages/foundation/*`, `packages/platform/*`, `packages/features/*`, and one per singleton), with no `packages/*` catch-all, and a package that matches no pattern fails lint. Without that, a package created in the wrong place would silently count as foundation. `pnpm-workspace.yaml` globs each layer folder and keeps `packages/*` for the singletons, so a package created outside a layer folder still joins the workspace and fails lint rather than going unchecked. Built in [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|Phase 3a lesson 1]] with the first platform package, `@sidekick/synergy`. See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]].
+`eslint-plugin-boundaries` enforces this in `pnpm lint` (`eslint.config.js` in the Sidekick repo). Its default is to disallow, and it lists only the allowed directions above. Each layer and singleton has an explicit element pattern (`packages/foundation/*`, `packages/platform/*`, `packages/features/_sandbox/*` listed before `packages/features/*` so each sandbox provider is its own feature, and one per singleton), with no `packages/*` catch-all, and a package that matches no pattern fails lint. Without that, a package created in the wrong place would silently count as foundation. `pnpm-workspace.yaml` globs each layer folder and keeps `packages/*` for the singletons, so a package created outside a layer folder still joins the workspace and fails lint rather than going unchecked. Built in [[04-phases/03-synergy/00-lessons/lesson-1-layer-folders/00-brief|Phase 3a lesson 1]] with the first platform package, `@sidekick/synergy`. Since lesson 4, `import-x/no-relative-packages` also refuses a relative path into another package (`../../features/…/src`), which boundaries alone allows when the direction is legal. See [[03-system-design/non-functional/monorepo/dependency-flow|Platform layer]] and [[03-system-design/non-functional/code-quality-checks/eslint/eslint-plugin-boundaries|eslint-plugin-boundaries]].
 
 ## The site and content
 

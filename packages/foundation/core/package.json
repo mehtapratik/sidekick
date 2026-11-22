@@ -13,7 +13,9 @@
       "./supabase/proxy": "./src/supabase/proxy.ts",
       "./supabase/admin": "./src/supabase/admin.ts",
       "./db": "./src/db/index.ts",
-      "./db/schema": "./src/db/schema/index.ts"
+      "./db/columns": "./src/db/columns.ts",
+      "./db/schema": "./src/db/schema/index.ts",
+      "./http": "./src/http/status.ts"
    },
    "scripts": {
       "build": "tsc -p tsconfig.build.json",
@@ -29,7 +31,8 @@
       "@supabase/supabase-js": "^2.119.0",
       "drizzle-orm": "^0.45.4",
       "postgres": "^4.1.1",
-      "server-only": "^0.0.1"
+      "server-only": "^0.0.1",
+      "zod": "^4.6.7"
    },
    "devDependencies": {
       "@sidekick/test-utils": "workspace:*",

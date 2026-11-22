@@ -71,6 +71,21 @@ const unsafeDbPatternBan = {
       'The raw database client runs queries without a user context. Use withRLS from "@sidekick/core/db" instead.',
 };
 
+// D269: the App's UI reaches data only through its own API, like any other
+// client (D48). Only route handlers (src/app/api/**/route.ts) may import the
+// database, the guard or a package's server entry point.
+const uiDataMessage =
+   'UI code reaches data only through the API (D48, D269). Call the route with fetch; only src/app/api/**/route.ts may import this.';
+
+const uiDataPathBans = ['@sidekick/core/db', '@sidekick/core/api'].map(
+   (name) => ({ name, message: uiDataMessage }),
+);
+
+const uiDataPatternBan = {
+   group: ['@sidekick/core/db/*', '@sidekick/*/server'],
+   message: uiDataMessage,
+};
+
 const tsProjects = [
    'tsconfig.base.json',
    'apps/*/tsconfig.json',
@@ -78,6 +93,7 @@ const tsProjects = [
    'packages/foundation/*/tsconfig.json',
    'packages/platform/*/tsconfig.json',
    'packages/features/*/tsconfig.json',
+   'packages/features/_sandbox/*/tsconfig.json',
 ];
 
 export default defineConfig(
@@ -101,6 +117,9 @@ export default defineConfig(
             { type: 'site', pattern: 'apps/www' },
             { type: 'app', pattern: 'apps/*' },
             { type: 'registry', pattern: 'packages/features-registry' },
+            // Each sandbox provider is its own feature, so notes can't import
+            // tasks. Listed first: packages/features/* also matches _sandbox.
+            { type: 'feature', pattern: 'packages/features/_sandbox/*' },
             { type: 'feature', pattern: 'packages/features/*' },
             { type: 'platform', pattern: 'packages/platform/*' },
             {
@@ -527,6 +546,26 @@ export default defineConfig(
          ],
       },
    },
+   {
+      // D269: in the App, only route handlers touch data. Every other file
+      // (pages, layouts, components) calls the API like any other client.
+      // Every global ban still applies here.
+      files: ['apps/app/src/**/*.{ts,tsx}'],
+      ignores: ['apps/app/src/app/api/**/route.ts'],
+      rules: {
+         'no-restricted-imports': [
+            'error',
+            {
+               paths: [...cssInJsBans, adminClientPathBan, ...uiDataPathBans],
+               patterns: [
+                  unsafeDbPatternBan,
+                  adminClientPatternBan,
+                  uiDataPatternBan,
+               ],
+            },
+         ],
+      },
+   },
    // ── Dependency hygiene ────────────────────────────────────────────────────
    {
       // Every import must be declared in the nearest package.json.
@@ -544,6 +583,8 @@ export default defineConfig(
                   '**/*.test.tsx',
                   '**/*.spec.ts',
                   '**/*.spec.tsx',
+                  // Test helpers next to the tests (signInAs and the like)
+                  '**/tests/**',
                   '**/eslint.config.*',
                   '**/stylelint.config.*',
                   '**/drizzle.config.*',
@@ -557,8 +598,13 @@ export default defineConfig(
                optionalDependencies: false,
             },
          ],
+         // Another package is imported by its name, never by a relative path
+         // into its folder: a relative path skips its package.json `exports`
+         // and its declared dependency, and breaks when a folder moves.
+         'import-x/no-relative-packages': 'error',
       },
    },
+
    // ── Public site (apps/www) ────────────────────────────────────────────────
    // The site is temporary (D256): boundaries, the basics and the type-aware
    // promise checks stay on; the App's strictness does not apply.

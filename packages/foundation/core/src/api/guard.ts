@@ -2,6 +2,7 @@ import 'server-only';
 
 import { withRLS, type RlsTx } from '../db';
 import { getEnabledFeatures } from '../features/entitlements';
+import { HTTP_STATUS } from '../http/status';
 import {
    logEvent,
    toLoggedError,
@@ -15,6 +16,8 @@ export interface GuardOptions {
    feature?: string;
    /** Scope an API-key caller must hold; session callers skip this check */
    requireScope?: string;
+   /** Take the user's lock at the start of the transaction. Every write route sets it. */
+   lockUser?: boolean;
 }
 
 /** What withApiGuard hands a route handler */
@@ -34,10 +37,16 @@ export type ApiHandler<Ctx> = (args: ApiHandlerArgs<Ctx>) => Promise<Response>;
 
 /** The error-shape table from contracts.md: one place maps a code to its status and message */
 const GUARD_ERRORS = {
-   UNAUTHENTICATED: { status: 401, error: 'Unauthorized' },
-   SCOPE_MISSING: { status: 403, error: 'Forbidden' },
-   FEATURE_DISABLED: { status: 403, error: 'Feature disabled' },
-   INTERNAL: { status: 500, error: 'Internal error' },
+   UNAUTHENTICATED: { status: HTTP_STATUS.UNAUTHORIZED, error: 'Unauthorized' },
+   SCOPE_MISSING: { status: HTTP_STATUS.FORBIDDEN, error: 'Forbidden' },
+   FEATURE_DISABLED: {
+      status: HTTP_STATUS.FORBIDDEN,
+      error: 'Feature disabled',
+   },
+   INTERNAL: {
+      status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      error: 'Internal error',
+   },
 } as const;
 
 type GuardErrorCode = keyof typeof GUARD_ERRORS;
@@ -61,6 +70,17 @@ function isMissingScope(caller: ApiCaller, scope?: string): boolean {
 type GuardDenial = Pick<ApiDeniedEvent, 'code' | 'feature' | 'scope'>;
 
 /**
+ * Carries a handler's error response out of withRLS's transaction. Throwing it
+ * rolls the transaction back; the guard then returns the response (D268).
+ */
+class ErrorResponseRollback extends Error {
+   constructor(readonly response: Response) {
+      super('Rolled back for an error response');
+      this.name = 'ErrorResponseRollback';
+   }
+}
+
+/**
  * The auth, scope and feature checks, then the handler. Decides and never logs:
  * withApiGuard logs what it returns, and what it throws.
  */
@@ -81,23 +101,44 @@ async function authorizeAndHandle<Ctx>(
       return { code: 'SCOPE_MISSING', scope: opts.requireScope };
    }
 
-   return withRLS(caller.userId, async (tx) => {
-      if (
-         opts.feature &&
-         !(await getEnabledFeatures(tx)).includes(opts.feature)
-      ) {
-         return { code: 'FEATURE_DISABLED', feature: opts.feature };
-      }
+   try {
+      return await withRLS(
+         caller.userId,
+         async (tx) => {
+            if (
+               opts.feature &&
+               !(await getEnabledFeatures(tx)).includes(opts.feature)
+            ) {
+               return { code: 'FEATURE_DISABLED', feature: opts.feature };
+            }
 
-      return handler({ tx, caller, req, ctx });
-   });
+            const response = await handler({ tx, caller, req, ctx });
+
+            // An error response undoes everything the handler wrote (D268),
+            // whatever order it wrote in
+            if (response.status >= HTTP_STATUS.BAD_REQUEST) {
+               throw new ErrorResponseRollback(response);
+            }
+
+            return response;
+         },
+         {
+            lockUser: opts.lockUser,
+         },
+      );
+   } catch (error) {
+      if (error instanceof ErrorResponseRollback) {
+         return error.response;
+      }
+      throw error;
+   }
 }
 
 /**
  * Wraps a route handler with authentication, scope and feature checks, and runs it
  * inside one RLS transaction for the caller. Every App Router route handler must use it.
  * @param handler Runs only for an authenticated, permitted caller
- * @param opts Feature the caller must be entitled to, and scope a key caller must hold
+ * @param opts Feature the caller must be entitled to, scope a key caller must hold, and whether to take the user's lock
  * @returns A Next.js route handler
  * @description
  * - It runs from cheapest to most expensive

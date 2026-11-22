@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-2.contracts
 title: Gatekeeper Build Rules and Target Design
 created: 2026-10-18
-updated: 2026-10-24
+updated: 2026-11-19
 kind: plan
-version: 2.8.1
+version: 2.8.2
 tags:
    - plan
    - phase-2
@@ -199,7 +199,7 @@ Decided in lesson 4:
 - `feature` stays optional. With no `feature`, the guard skips the entitlements query (`opts.feature && …` short-circuits).
 - `getEnabledFeatures` keeps returning `string[]`. A `Set` or `Map` gains nothing for one lookup per request.
 - The client keeps distinct `SCOPE_MISSING` and `FEATURE_DISABLED` codes: the caller is signed in and asking about their own account. Detailed reasons go to the server log (lesson 5).
-- A handler that writes and then returns an error response commits. Only a throw rolls back, so handlers validate before they write. The integration test pins this.
+- A handler that writes and then returns an error response commits. Only a throw rolls back, so handlers validate before they write. The integration test pins this. Superseded by [[D268]] (Synergy lesson 4, 2026-11-19): an error response now rolls back too.
 - Shared test helpers live in `packages/core/tests/helpers/` ([sidekick#18](https://github.com/mehtapratik/sidekick/pull/18)) until a second package needs them.
 
 ### Error shape

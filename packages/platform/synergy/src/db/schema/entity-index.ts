@@ -8,20 +8,12 @@ import {
    uuid,
 } from 'drizzle-orm/pg-core';
 
+import { timestamps, tombstone, utcTimestamp } from '@sidekick/core/db/columns';
 import { profiles } from '@sidekick/core/db/schema';
 
-import {
-   provenance,
-   provenanceChecks,
-   sqlList,
-   timestamps,
-   tombstone,
-   utcTimestamp,
-} from './columns';
+import { ENTITY_STATUSES } from '../../contracts/entity';
+import { provenance, provenanceChecks, sqlList } from './columns';
 import { ownRowsPolicy } from './policies';
-
-/** The lifecycle states an entity can be in */
-export const ENTITY_STATUSES = ['active', 'deprecated', 'superseded'] as const;
 
 /**
  * One row per entity any provider owns: its identity, names, status and version counters.

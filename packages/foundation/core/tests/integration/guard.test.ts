@@ -117,22 +117,21 @@ describe('withApiGuard on a real database', () => {
       );
    });
 
-   it('keeps the handler’s write when it returns an error response instead of throwing', async () => {
+   it('rolls back the handler’s write when it returns an error response (D268)', async () => {
       mockSignedInAs(otherUserId);
       const guarded = withApiGuard(async ({ tx, caller }) => {
          await tx
             .update(profiles)
-            .set({ email: 'kept@example.com' })
+            .set({ email: 'changed@example.com' })
             .where(eq(profiles.id, caller.userId));
-         return Response.json(
-            { error: 'Invalid input', code: 'VALIDATION_ERROR' },
-            { status: 400 },
-         );
+         return Response.json({ code: 'stale_content' }, { status: 409 });
       });
 
       const response = await guarded(createMockHttpRequest(), undefined);
-      expect(response.status).toBe(400);
-      // Only a throw rolls back: handlers must validate before they write
-      expect(await getProfileEmail(otherUserId)).toBe('kept@example.com');
+      // The handler's response reaches the client unchanged...
+      expect(response.status).toBe(409);
+      expect(await response.json()).toEqual({ code: 'stale_content' });
+      // ...and its write is gone
+      expect(await getProfileEmail(otherUserId)).toBe('other@example.com');
    });
 });
