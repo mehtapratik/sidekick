@@ -3,9 +3,9 @@ publish: true
 title: Living Implementation Plan
 id: plan.living
 created: 2026-09-19
-updated: 2026-11-01
+updated: 2026-11-22
 kind: plan
-version: 1.0.3
+version: 1.1.0
 tags:
    - plan
    - living-plan
@@ -43,6 +43,7 @@ Product truth lives in `02-prd/` (the high-level PRD plus per-feature PRDs writt
 
 **Changelog**
 
+- **2026-11-22** — Phase 3a lesson 4 complete: the first feature packages (`@sidekick/sandbox-notes`, `@sidekick/sandbox-tasks`) with their own tables and routes, Synergy's first route (`GET /api/synergy/entities/:id` with an ETag and 304), write routes that take the user lock first (`lockUser`), `parseRequestBody`, an error response that rolls back the whole transaction (D268), the App's UI kept off the data layer by lint (D269), and a catalog test of every table's delete model. Deferred: a central ownership function for RLS policies (D267) and a separate API deployment (D270, revisit at Phase 9); the backlog gains B14 to B22.
 - **2026-11-01** — Phases renamed by brand, shown as the doc title: 0 Groundwork, 1 Front Door (with 1.1 Row-Level Security and Pre-2 Hardening), 2 Gatekeeper, 3 Synergy, 4 Taxila, 5 Zinsser, 6 Alter Ego, 7 War Room, 8 Pocket, 9 Terminal, 10 Watchtower, 11 Open House, 12 Storefront. File names and phase numbers are unchanged.
 - **2026-08-24** — Core Drive redesigned as a system-wide **tiered context model** (kernel / applicability-loaded / situational state) with a centralized **Context Assembler** and first-class **Effort Level** in the AI request contract ([[03-system-design/functional-design/01-core-drive/00-tiered-context-model|tiered context model]]). Domain knowledge assigned to Taxila; state/values boundary between Core Drive and War Room/Factory made explicit. Phase 6A/6B/7A tasks updated.
 - **2026-07-27** — Realigned the entire plan to the bird's-eye-view essay (high-level PRD). Adopted module names; rejected Bookmarks/Recipes/Budget as standalone features; added the graph store and metadata service (now Synergy), Core Drive, command-palette shell, and provider-agnostic AI router; moved dogfooding/billing to optional tail. Phases 0–2 unchanged.
@@ -79,7 +80,7 @@ Tasks are grouped into **phases**. Each phase is a shippable milestone — by th
 - [[04-phases/01-front-door/01-row-level-security/00-plan|Phase 1.1 — Front Door ✅ COMPLETE]]
 - [[04-phases/01-front-door/02-hardening/00-plan|Pre-2 — Front Door ✅ COMPLETE]]
 - [[04-phases/02-gatekeeper/00-plan|Phase 2 — Gatekeeper ✅ COMPLETE]]
-- [[04-phases/03-synergy/00-plan|Phase 3 — Synergy]]
+- [[04-phases/03-synergy/00-plan|Phase 3 — Synergy 🚧 IN PROGRESS (3a lessons 0–4 complete)]]
 - [[04-phases/04-taxila/00-plan|Phase 4 — Taxila]]
 - [[04-phases/05-zinsser/00-plan|Phase 5 — Zinsser]]
 - [[04-phases/06-alter-ego/00-plan|Phase 6 — Alter Ego]]
@@ -116,15 +117,16 @@ If you're new to some of the tech in this stack, here's the minimum viable readi
 
 Before moving to the next phase, verify:
 
-- [ ] Every new API route uses `withApiGuard()`
+- [ ] Every new API route uses `withApiGuard()`; write routes set `lockUser: true`, and every route validates its input with `parseRequestBody`
+- [ ] Outside `src/app/api/**/route.ts`, the App never imports `@sidekick/core/db`, `@sidekick/core/api` or a package's `/server` (D269, lint)
+- [ ] Handlers rely on an error response rolling back (D268), never on the order of their writes
 - [ ] No `packages/*` imports from `apps/*`
-- [ ] Every new user-owned table has RLS enabled with the canonical combined policy (user isolation + soft-delete in one USING clause)
-- [ ] Every new syncable table has `no_hard_delete_[table]` and `no_update_deleted_[table]` triggers applied
+- [ ] Every new table names its delete model ([[03-system-design/non-functional/database/delete-models|D264]]), has RLS enabled and forced with the policy and triggers that model needs, and is listed in Delete Models and in core's catalog test, which fails otherwise
 - [ ] Every new table with user content uses `withRLS()` via the guard, not inline
 - [ ] All mutations go through the repository layer
 - [ ] Syncable tables include `createdAt`, `updatedAt`, `deletedAt`
 - [ ] Soft deletes only — no hard deletes on user data
-- [ ] All queries on syncable tables filter `where(isNull(table.deletedAt))`
+- [ ] Deleted rows stay out of reads: a tombstones-hidden table's policy hides them; a tombstones-visible table's repository filters `deleted_at` in every query that wants live rows
 - [ ] Content tables in the embedding pipeline have `embeddingStatus`
 - [ ] `DATABASE_URL` connects as `app_runtime` (not superuser) — verify if changing connection config
 

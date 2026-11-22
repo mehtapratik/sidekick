@@ -3,9 +3,9 @@ publish: true
 id: harness.commands-and-environment
 title: Commands and Environment
 created: 2026-09-19
-updated: 2026-11-21
+updated: 2026-11-22
 kind: guidance
-version: 1.4.0
+version: 1.5.0
 tags:
    - ai-coding
    - command
@@ -32,7 +32,7 @@ pnpm db:migrate
 pnpm ops:entitlements:grant --email <email> (--all | --feature <key>…) [--apply]
 ```
 
-`test:integration` runs `scripts/test-db/with-test-db.sh`: it builds one throwaway PostgreSQL 17, runs every package's migrations through `turbo run db:migrate`, then runs each package's `test:integration` against it. It needs the PostgreSQL 17 tools installed locally and is never cached. Run one package's suite with `pnpm test:integration --filter=<package>`. Run it from the repo root, through this script: running a package's `test:integration` directly (`pnpm --filter <package> test:integration`) skips the wrapper and fails with "`TEST_AUTH_DATABASE_URL` is not set", and `pnpm test:integration -- --filter=…` doesn't filter, because Turbo passes arguments after `--` to the tasks.
+`test:integration` runs `scripts/test-db/with-test-db.sh`: it builds one throwaway PostgreSQL 17, runs every package's migrations through `turbo run db:migrate`, then runs each package's `test:integration` against it. It needs the PostgreSQL 17 tools installed locally and is never cached. Run one package's suite with `pnpm test:integration --filter=<package>`. Run it from the repo root, through this script: running a package's `test:integration` directly (`pnpm --filter <package> test:integration`) skips the wrapper and fails with "`TEST_AUTH_DATABASE_URL` is not set", and `pnpm test:integration -- --filter=…` doesn't filter, because Turbo passes arguments after `--` to the tasks. `db:generate` reads every file in a package's `migrations/meta/`, so a Finder `.DS_Store` there crashes it ("`Bud1` is not valid JSON"); delete it.
 
 Database commands and `ops:*` scripts require `.env.local` at the repository root. Only the root `db:*` scripts load it; Turbo runs in strict env mode, so `turbo.json` passes `DATABASE_DIRECT_URL` through to `db:migrate` and `db:generate` and to no other task. Package `db:*` scripts are plain `drizzle-kit` and read no env file, so the test script's throwaway URL can never fall back to dev. `db:migrate` runs packages in dependency order (`dependsOn: ["^db:migrate"]`). Generate one package's migration with `pnpm db:generate --filter=<package> -- --custom --name=<name>`. `ops:*` scripts connect as the privileged role, print a plan by default and write only with `--apply`; exit codes are 0 ok, 1 failed, 2 usage error ([[04-phases/02-gatekeeper/01-contracts#Ops|ops conventions]]). Run them from the root: root scripts don't exist inside a package. Scripts that need the env file use `dotenv`; do not use Node `--env-file` through `NODE_OPTIONS`.
 

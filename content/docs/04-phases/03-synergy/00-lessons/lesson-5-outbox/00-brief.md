@@ -5,7 +5,7 @@ title: "Synergy Lesson 5: Outbox, Status and Versions"
 created: 2026-11-01
 updated: 2026-11-22
 kind: plan
-version: 1.1.0
+version: 1.1.1
 tags:
    - plan
    - phase-3
@@ -36,7 +36,7 @@ Lesson 4 ([[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/01-walkth
 - **Errors:** `errorResponse(code, status)` from `@sidekick/core/api`; statuses by name from `HTTP_STATUS` (`@sidekick/core/http`); Synergy's codes in `SYNERGY_ERROR_CODE` with `SYNERGY_ERROR_STATUS`, turned into responses by `synergyErrorResponse`. A new code goes in both, and the `Record` type fails the typecheck until it has a status.
 - **Contracts:** each response has a zod schema and an inferred type (`entitySchema` and `Entity`, with `toEntity` from a row). The versions route's page and the status route's response follow that.
 - **Decide in this lesson: the ETag must change when status changes.** Today `ETag: "<content_seq>"`, and a status change won't move `content_seq`, so after `PATCH /entities/:id/status` a client's `If-None-Match` would get 304 with a stale status. HTTP requires an ETag over the whole response; the likely fix is `"<content_seq>.<updated_at>"` (`updated_at` moves on every write), with the client deciding how loudly to say what changed (Pratik, 2026-11-20).
-- **Known gap:** creating with an id that already exists answers 500 (a duplicate key). Idempotent retries arrive with this lesson's idempotency work or later; the create handlers are where they'll plug in.
+- **Known gap:** creating with an id that already exists answers 500 (a duplicate key). Idempotency keys arrive in lesson 6; the create handlers are where they'll plug in.
 - **Not yet consistent:** the guard's own codes are UPPER_CASE with an English `error` field (`{ error: 'Forbidden', code: 'FEATURE_DISABLED' }`), while every other error is `{ code }` in snake_case, and core's codes have no inventory like `SYNERGY_ERROR_CODE`. Decide once, when the client starts reading codes.
 - **Tests:** a package's integration tests go through the real guard with `signInAs(userId)` (a mocked `@sidekick/core/supabase/server`, see the sandbox packages' `tests/helpers.ts`). Core's catalog test lists every table with its delete model: the outbox table must be added there (hard delete) and in [[03-system-design/non-functional/database/delete-models|Delete Models]]. A throwaway table in a test must end in `_probe`. Integration tests run only through the root `pnpm test:integration`.
 - **Dev:** migrated through the sandbox tables; Pratik's account holds `sandbox-notes` and `sandbox-tasks`.

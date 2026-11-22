@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.testing.testing-layers
 title: Testing Layers
 created: 2026-10-30
-updated: 2026-11-11
+updated: 2026-11-22
 kind: spec
-version: 1.3.0
+version: 1.4.0
 tags:
    - system-design
    - testing
@@ -88,7 +88,9 @@ A playground page (such as Synergy's, behind the sandbox entitlements) is for lo
 - **Tests only:** packages list it as a devDependency, and `import-x/no-extraneous-dependencies` lets only test and config files import devDependencies. Its own boundaries element (`test-utils`) is importable from every layer's tests except the site's and ops'.
 - **No workspace imports:** core's tests depend on it, so an import of core would make the two depend on each other, and Turbo refuses a cyclic graph. Lint refuses the import before Turbo does.
 - **Not foundation:** foundation is product code any layer imports at runtime; test helpers never ship.
-- A helper moves here when a second package needs it; until then it stays in its package (core's `mocks.ts` is built from core's own types).
+- A helper moves here when a second package needs it; until then it stays in its package (core's `mocks.ts` is built from core's own types). One exception so far: `signInAs` (Synergy lesson 4) sits in each package's `tests/helpers.ts` (the two sandbox providers and Synergy), because it is typed against core's Supabase client and test-utils imports no workspace package ([[backlogged-unplanned#B21 — Test plumbing repeated per package|B21]]).
+
+**Route tests (Synergy lesson 4).** A package tests its routes through the real `withApiGuard`, built with the same options as the route file, against the integration database. Only the session is faked: the test mocks `@sidekick/core/supabase/server`, and `signInAs(userId)` makes its `getUser()` return that user, so the guard's real `resolveApiCaller` runs. Each test checks the database afterwards as `postgres` and parses every success with the response's schema. Core's catalog test lists every table with its delete model and checks its RLS, triggers and policy in Postgres's catalog; a table a test creates and drops must end in `_probe`, because packages' suites run in parallel against one database. Integration tests only run through the root `pnpm test:integration`.
 - `tests/stubs/` — test-only stand-ins. For example, `server-only` throws outside Next.js's `react-server` condition, so `vitest.config.ts` aliases it to an empty stub.
 
 ### Beyond unit and integration tests

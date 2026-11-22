@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.database.migration
 title: Migration
 created: 2026-09-19
-updated: 2026-11-14
+updated: 2026-11-22
 kind: spec
-version: 1.2.0
+version: 1.3.0
 tags:
    - system-design
    - database
@@ -31,7 +31,7 @@ tags:
 
 ## Consequences
 
-- **Ownership is independent, order is not.** A package's migrations may bind functions or reference tables of the packages below it (Synergy's triggers, core's `profiles`), the same way its code imports them. It can ship on its own as long as the packages it depends on are migrated first.
+- **Ownership is independent, order is not.** A package's migrations may bind functions or reference tables of the packages below it (Synergy's triggers, core's `profiles`), the same way its code imports them. It can ship on its own as long as the packages it depends on are migrated first. Feature packages own tables the same way (Synergy lesson 4): `@sidekick/sandbox-notes` depends on core and Synergy, so Turbo migrates it after both, and its hand-written migration adds a `DEFERRABLE INITIALLY DEFERRED` foreign key into Synergy's `entity_index`, which Drizzle's schema can't declare. Shared column helpers (`timestamps`, `tombstone`) come from `@sidekick/core/db/columns`.
 - **Shared SQL functions are public API.** Postgres refuses `DROP FUNCTION` while a trigger uses it, but `CREATE OR REPLACE` changes a function for every package that binds it, with no error. Change a shared function only in a way every caller survives. A first definition uses plain `CREATE FUNCTION`, so a name clash with another package fails loudly; a package's own functions carry its name (`synergy_…`).
 - **Closed sets of keys are text with a CHECK, not Postgres enums** ([[D266]], below).
 - **Default privileges are global.** Core's `0009` revokes `EXECUTE` from `PUBLIC` on every function `postgres` creates, in any schema; a role that must call one directly gets an explicit `GRANT EXECUTE`. Triggers don't need it.
