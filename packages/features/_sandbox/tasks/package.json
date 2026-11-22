@@ -13,6 +13,7 @@
       "db:generate": "drizzle-kit generate",
       "db:migrate": "drizzle-kit migrate",
       "lint": "eslint .",
+      "test:integration": "vitest run tests/integration",
       "typecheck": "tsc -p tsconfig.json --noEmit"
    },
    "dependencies": {
@@ -23,7 +24,9 @@
       "zod": "^4.6.7"
    },
    "devDependencies": {
+      "@sidekick/test-utils": "workspace:*",
       "@types/node": "^24.19.2",
-      "drizzle-kit": "^0.31.11"
+      "drizzle-kit": "^0.31.11",
+      "vitest": "^5.1.0"
    }
 }
