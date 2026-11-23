@@ -22,6 +22,7 @@ const TABLES: Readonly<Record<string, DeleteModel>> = {
    user_feature_entitlements: 'hard delete',
    entity_index: 'tombstones visible',
    version_log: 'append-only',
+   outbox: 'hard delete',
    sandbox_notes: 'tombstones hidden',
    sandbox_tasks: 'tombstones hidden',
 };
@@ -60,7 +61,9 @@ async function security(table: string) {
    const policies = await testAdminDb<{ using: string }[]>`
       SELECT qual AS using
       FROM pg_policies
-      WHERE schemaname = 'public' AND tablename = ${table}`;
+      WHERE schemaname = 'public' AND tablename = ${table}
+      -- An INSERT-only policy has no USING term (the outbox's)
+      AND qual IS NOT NULL`;
    const [privileges] = await testAdminDb<
       { canUpdate: boolean; canDelete: boolean }[]
    >`
