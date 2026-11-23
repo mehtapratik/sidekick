@@ -1,6 +1,6 @@
 import type { ApiCaller } from '@sidekick/core/api';
 
-import type { Actor } from '../repository/entities';
+import type { Actor } from '../repository/actor';
 
 /**
  * Who Synergy records as the writer of a request: the signed-in human, or the

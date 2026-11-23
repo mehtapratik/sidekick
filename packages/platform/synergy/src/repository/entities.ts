@@ -4,32 +4,13 @@ import { withUserLock, type RlsTx } from '@sidekick/core/db';
 
 import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { entityIndex, versionLog } from '../db/schema';
-import type { ACTOR_KINDS } from '../db/schema/columns';
 import { increment } from '../db/utils';
+import { currentUserId, type Actor } from './actor';
 import { SynergyError } from './errors';
-
-type ActorKind = (typeof ACTOR_KINDS)[number];
-
-/** The system writing on its own: it has no id */
-export interface SystemAsActor {
-   kind: 'system';
-   id?: never;
-}
-/** A human, agent or API key writing: each has an id */
-export interface NonSystemAsActor {
-   kind: Exclude<ActorKind, 'system'>;
-   /** The id of the user, agent or API key */
-   id: string;
-}
-
-/** Who is writing. Mirrors the provenance CHECK: only the system has no id. */
-export type Actor = SystemAsActor | NonSystemAsActor;
+import { recordEvent } from './outbox';
 
 /** A row of entity_index, exactly as Drizzle returns it */
 export interface EntityIndexRow extends InferSelectModel<typeof entityIndex> {}
-
-/** SQL for the user withRLS set. RLS's WITH CHECK refuses any other user_id anyway. */
-export const currentUserId = sql`current_setting('app.current_user_id')::uuid`;
 
 /** What registerEntity needs to create an entity's index row */
 export interface RegisterEntityPayload {
@@ -69,6 +50,13 @@ export const registerEntity = withUserLock(
             userId: currentUserId,
          })
          .returning();
+
+      await recordEvent(tx, {
+         kind: 'entity.created',
+         subjectId: entity.id,
+         actor: payload.actor,
+         payload: { provider: entity.provider, type: entity.type },
+      });
 
       return entity;
    },
@@ -162,6 +150,13 @@ export const saveEntityContent = withUserLock(
          );
       }
 
+      await recordEvent(tx, {
+         kind: 'entity.content_saved',
+         subjectId: id,
+         actor: payload.actor,
+         payload: { contentSeq: updatedEntityRow.contentSeq },
+      });
+
       if (bump === 'version') {
          await tx.insert(versionLog).values({
             userId: currentUserId,
@@ -170,6 +165,12 @@ export const saveEntityContent = withUserLock(
             changeNote,
             actorKind,
             actorId: actorId ?? null,
+         });
+         await recordEvent(tx, {
+            kind: 'entity.version_bumped',
+            subjectId: id,
+            actor: payload.actor,
+            payload: { version: updatedEntityRow.version },
          });
       }
 

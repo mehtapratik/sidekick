@@ -7,11 +7,11 @@ import { withRLS } from '@sidekick/core/db';
 import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
 
 import { entityIndex, versionLog } from '../../src/db/schema';
+import type { Actor } from '../../src/repository/actor';
 import {
    getEntity,
    registerEntity,
    saveEntityContent,
-   type Actor,
 } from '../../src/repository/entities';
 
 // Proves Synergy's repository, RLS and triggers on entity_index and version_log,

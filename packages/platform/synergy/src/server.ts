@@ -9,7 +9,6 @@ export {
    getEntity,
    registerEntity,
    saveEntityContent,
-   type Actor,
    type EntityIndexRow,
    type GetEntityOptions,
    type RegisterEntityPayload,
@@ -20,3 +19,4 @@ export { SynergyError } from './repository/errors';
 export { identifyActor } from './api/actor';
 export { toEntity } from './api/entity';
 export { readEntity, type EntityRouteContext } from './api/read-entity';
+export { type Actor } from './repository/actor';
