@@ -61,12 +61,15 @@ psql "$(url admin)" -v ON_ERROR_STOP=1 -q -f "$HERE/supabase-stub.sql"
   pnpm turbo run db:migrate --output-logs=errors-only)
   
 # The out-of-band step from the app_runtime decision note
+# and the same for the outbox's read-only role (Synergy lesson 5)
 psql "$(url admin)" -v ON_ERROR_STOP=1 -q \
-  -c "ALTER ROLE app_runtime WITH LOGIN PASSWORD 'test-only'"
+  -c "ALTER ROLE app_runtime WITH LOGIN PASSWORD 'test-only'" \
+  -c "ALTER ROLE outbox_reader WITH LOGIN PASSWORD 'test-only'"
 
 export DATABASE_URL="postgresql://app_runtime:test-only@127.0.0.1:$PORT/postgres"
 export TEST_AUTH_DATABASE_URL="$(url supabase_auth_admin)"
 # postgres: the privileged migration/seed role, the only one that writes entitlements
 export TEST_ADMIN_DATABASE_URL="$(url postgres)"
+export TEST_OUTBOX_READER_DATABASE_URL="postgresql://outbox_reader:test-only@127.0.0.1:$PORT/postgres"
 
 "$@"

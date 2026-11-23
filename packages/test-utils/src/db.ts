@@ -30,3 +30,10 @@ export function createTestAdminDb(): Sql {
 export function createTestRuntimeDb(): Sql {
    return postgres(requireTestEnv('DATABASE_URL'), { max: 1 });
 }
+
+/** outbox_reader: the read-only role outbox readers connect as, across users */
+export function createTestOutboxReaderDb(): Sql {
+   return postgres(requireTestEnv('TEST_OUTBOX_READER_DATABASE_URL'), {
+      max: 1,
+   });
+}

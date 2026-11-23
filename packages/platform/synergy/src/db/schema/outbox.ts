@@ -6,6 +6,7 @@ import {
    index,
    jsonb,
    pgPolicy,
+   pgRole,
    pgTable,
    text,
    uuid,
@@ -27,6 +28,12 @@ export const OUTBOX_EVENT_KINDS = [
    'entity.version_bumped',
    'entity.status_changed',
 ] as const;
+
+/**
+ * The read-only role outbox readers connect as. Created in migration 0010,
+ * so Drizzle only refers to it.
+ */
+export const outboxReader = pgRole('outbox_reader').existing();
 
 /**
  * Postgres's 64-bit transaction id. Drizzle has no built-in for it; it reads
@@ -76,6 +83,12 @@ export const outbox = pgTable(
       pgPolicy('outbox_insert_own_rows', {
          for: 'insert',
          withCheck: ownRow(self),
+      }),
+      // Readers work across users: outbox_reader sees every row.
+      pgPolicy('outbox_reader_reads_every_row', {
+         for: 'select',
+         to: outboxReader,
+         using: sql`true`,
       }),
    ],
 );

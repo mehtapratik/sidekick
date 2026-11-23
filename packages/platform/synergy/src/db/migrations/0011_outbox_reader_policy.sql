@@ -1,0 +1,1 @@
+CREATE POLICY "outbox_reader_reads_every_row" ON "outbox" AS PERMISSIVE FOR SELECT TO "outbox_reader" USING (true);
