@@ -103,7 +103,37 @@ All commands run from the repo root, `~/Projects/sidekick`. One branch for the l
 
 **Handover:**
 
-_Filled by the segment session: what was built (files, commit), departures from this plan, Pratik's questions with a one-line answer each, test counts, open items._
+**Built** on branch `feat/synergy/links` (commit: the segment 1 commit; see `git log`):
+
+- `packages/platform/synergy/src/db/schema/relation-types.ts` (table `relation_types`, exported from `schema/index.ts`) and migration `0013_relation_types.sql` with its snapshot and journal entry. The SQL holds the table, two CHECKs, the read policy `relation_types_read_all` (`USING (true)`), the 13-row seed, then `FORCE ROW LEVEL SECURITY` and `REVOKE INSERT, UPDATE, DELETE ... FROM app_runtime`. Dev is migrated through `0013`.
+- `src/contracts/relation-type.ts`: `RELATION_KINDS`, `RELATION_TYPE_STATUSES`, `relationTypeSchema`, `RelationType` (exported from `contracts/index.ts`).
+- `src/repository/relation-types.ts`: `listRelationTypes(tx)` (ordered by `source_key`) and `getRelationType(tx, sourceKey)`, which returns the row or `undefined`.
+- `src/api/list-relation-types.ts`: handler `listRelationTypesHandler` (typed `ApiHandler<never>`, no second argument), exported from `src/server.ts`; route `apps/app/src/app/api/synergy/relation-types/route.ts`. `toRelationType` maps row to contract on purpose: the two shapes will diverge.
+- `relation_types: 'hard delete'` in core's `catalog.test.ts`; `packages/platform/synergy/tests/integration/relation-types.test.ts`.
+
+**Decisions (all as recommended):** keys only, no label words until lesson I1 creates Synergy's catalog (D201); no `user_id`, global table readable by `app_runtime`, no writes; symmetric types have `target_key` equal to `source_key` (`related-to`, `contradicts`, and `untyped`).
+
+**Departures from the plan:**
+
+- The kind and status constants live in `contracts/relation-type.ts` (named `RELATION_KINDS`, plural, like `ENTITY_STATUSES`), and the schema imports them. The plan's step 2 put them in the schema, and its step 5 called the constant `RELATION_KIND`.
+- The read policy is declared in the schema (`pgPolicy`), so drizzle-kit generated it; only the seed, `FORCE` and `REVOKE` were hand-written.
+- The seed comes before `FORCE ROW LEVEL SECURITY` in the file: `FORCE` binds the table owner, and there is no insert policy, so a later insert in the same migration would fail.
+
+**Gotchas for later segments:**
+
+- Any later migration that changes a `relation_types` row (say, deprecating a type) must run `ALTER TABLE relation_types NO FORCE ROW LEVEL SECURITY` first and `FORCE` again after, or it runs as a role that bypasses RLS.
+- `ApiHandler<Ctx>` needs its type parameter; a handler with no second argument uses `never`.
+- The repo's TypeScript `lib` has no `toSorted`; use `.sort()` on a copy.
+- A route file must be named exactly `route.ts`, and a test file `*.test.ts`, or lint and Vitest skip it.
+- The coach's tool cannot write into the repo before Pratik agrees to the code, so the coach checks each file after Pratik types it.
+
+**Test counts** (integration; baseline, then after): core 35, then 37 (the catalog test adds RLS-forced and delete-model checks for the new table); synergy 39, then 44 (the route returns 13 types sorted, two system rows, `app_runtime` cannot insert, update or delete); sandbox-notes 6 and sandbox-tasks 6, unchanged. `pnpm turbo typecheck lint test` (synergy, core, app) and `pnpm prettier:check` pass.
+
+**Pratik's questions:**
+
+- Should `RELATION_TYPE_STATUSES` be `RELATIONSHIP_KIND_STATUSES`? No: a constant is named for the table and column it constrains, and "relationship" is the link row (segment 2).
+
+**Open items:** none for segment 2. Segment 4's link create uses `getRelationType` to refuse unknown or deprecated types.
 
 ### Segment 2: The relationships table and its events
 

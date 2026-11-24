@@ -5,3 +5,4 @@
 export * from './entity-index';
 export * from './version-log';
 export * from './outbox';
+export * from './relation-types';

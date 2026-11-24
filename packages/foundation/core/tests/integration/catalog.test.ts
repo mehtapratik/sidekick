@@ -23,6 +23,7 @@ const TABLES: Readonly<Record<string, DeleteModel>> = {
    entity_index: 'tombstones visible',
    version_log: 'append-only',
    outbox: 'hard delete',
+   relation_types: 'hard delete',
    sandbox_notes: 'tombstones hidden',
    sandbox_tasks: 'tombstones hidden',
 };

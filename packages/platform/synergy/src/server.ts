@@ -22,3 +22,4 @@ export { readEntity } from './api/read-entity';
 export { type Actor } from './repository/actor';
 export { changeEntityStatus } from './api/change-entity-status';
 export { listEntityVersions } from './api/list-versions';
+export { listRelationTypesHandler } from './api/list-relation-types';

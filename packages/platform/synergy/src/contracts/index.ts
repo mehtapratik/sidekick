@@ -23,3 +23,11 @@ export {
    versionsPageSchema,
    type VersionsPage,
 } from './version';
+export {
+   RELATION_KINDS,
+   type RelationKind,
+   RELATION_TYPE_STATUSES,
+   type RelationTypeStatus,
+   relationTypeSchema,
+   type RelationType,
+} from './relation-type';
