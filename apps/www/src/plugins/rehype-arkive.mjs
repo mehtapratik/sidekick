@@ -39,9 +39,55 @@ const isLine = (n) =>
       .split(' ')
       .includes('line');
 
+const textOf = (n) =>
+   n.type === 'text' ? n.value : (n.children ?? []).map(textOf).join('');
+
+/**
+ * What a diff line is, from its first characters. `---` and `+++` are file headers only before
+ * the first hunk; inside a hunk they are a removed `--` line or an added `++` line.
+ */
+function diffLineKinds(lines) {
+   let inHunk = false;
+   return lines.map((text) => {
+      if (text.startsWith('@@')) {
+         inHunk = true;
+         return 'hunk';
+      }
+      if (text.startsWith('diff ')) inHunk = false;
+      if (!inHunk && /^(diff |index |--- |\+\+\+ )/.test(text)) return 'hunk';
+      if (text.startsWith('+')) return 'ins';
+      if (text.startsWith('-')) return 'del';
+      return undefined;
+   });
+}
+
+const DIFF_TAGS = { ins: 'ins', del: 'del', hunk: 'span' };
+
+/**
+ * Diff blocks: an added line becomes <ins>, a removed line <del> and a hunk or file header
+ * <span class="hunk">, each holding the plain line text; arkive.css colours them. Context lines
+ * stay as Shiki's tokens. The plain text also drops the `user-select: none` span Astro puts
+ * around the +/- marker, so a selection copies the patch as written, as the Copy button does.
+ */
+function diffLines(children) {
+   const kinds = diffLineKinds(children.filter(isLine).map(textOf));
+   let line = 0;
+   return children.map((c) => {
+      const kind = isLine(c) ? kinds[line++] : undefined;
+      if (!kind) return c;
+      return {
+         type: 'element',
+         tagName: DIFF_TAGS[kind],
+         properties: kind === 'hunk' ? { className: ['hunk'] } : {},
+         children: [{ type: 'text', value: textOf(c) }],
+      };
+   });
+}
+
 /**
  * Shiki transformer: the <pre> carries only `data-language` (the page's own text colour and
- * borders come from arkive.css), and per-line wrapper spans are flattened away.
+ * borders come from arkive.css), and per-line wrapper spans are flattened away, except the
+ * added, removed and header lines of a diff block (see `diffLines`).
  */
 export const shikiArkive = {
    name: 'arkive',
@@ -49,9 +95,11 @@ export const shikiArkive = {
       node.properties = { 'data-language': this.options.lang ?? '' };
    },
    code(node) {
-      node.children = node.children.flatMap((c) =>
-         isLine(c) ? c.children : [c],
-      );
+      const children =
+         this.options.lang === 'diff'
+            ? diffLines(node.children)
+            : node.children;
+      node.children = children.flatMap((c) => (isLine(c) ? c.children : [c]));
    },
 };
 

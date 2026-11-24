@@ -627,6 +627,34 @@ pre span {
    );
    font-style: var(--shiki-light-font-style, normal);
 }
+/* Diff blocks: the Shiki transformer wraps added lines in <ins>, removed lines in <del> and hunk or file
+   headers in .hunk. The +/- marker keeps the meaning; the colour and a tint that runs the full width of
+   the scrolling box (into the side padding) make the lines easy to tell apart. Text passes 4.5:1 on its tint. */
+pre[data-language="diff"] code {
+   display: block;
+   width: max-content;
+   min-width: 100%;
+}
+pre :is(ins, del) {
+   --pad: calc(1.25rem - var(--edge, 0px));
+   display: inline-block;
+   box-sizing: border-box;
+   width: calc(100% + 2 * var(--pad));
+   margin-inline: calc(-1 * var(--pad));
+   padding-inline: var(--pad);
+   text-decoration: none;
+   color: var(--tone);
+   background: color-mix(in srgb, var(--tone) 12%, var(--subtle));
+}
+pre ins {
+   --tone: light-dark(#1d6b2f, #8fd19e); /* 5.0:1 · 7.5:1 */
+}
+pre del {
+   --tone: light-dark(#a8282c, #ff9e9e); /* 5.2:1 · 6.9:1 */
+}
+pre .hunk {
+   color: var(--muted);
+}
 
 /* --- Tables in entries ----------------------------------------------------------------------------- */
 .prose table {
