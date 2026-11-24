@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.04-synergy.content-sequence
 title: Content Sequence
 created: 2026-10-31
-updated: 2026-11-01
+updated: 2026-11-22
 kind: spec
-version: 1.0.0
+version: 1.0.1
 tags:
    - system-design
    - synergy
@@ -19,7 +19,7 @@ status: accepted
 The entity index gets a third counter, **`content_seq`**, that goes up on every write to an entity's content: a revision save, a version save, and an anchor mark added to the content for someone else's link (Pratik, 2026-10-31).
 
 - **The stale-write check uses it.** A save carries the `content_seq` it started from; the update runs `SET content_seq = content_seq + 1 … WHERE content_seq = $base`, and a stale one gets 409 `stale_content`.
-- **The ETag and the render cache key use it.** Entity responses carry `ETag: "<content_seq>"`, and render data is cached under (entity, `content_seq`, display type).
+- **The ETag and the render cache key use it.** Entity responses carry `ETag: "<content_seq>"`, and render data is cached under (entity, `content_seq`, display type). Built in lesson 4 (`GET /api/synergy/entities/:id`, 304 on a matching `If-None-Match`). Known gap: a status change (lesson 5's `PATCH /entities/:id/status`) doesn't move `content_seq`, so an ETag of `content_seq` alone would answer 304 over a changed status. HTTP requires an ETag over the whole response; lesson 5 decides, likely `"<content_seq>.<updated_at>"`, with the client choosing how loudly to report what changed.
 - **`version` and `revision` keep their meaning** and only drive the staleness dots: version for a change the author flags, revision for every other author save. An anchor write moves neither.
 - **It is an integer, not a timestamp.** A JavaScript `Date` holds milliseconds while Postgres stores microseconds, so a timestamp sent back by the editor would never match the stored one; `now()` is the transaction's start time, so two saves can share a value. A counter is exact and easy to assert on in tests.
 - **Status isn't content**, so status changes don't move it. The cache holds only data derived from content; status, states and marks are read fresh on every request.
@@ -43,3 +43,4 @@ The entity index gets a third counter, **`content_seq`**, that goes up on every 
 ## Decision History
 
 - 2026-10-31 · accepted · Content Sequence
+- 2026-11-22 · accepted · The ETag built in lesson 4; the status gap handed to lesson 5

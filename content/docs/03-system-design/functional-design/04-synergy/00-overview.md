@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.synergy.overview
 title: "Synergy: System Design"
 created: 2026-10-30
-updated: 2026-11-21
+updated: 2026-11-22
 kind: spec
-version: 1.7.0
+version: 1.8.0
 tags:
    - system-design
    - synergy
@@ -159,7 +159,7 @@ Synergy must see its own tombstones: a deleted target still shows its name, "No 
 
 ## Write path
 
-A provider saves inside one `withRLS` transaction: it writes its own row, then calls Synergy in the same transaction.
+A provider saves inside one transaction that `withApiGuard` opens with `lockUser: true`, so the user lock comes first: its handler calls Synergy and writes its own row in the same transaction, in either order, because an error response or a throw rolls back both ([[D268]], lesson 4).
 
 ![[synergy-save.svg|360]]
 
@@ -169,7 +169,7 @@ A provider saves inside one `withRLS` transaction: it writes its own row, then c
 
 **D265** `rule` #synergy #concurrency #lint: Every write in Synergy's repository runs inside `withUserLock(...)`, which takes the user lock before the write function runs; the lint rule `sidekick/require-user-lock` fails any insert, update or delete in `src/repository/` outside it. derived-from [[D202]]
 
-The bare lock function isn't exported, so the wrapper is the only way to take it. The rule checks every write call, so a helper that writes must be wrapped too; taking the lock twice in one transaction is free. It can't see raw SQL through `tx.execute`. A provider writes its own row before calling Synergy, which in lesson 10 (`addAnchor` writing a provider row under the lock) could deadlock two tabs; lesson 4 makes provider write transactions take the user lock at their start.
+`withUserLock` lives in `@sidekick/core/db` since lesson 4, and the lock statement itself is only reachable through it or through `withRLS`'s `lockUser`. The rule checks every write call, so a helper that writes must be wrapped too; taking the lock twice in one transaction is free. It can't see raw SQL through `tx.execute`. Because every write route takes the lock at the start of its transaction (lesson 4), lesson 10's `addAnchor`, which writes a provider row under the lock, can't deadlock two tabs: no transaction holds a provider row lock before the user lock.
 
 - **Create:** register the entity's index row (id, provider, type, display name).
 - **Save content:** the provider sends the base `content_seq`, revision or version, the optional change note, and the **current sets** it extracts from the new content with `extractRefs`: every block and anchor id, and every relationship id the content mentions. It also declares the links this save creates (below). Synergy then:

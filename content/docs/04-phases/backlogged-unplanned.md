@@ -3,9 +3,9 @@ publish: true
 id: plan.backlogged-unplanned
 title: Backlogged / Unplanned
 created: 2026-09-19
-updated: 2026-11-14
+updated: 2026-11-22
 kind: plan
-version: 1.4.0
+version: 1.5.0
 status: deferred
 tags:
    - plan
@@ -144,3 +144,75 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Pratik asked during Synergy lesson 3 (2026-11-13). No PRD has it. What already helps: one RLS policy helper (`ownRowsPolicy`), the user in two helpers (`currentUserId`, the lock), the repository as the only path, and provenance separating who acted (`actor_id`) from whose data it is (`user_id`).
 
 **When to implement:** When users ask for it; it gets its own decision and phase first.
+
+### B14 — A central ownership function for RLS policies
+
+**What:** Every policy calls one SQL function for its ownership check, `USING (app_owns_row(user_id) AND deleted_at IS NULL)`, so a single `CREATE OR REPLACE` changes ownership for every table. A TypeScript helper that writes each table's `pgPolicy` (`deleteModelPolicy(table, self, model)`, generalizing Synergy's `ownRowsPolicy`) was discussed alongside it.
+
+**Why deferred:** [[D267]] (Synergy lesson 4, 2026-11-17). The check hasn't changed since Phase 1, the likely changes (sharing, workspaces, agents) differ per table, switching later costs the same, and a policy written out in its migration is easier to know. A procedure that writes policies from parameters was rejected outright: a rebuilt database would replay old migrations against its newest version. Core's catalog test is what catches a table missing its policy.
+
+**When to implement:** When an ownership rule must change across most tables at once, or the same change is about to be made to three or more tables' policies.
+
+### B15 — One style for every error response
+
+**What:** `withApiGuard`'s own errors are `{ error, code }` with an English `error` and an UPPER_CASE code (`FEATURE_DISABLED`), while every other error is `{ code }` in snake_case (`stale_content`, `validation_failed`). Core's codes also have no inventory like Synergy's `SYNERGY_ERROR_CODE`. Also discussed: an `HttpErrorStatus` type (statuses of 400 and above) so `errorResponse` can't be given a 200.
+
+**Why deferred:** Raised in Synergy lesson 4 (2026-11-20). No client reads error codes yet, and changing the guard's codes changes a contract Phase 2 documented.
+
+**When to implement:** Before the first client reads error codes (the 3b playground or lesson I1, whichever comes first), as one decision for every package.
+
+### B16 — Writes that survive an error response
+
+**What:** An explicit opt-in for a handler write that must commit even though the response is an error: a failed-attempt counter behind a 429, or an audit row for a denied request. Since [[D268]], any response of 400 or above rolls back the whole transaction.
+
+**Why deferred:** Nothing needs it yet (Synergy lesson 4, 2026-11-19). The default must stay "an error changed nothing".
+
+**When to implement:** With the first such write, likely API-key rate limiting in Phase 9: a guard option, or a write on its own connection.
+
+### B17 — The API's own deployment
+
+**What:** Move the API out of `apps/app` into its own app at its own address, so the UI is structurally just another client.
+
+**Why deferred:** [[D270]] (Synergy lesson 4, 2026-11-20). It would cost cross-origin auth, a network hop for every Server Component that needs data, and two deployments that can drift, with no gain a user feels. [[D269]] already keeps the UI off the data layer, and handlers live in their packages, so a move is one line per route.
+
+**When to implement:** At Phase 9 (Terminal), when the CLI and a public API need their own address and versioning, or earlier if the API must deploy, scale or run separately from the UI.
+
+### B18 — A typed client for the API
+
+**What:** One helper the App's client code uses for every call, such as `apiFetch(url, schema)`, which parses each response with its `/contracts` schema instead of trusting it, and handles conditional requests: it keeps each entity's ETag itself and fetches with `cache: 'no-store'` and its own `If-None-Match`, because the browser's HTTP cache otherwise turns a 304 into a 200. "Page updated" polls on focus, visibility and every 30 seconds and shows a banner, never an automatic reload ([[D210]]).
+
+**Why deferred:** Discussed in Synergy lesson 4 (2026-11-20); no UI calls the API yet.
+
+**When to implement:** With the first UI that calls the API (the 3b playground).
+
+### B19 — Dates in the user's time zone
+
+**What:** Server-rendered dates in the user's zone, so server and browser render the same time: the browser sets a time-zone cookie from `Intl`, a profile preference overrides it, and Vercel's `x-vercel-ip-timezone` covers the first request; next-intl's `timeZone` request setting takes it. Also: a calendar date (a task's due date) is a `date` column, not a timestamp, so "Friday" never becomes Thursday west of UTC. The API accepts only ISO 8601 with a zone and answers in UTC.
+
+**Why deferred:** Discussed in Synergy lesson 4 (2026-11-19); nothing renders dates yet.
+
+**When to implement:** Time zones with i18n in lesson I1; `date` columns with the first entity that has a due date (War Room, Phase 7).
+
+### B20 — Validate large request bodies before the transaction
+
+**What:** `parseRequestBody` runs inside the guard's transaction, under the user lock, so a slow or large body holds up the user's other writes. A route that accepts large bodies (uploads) should validate before the transaction opens.
+
+**Why deferred:** Small JSON bodies parse in microseconds (Synergy lesson 4, 2026-11-18).
+
+**When to implement:** With the first route that accepts large bodies.
+
+### B21 — Test plumbing repeated per package
+
+**What:** `signInAs` is copied into each package's `tests/helpers.ts` (the two sandbox providers and Synergy), because it is typed against core's Supabase client and `@sidekick/test-utils` imports no workspace package ([[D261]]). Route tests also rebuild each route's guard options by hand, which can drift from the route file.
+
+**Why deferred:** Three small copies are cheaper than a new rule for test-utils (Synergy lesson 4, 2026-11-22).
+
+**When to implement:** When a fourth package needs it, or if a route file's options drift from its tests: a test entry in core (`@sidekick/core/testing`), or route definitions exported from each package and mounted by the app.
+
+### B22 — Feature names and descriptions in catalogs
+
+**What:** A feature's `MANIFEST` holds its `name` and `description` as English strings, not keys in the feature's catalog, which every other user-visible word must be.
+
+**Why deferred:** Only the ops grant script reads them today; no user sees them (Synergy lesson 4, 2026-11-15).
+
+**When to implement:** When a screen first shows a feature's name or description, or in lesson I1 when catalogs arrive, whichever comes first.

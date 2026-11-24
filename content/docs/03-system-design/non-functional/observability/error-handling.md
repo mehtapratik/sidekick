@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.observability.error-handling
 title: Error Handling
 created: 2026-09-19
-updated: 2026-10-23
+updated: 2026-11-22
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - observability
@@ -35,20 +35,15 @@ Some failures should be swallowed:
 
 ## API Error Shape
 
-All API errors must use a consistent shape (enforced by `withApiGuard` since Phase 2):
-
-```ts
-{ error: string, code: string }
-```
-
-`error` is a short human-readable message; `code` is the stable, machine-readable value clients branch on. `withApiGuard`'s codes are listed in [[04-phases/02-gatekeeper/01-contracts#Error shape|the Phase 2 contracts]].
-
-Examples:
+An error response's body is a stable code the client branches on and looks up words for, never words of its own ([[D201]]). Handlers build it with `errorResponse(code, status)` from `@sidekick/core/api` (Synergy lesson 4); a code may carry values the client needs, and invalid input answers 400 with one code and one issue per problem:
 
 ```json
-{ "error": "Unauthorized", "code": "UNAUTHENTICATED" }
-{ "error": "Feature disabled", "code": "FEATURE_DISABLED" }
-{ "error": "Invalid input", "code": "VALIDATION_ERROR" }
+{ "code": "stale_content" }
+{ "code": "validation_failed", "issues": [{ "path": ["title"], "message": { "key": "common.validation.too_small", "values": { "minimum": 1 } } }] }
 ```
+
+Each package keeps an inventory of its codes and their statuses (Synergy's `SYNERGY_ERROR_CODE` and `SYNERGY_ERROR_STATUS`), and statuses are named with `HTTP_STATUS` (`@sidekick/core/http`). An error response rolls back everything the handler wrote ([[D268]]).
+
+`withApiGuard`'s own errors predate this and still carry an English `error` field next to an UPPER_CASE code, `{ "error": "Feature disabled", "code": "FEATURE_DISABLED" }`, listed in [[04-phases/02-gatekeeper/01-contracts#Error shape|the Phase 2 contracts]]. Bringing them in line is backlog item [[backlogged-unplanned#B15 — One style for every error response|B15]].
 
 Never return raw error objects, stack traces, or internal database errors to the client. Log those server-side.
