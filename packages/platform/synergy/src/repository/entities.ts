@@ -51,6 +51,15 @@ export const registerEntity = withUserLock(
          })
          .returning();
 
+      // Version 1 is a version too: the log starts at creation, so the history
+      // is complete without the API or the UI adding the first entry
+      await tx.insert(versionLog).values({
+         userId: currentUserId,
+         entityId: entity.id,
+         version: entity.version,
+         ...toActorColumns(payload.actor),
+      });
+
       await recordEvent(tx, {
          kind: 'entity.created',
          subjectId: entity.id,

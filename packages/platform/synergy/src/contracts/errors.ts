@@ -7,6 +7,7 @@ import { HTTP_STATUS, type HttpStatus } from '@sidekick/core/http';
 export const SYNERGY_ERROR_CODE = Object.freeze({
    NOT_FOUND: 'not_found',
    STALE_CONTENT: 'stale_content',
+   INVALID_CURSOR: 'invalid_cursor',
 });
 
 /** One of Synergy's error codes */
@@ -22,4 +23,5 @@ export const SYNERGY_ERROR_STATUS: Readonly<
 > = {
    [SYNERGY_ERROR_CODE.NOT_FOUND]: HTTP_STATUS.NOT_FOUND,
    [SYNERGY_ERROR_CODE.STALE_CONTENT]: HTTP_STATUS.CONFLICT,
+   [SYNERGY_ERROR_CODE.INVALID_CURSOR]: HTTP_STATUS.BAD_REQUEST,
 };

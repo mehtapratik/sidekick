@@ -17,3 +17,9 @@ export {
    setEntityStatusRequestSchema,
    type SetEntityStatusRequest,
 } from './entity';
+export {
+   versionSchema,
+   type Version,
+   versionsPageSchema,
+   type VersionsPage,
+} from './version';
