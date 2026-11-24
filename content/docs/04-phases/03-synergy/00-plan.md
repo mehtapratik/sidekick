@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3-graph-store-metadata-service
 title: Synergy
 created: 2026-09-19
-updated: 2026-11-22
+updated: 2026-11-24
 kind: plan
-version: 2.6.0
+version: 2.7.1
 tags:
    - plan
    - living-plan
@@ -44,7 +44,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 | 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database                | ✅     |
 | 3      | [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief\|Entity index and version log]]                | RLS without the tombstone filter, restore-aware triggers, advisory locks, stale-write checks     | ✅     |
 | 4      | [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/00-brief\|Sandbox providers and the first routes]] | feature packages, deferrable foreign keys, ETags and 304, error codes to HTTP                    | ✅     |
-| 5      | [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief\|Outbox, status and versions]]                       | the outbox pattern, transaction ids and commit order, a read-only role                           |        |
+| 5      | [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief\|Outbox, status and versions]]                       | the outbox pattern, transaction ids and commit order, a read-only role                           | ✅     |
 | 6      | [[04-phases/03-synergy/00-lessons/lesson-6-links/00-brief\|Links, relation types and cycles]]                   | polymorphic references, recursive CTEs with `CYCLE`, idempotency keys, registries as data        |        |
 | 7      | [[04-phases/03-synergy/00-lessons/lesson-7-staleness/00-brief\|Staleness dots and the roll-up]]                 | snapshots, state derived on read, one query for a roll-up                                        |        |
 | 8      | [[04-phases/03-synergy/00-lessons/lesson-8-lists-and-supersede/00-brief\|Lists and supersede]]                  | composite foreign keys, CHECK constraints, lexorank, confirm-then-act requests                   |        |
@@ -72,7 +72,7 @@ Phase 3 follows Phase 2's [[04-phases/02-gatekeeper/01-contracts#How we build|ho
 - **One piece at a time.** Nothing lands in the repo until Pratik agrees to it. Pratik commits, pushes and opens the PR unless they ask otherwise.
 - **Tests go through the guarded API** wherever a route exists ([[03-system-design/non-functional/testing/testing-layers|testing layers]]). Whether a pure function also gets a unit test is Pratik's call in each lesson; the briefs point out the candidates.
 - **The design can change.** When Pratik's design wins in a lesson, the coach updates the Synergy overview (or the decision it touches) and bumps its version in the lesson's docs PR, so later lessons build on what was built.
-- **Every lesson ends with one docs PR:** a walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md`, a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `pnpm turbo run build --filter=@sidekick/www` (Astro and both gates).
+- **Every lesson ends with one docs PR:** a reproducible walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md` (every step's file path, its final code as merged, the commands and how to verify them, so a reader repeats the lesson from the page alone; [[08-ai-coding-harness/agent-guide#At the end of a phase|agent guide]]), a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `pnpm turbo run build --filter=@sidekick/www` (Astro and both gates).
 
 ## Exit criteria
 

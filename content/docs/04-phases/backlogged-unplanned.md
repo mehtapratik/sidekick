@@ -3,9 +3,9 @@ publish: true
 id: plan.backlogged-unplanned
 title: Backlogged / Unplanned
 created: 2026-09-19
-updated: 2026-11-22
+updated: 2026-11-24
 kind: plan
-version: 1.5.0
+version: 1.6.0
 status: deferred
 tags:
    - plan
@@ -216,3 +216,27 @@ These items are known, intentional gaps — deferred, not forgotten.
 **Why deferred:** Only the ops grant script reads them today; no user sees them (Synergy lesson 4, 2026-11-15).
 
 **When to implement:** When a screen first shows a feature's name or description, or in lesson I1 when catalogs arrive, whichever comes first.
+
+### B23 — Refuse un-superseding by hand
+
+**What:** `setEntityStatus` moves an entity between `active` and `deprecated`, and the request schema refuses `superseded`. Nothing refuses moving a *superseded* entity back to `active` or `deprecated` through `PATCH /entities/:id/status`, which would leave its "replaced by" link behind.
+
+**Why deferred:** No entity can be superseded until lesson 8 builds the supersede (Synergy lesson 5, 2026-11-24).
+
+**When to implement:** In lesson 8, with the supersede: a Synergy error code for it, or undoing a supersede as its own operation.
+
+### B24 — Outbox bookmarks, pruning and a lag alert
+
+**What:** Each outbox reader's bookmark (the last `(xact_id, id)` it processed), reads bounded by `pg_snapshot_xmin`, a job that deletes events behind every bookmark and older than 90 days, an alert when a reader's oldest unprocessed event gets too old, and a deliberate step to retire a reader. `outbox_reader` has no login yet.
+
+**Why deferred:** Nothing reads the outbox in Phase 3, and one user's events are small ([[03-system-design/functional-design/04-synergy/synergy-store-choices|Synergy store choices]], Synergy lesson 5, 2026-11-23).
+
+**When to implement:** With the first reader (notifications, search indexing or push).
+
+### B25 — `repository/errors.ts` holds one class
+
+**What:** Under the file-naming rule ([[08-ai-coding-harness/architecture-invariants|Architecture invariants]]), Synergy's `repository/errors.ts` holds one concept, `SynergyError`, and would be `synergy-error.ts`.
+
+**Why deferred:** A rename touches imports for no change in behaviour (Synergy lesson 5, 2026-11-24).
+
+**When to implement:** The next time the file changes for another reason.

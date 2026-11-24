@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-5-outbox
 title: "Synergy Lesson 5: Outbox, Status and Versions"
 created: 2026-11-01
-updated: 2026-11-22
+updated: 2026-11-24
 kind: plan
-version: 1.1.1
+version: 1.2.0
 tags:
    - plan
    - phase-3
@@ -13,7 +13,7 @@ tags:
    - synergy
    - database
    - postgresql
-status: planned
+status: completed
 ---
 
 > **Lesson 5 of 13 in Phase 3a.** Before this: [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/00-brief|lesson 4]]. Next: [[04-phases/03-synergy/00-lessons/lesson-6-links/00-brief|lesson 6]]. The coach follows the plan's [[04-phases/03-synergy/00-plan#How we build|how we build]].
