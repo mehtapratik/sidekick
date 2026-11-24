@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3.lesson-6-links
 title: "Synergy Lesson 6: Links, Relation Types and Cycles"
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-24
 kind: plan
-version: 1.1.0
+version: 1.2.0
 tags:
    - plan
    - phase-3
@@ -26,6 +26,18 @@ status: planned
 **Learning payoff:** polymorphic references (a link can point at any provider's entity because both ends are `entity_index` ids); a vocabulary table keyed by `source_key` and `target_key` with labels in copy; recursive CTEs and Postgres's `CYCLE` clause; why only references are checked for cycles; idempotency keys and safe retries; dependency injection by data (the registry hands Synergy a map; Synergy imports no feature).
 
 **Coach reads first:** the overview, the mentions decision, [[02-prd/03-features/01-synergy/02.prd.features.synergy.relationships|relationships PRD]], [[02-prd/03-features/01-synergy/research/05-resolver-contract-home|research 05]], [[03-system-design/non-functional/content/centralized-copy|centralized copy]], lesson 4's sandbox packages.
+
+## Handover from lesson 5
+
+Lesson 5 ([[04-phases/03-synergy/00-lessons/lesson-5-outbox/01-walkthrough|walkthrough]], [sidekick#69](https://github.com/mehtapratik/sidekick/pull/69)) left the repo like this:
+
+- **Every write records its events.** `recordEvent(tx, event)` in Synergy's `repository/outbox.ts`, inside the write's transaction, after the change it describes. A new event is a kind added to `OUTBOX_EVENT_KINDS` (the CHECK regenerates with `db:generate`) and its payload added to `OutboxPayloads`; the typecheck fails until both exist. This lesson adds relationship created, updated, cited, uncited, deleted and restored, from the overview's list. Integration tests read the outbox as `postgres` in reader order (`ORDER BY xact_id, id`; see `tests/integration/outbox.test.ts`).
+- **Actor columns:** `toActorColumns(actor)` from `repository/actor.ts` on every insert and update, never `actor.id` by hand (in `.set()`, `undefined` leaves the old value). `Actor` lives in `repository/actor.ts`.
+- **The ETag is a hash of the response** ([[D271]], `entityETag` in `api/entity.ts`), so the roll-up lesson 7 adds is covered with no change. Handlers share pieces through `api/entity.ts`, never through another handler's file; one handler per file ([[08-ai-coding-harness/architecture-invariants|naming rule]]).
+- **Paging:** `GET /entities/:id/versions` pages 20 at a time with an opaque cursor (`api/version-cursor.ts`, `invalid_cursor` for one it didn't make, `PAGE_SIZE + 1` to know there's more). Backlinks are the second paged list: extract the cursor, the `limit + 1` step and a `{ items, nextCursor }` page shape into one helper then, from the two real cases. Each list keeps its own page size.
+- **Still open:** creating with an id that already exists answers 500 until this lesson's idempotency keys; the guard's error-code style ([[backlogged-unplanned#B15 — One style for every error response|B15]]).
+- **Version 1 is in the log from creation**, so every live entity has at least one `version_log` row.
+- **Dev:** migrated through Synergy `0012`.
 
 ## Steps
 

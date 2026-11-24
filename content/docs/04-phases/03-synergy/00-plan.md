@@ -3,9 +3,9 @@ publish: true
 id: plan.phase-3-graph-store-metadata-service
 title: Synergy
 created: 2026-09-19
-updated: 2026-11-22
+updated: 2026-11-24
 kind: plan
-version: 2.6.0
+version: 2.7.0
 tags:
    - plan
    - living-plan
@@ -44,7 +44,7 @@ Lessons run one at a time, in this order, each in its own thread, on Pratik's Ma
 | 2      | [[04-phases/03-synergy/00-lessons/lesson-2-per-package-migrations/00-brief\|Per-package migrations]]            | Drizzle configs and migration tables, Turbo task ordering, a shared test database                | ✅     |
 | 3      | [[04-phases/03-synergy/00-lessons/lesson-3-entity-index/00-brief\|Entity index and version log]]                | RLS without the tombstone filter, restore-aware triggers, advisory locks, stale-write checks     | ✅     |
 | 4      | [[04-phases/03-synergy/00-lessons/lesson-4-sandbox-providers/00-brief\|Sandbox providers and the first routes]] | feature packages, deferrable foreign keys, ETags and 304, error codes to HTTP                    | ✅     |
-| 5      | [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief\|Outbox, status and versions]]                       | the outbox pattern, transaction ids and commit order, a read-only role                           |        |
+| 5      | [[04-phases/03-synergy/00-lessons/lesson-5-outbox/00-brief\|Outbox, status and versions]]                       | the outbox pattern, transaction ids and commit order, a read-only role                           | ✅     |
 | 6      | [[04-phases/03-synergy/00-lessons/lesson-6-links/00-brief\|Links, relation types and cycles]]                   | polymorphic references, recursive CTEs with `CYCLE`, idempotency keys, registries as data        |        |
 | 7      | [[04-phases/03-synergy/00-lessons/lesson-7-staleness/00-brief\|Staleness dots and the roll-up]]                 | snapshots, state derived on read, one query for a roll-up                                        |        |
 | 8      | [[04-phases/03-synergy/00-lessons/lesson-8-lists-and-supersede/00-brief\|Lists and supersede]]                  | composite foreign keys, CHECK constraints, lexorank, confirm-then-act requests                   |        |
