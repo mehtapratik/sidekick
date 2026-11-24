@@ -3,9 +3,9 @@ publish: true
 id: system-design.functional-design.04-synergy.synergy-store-choices
 title: Synergy Store Choices
 created: 2026-10-30
-updated: 2026-11-01
+updated: 2026-11-24
 kind: spec
-version: 1.1.0
+version: 1.2.0
 tags:
    - system-design
    - synergy
@@ -33,10 +33,11 @@ MVP search covers titles and metadata, which all live in the entity index, so a 
 
 ## Outbox: 90-day retention, no cold storage
 
-The outbox carries change events for later readers (notifications, Factory automations, cache warming, reindexing). Lasting history lives in the version log and the actor and reason fields, so an event is deleted 90 days after every reader has processed it. Nothing reads the outbox in Phase 3 and one user's rows are small, so the pruning job arrives with the first reader.
+The outbox carries change events for later readers (notifications, Factory automations, cache warming, reindexing). Lasting history lives in the version log and the actor and reason fields, so the outbox is a delivery queue, not a log. Each reader keeps a bookmark of the last event it processed; an event is deleted once it is behind every reader's bookmark and older than 90 days, so a reader fixed after a bug can move its bookmark back and process events again. A reader that stops holds every later event (on purpose: no event is lost), so its lag needs an alert, and a retired reader's bookmark is removed by a migration or an `ops` script. Nothing reads the outbox in Phase 3 and one user's rows are small, so bookmarks and the pruning job arrive with the first reader.
 
-Each row stores `pg_current_xact_id()`, so readers can process events in commit order (a `bigserial` id doesn't give that: a long transaction can commit a lower id after a reader has moved past it), and this can't be rebuilt for rows written without it. The [[03-system-design/functional-design/04-synergy/00-overview|overview]] lists every event type. Readers use a dedicated read-only role outside RLS, because they work across users. The outbox and idempotency keys are non-syncable and hard-deleted ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]).
+Each row stores `pg_current_xact_id()`, and this can't be rebuilt for rows written without it. On its own it is not commit order: a transaction gets its id at its first write, so transaction 100 can commit after 101, the same gap a `bigserial` id has (corrected in Synergy lesson 5). A reader therefore reads in `(xact_id, id)` order and only below `pg_snapshot_xmin(pg_current_snapshot())`, the oldest transaction still running, so no event can commit behind its bookmark. The [[03-system-design/functional-design/04-synergy/00-overview|overview]] lists every event kind. Readers connect as the read-only role `outbox_reader`, which a `SELECT` policy lets see every row of the outbox and nothing else, because readers work across users. The outbox and idempotency keys are non-syncable and hard-deleted ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]).
 
 ## Decision History
 
 - 2026-10-30 · accepted · Synergy Store Choices
+- 2026-11-24 · accepted · Outbox: `xact_id` alone isn't commit order, readers stop at the snapshot's xmin; retention by reader bookmarks; the reader role is `outbox_reader` (Synergy lesson 5)
