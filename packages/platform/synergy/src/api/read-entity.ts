@@ -1,20 +1,11 @@
-import { createHash } from 'node:crypto';
-
 import { z } from 'zod';
 
 import { errorResponse, type ApiHandler } from '@sidekick/core/api';
 import { HTTP_STATUS } from '@sidekick/core/http';
 
-import type { Entity } from '../contracts/entity';
 import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { getEntity } from '../repository/entities';
-import { toEntity } from './entity';
-
-/** Next.js's second route-handler argument for `/api/synergy/entities/[id]` */
-export interface EntityRouteContext {
-   /** The route's dynamic segments */
-   params: Promise<{ id: string }>;
-}
+import { entityETag, toEntity, type EntityRouteContext } from './entity';
 
 /**
  * Whether an `If-None-Match` header names this ETag. The header may list
@@ -32,19 +23,6 @@ export function matchesIfNoneMatch(
       .split(',')
       .map((tag) => tag.trim().replace(/^W\//, ''))
       .some((tag) => tag === '*' || tag === etag);
-}
-
-/**
- * The ETag of an entity's response: a hash of the exact JSON the API sends, so
- * it changes whenever any field does (status included) and never otherwise.
- * HTTP requires an ETag to cover the whole response (RFC 9110).
- */
-export function entityETag(entity: Entity): string {
-   const hash = createHash('sha256')
-      .update(JSON.stringify(entity))
-      .digest('base64url');
-
-   return `"${hash}"`;
 }
 
 /**

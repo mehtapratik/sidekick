@@ -6,7 +6,8 @@ import { withApiGuard } from '@sidekick/core/api';
 import { withRLS } from '@sidekick/core/db';
 import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
 
-import { entityETag, readEntity } from '../../src/api/read-entity';
+import { entityETag } from '../../src/api/entity';
+import { readEntity } from '../../src/api/read-entity';
 import { entitySchema } from '../../src/contracts';
 import {
    registerEntity,

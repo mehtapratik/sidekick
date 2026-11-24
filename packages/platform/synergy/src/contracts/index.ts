@@ -12,4 +12,8 @@ export {
    type EntityStatus,
    entitySchema,
    type Entity,
+   EXPLICIT_ENTITY_STATUSES,
+   type ExplicitEntityStatus,
+   setEntityStatusRequestSchema,
+   type SetEntityStatusRequest,
 } from './entity';

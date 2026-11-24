@@ -9,6 +9,16 @@ export const EXPLICIT_ENTITY_STATUSES = ['active', 'deprecated'] as const;
 /** A status a person can set by hand */
 export type ExplicitEntityStatus = (typeof EXPLICIT_ENTITY_STATUSES)[number];
 
+/** The body of `PATCH /api/synergy/entities/:id/status` */
+export const setEntityStatusRequestSchema = z.object({
+   status: z.enum(EXPLICIT_ENTITY_STATUSES),
+});
+
+/** The body of `PATCH /api/synergy/entities/:id/status` */
+export interface SetEntityStatusRequest extends z.infer<
+   typeof setEntityStatusRequestSchema
+> {}
+
 /** The lifecycle states an entity can be in */
 export const ENTITY_STATUSES = [
    ...EXPLICIT_ENTITY_STATUSES,
