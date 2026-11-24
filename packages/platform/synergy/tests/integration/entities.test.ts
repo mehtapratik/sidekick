@@ -7,11 +7,11 @@ import { withRLS } from '@sidekick/core/db';
 import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
 
 import { entityIndex, versionLog } from '../../src/db/schema';
+import type { Actor } from '../../src/repository/actor';
 import {
    getEntity,
    registerEntity,
    saveEntityContent,
-   type Actor,
 } from '../../src/repository/entities';
 
 // Proves Synergy's repository, RLS and triggers on entity_index and version_log,
@@ -132,12 +132,18 @@ describe('registerEntity and saveEntityContent', () => {
          }),
       );
       const log = await withRLS(userA, (tx) =>
-         tx.select().from(versionLog).where(eq(versionLog.entityId, id)),
+         tx
+            .select()
+            .from(versionLog)
+            .where(eq(versionLog.entityId, id))
+            .orderBy(versionLog.version),
       );
 
       expect(saved).toMatchObject({ version: 2, revision: 0, contentSeq: 1 });
-      expect(log).toHaveLength(1);
-      expect(log[0]).toMatchObject({
+      expect(log).toHaveLength(2);
+      // Version 1 from creation, with no note; version 2 from this save
+      expect(log[0]).toMatchObject({ version: 1, changeNote: null });
+      expect(log[1]).toMatchObject({
          version: 2,
          changeNote: 'Reworded the rule',
       });

@@ -57,6 +57,41 @@
       "when": 1794634768836,
       "tag": "0007_refuse_version_log_updates",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795464847460,
+      "tag": "0008_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795465010382,
+      "tag": "0009_outbox_insert_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795467427296,
+      "tag": "0010_outbox_reader_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795468351673,
+      "tag": "0011_outbox_reader_policy",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795525927854,
+      "tag": "0012_version_one_backfill",
+      "breakpoints": true
     }
   ]
 }

@@ -5,13 +5,7 @@ import { HTTP_STATUS } from '@sidekick/core/http';
 
 import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { getEntity } from '../repository/entities';
-import { toEntity } from './entity';
-
-/** Next.js's second route-handler argument for `/api/synergy/entities/[id]` */
-export interface EntityRouteContext {
-   /** The route's dynamic segments */
-   params: Promise<{ id: string }>;
-}
+import { entityETag, toEntity, type EntityRouteContext } from './entity';
 
 /**
  * Whether an `If-None-Match` header names this ETag. The header may list
@@ -33,7 +27,7 @@ export function matchesIfNoneMatch(
 
 /**
  * `GET /api/synergy/entities/:id`: an entity's index fields with
- * `ETag: "<content_seq>"`, or 304 with no body when the caller's
+ * its ETag (entityETag), or 304 with no body when the caller's
  * `If-None-Match` already names it (D210). Another user's id, a deleted
  * entity and an id that never existed all answer 404 (D209).
  */
@@ -55,7 +49,8 @@ export const readEntity: ApiHandler<EntityRouteContext> =
          );
       }
 
-      const etag = `"${row.contentSeq}"`;
+      const entity = toEntity(row);
+      const etag = entityETag(entity);
       // private: only the caller's browser may store it; no-cache: it must ask
       // (cheaply, with If-None-Match) before reusing it
       const headers = { 'ETag': etag, 'Cache-Control': 'private, no-cache' };
@@ -67,5 +62,5 @@ export const readEntity: ApiHandler<EntityRouteContext> =
          });
       }
 
-      return Response.json(toEntity(row), { headers });
+      return Response.json(entity, { headers });
    };

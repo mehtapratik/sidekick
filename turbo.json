@@ -42,7 +42,8 @@
          "passThroughEnv": [
             "DATABASE_URL",
             "TEST_AUTH_DATABASE_URL",
-            "TEST_ADMIN_DATABASE_URL"
+            "TEST_ADMIN_DATABASE_URL",
+            "TEST_OUTBOX_READER_DATABASE_URL"
          ]
       }
    }

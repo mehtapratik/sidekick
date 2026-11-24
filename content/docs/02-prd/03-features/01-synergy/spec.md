@@ -4,8 +4,8 @@ title: "Synergy - Feature Specifications"
 created: 2026-10-28
 kind: prd
 audience: everyone
-updated: 2026-11-11
-version: 1.4.1
+updated: 2026-11-24
+version: 1.4.2
 status: accepted
 tags:
    - prd
@@ -235,7 +235,7 @@ The prototype's resolved-link shape, trimmed (from the throwaway prototype in ti
 - Stable error codes: `delete_blocked` (with the referencer count), `passage_referenced` (with the links), `cycle` (with the chain), `locked`, `stale_content`, `restore_conflict`, `confirmation_required`, `not_found` (also for another user's ids, so a response never reveals whether one exists), `invalid_tag`, `deprecated_vocabulary`.
 - Every create accepts an idempotency key.
 - Every list (backlinks, search, tags, version log, list-link members) pages by cursor.
-- The render cache is keyed by entity, `content_seq` and display type, holds render data only (states are read fresh, including those of links inside a preview), sits behind a plain get/set interface with in-process storage, and responses carry `content_seq` as an ETag.
+- The render cache is keyed by entity, `content_seq` and display type, holds render data only (states are read fresh, including those of links inside a preview), sits behind a plain get/set interface with in-process storage, and responses carry an ETag that is a hash of the whole response, not `content_seq` ([[D271]]).
 
 **Search**
 

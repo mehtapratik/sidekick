@@ -6,6 +6,7 @@ import { withApiGuard } from '@sidekick/core/api';
 import { withRLS } from '@sidekick/core/db';
 import { createTestAdminDb, createTestAuthDb } from '@sidekick/test-utils/db';
 
+import { entityETag } from '../../src/api/entity';
 import { readEntity } from '../../src/api/read-entity';
 import { entitySchema } from '../../src/contracts';
 import {
@@ -68,17 +69,18 @@ afterAll(async () => {
 });
 
 describe('GET /api/synergy/entities/:id', () => {
-   it('returns the entity with its content_seq as the ETag', async () => {
+   it('returns the entity with the hash of its JSON as the ETag', async () => {
       signInAs(owner);
       const id = await newEntity();
 
       const response = await read(id);
+      // The response keeps its own contract
+      const entity = entitySchema.parse(await response.json());
 
       expect(response.status).toBe(200);
-      expect(response.headers.get('ETag')).toBe('"0"');
+      expect(response.headers.get('ETag')).toBe(entityETag(entity));
       expect(response.headers.get('Cache-Control')).toBe('private, no-cache');
-      // The response keeps its own contract
-      expect(entitySchema.parse(await response.json())).toMatchObject({
+      expect(entity).toMatchObject({
          id,
          provider: 'sandbox-notes',
          type: 'note',
@@ -89,17 +91,19 @@ describe('GET /api/synergy/entities/:id', () => {
    it('answers 304 with no body while the ETag still matches', async () => {
       signInAs(owner);
       const id = await newEntity();
+      const etag = (await read(id)).headers.get('ETag') ?? '';
 
-      const response = await read(id, '"0"');
+      const response = await read(id, etag);
 
       expect(response.status).toBe(304);
-      expect(response.headers.get('ETag')).toBe('"0"');
+      expect(response.headers.get('ETag')).toBe(etag);
       expect(await response.text()).toBe('');
    });
 
-   it('answers 200 with the new ETag once someone has saved', async () => {
+   it('answers 200 with a new ETag once someone has saved', async () => {
       signInAs(owner);
       const id = await newEntity();
+      const etag = (await read(id)).headers.get('ETag') ?? '';
       await withRLS(owner, (tx) =>
          saveEntityContent(tx, {
             id,
@@ -110,10 +114,10 @@ describe('GET /api/synergy/entities/:id', () => {
          }),
       );
 
-      const response = await read(id, '"0"');
+      const response = await read(id, etag);
 
       expect(response.status).toBe(200);
-      expect(response.headers.get('ETag')).toBe('"1"');
+      expect(response.headers.get('ETag')).not.toBe(etag);
       expect(await response.json()).toMatchObject({ displayName: 'Edited' });
    });
 

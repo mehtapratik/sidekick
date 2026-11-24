@@ -9,7 +9,6 @@ export {
    getEntity,
    registerEntity,
    saveEntityContent,
-   type Actor,
    type EntityIndexRow,
    type GetEntityOptions,
    type RegisterEntityPayload,
@@ -18,5 +17,8 @@ export {
 export { synergyErrorResponse } from './api/error-response';
 export { SynergyError } from './repository/errors';
 export { identifyActor } from './api/actor';
-export { toEntity } from './api/entity';
-export { readEntity, type EntityRouteContext } from './api/read-entity';
+export { toEntity, type EntityRouteContext } from './api/entity';
+export { readEntity } from './api/read-entity';
+export { type Actor } from './repository/actor';
+export { changeEntityStatus } from './api/change-entity-status';
+export { listEntityVersions } from './api/list-versions';

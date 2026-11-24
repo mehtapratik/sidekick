@@ -3,9 +3,9 @@ publish: true
 id: system-design.non-functional.database.delete-models
 title: Delete Models
 created: 2026-11-14
-updated: 2026-11-21
+updated: 2026-11-24
 kind: spec
-version: 1.2.0
+version: 1.3.0
 tags:
    - system-design
    - database
@@ -46,10 +46,11 @@ A soft-deleted row under either soft model is never hard-deleted by the app. Era
 | `user_feature_entitlements` | core | Hard delete | Revoking a feature deletes its row; only ops scripts write it. |
 | `entity_index` | Synergy | Tombstones visible | A link to a deleted entity still shows its name and status, and lesson 11 restores entities ([[03-system-design/functional-design/04-synergy/tombstone-visibility|Tombstone visibility]]). |
 | `version_log` | Synergy | Append-only | Each row records one version bump; a later change is a new row, never an edit (Pratik, 2026-11-14). |
+| `outbox` | Synergy | Hard delete | Non-syncable: no device reads it, and the pruning job (with the first reader) deletes events every reader has processed. `app_runtime` only inserts: an insert-only policy and a `REVOKE` of `SELECT`, `UPDATE` and `DELETE` (Synergy lesson 5). |
 | `sandbox_notes` | `@sidekick/sandbox-notes` | Tombstones hidden | A mock provider's notes; nothing reads or restores a deleted one, and its entity in `entity_index` keeps the tombstone links need. |
 | `sandbox_tasks` | `@sidekick/sandbox-tasks` | Tombstones hidden | A mock provider's tasks, for the same reason. |
 
-Core's catalog test (`packages/foundation/core/tests/integration/catalog.test.ts`) holds the same list and fails when a table is missing from it, or lacks the RLS, triggers or policy term its model needs (Synergy lesson 4). Add a new table to both. Synergy's later tables join this list in the lessons that add them. The outbox and idempotency keys will be hard delete ([[03-system-design/non-functional/database/non-syncable-tables|non-syncable]]).
+Core's catalog test (`packages/foundation/core/tests/integration/catalog.test.ts`) holds the same list and fails when a table is missing from it, or lacks the RLS, triggers or policy term its model needs (Synergy lesson 4). Add a new table to both. Synergy's later tables join this list in the lessons that add them. Idempotency keys will be hard delete ([[03-system-design/non-functional/database/non-syncable-tables|non-syncable]]).
 
 ## Restores are strict
 
@@ -59,3 +60,4 @@ Under tombstones visible, a restore changes only `deleted_at` and the provenance
 
 - 2026-11-14 · accepted · Delete Models (Synergy lesson 3)
 - 2026-11-14 · accepted · A fourth model, append-only, for logs; `version_log` moves to it (D264 revised)
+- 2026-11-24 · accepted · `outbox` listed: hard delete, insert-only for `app_runtime` (Synergy lesson 5)

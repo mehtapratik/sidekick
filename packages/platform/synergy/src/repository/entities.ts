@@ -2,34 +2,16 @@ import { and, eq, isNull, sql, type InferSelectModel } from 'drizzle-orm';
 
 import { withUserLock, type RlsTx } from '@sidekick/core/db';
 
+import type { ExplicitEntityStatus } from '../contracts/entity';
 import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { entityIndex, versionLog } from '../db/schema';
-import type { ACTOR_KINDS } from '../db/schema/columns';
 import { increment } from '../db/utils';
+import { currentUserId, toActorColumns, type Actor } from './actor';
 import { SynergyError } from './errors';
-
-type ActorKind = (typeof ACTOR_KINDS)[number];
-
-/** The system writing on its own: it has no id */
-export interface SystemAsActor {
-   kind: 'system';
-   id?: never;
-}
-/** A human, agent or API key writing: each has an id */
-export interface NonSystemAsActor {
-   kind: Exclude<ActorKind, 'system'>;
-   /** The id of the user, agent or API key */
-   id: string;
-}
-
-/** Who is writing. Mirrors the provenance CHECK: only the system has no id. */
-export type Actor = SystemAsActor | NonSystemAsActor;
+import { recordEvent } from './outbox';
 
 /** A row of entity_index, exactly as Drizzle returns it */
 export interface EntityIndexRow extends InferSelectModel<typeof entityIndex> {}
-
-/** SQL for the user withRLS set. RLS's WITH CHECK refuses any other user_id anyway. */
-export const currentUserId = sql`current_setting('app.current_user_id')::uuid`;
 
 /** What registerEntity needs to create an entity's index row */
 export interface RegisterEntityPayload {
@@ -64,11 +46,26 @@ export const registerEntity = withUserLock(
             type: payload.type,
             displayName: payload.displayName,
             title: payload.title,
-            actorKind: payload.actor.kind,
-            actorId: payload.actor.id,
+            ...toActorColumns(payload.actor),
             userId: currentUserId,
          })
          .returning();
+
+      // Version 1 is a version too: the log starts at creation, so the history
+      // is complete without the API or the UI adding the first entry
+      await tx.insert(versionLog).values({
+         userId: currentUserId,
+         entityId: entity.id,
+         version: entity.version,
+         ...toActorColumns(payload.actor),
+      });
+
+      await recordEvent(tx, {
+         kind: 'entity.created',
+         subjectId: entity.id,
+         actor: payload.actor,
+         payload: { provider: entity.provider, type: entity.type },
+      });
 
       return entity;
    },
@@ -109,7 +106,7 @@ export const saveEntityContent = withUserLock(
          changeNote,
          displayName,
          title,
-         actor: { kind: actorKind, id: actorId },
+         actor,
       } = payload;
       const revision =
          bump === 'revision'
@@ -131,8 +128,7 @@ export const saveEntityContent = withUserLock(
             title: title ?? null,
             editedAt: sql`now()`,
             updatedAt: sql`now()`,
-            actorKind,
-            actorId: actorId ?? null,
+            ...toActorColumns(actor),
             reason: null,
          })
          .where(
@@ -162,18 +158,83 @@ export const saveEntityContent = withUserLock(
          );
       }
 
+      await recordEvent(tx, {
+         kind: 'entity.content_saved',
+         subjectId: id,
+         actor: payload.actor,
+         payload: { contentSeq: updatedEntityRow.contentSeq },
+      });
+
       if (bump === 'version') {
          await tx.insert(versionLog).values({
             userId: currentUserId,
             entityId: id,
             version: updatedEntityRow.version,
             changeNote,
-            actorKind,
-            actorId: actorId ?? null,
+            ...toActorColumns(actor),
+         });
+         await recordEvent(tx, {
+            kind: 'entity.version_bumped',
+            subjectId: id,
+            actor: payload.actor,
+            payload: { version: updatedEntityRow.version },
          });
       }
 
       return updatedEntityRow;
+   },
+);
+
+/** What setEntityStatus needs to change an entity's status */
+export interface SetEntityStatusPayload {
+   /** The id of the entity */
+   id: string;
+   /** The status it moves to */
+   status: ExplicitEntityStatus;
+   /** Who is changing it */
+   actor: Actor;
+}
+
+/**
+ * Sets an entity's status to active or deprecated, and records the change.
+ * A metadata write: no counter moves. Setting the status it already has
+ * changes nothing and records nothing. Throws SynergyError `not_found` if the
+ * entity is deleted or never existed.
+ */
+export const setEntityStatus = withUserLock(
+   async function setEntityStatusMutation(
+      tx,
+      payload: SetEntityStatusPayload,
+   ): Promise<EntityIndexRow> {
+      const { id, status, actor } = payload;
+      const current = await getEntity(tx, id, { includeDeleted: false });
+      if (!current) {
+         throw new SynergyError(SYNERGY_ERROR_CODE.NOT_FOUND);
+      }
+
+      if (current.status === status) {
+         return current;
+      }
+
+      const [updated] = await tx
+         .update(entityIndex)
+         .set({
+            status,
+            updatedAt: sql`now()`,
+            ...toActorColumns(actor),
+            reason: null,
+         })
+         .where(eq(entityIndex.id, id))
+         .returning();
+
+      await recordEvent(tx, {
+         kind: 'entity.status_changed',
+         subjectId: id,
+         actor,
+         payload: { from: current.status, to: status },
+      });
+
+      return updated;
    },
 );
 
