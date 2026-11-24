@@ -1,8 +1,11 @@
+import { createHash } from 'node:crypto';
+
 import { z } from 'zod';
 
 import { errorResponse, type ApiHandler } from '@sidekick/core/api';
 import { HTTP_STATUS } from '@sidekick/core/http';
 
+import type { Entity } from '../contracts/entity';
 import { SYNERGY_ERROR_CODE } from '../contracts/errors';
 import { getEntity } from '../repository/entities';
 import { toEntity } from './entity';
@@ -32,8 +35,21 @@ export function matchesIfNoneMatch(
 }
 
 /**
+ * The ETag of an entity's response: a hash of the exact JSON the API sends, so
+ * it changes whenever any field does (status included) and never otherwise.
+ * HTTP requires an ETag to cover the whole response (RFC 9110).
+ */
+export function entityETag(entity: Entity): string {
+   const hash = createHash('sha256')
+      .update(JSON.stringify(entity))
+      .digest('base64url');
+
+   return `"${hash}"`;
+}
+
+/**
  * `GET /api/synergy/entities/:id`: an entity's index fields with
- * `ETag: "<content_seq>"`, or 304 with no body when the caller's
+ * its ETag (entityETag), or 304 with no body when the caller's
  * `If-None-Match` already names it (D210). Another user's id, a deleted
  * entity and an id that never existed all answer 404 (D209).
  */
@@ -55,7 +71,8 @@ export const readEntity: ApiHandler<EntityRouteContext> =
          );
       }
 
-      const etag = `"${row.contentSeq}"`;
+      const entity = toEntity(row);
+      const etag = entityETag(entity);
       // private: only the caller's browser may store it; no-cache: it must ask
       // (cheaply, with If-None-Match) before reusing it
       const headers = { 'ETag': etag, 'Cache-Control': 'private, no-cache' };
@@ -67,5 +84,5 @@ export const readEntity: ApiHandler<EntityRouteContext> =
          });
       }
 
-      return Response.json(toEntity(row), { headers });
+      return Response.json(entity, { headers });
    };

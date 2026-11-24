@@ -20,7 +20,7 @@ export const entitySchema = z.object({
    status: z.enum(ENTITY_STATUSES),
    version: z.int(),
    revision: z.int(),
-   // The stale-write token and the ETag
+   // The stale-write token a save sends back as its baseline
    contentSeq: z.int(),
    editedAt: z.iso.datetime(),
    createdAt: z.iso.datetime(),
