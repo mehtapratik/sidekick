@@ -21,3 +21,14 @@ export type Actor = SystemAsActor | NonSystemAsActor;
 
 /** SQL for the user withRLS set. RLS's WITH CHECK refuses any other user_id anyway. */
 export const currentUserId = sql`current_setting('app.current_user_id')::uuid`;
+
+/** An actor as a row's actor_kind and actor_id store it */
+export function toActorColumns(actor: Actor): {
+   actorKind: ActorKind;
+   actorId: string | null;
+} {
+   return {
+      actorKind: actor.kind,
+      actorId: actor.id ?? null,
+   };
+}

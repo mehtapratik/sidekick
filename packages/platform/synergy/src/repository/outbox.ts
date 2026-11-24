@@ -2,7 +2,7 @@ import { withUserLock } from '@sidekick/core/db';
 
 import type { EntityStatus } from '../contracts/entity';
 import { outbox, type OUTBOX_EVENT_KINDS } from '../db/schema';
-import { currentUserId, type Actor } from './actor';
+import { currentUserId, toActorColumns, type Actor } from './actor';
 
 /** One of the kinds in OUTBOX_EVENT_KINDS */
 type OutboxEventKind = (typeof OUTBOX_EVENT_KINDS)[number];
@@ -50,7 +50,6 @@ export const recordEvent = withUserLock(async function recordEventWrite(
       kind: event.kind,
       subjectId: event.subjectId,
       payload: event.payload,
-      actorKind: event.actor.kind,
-      actorId: event.actor.id ?? null,
+      ...toActorColumns(event.actor),
    });
 });
