@@ -5,7 +5,7 @@ title: Agent Guide
 created: 2026-09-19
 updated: 2026-11-24
 kind: guidance
-version: 1.13.0
+version: 1.14.0
 tags:
    - ai-coding
    - agent
@@ -94,6 +94,8 @@ pnpm ops:entitlements:grant --email <email> --all [--apply]
 ## At the end of a phase
 
 Everything about a phase lives in its folder under `04-phases/`, named by number and nickname (`03-synergy/`): `00-plan.md`, `02-walkthrough.md`, `03-notes.md`, and one `lessons/lesson-N-slug/` folder per lesson holding `00-brief.md`, `01-walkthrough.md` and `02-notes.md`. The number prefixes set the order in the site's folder view and don't appear in URLs. Write the step-by-step walkthrough, mark the plan note complete, and record learnings in `notes.md` (private, `publish: false`).
+
+**A walkthrough is reproducible** (Pratik, 2026-11-24): someone else, or Pratik later, repeats the lesson from the page alone and ends with the same result. Every step gives where (the file path, or the folder a command runs from), exactly what to type (the final code as merged, copied from the repo, never from memory; a whole file, or the exact edit for a small change; every command), and how to verify it (the check to run and its expected result: test counts, the generated SQL, the error a planted mistake gives). The explanation goes under the code, never in place of it. Lesson 3's walkthrough is the model.
 
 ## Read the smallest relevant guidance
 

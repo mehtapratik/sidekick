@@ -5,7 +5,7 @@ title: Synergy
 created: 2026-09-19
 updated: 2026-11-24
 kind: plan
-version: 2.7.0
+version: 2.7.1
 tags:
    - plan
    - living-plan
@@ -72,7 +72,7 @@ Phase 3 follows Phase 2's [[04-phases/02-gatekeeper/01-contracts#How we build|ho
 - **One piece at a time.** Nothing lands in the repo until Pratik agrees to it. Pratik commits, pushes and opens the PR unless they ask otherwise.
 - **Tests go through the guarded API** wherever a route exists ([[03-system-design/non-functional/testing/testing-layers|testing layers]]). Whether a pure function also gets a unit test is Pratik's call in each lesson; the briefs point out the candidates.
 - **The design can change.** When Pratik's design wins in a lesson, the coach updates the Synergy overview (or the decision it touches) and bumps its version in the lesson's docs PR, so later lessons build on what was built.
-- **Every lesson ends with one docs PR:** a walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md`, a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `pnpm turbo run build --filter=@sidekick/www` (Astro and both gates).
+- **Every lesson ends with one docs PR:** a reproducible walkthrough at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/01-walkthrough.md` (every step's file path, its final code as merged, the commands and how to verify them, so a reader repeats the lesson from the page alone; [[08-ai-coding-harness/agent-guide#At the end of a phase|agent guide]]), a learnings note at `04-phases/03-synergy/00-lessons/lesson-N-<slug>/02-notes.md` (`publish: false`) holding everything explained in the lesson, the lesson marked ✅ in the table above, and a "Handover from lesson N" section in the next brief. A fix that changes an earlier lesson's or phase's result adds a post note to that walkthrough. Verify with `pnpm turbo run build --filter=@sidekick/www` (Astro and both gates).
 
 ## Exit criteria
 
